@@ -109,6 +109,31 @@ test('un héros et son arme ajoutés par un simple fichier sont jouables, sans u
   }
 });
 
+test('creuser : sans avancer, bas + tir perce sous les pieds, haut + tir perce le plafond', () => {
+  const ground = 10;
+  const lvl = () => flat({ draw: (put, row) => {
+    for (let y = row - 4; y <= row; y++) put(y, 6, 'TTTTT'); // un bloc de terre, quatre rangées au-dessus du sol d'acier
+    put(row - 5, 8, 'D');
+    put(row, 2, '.');
+  } });
+  const digger = settle(play(lvl()));
+  const top = digger.hero.y;
+  run(digger, 240, { down: true, fire: true });
+  assert.ok(digger.hero.y >= top + 4 * TILE, `le héros est descendu de ${(digger.hero.y - top) / TILE} tuiles`);
+  assert.equal(digger.world.at(8, ground), null, 'la terre sous lui a disparu jusqu’à l’acier');
+  assert.equal(digger.world.at(8, ground + 1)?.id, 'acier', 'l’acier ne se creuse pas');
+  assert.equal(digger.world.at(6, ground)?.id, 'terre', 'et il n’a creusé qu’un puits');
+
+  const walker = settle(play(lvl()));
+  run(walker, 60, { down: true, right: true, fire: true });
+  assert.equal(walker.hero.aim, 0, 'en avançant, on tire devant soi');
+  assert.equal(walker.world.at(8, ground - 4)?.id, 'terre');
+
+  const roof = settle(play(flat({ draw: (put, row) => put(row - 3, 0, 'TTTTTT') })));
+  run(roof, 60, { up: true, fire: true });
+  assert.equal(roof.world.at(2, ground - 3), null, 'le plafond est percé au-dessus de sa tête');
+});
+
 test('spéciale « onde » : repousse, étourdit et casse les planches autour', () => {
   const game = settle(play(flat({
     legende: { f: enemy('fonceur') },

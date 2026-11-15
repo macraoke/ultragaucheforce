@@ -30,7 +30,7 @@ test('le manche a une course morte : un pouce qui tremble ne fait pas marcher', 
 
 test('pousser le manche vers le haut fait sauter, en avançant ou non', () => {
   const lift = VIEW.h * ZONES.lift + 2;
-  assert.deepEqual(touchActions([finger(100, 300, 0, -lift)], VIEW), { jump: true });
+  assert.deepEqual(touchActions([finger(100, 300, 0, -lift)], VIEW), { jump: true, up: true });
   assert.deepEqual(touchActions([finger(100, 300, 30, -lift)], VIEW), { right: true, jump: true });
   assert.deepEqual(touchActions([finger(100, 300, 30, -10)], VIEW), { right: true }, 'un petit écart ne suffit pas');
 });
@@ -66,4 +66,16 @@ test('un doigt garde son côté : parti de la droite, il reste une action même 
   const slid = { ox: 700, oy: 300, x: 300, y: 300 };
   assert.deepEqual(touchActions([slid], VIEW), { jump: true });
   assert.deepEqual(touchActions([], VIEW), {});
+});
+
+test('tirer le manche vers le bas : on vise en bas, sans avancer ; poussé droit vers le haut : le tir suit le saut', () => {
+  assert.deepEqual(touchActions([finger(100, 200, 4, ZONES.pull + 2)], VIEW), { down: true });
+  assert.deepEqual(touchActions([finger(100, 200, 14, ZONES.pull + 2)], VIEW), { down: true }, 'un pouce n’est jamais parfaitement droit');
+  assert.deepEqual(touchActions([finger(100, 200, 40, ZONES.pull + 2)], VIEW), { right: true }, 'en diagonale vers le bas : on avance');
+  assert.deepEqual(touchActions([finger(100, 200, 0, ZONES.pull - 4)], VIEW), {});
+  const lift = -(VIEW.h * ZONES.lift + 2);
+  assert.deepEqual(touchActions([finger(100, 300, 0, lift)], VIEW), { jump: true, up: true });
+  assert.deepEqual(touchActions([finger(100, 300, 30, lift)], VIEW), { right: true, jump: true }, 'en avançant : un saut, le tir reste devant');
+  // Le pouce redescend après un saut : on mesure depuis le point le plus haut atteint.
+  assert.deepEqual(touchActions([{ ox: 100, oy: 300, ay: 240, x: 100, y: 240 + ZONES.pull + 2 }], VIEW), { down: true });
 });

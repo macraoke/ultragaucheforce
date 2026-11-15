@@ -115,7 +115,7 @@ export class Game {
     if (this.status !== 'playing') return;
     const input = {
       left: Boolean(actions.left), right: Boolean(actions.right), jump: Boolean(actions.jump),
-      fire: Boolean(actions.fire),
+      up: Boolean(actions.up), down: Boolean(actions.down), fire: Boolean(actions.fire),
       jumpPressed: Boolean(actions.jump) && !this.held.jump,
       specialPressed: Boolean(actions.special) && !this.held.special,
     };
