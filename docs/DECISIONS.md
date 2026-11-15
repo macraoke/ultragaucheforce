@@ -76,7 +76,25 @@ Chaque fiche de `content/` devient une carte, trouvée en la croisant dans le je
 
 ## La fortune, assise
 
-Le boss est assis sur sa fortune, dans le niveau comme dans la scène de fin : un tas de liasses à l'échelle, une liasse pour dix mille ans de Smic. Un seul geste, « Taxer 2 % », et un seul constat : il lui reste 98 %.
+Le boss est assis sur sa fortune, dans le niveau comme dans la scène de fin : un tas de liasses à l'échelle. La scène avance d'un bouton à l'autre, un grand nombre et une phrase à chaque fois :
+
+- **L'échelle, face à quelqu'un de très bien payé** : un chirurgien, pas le Smic. Une liasse vaut mille ans de ses revenus.
+- **Ce que la fortune rapporte** : ses dividendes d'une année, pour répondre d'avance à « flux et stocks ».
+- **Les 2 %** : moins que ces seuls dividendes.
+- **Qui paie combien** : la part des revenus qui part en impôts, pour presque tout le monde et pour les milliardaires.
+- **Ce que ça finance** : des postes d'enseignants.
+
+Le public visé est autant la classe moyenne que les jeunes.
+
+## Itération 3
+
+- **Le téléphone d'abord** : l'image remplit l'écran, tout l'écran répond (manche flottant à gauche, trois zones à droite), et le jeu pivote en paysage quand le téléphone est tenu debout.
+- **La panique est celle de la chaîne** : sa jauge vit dans le bandeau de PANIQUE TV, à côté de son nom. BFM-TV et CNews sont des unités qui cadrent le héros.
+- **Un seul comptage de la manif** : le chiffre de la préfecture est retiré.
+- **Les blessés, détaillés** : plus de compteur pendant la partie ; à la fin, le nombre annoncé côté forces de l'ordre, et ce qui le compose.
+- **La nasse revient d'elle-même**, sans être annoncée.
+- **On choisit son héros** parmi ceux de la Collection ; chaque camarade libéré vaut une vie de plus.
+- **La Collection se joue** : cartes à retourner, « Nouveau », progression par rayon, cartes gagnées en fin de niveau.
 
 ## Hors-ligne : seulement dans la version construite
 

@@ -9,7 +9,7 @@ Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les platea
 - **En face, du vrai.** CRS et leurs sommations, BAC et LBD, BRAV-M, canon à eau, hélicoptère, blindé, nasse. Un ministre, un éditorialiste.
 - **Tout est une référence.** Les pancartes ont été vues en manif, les bandeaux à la télé, les répliques ont été dites. PANIQUE TV les fait défiler, signées et datées.
 - **Collectionner.** Chaque personnage, lieu, parole, pancarte et fait croisé devient une carte, avec sa source.
-- **Taxer.** Le boss est assis sur sa fortune. On en prend 2 %. Il lui reste 98 %.
+- **Taxer.** Le boss est assis sur sa fortune. On en prend 2 % : moins que ses dividendes d'une année, et de quoi payer 64 000 enseignants.
 
 | | |
 |---|---|
