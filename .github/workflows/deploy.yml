@@ -1,0 +1,45 @@
+# Mise en ligne sur GitHub Pages — à déclenchement MANUEL uniquement
+# (onglet Actions → « Mise en ligne » → Run workflow).
+#
+# Avant le premier lancement, le propriétaire du dépôt doit activer Pages :
+# Settings → Pages → Build and deployment → Source : « GitHub Actions ».
+# Tant que ce n'est pas fait, ce workflow échoue sans rien publier.
+name: Mise en ligne
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deployer:
+    name: Construire et publier
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.publication.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Vérifier le contenu
+        run: node tools/validate.mjs
+      - name: Lancer les tests
+        run: npm test
+      - name: Construire le jeu
+        run: node tools/build.mjs
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - name: Publier
+        id: publication
+        uses: actions/deploy-pages@v4
