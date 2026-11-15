@@ -6,7 +6,7 @@ const KEY = 'ugf:sauvegarde:v1'; // préfixé : le domaine peut être partagé a
 
 const DEFAULTS = {
   termines: {}, // identifiant de niveau → vrai
-  decouvertes: [], // identifiants de fiches, citations et drapeaux rencontrés
+  decouvertes: [], // les cartes de la Collection déjà rencontrées : « rayon:identifiant »
   options: { son: true, musique: false, sobre: false }, // la musique (lecteur SoundCloud) ne se lance que sur demande
   brouillon: '',
 };
@@ -29,10 +29,15 @@ export function storeSave(save) {
   }
 }
 
+const key = (kind, id) => `${kind}:${id}`;
+
+/** Cette carte (« heros », « ennemis », « citations »… + identifiant) a-t-elle déjà été rencontrée ? */
+export const isFound = (save, kind, id) => save.decouvertes.includes(key(kind, id));
+
 /** Note une découverte ; renvoie vrai si elle est nouvelle. */
-export function discover(save, id) {
-  if (save.decouvertes.includes(id)) return false;
-  save.decouvertes.push(id);
+export function discover(save, kind, id) {
+  if (isFound(save, kind, id)) return false;
+  save.decouvertes.push(key(kind, id));
   storeSave(save);
   return true;
 }

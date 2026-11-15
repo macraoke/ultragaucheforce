@@ -1,0 +1,12 @@
+texte: Pour pousser à la délocalisation, c'est idéal !
+auteur: Bernard Arnault
+fonction: PDG de LVMH
+date: 2025-01-28
+contexte: Présentation des résultats annuels de LVMH, à propos de la surtaxe d'impôt sur les sociétés des grandes entreprises prévue au budget 2025, quelques jours après avoir assisté à l'investiture de Donald Trump.
+categorie: puissants
+mot: DÉLOCALISATION
+note: Il dénonce le fait « qu'on s'apprête à augmenter de 40% les impôts des entreprises qui fabriquent en France », puis : « Pour pousser à la délocalisation, c'est idéal! C'est la taxation du made in France. » Auparavant : « Je reviens des USA et j'ai pu voir le vent d'optimisme qui régnait dans ce pays. Et quand on revient en France, c'est un peu la douche froide » (phrases également citées par Public Sénat le 29 janvier 2025). Trois jours plus tard, il a écrit sur X n'avoir « jamais dit » que LVMH allait délocaliser (d'après les titres de presse, message non relu).
+source.titre: FashionUnited — Bernard Arnault : « Je reviens des USA et j'ai pu voir le vent d'optimisme qui régnait dans ce pays »
+source.url: https://fashionunited.fr/actualite/business/bernard-arnault-je-reviens-des-usa-et-jai-pu-voir-le-vent-doptimisme-qui-regnait-dans-ce-pays/2025012937082
+source.nature: presse
+verifie: 2026-11-15

@@ -1,0 +1,29 @@
+# À moto : traverse, dépasse, fait demi-tour.
+nom: La BRAV-M
+pv: 3
+vitesse: 150
+deplacement: moto
+reaction: rien
+vue: 240
+contact: 1
+fin: panne
+largeur: 22
+hauteur: 14
+citation: lallement-meme-camp
+fiche: brav-m-petition
+auteur: UltraGauche Force
+--- repos
+........wwww....wwww....
+.......wkkkw...wkkkw....
+.......wkkww...wkkww....
+........nnnn....nnnn....
+.......nnnnnn..nnnnnnk..
+......nnnnnnnnnnnnnns...
+.....nnnnnnnnnnnnnnn..k.
+....kkkkkkkkkkkkkkkkkkk.
+...kkkkkkYkkkkkkkkkkkwk.
+..kkkkkkkkkkkkkkkkkkkk..
+..kGGk..kkkkkkkk..kGGk..
+.kGkkGk..........kGkkGk.
+.kGkkGk..........kGkkGk.
+..kGGk............kGGk..

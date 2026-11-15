@@ -248,6 +248,12 @@ body.jeu { overflow: hidden; overscroll-behavior: none; }
 #hud .droite { right: 10px; justify-content: flex-end; }
 #hud-coeurs { color: var(--rouge); font-size: 1.3em; letter-spacing: .08em; }
 #hud-charges { color: var(--or); font-size: 1.2em; }
+#hud-manif { flex-basis: 100%; color: var(--or); font-size: 1.5em; transform-origin: left center; }
+#hud-manif small { font-size: .5em; color: var(--blanc); vertical-align: middle; }
+#hud-manif[hidden] { display: none; }
+#hud-manif.grossit { animation: grossit .45s cubic-bezier(.2, 1.6, .4, 1); }
+@keyframes grossit { 0% { transform: scale(1.7); } 100% { transform: scale(1); } }
+body.sobre #hud-manif.grossit { animation: none; }
 #hud-panique { position: relative; width: 9em; height: 1.35em; background: var(--nuit); border: 2px solid var(--blanc); overflow: hidden; text-shadow: none; }
 #hud-panique i { position: absolute; inset: 0 auto 0 0; background: #38b764; transition: width .3s; }
 #hud-panique[data-niveau='1'] i { background: var(--or); }
@@ -264,14 +270,18 @@ body.sobre #hud-panique i { animation: none; }
 /* Bandeau PANIQUE TV */
 #bandeau { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; display: flex; align-items: stretch; font: 900 clamp(.75rem, 2.6vmin, 1.25rem)/1 var(--titre); text-transform: uppercase; letter-spacing: .03em; pointer-events: none; overflow: hidden; }
 #bandeau strong { background: var(--rouge); color: var(--blanc); padding: .5em .7em; white-space: nowrap; }
-#bandeau em { background: var(--or); color: var(--nuit); padding: .5em .6em; font-style: normal; white-space: nowrap; }
+#bandeau em { background: var(--nuit); color: var(--or); padding: .5em .6em; font-style: normal; white-space: nowrap; }
+#bandeau[data-alerte] em { background: var(--or); color: var(--nuit); }
 #bandeau span { flex: 1; min-width: 0; background: var(--blanc); color: var(--nuit); padding: .5em .8em; white-space: nowrap; overflow: hidden; }
 #bandeau span i { display: inline-block; font-style: normal; animation: defile 4.5s linear .8s both; }
 @keyframes defile { to { transform: translateX(var(--decalage, 0)); } }
 #bandeau[hidden], #hud[hidden], #hud-boss[hidden] { display: none; }
 #bandeau.entre { animation: bandeau-entre .3s cubic-bezier(.2, 1.3, .4, 1); }
 @keyframes bandeau-entre { from { transform: translateY(100%); } }
-@media (orientation: landscape) { body.tactile #bandeau { bottom: auto; top: 3.4em; } }
+@media (orientation: landscape) {
+  body.tactile #bandeau { bottom: auto; top: 4.4em; } /* sous les deux lignes du HUD */
+  body.tactile #toasts { top: 8em; }
+}
 
 #toasts { position: absolute; left: 10px; top: 4.6em; z-index: 6; display: grid; gap: 6px; pointer-events: none; }
 #toasts p { margin: 0; padding: .45em .7em; background: var(--nuit); border-left: 5px solid var(--or); font: 700 .8rem/1.2 var(--texte); animation: bandeau-entre .25s; }
@@ -358,14 +368,18 @@ body.tactile:not(.en-jeu) #tactile { display: none; }
 @media (max-width: 560px) { .fin .bilans { grid-template-columns: 1fr; } }
 
 /* scène de taxation */
-.panneau.taxe { text-align: center; width: min(100%, 760px); }
-.taxe canvas { display: block; margin: 10px auto; }
-.taxe canvas.fortune { width: min(100%, 60vh, 520px); height: auto; border: 3px solid var(--blanc); background: #111; }
-.taxe canvas.vie { width: auto; height: min(46vh, 387px); }
-.taxe .gros { font: 900 clamp(1.1rem, 3.6vmin, 1.7rem)/1.15 var(--titre); text-transform: uppercase; color: var(--blanc); }
-.taxe .vrai { text-align: left; font-size: .85rem; background: var(--encre); border-left: 6px solid var(--or); padding: .6em .8em; }
+.panneau.taxe { text-align: center; width: min(100%, 860px); }
+.taxe .montant { font: 900 clamp(2rem, 9vmin, 4.6rem)/.9 var(--titre); text-transform: uppercase; color: var(--or); margin: 0 0 .1em; }
+.taxe .montant.petit { font-size: clamp(1.5rem, 6vmin, 3rem); color: #38b764; }
+.taxe canvas.tas { display: block; width: 100%; height: auto; margin: 8px auto; background: #10111c; border: 3px solid var(--blanc); }
+.taxe .legende { display: flex; flex-wrap: wrap; justify-content: center; gap: .3em 1.4em; font-size: .85rem; }
+.taxe .legende i { display: inline-block; vertical-align: middle; margin-right: .4em; }
+.taxe .legende .liasse { width: 14px; height: 8px; background: #38b764; border: 2px solid #1f6b4a; }
+.taxe .legende .point { width: 5px; height: 5px; background: var(--rouge); }
+.taxe .gros { font: 900 clamp(1.2rem, 4.4vmin, 2rem)/1.1 var(--titre); text-transform: uppercase; color: var(--blanc); margin: .2em 0; }
+.taxe .vrai { text-align: left; font-size: .82rem; background: var(--encre); border-left: 6px solid var(--or); padding: .6em .8em; }
 .taxe .pied { justify-content: center; }
-.taxe .services { display: flex; justify-content: center; gap: 24px; font-size: clamp(2.4rem, 9vmin, 4rem); filter: grayscale(1) brightness(.45); transition: filter .8s .3s; }
+.taxe .services { display: flex; justify-content: center; gap: 24px; font-size: clamp(2rem, 8vmin, 3.4rem); filter: grayscale(1) brightness(.45); transition: filter .8s .6s; }
 .taxe .services.allumes { filter: none; }
 
 /* atelier */
@@ -389,5 +403,44 @@ body.tactile:not(.en-jeu) #tactile { display: none; }
 #radio iframe { display: block; width: 100%; height: 76px; border: 0; margin: 4px 0; }
 #radio p { margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
+.fin .partie { display: flex; flex-wrap: wrap; gap: .2em 1.4em; padding: 0; margin: .8em 0; list-style: none; font-weight: 700; }
 .fin .pancarte { margin-top: 12px; padding: .6em .8em; background: var(--papier); color: var(--nuit); transform: rotate(-1deg); font-family: var(--titre); text-transform: uppercase; }
 .fin .pancarte small { font: 400 .75rem var(--texte); text-transform: none; }
+
+/* ------------------------------------------------------------------ la Collection (album de cartes) */
+
+.album .compte { font: 900 1.6rem/1 var(--titre); color: var(--or); margin: 0 0 .4em; }
+.album .rayon { font: 900 1.3rem/1 var(--titre); text-transform: uppercase; letter-spacing: .04em; color: var(--blanc); border-bottom: 3px solid var(--rouge); padding-bottom: .2em; margin: 1.4em 0 .7em; }
+.cartes-album { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; align-items: start; }
+article.carte { background: var(--papier); color: var(--nuit); border: 4px solid var(--nuit); border-radius: 10px; box-shadow: 5px 5px 0 var(--rouge); padding: 8px 10px 10px; min-width: 0; display: flex; flex-direction: column; gap: 5px; font-size: .78rem; line-height: 1.3; }
+article.carte header { display: flex; justify-content: space-between; align-items: center; font: 900 .7rem/1 var(--titre); letter-spacing: .06em; text-transform: uppercase; }
+article.carte .genre { background: var(--rouge); color: var(--blanc); padding: .25em .5em; border-radius: 3px; }
+article.carte.ennemis .genre, article.carte.boss .genre { background: var(--nuit); }
+article.carte.heros .genre, article.carte.recrues .genre { background: var(--rouge); }
+article.carte.niveaux .genre { background: var(--bleu); }
+article.carte.drapeaux .genre { background: #8e4fc2; }
+article.carte.citations .genre { background: var(--or); color: var(--nuit); }
+article.carte.fiches .genre { background: #257953; }
+article.carte.pancartes { background: var(--blanc); transform: rotate(-.6deg); }
+article.carte.pancartes:nth-child(even) { transform: rotate(.5deg); }
+article.carte.pancartes h3 { font-size: 1.3rem; }
+article.carte .vignette { height: 128px; display: grid; place-items: center; overflow: hidden; border: 3px solid var(--nuit); border-radius: 6px; background: linear-gradient(#f6c21c, #ef7d57); }
+article.carte.ennemis .vignette { background: linear-gradient(#94b0c2, #566c86); }
+article.carte.boss .vignette { background: linear-gradient(#f6c21c, #c98f1e); }
+article.carte.niveaux .vignette { background: var(--nuit); padding: 4px; }
+article.carte.drapeaux .vignette { background: linear-gradient(#f4f4f4, #cfd8e3); }
+article.carte h3 { font: 900 1.15rem/1 var(--titre); text-transform: uppercase; margin: .15em 0 0; color: var(--nuit); }
+article.carte p { margin: 0; overflow-wrap: anywhere; }
+article.carte .dapres { font-style: italic; }
+article.carte blockquote { margin: 0; padding: .35em .5em; background: #fff8; border-left: 4px solid var(--rouge); font-weight: 700; }
+article.carte blockquote cite { display: block; font-weight: 400; font-style: normal; font-size: .9em; margin-top: .2em; }
+article.carte .fait { padding: .35em .5em; background: #fff8; border-left: 4px solid var(--bleu); }
+article.carte a { color: var(--rouge-sombre); }
+article.carte .stats { font-weight: 700; }
+article.carte .coeurs { color: var(--rouge); }
+article.carte .source { font-size: .9em; }
+article.carte .vignette.vide { height: 64px; font: 900 2.4rem/1 var(--titre); color: #0005; background: #0001; border-style: dashed; }
+article.carte .indice { margin-top: auto; font-size: .92em; opacity: .75; }
+article.carte.cachee { background: #cfc8b4; }
+article.carte.cachee .vignette canvas { filter: brightness(0) opacity(.75); }
+article.carte.cachee h3 { letter-spacing: .2em; }

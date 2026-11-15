@@ -1,0 +1,12 @@
+texte: Ce sont aujourd'hui de véritables milices.
+auteur: Marine Le Pen
+fonction: présidente du Rassemblement national, députée du Pas-de-Calais
+date: 2019-02-11
+contexte: Sur France Inter, à propos des groupes d'extrême gauche, après des violences devant l'Assemblée nationale en marge d'une manifestation de « gilets jaunes ».
+categorie: diabolisation
+mot: MILICES
+note: Suite : « Cela fait des années que je réclame leur dissolution. Et cela fait des années que je regarde avec étonnement la complaisance du pouvoir à l'égard de ces milices d'extrême gauche ».
+source.titre: franceinfo — Violences devant l'Assemblée nationale : Marine Le Pen dit s'étonner de "la complaisance du pouvoir à l'égard des milices d'extrême gauche"
+source.url: https://www.franceinfo.fr/economie/transports/gilets-jaunes/violences-devant-l-assemblee-nationale-marine-le-pen-dit-s-etonner-de-la-complaisance-du-pouvoir-a-l-egard-des-milices-d-extreme-gauche_3185311.html
+source.nature: presse
+verifie: 2026-11-15

@@ -1,0 +1,18 @@
+nom: Barrière
+auteur: UltraGauche Force
+--- image
+..........................
+.hhhhhhhhhhhhhhhhhhhhhhhh.
+.h..H..H..H..H..H..H..H.h.
+.h..H..H..H..H..H..H..H.h.
+.h..H..H..H..H..H..H..H.h.
+.h..H..H..H..H..H..H..H.h.
+.h..H..H..H..H..H..H..H.h.
+.h..H..H..H..H..H..H..H.h.
+.h..H..H..H..H..H..H..H.h.
+.h..H..H..H..H..H..H..H.h.
+.h..H..H..H..H..H..H..H.h.
+.hhhhhhhhhhhhhhhhhhhhhhhh.
+.HH....................HH.
+.HH....................HH.
+.HH....................HH.

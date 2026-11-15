@@ -1,6 +1,6 @@
 # Il ne blesse personne : il cadre le héros, et la panique monte.
 # Clin d'œil à « We Become What We Behold » de Nicky Case.
-nom: Le Drone de PANIQUE TV
+nom: Le drone de PANIQUE TV
 pv: 1
 vitesse: 60
 deplacement: vol
@@ -10,11 +10,8 @@ panique: 1.5
 fin: panne
 largeur: 14
 hauteur: 9
-replique: ON A LES IMAGES !
-replique: VACHE SUSPECTE !
-replique: ÉDITION SPÉCIALE !
+fiche: drones-manifestations
 auteur: UltraGauche Force
-
 --- repos
 GGGG......GGGG
 ..k........k..

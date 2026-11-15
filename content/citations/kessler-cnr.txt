@@ -1,0 +1,12 @@
+texte: Il s'agit aujourd'hui de sortir de 1945, et de défaire méthodiquement le programme du Conseil national de la Résistance.
+auteur: Denis Kessler
+fonction: ancien vice-président du Medef, PDG du réassureur Scor
+date: 2007-10
+contexte: Éditorial dans le magazine Challenges, quelques mois après l'élection de Nicolas Sarkozy, à propos des réformes engagées.
+categorie: puissants
+mot: SORTIR DE 1945
+note: Phrase citée par Politis : « Il s'agit aujourd'hui de sortir de 1945, et de défaire méthodiquement le programme du Conseil national de la Résistance », suivie de « Le gouvernement s'y emploie. » L'éditorial d'origine, « Adieu 1945, raccrochons notre pays au monde ! » (Challenges, 4 octobre 2007), n'a pas pu être relu : titre et date d'après ses nombreuses reprises.
+source.titre: Politis — Comment on abat l'héritage de la Résistance
+source.url: https://www.politis.fr/articles/2010/05/comment-on-abat-lheritage-de-la-resistance-10522/
+source.nature: presse
+verifie: 2026-11-15

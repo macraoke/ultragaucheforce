@@ -1,0 +1,9 @@
+titre: Recruter à l'hôpital
+theme: programme
+texte: Le programme L'Avenir en commun propose d'engager un plan pluriannuel de recrutement des professionnels du soin et du médico-social (médecins, infirmières, aides-soignantes et personnels administratifs).
+portee: Édition 2027 du programme de La France insoumise, chapitre « Faire de la santé un enjeu global ». Le même chapitre prévoit de réouvrir progressivement des services d'urgence, des maternités et des Ehpad publics à moins de 30 minutes de chaque Français, et de sortir de la tarification à l'acte (T2A) à l'hôpital. Il s'agit de propositions d'un mouvement politique, pas de mesures en vigueur.
+periode: édition 2027, présentée en novembre 2026
+source.titre: Mélenchon 2027 — L'Avenir en commun, chapitre « Faire de la santé un enjeu global »
+source.url: https://melenchon2027.fr/programme/livre/le-gout-du-futur-aux-nouvelles-frontieres-de-l-humanite/chapitre4
+source.nature: militante
+verifie: 2026-11-15

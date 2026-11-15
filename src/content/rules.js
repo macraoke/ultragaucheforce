@@ -5,7 +5,7 @@
 // un contributeur voit donc dans son navigateur les mêmes messages que la CI.
 
 import { Fiche, parseLines } from './parse.js';
-import { WEAPONS, SPECIALS, MOVES, REACTIONS, ENDINGS, BOSS_ATTACKS } from '../sim/behaviors.js';
+import { WEAPONS, SPECIALS, MOVES, REACTIONS, ENDINGS, ENEMY_GROUPS, BOSS_ATTACKS } from '../sim/behaviors.js';
 
 export const TILE = 16;
 
@@ -16,6 +16,7 @@ export const MARKERS = {
   K: 'camarade en garde à vue',
   Q: 'piquet de grève (point de reprise)',
   Y: 'boss',
+  N: 'nasse (les lignes se referment quand le héros passe ici)',
 };
 
 export const THEMES = ['richesses', 'droits', 'ordre', 'democratie', 'programme', 'luttes'];
@@ -176,14 +177,20 @@ const noSections = (f, report) => {
 
 const under = (...prefixes) => (key) => prefixes.some((p) => key.startsWith(`${p}.`));
 
+/** La fiche de collection : d'où vient le personnage (texte libre) et la fiche de faits qui l'explique. */
+const CARD = { origine: str(), fiche: list() }; // « fiche » se répète : une carte peut s'appuyer sur plusieurs faits
+
+/** Les armes réservées aux ennemis (le jet du canon à eau) ne se proposent pas aux héros. */
+const HERO_WEAPONS = Object.fromEntries(Object.entries(WEAPONS).filter(([, w]) => w.only !== 'ennemi'));
+
 function buildHero(f, ctx, report) {
   const spec = {
-    nom: req(), inspiration: str(), traitement: str(), cri: str(), voix: str(), citation: str(),
+    nom: req(), inspiration: str(), traitement: str(), cri: str(), citation: str(),
     pv: num(1, 5, 2), vitesse: num(60, 220, 140), saut: num(1.5, 5, 3.2),
-    largeur: num(6, 16, 10), hauteur: num(8, 24, 14), statut: pick(['jouable', 'test']), ...CREDITS,
+    largeur: num(6, 16, 10), hauteur: num(8, 24, 14), statut: pick(['jouable', 'test']), ...CARD, ...CREDITS,
   };
   const out = readFields(f, spec, report, under('arme', 'speciale'));
-  out.arme = readBehavior(f, 'arme', WEAPONS, report);
+  out.arme = readBehavior(f, 'arme', HERO_WEAPONS, report);
   out.speciale = readBehavior(f, 'speciale', SPECIALS, report, {
     optional: true, params: { charges: [0, 9, 3] }, texts: ['nom'],
   });
@@ -195,11 +202,30 @@ function buildEnemy(f, ctx, report) {
   const spec = {
     nom: req(), pv: num(1, 20, 2), vitesse: num(0, 200, 40), deplacement: pick(MOVES), reaction: pick(REACTIONS),
     vue: num(32, 400, 150), bouclier: bool(), contact: num(0, 3, 0), panique: num(0, 30, 0), fin: pick(ENDINGS),
-    replique: list(), largeur: num(6, 32, 12), hauteur: num(6, 32, 16), ...CREDITS,
+    replique: list(), largeur: num(6, 32, 12), hauteur: num(6, 32, 16),
+    // `debordement` : la ligne tient (insensible, infranchissable) tant que la manif compte moins de monde.
+    debordement: num(0, 5000, 0), sommation: list(), citation: str(),
+    // `ecriteau` : ce qu'on lit au-dessus de l'unité une fois hors service (sinon « EN GRÈVE » pour une fin en grève).
+    ecriteau: str(), ...CARD, ...CREDITS,
   };
-  const out = readFields(f, spec, report, under('arme'));
+  const groups = Object.keys(ENEMY_GROUPS);
+  const out = readFields(f, spec, report, under('arme', ...groups));
   out.arme = readBehavior(f, 'arme', WEAPONS, report, { optional: true });
+  for (const group of groups) out[group] = readParams(f, group, ENEMY_GROUPS[group], report);
   out.sprites = readSprites(f, ctx.palette, report, { required: ['repos'] });
+  return out;
+}
+
+/** Une recrue : quelqu'un (ou une assemblée) qui rejoint la manif quand le héros passe ou lui tend un tract. */
+function buildRecruit(f, ctx, report) {
+  const spec = { nom: req(), apport: num(1, 500, 0), multiplie: num(1.5, 5, 0), slogan: list(), ...CARD, ...CREDITS };
+  const out = readFields(f, spec, report);
+  if (f.has('apport') === f.has('multiplie')) {
+    report(1, 'Une recrue a besoin de « apport: … » (des gens qui rejoignent) OU de « multiplie: … » (la manif est multipliée), pas les deux.');
+  }
+  out.sprites = readSprites(f, ctx.palette, report, { required: ['image'], max: 48 });
+  out.largeur = out.sprites.image?.[0]?.length || TILE;
+  out.hauteur = out.sprites.image?.length || TILE;
   return out;
 }
 
@@ -208,7 +234,9 @@ function buildBoss(f, ctx, report) {
   const spec = {
     nom: req(), inspiration: str(), traitement: str(), pv: num(5, 400, 60), largeur: num(16, 96, 40),
     hauteur: num(16, 96, 48), vitesse: num(0, 200, 40), citation: str(), replique: list(),
-    'fortune.montant': num(0, 1000, 0), 'fortune.fiche': str(), ...CREDITS,
+    'fortune.montant': num(0, 1000, 0), 'fortune.fiche': str(),
+    // `assis` : il reste sur son tas, sans bouger ni charger, tant que sa vie n'est pas passée sous `leve`.
+    assis: bool(), leve: num(0, 1, 0.7), ...CARD, ...CREDITS,
   };
   const out = readFields(f, spec, report, under('phase', ...attacks));
   out.phases = [];
@@ -246,7 +274,12 @@ function buildTile(f, ctx, report) {
 }
 
 function buildDecor(f, ctx, report) {
-  const out = readFields(f, { nom: req(), devant: bool(), ...CREDITS }, report);
+  // `ecrit` : le jeu écrit dessus une vraie pancarte de `content/pancartes/`, choisie selon l'emplacement.
+  // « pancarte » : texte sombre sur le dessin (banderole) ; « tag » : texte peint, sans fond (mur).
+  const spec = { nom: req(), devant: bool(), ecrit: pick(['', 'pancarte', 'tag']), 'ecrit.y': num(0, 96, 8), ...CREDITS };
+  const out = readFields(f, { nom: req(), devant: bool(), ...CREDITS }, report, (key) => key === 'ecrit' || key === 'ecrit.y');
+  out.ecrit = readValue(f, 'ecrit', spec.ecrit, report);
+  out.ecritY = readValue(f, 'ecrit.y', spec['ecrit.y'], report);
   out.sprites = readSprites(f, ctx.palette, report, { required: ['image'] });
   return out;
 }
@@ -314,13 +347,20 @@ function buildMusic(f, ctx, report) {
   return out;
 }
 
-/** Un niveau : en-tête, légende des lettres minuscules, panneaux numérotés, puis la carte. */
+/** Les signes qu'une légende de niveau peut prendre : les minuscules, et quelques signes pour les niveaux très peuplés. */
+export const LEGEND = /^[a-z+*@&%$!?=~^<>_,;]$/;
+
+/** Un niveau : en-tête, légende (un signe = un ennemi, une recrue ou un décor), panneaux numérotés, puis la carte. */
 export function buildLevel(f, ctx, report) {
   const spec = {
     titre: req(), accroche: str(), intro: str(), manchette: list(), fond: pick(BACKDROPS), boss: str(),
-    heros: str(), camarades: str(), cortege: bool(), musique: str(), fiche: str(), ...CREDITS,
+    heros: str(), camarades: str(), cortege: bool(), musique: str(),
+    // `citation` : la vraie phrase qui ouvre le niveau ; `fiche` (répétable) : la première sert à l'écran de fin.
+    citation: str(), fiche: list(),
+    manif: num(0, 5000, 0), 'nasse.ennemi': str(), 'nasse.nombre': num(1, 6, 3), 'nasse.vitesse': num(4, 80, 18),
+    ...CREDITS,
   };
-  const isLegend = (k) => /^[a-z]$/.test(k);
+  const isLegend = (k) => LEGEND.test(k);
   const isSign = (k) => /^panneau\.[1-9]$/.test(k);
   const out = readFields(f, spec, report, (k) => isLegend(k) || isSign(k));
   out.legende = {};
@@ -328,9 +368,14 @@ export function buildLevel(f, ctx, report) {
   for (const { key, value, line } of f.fields) {
     if (isSign(key)) out.panneaux[key.at(-1)] = value;
     if (!isLegend(key)) continue;
-    const type = has(ctx.ennemis, value) ? 'ennemi' : has(ctx.decors, value) ? 'decor' : null;
+    const type = has(ctx.ennemis, value) ? 'ennemi' : has(ctx.recrues || {}, value) ? 'recrue' : has(ctx.decors, value) ? 'decor' : null;
     if (type) out.legende[key] = { type, id: value };
-    else report(line, `« ${key}: ${value} » : aucun ennemi ni décor ne s'appelle « ${value} ».`);
+    else report(line, `« ${key}: ${value} » : aucun ennemi ni décor ne s'appelle « ${value} » (aucune recrue non plus).`);
+  }
+  // La manif de départ : dix personnes quand le niveau a un cortège, sauf indication contraire.
+  if (!f.has('manif')) out.manif = out.cortege ? 10 : 0;
+  if (out.nasse.ennemi && !has(ctx.ennemis, out.nasse.ennemi)) {
+    report(f.lineOf('nasse.ennemi'), `« nasse.ennemi: ${out.nasse.ennemi} » : cet ennemi n'existe pas dans content/ennemis/.`);
   }
   if (out.boss && !has(ctx.boss, out.boss)) report(f.lineOf('boss'), `Le boss « ${out.boss} » n'existe pas dans content/boss/.`);
   out.camarades = splitList(out.camarades);
@@ -346,7 +391,7 @@ export function buildLevel(f, ctx, report) {
   }
   const width = Math.max(...map.rows.map((r) => r.length));
   const rows = map.rows.map((r) => r.replaceAll(' ', '.').padEnd(width, '.'));
-  const count = { D: 0, S: 0, Y: 0 };
+  const count = { D: 0, S: 0, Y: 0, N: 0 };
   let start = null;
   rows.forEach((row, y) => {
     for (let x = 0; x < row.length; x++) {
@@ -357,7 +402,7 @@ export function buildLevel(f, ctx, report) {
         if (c === 'D') start = { x, y };
       } else if (/[1-9]/.test(c)) {
         if (!has(out.panneaux, c)) report(map.line + y, `Panneau « ${c} » sans texte : ajoute « panneau.${c}: … » dans l'en-tête.`, x + 1);
-      } else if (/[a-z]/.test(c)) {
+      } else if (LEGEND.test(c)) {
         if (!has(out.legende, c)) report(map.line + y, `Lettre « ${c} » inconnue : déclare-la dans l'en-tête, par exemple « ${c}: bouclier ».`, x + 1);
       } else {
         report(map.line + y, `Symbole « ${c} » inconnu. Tuiles : ${Object.keys(ctx.symbols).join(' ')} ; repères : ${Object.keys(MARKERS).join(' ')} ; vide : « . ».`, x + 1);
@@ -370,6 +415,7 @@ export function buildLevel(f, ctx, report) {
   if (count.S < 1) report(map.line, 'Il faut au moins une sortie « S ».');
   if (out.boss && count.Y !== 1) report(map.line, 'Ce niveau a un boss : place exactement un « Y » dans la carte.');
   if (!out.boss && count.Y) report(map.line, 'La carte contient un « Y » mais l’en-tête n’a pas de ligne « boss: … ».');
+  if (count.N && !out.nasse.ennemi) report(map.line, 'La carte contient une nasse « N » : ajoute « nasse.ennemi: … » dans l’en-tête.');
   if (start && count.S && !exitReachable(rows, start, ctx.symbols)) {
     report(map.line, 'La sortie « S » est inatteignable : un mur indestructible sépare le départ de la sortie.');
   }
@@ -425,7 +471,7 @@ function exitReachable(rows, start, symbols) {
 
 const FOLDERS = {
   tuiles: buildTile, decors: buildDecor, drapeaux: buildFlag, heros: buildHero, ennemis: buildEnemy, boss: buildBoss,
-  citations: buildCitation, fiches: buildFact, sons: buildSound, musiques: buildMusic, niveaux: buildLevel,
+  recrues: buildRecruit, citations: buildCitation, fiches: buildFact, sons: buildSound, musiques: buildMusic, niveaux: buildLevel,
 };
 const LINE_FOLDERS = ['manchettes', 'pancartes'];
 
@@ -466,7 +512,7 @@ export function buildContent(files) {
     if (LINE_FOLDERS.includes(dir)) {
       for (const { text } of parseLines(file.text)) {
         const [texte, credit = ''] = text.split('|').map((s) => s.trim());
-        bundle[dir].push(dir === 'pancartes' ? { texte, credit } : texte);
+        bundle[dir].push({ texte, credit }); // crédit : « où et quand — adresse de la source »
       }
       continue;
     }
@@ -508,14 +554,19 @@ export function buildContent(files) {
   // Références croisées : une fiche ne peut citer que ce qui existe.
   const refs = (dir, target, get) => {
     for (const item of Object.values(bundle[dir])) {
-      const id = get(item);
-      if (id && !has(bundle[target], id)) reporter(`content/${dir}/${item.id}.txt`)(1, `« ${id} » n'existe pas dans content/${target}/.`);
+      for (const id of [get(item)].flat()) {
+        if (id && !has(bundle[target], id)) reporter(`content/${dir}/${item.id}.txt`)(1, `« ${id} » n'existe pas dans content/${target}/.`);
+      }
     }
   };
   refs('heros', 'citations', (h) => h.citation);
   refs('boss', 'citations', (b) => b.citation);
+  refs('ennemis', 'citations', (e) => e.citation);
+  for (const dir of ['heros', 'ennemis', 'boss', 'recrues']) refs(dir, 'fiches', (item) => item.fiche);
+  refs('ennemis', 'ennemis', (e) => e.renfort.ennemi);
   refs('boss', 'fiches', (b) => b.fortune.fiche);
   refs('niveaux', 'fiches', (n) => n.fiche);
+  refs('niveaux', 'citations', (n) => n.citation);
   refs('niveaux', 'musiques', (n) => n.musique);
   for (const b of Object.values(bundle.boss)) {
     const ally = b.attaques?.invocation?.ennemi;

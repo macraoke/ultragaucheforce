@@ -1,0 +1,24 @@
+nom: La paysanne
+apport: 30
+slogan: LA PLANÈTE AVANT LE PROFIT
+slogan: - DE RICHES, + DE RUCHES
+fiche: programme-planification-ecologique
+auteur: UltraGauche Force
+--- image
+.h.........
+hhh..yyyy..
+.h.yyyyyyyy
+.h..ssssss.
+.T..skssks.
+.T..ssssss.
+.T...ssss..
+.T..vVVVVv.
+.sVVVVvvVVV
+.T.VVVvvVVV
+.T.VVVVVVVs
+.T..VVVVVV.
+.T..VVVVVV.
+.T..VV..VV.
+.T..VV..VV.
+.T..VV..VV.
+...kkk.kkk.

@@ -1,0 +1,12 @@
+texte: Si on commence à jeter des cailloux sur les premiers de cordée c'est toute la cordée qui dégringole.
+auteur: Emmanuel Macron
+fonction: président de la République
+date: 2017-10-15
+contexte: Première interview télévisée du quinquennat, sur TF1 et LCI, en défense de sa politique fiscale et de la réforme de l'impôt sur la fortune.
+categorie: puissants
+mot: PREMIERS DE CORDÉE
+note: Juste avant : « Je crois à la cordée. Il y a des hommes et des femmes qui réussissent parce qu'ils ont des talents, je veux qu'on les célèbre. » Variantes : « si l'on commence… » chez Public Sénat ; fin en « s'effondre » chez Europe 1. Dans le même entretien : « Je ne crois pas à la jalousie française qui consiste à dire "il y a des riches, taxons-les, nous nous porterons mieux" ».
+source.titre: franceinfo — VIDEOS. Sept citations à retenir de l'interview télévisée d'Emmanuel Macron
+source.url: https://www.franceinfo.fr/politique/emmanuel-macron/interview-televisee-d-emmanuel-macron-ce-qu-il-faut-retenir-en-sept-citations_2421121.html
+source.nature: presse
+verifie: 2026-11-15

@@ -1,0 +1,12 @@
+texte: Si les impôts augmentent, il y aura une grande mobilisation patronale.
+auteur: Patrick Martin
+fonction: président du Medef
+date: 2025-09-13
+contexte: Entretien au Parisien, pendant la préparation du budget 2026 et le débat sur la taxe Zucman.
+categorie: puissants
+mot: MOBILISATION PATRONALE
+note: Il précise : « On ne descendra pas dans la rue. » La mobilisation prendrait la forme d'un meeting réunissant « des milliers de chefs d'entreprise de tout profil ». Sur la taxe Zucman : « instaurer cette taxe serait même une forme de spoliation ».
+source.titre: France 24 (dépêche AFP) — Budget: le Medef menace d'une "grande mobilisation patronale" si les impôts des entreprises augmentent
+source.url: https://www.france24.com/fr/info-en-continu/20250913-budget-le-medef-menace-d-une-grande-mobilisation-patronale-si-les-imp%C3%B4ts-des-entreprises-augmentent
+source.nature: presse
+verifie: 2026-11-15

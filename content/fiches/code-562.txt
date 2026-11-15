@@ -1,0 +1,9 @@
+titre: Code 562
+theme: ordre
+texte: Fin juillet 2023, après le placement en détention provisoire d'un membre de la BAC de Marseille, la colère de policiers « s'exprime par des arrêts maladie pour surmenage ou, principalement, par la mise en code 562 » : « en attente d'instruction », c'est-à-dire en service minimum.
+portee: Article de La Libre du 27 juillet 2023, qui ne chiffre pas le mouvement. Le policier était soupçonné d'avoir passé à tabac un jeune homme dans la nuit du 1er au 2 juillet 2023.
+periode: juillet 2023
+source.titre: La Libre — En France, les forces de police manifestent leur malaise par l'inaction
+source.url: https://www.lalibre.be/international/europe/2023/07/27/en-france-les-forces-de-police-manifestent-leur-malaise-par-linaction-SX76RHIAG5GY3KMSZ2UDCFT4EA/
+source.nature: presse
+verifie: 2026-11-15

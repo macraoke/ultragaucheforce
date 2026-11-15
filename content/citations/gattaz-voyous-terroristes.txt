@@ -1,0 +1,12 @@
+texte: Un peu comme des voyous, comme des terroristes.
+auteur: Pierre Gattaz
+fonction: président du Medef
+date: 2016-05-30
+contexte: Entretien au Monde, pendant la mobilisation contre la loi travail, à propos de la CGT et de « minorités » qui bloquent l'économie.
+categorie: diabolisation
+mot: VOYOUS
+note: Passage cité par l'AFP : des « minorités qui se comportent un peu comme des voyous, comme des terroristes ». Dans le même entretien : « Pour moi, le sigle CGT est égal à chômage » et, à propos du syndicat du Livre, « il me semble que l'on est dans une dictature stalinienne ». Le 1er juin 2016, communiqué du Medef titré « Méthodes de la CGT : terroristes non, voyous oui », où il concède : « Le mot terrorisme était donc inadapté dans ce contexte. »
+source.titre: Tendance Ouest (dépêche AFP) — Gattaz compare l'action de la CGT-Livre à "une dictature stalinienne"
+source.url: https://www.tendanceouest.com/actualite-139286-paris-afp-gattaz-compare-l-action-de-la-cgt-livre-a-une-dictature-stalinienne
+source.nature: presse
+verifie: 2026-11-15

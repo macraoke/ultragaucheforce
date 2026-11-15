@@ -1,0 +1,12 @@
+texte: Sur le 10, très clairement, on voit bien que le mouvement s'est gauchisé.
+auteur: Bruno Retailleau
+fonction: ministre de l'Intérieur
+date: 2025-09-05
+contexte: En déplacement à Clermont-Ferrand, à propos de l'appel « Bloquons tout » du 10 septembre 2025.
+categorie: diabolisation
+mot: GAUCHISÉ
+note: Suite : « M. Mélenchon tente de le récupérer », « c'est la mouvance d'extrême gauche, d'ultragauche, aidée par la CGT, qui va être à l'œuvre », puis « Cette consigne de bloquer tout, c'est stupide. » Le 10 septembre au soir, ministre démissionnaire : « Les bloqueurs n'ont pas bloqué la France » (franceinfo).
+source.titre: France 24 — "Bloquons tout" : Bruno Retailleau ne croit pas "à des mouvements d'ampleur" mais prône la "fermeté"
+source.url: https://www.france24.com/fr/info-en-continu/20250905-10-septembre-retailleau-ne-croit-pas-%C3%A0-des-mouvements-d-ampleur-malgr%C3%A9-le-risque-d-actions-spectaculaires
+source.nature: presse
+verifie: 2026-11-15

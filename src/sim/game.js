@@ -7,7 +7,19 @@
 // et vide `events` à chaque image pour jouer sons, secousses, bandeaux et cartons :
 //   sfx {id, x} · shake {force} · headline {text} · heroCard {hero} · card {id} · debris {x, y, color, n}
 //   bubble {x, y, text} · explosion {x, y, r} · panic {level} · checkpoint · death · respawn
-//   boss {state: 'enter' | 'phase' | 'defeated'} · won · lost
+//   boss {state: 'enter' | 'phase' | 'stand' | 'defeated'} · won · lost
+//   recruit {id, n, crowd, x, y} · dispersed {n, crowd} · overrun {x, y} · blocked {x, need, crowd}
+//   kettle {state: 'start', x} puis {state: 'end', reason: 'out' | 'broken' | 'time'} · drop {x, y, n}
+//   discover {kind: 'heros' | 'ennemi' | 'recrue' | 'boss' | 'mot' | 'panneau', id} : une seule fois par partie
+//
+// La manif et le maintien de l'ordre :
+//   crowd        nombre de manifestants (entier, jamais plafonné) ; `cortege` en dessine 40 au plus
+//   recruits     [{ id, def, x, y, w, h, joined, animTime }] : à rejoindre en les touchant ou en leur tendant un tract
+//   addCrowd(n)  des gens rejoignent · disperse(part) en disperse une part (jamais sous 1 avec un cortège)
+//   power()      multiplicateur des dégâts des projectiles du héros : le nombre fait la force
+//   counts()     { syndicats, prefecture } : les deux comptages
+//   kettle       null | { x, t, limit, x0, x1 } : nasse en cours (x0, x1 = bords intérieurs des lignes)
+//   Ennemis : blocking, aim, jet, beam, rush, rope (voir enemy.js) · boss.seated (voir boss.js)
 //
 // Repères : tout est en pixels, tuile = 16. Les boîtes (héros, ennemis, projectiles, accessoires, boss)
 // ont x, y = coin haut-gauche. Cortège : x = centre, y = pieds. Décors : x, y = coin bas-gauche de la case.
@@ -16,11 +28,12 @@ import { makeRng } from './rng.js';
 import { TILE } from './world.js';
 import { hitsSolid, overlap } from './physics.js';
 import { updateHero, setHeroDef } from './hero.js';
-import { createEnemy, updateEnemy } from './enemy.js';
+import { createEnemy, updateEnemy, sturdy, LINE_REACH } from './enemy.js';
 import { updateProjectiles } from './projectile.js';
 import { updateBoss, hurtBoss } from './boss.js';
 import { loadLevel, toList, playable } from './level.js';
-import { updateProps, updateCortege, growCortege } from './props.js';
+import { updateProps } from './props.js';
+import { updateRecruits, updateCortege, syncCortege, updateKettle } from './manif.js';
 
 export const DT = 1 / 60;
 
@@ -30,6 +43,7 @@ const FUSE = 0.12; // délai entre la destruction d'un tonneau et son explosion 
 const RESPAWN_DELAY = 0.8;
 const TRAIL_LENGTH = 600;
 const MAX_EVENTS = 400;
+const NAG = 2; // secondes entre deux rappels « vous n'êtes pas assez nombreux »
 
 export class Game {
   /**
@@ -43,6 +57,7 @@ export class Game {
     if (!level) throw new Error(`Niveau introuvable : « ${levelId} ».`);
     this.bundle = bundle;
     this.level = level;
+    this.levelId = level.id ?? levelId;
     this.rng = makeRng(opts.seed ?? 1);
     this.invincible = Boolean(opts.invincible);
 
@@ -53,7 +68,10 @@ export class Game {
     this.panic = 0;
     this.panicLevel = 0;
     this.sign = null;
-    this.stats = { breakdownsByPlayer: 0, breakdownsBySelf: 0, gassed: 0, tiles: 0, rescues: 0, tracts: 0, deaths: 0 };
+    this.stats = {
+      breakdownsByPlayer: 0, breakdownsBySelf: 0, gassed: 0, tiles: 0, rescues: 0, tracts: 0, deaths: 0,
+      recruits: 0, dispersed: 0, overrun: 0,
+    };
 
     this.enemies = [];
     this.projectiles = [];
@@ -62,10 +80,15 @@ export class Game {
     this.decors = [];
     this.cortege = [];
     this.boss = null;
+    this.crowd = 0; // la manif : nombre de manifestants
+    this.recruits = [];
+    this.nasses = []; // repères « N » de la carte
+    this.kettle = null;
 
     this.fuses = []; // explosions à retardement
     this.trail = []; // trace du héros, suivie par le cortège et les doubles
     this.unlocked = []; // fiches « droits » déjà débloquées dans cette partie
+    this.discovered = new Set(); // « genre:identifiant » déjà signalés dans cette partie
     this.reinforcements = 0;
     this.headlines = 0;
     this.respawnTimer = 0;
@@ -74,7 +97,8 @@ export class Game {
 
     loadLevel(this); // world, hero, checkpoint, enemies, props, decors, boss
     this.recordTrail();
-    growCortege(this, 3);
+    this.addCrowd(level.manif ?? (level.cortege ? 10 : 0));
+    this.discover('heros', this.hero.def.id);
   }
 
   // ------------------------------------------------------------ un pas de simulation
@@ -101,11 +125,14 @@ export class Game {
       if (hero.y > this.world.h * TILE + 48) this.killHero(); // tombé sous la carte
     }
     for (const e of this.enemies) updateEnemy(this, e, DT);
+    this.blockHero();
     if (this.boss) updateBoss(this, this.boss, DT);
     updateProjectiles(this, DT);
     this.updateClouds();
     this.updateFuses();
     updateProps(this);
+    updateRecruits(this, DT);
+    updateKettle(this, DT);
     updateCortege(this, DT);
     this.world.flush(
       (tx, ty, def, team) => this.tileDestroyed(tx, ty, def, team),
@@ -165,7 +192,7 @@ export class Game {
       for (const e of this.enemies) {
         if (e.state === 'done' || !near(e)) continue;
         this.hurtEnemy(e, damage, credit === 'ordre' ? 'ordre' : 'luttes');
-        if (e.state === 'done') continue;
+        if (e.state === 'done' || sturdy(e)) continue; // une ligne qui tient ou un véhicule : ni recul ni étourdissement
         if (push) e.kick = Math.sign(e.x + e.w / 2 - x || 1) * push;
         if (stun && e.state !== 'sleep') {
           e.state = 'stunned';
@@ -191,7 +218,7 @@ export class Game {
     const inGas = (b) => this.clouds.some((c) => Math.hypot(c.x - (b.x + b.w / 2), c.y - (b.y + b.h / 2)) < c.r);
     // Le gaz ne choisit pas son camp : il étourdit aussi ceux qui l'ont lancé.
     for (const e of this.enemies) {
-      if (e.state === 'done' || e.state === 'sleep' || !inGas(e)) continue;
+      if (e.state === 'done' || e.state === 'sleep' || sturdy(e) || !inGas(e)) continue;
       e.state = 'stunned';
       e.stun = Math.max(e.stun, 1);
     }
@@ -211,7 +238,8 @@ export class Game {
     return overlap(box, this.hero)
       || this.enemies.some((e) => overlap(box, e))
       || Boolean(this.boss && this.boss.state !== 'gone' && overlap(box, this.boss))
-      || this.props.some((p) => p.kind !== 'panneau' && overlap(box, p));
+      || this.props.some((p) => p.kind !== 'panneau' && overlap(box, p))
+      || this.recruits.some((r) => !r.joined && overlap(box, r));
   }
 
   // ------------------------------------------------------------ coups reçus
@@ -229,6 +257,10 @@ export class Game {
   /** Un automate ne meurt pas : à zéro, il se met en grève ou tombe en panne. */
   hurtEnemy(e, amount, team = 'luttes') {
     if (e.state === 'done' || amount <= 0) return;
+    if (e.def.debordement > 0) {
+      e.flash = 0.05; // la ligne tient : seul le nombre la fait céder
+      return;
+    }
     e.hp -= amount;
     e.flash = 0.12;
     if (e.state === 'sleep') e.state = 'patrol';
@@ -264,6 +296,7 @@ export class Game {
     hero.dead = true;
     hero.clones = [];
     this.stats.deaths++;
+    this.disperse(0.15); // sans son héros, une partie de la manif se disperse
     this.emit('death', {});
     this.sfx('mort', hero.x);
     if (!this.invincible) this.lives--;
@@ -302,6 +335,7 @@ export class Game {
 
     this.sfx('sauvetage', cage.x);
     this.emit('heroCard', { hero: next.id });
+    this.discover('heros', next.id);
     const card = Object.values(bundle.fiches || {}).find((f) => f.theme === 'droits' && !this.unlocked.includes(f.id));
     if (card) {
       this.unlocked.push(card.id);
@@ -309,7 +343,7 @@ export class Game {
     }
     this.addPanic(10);
     if (this.stats.rescues > 1) this.headline(); // le premier sauvetage a déjà son carton
-    growCortege(this, 2);
+    this.addCrowd(20); // le camarade libéré ne repart pas seul
   }
 
   /** Après un changement de gabarit, écarte le héros d'un mur qu'il chevaucherait. */
@@ -338,16 +372,21 @@ export class Game {
     this.stats.tracts++;
     if (this.stats.tracts === 1) {
       this.addPanic(6);
-      this.headline('ALERTE MAXIMALE : UN TRACT A ÉTÉ DISTRIBUÉ SANS AUTORISATION DES MARCHÉS');
+      const pool = this.bundle.manchettes || [];
+      if (pool.length) this.headline(this.rng.pick(pool)); // le premier tract fait la une, sans entamer les manchettes du niveau
     }
   }
 
-  /** Une manchette de PANIQUE TV : celle qu'on donne, sinon la suivante du niveau, sinon une du fonds commun. */
+  /**
+   * Une alerte de PANIQUE TV : celle qu'on donne, sinon la suivante du niveau, sinon un bandeau du fonds commun
+   * (`content/manchettes/` : de vrais bandeaux de chaînes d'info, avec leur crédit).
+   */
   headline(text = null) {
     const own = this.level.manchette || [];
     const pool = this.bundle.manchettes || [];
     const pick = text ?? own[this.headlines++] ?? (pool.length ? this.rng.pick(pool) : null);
-    if (pick) this.emit('headline', { text: pick });
+    if (!pick) return;
+    this.emit('headline', typeof pick === 'string' ? { text: pick } : { text: pick.texte, credit: pick.credit });
   }
 
   /** La panique ne redescend jamais ; chaque palier franchi déclenche une manchette et des renforts bornés. */
@@ -368,7 +407,8 @@ export class Game {
     const { hero, world, bundle, level } = this;
     const defs = Object.values(level.legende || {})
       .filter((ref) => ref.type === 'ennemi' && bundle.ennemis?.[ref.id])
-      .map((ref) => bundle.ennemis[ref.id]);
+      .map((ref) => bundle.ennemis[ref.id])
+      .filter((def) => !(def.debordement > 0)); // un barrage ne tombe pas du ciel
     const pool = defs.some((d) => d.reaction === 'cadre') ? defs.filter((d) => d.reaction === 'cadre') : defs;
     if (!pool.length) return;
     const exit = this.props.find((p) => p.kind === 'sortie');
@@ -386,6 +426,73 @@ export class Game {
       }
       this.spawnEnemy(def.id, cx, feet, { state: 'alert' });
       this.reinforcements++;
+    }
+  }
+
+  // ------------------------------------------------------------ la manif
+
+  /** Des gens rejoignent la manif (recrue, sauvetage, piquet de grève). */
+  addCrowd(n) {
+    if (!(n > 0)) return;
+    this.crowd += Math.round(n);
+    syncCortege(this);
+  }
+
+  /**
+   * Personne ne meurt dans la manif : une charge, un nuage de gaz ou la chute du héros en « dispersent » une part.
+   * Avec un cortège, il reste toujours au moins une personne. Renvoie le nombre de dispersés.
+   */
+  disperse(share) {
+    const floor = this.level.cortege ? 1 : 0;
+    const n = Math.min(this.crowd - floor, Math.max(1, Math.round(this.crowd * share)));
+    if (!(share > 0) || n <= 0) return 0;
+    this.crowd -= n;
+    this.stats.dispersed += n;
+    syncCortege(this);
+    this.emit('dispersed', { n, crowd: this.crowd });
+    return n;
+  }
+
+  /** Le nombre fait la force : multiplicateur des dégâts des projectiles du héros (1 quand il est seul). */
+  power() {
+    return 1 + Math.log10(1 + this.crowd) / 2;
+  }
+
+  /** Les deux comptages d'une manif. */
+  counts() {
+    // Le rapport des deux comptages de Paris, le 31 janvier 2023 : 500 000 selon la CGT, 87 000 selon la préfecture.
+    return { syndicats: this.crowd, prefecture: Math.max(1, Math.round((this.crowd * 87) / 500)) };
+  }
+
+  /** Signale une découverte (personnage, mot, panneau…) : une seule fois par partie. */
+  discover(kind, id, more = {}) {
+    const key = `${kind}:${id}`;
+    if (!id || this.discovered.has(key)) return;
+    this.discovered.add(key);
+    this.emit('discover', { kind, id, ...more });
+  }
+
+  /**
+   * Les lignes qui tiennent et les véhicules sont pleins pour le héros : on l'écarte du côté où il se trouve.
+   * Une ligne barre aussi le passage au-dessus d'elle (LINE_REACH) : on ne la saute pas, on la déborde.
+   */
+  blockHero() {
+    const { hero, world } = this;
+    if (hero.dead) return;
+    for (const e of this.enemies) {
+      if (e.state === 'done' || !sturdy(e)) continue;
+      const top = e.blocking ? e.y - LINE_REACH : e.y;
+      if (hero.x >= e.x + e.w || hero.x + hero.w <= e.x || hero.y >= e.y + e.h || hero.y + hero.h <= top) continue;
+      const x = hero.x + hero.w / 2 < e.x + e.w / 2 ? e.x - hero.w : e.x + e.w;
+      if (hitsSolid(world, x, hero.y, hero.w, hero.h)) continue; // coincé contre un mur : on ne l'écrase pas
+      hero.x = x;
+      hero.vx = 0;
+      if (e.def.debordement > 0 && e.nag <= 0) {
+        e.nag = NAG;
+        this.emit('blocked', { x: e.x + e.w / 2, need: e.def.debordement, crowd: this.crowd });
+        // Jamais d'impasse : devant une ligne qui tient, des passants rejoignent la manif, peu à peu.
+        if (this.crowd < e.def.debordement) this.addCrowd(Math.ceil(e.def.debordement * 0.04));
+      }
     }
   }
 

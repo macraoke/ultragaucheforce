@@ -1,0 +1,38 @@
+# Son jet repousse le héros et le cortège, sans blesser.
+nom: Le canon à eau
+pv: 14
+vitesse: 12
+deplacement: vehicule
+reaction: tire
+vue: 210
+fin: panne
+largeur: 32
+hauteur: 19
+fiche: canons-a-eau
+arme.type: jet
+arme.duree: 1.8
+arme.pause: 2.6
+arme.portee: 150
+arme.poussee: 230
+arme.son: jet
+auteur: UltraGauche Force
+--- repos
+......................GGGG..........GG..
+.....................GGGGGGGGGGGGGGGGG..
+.....................GGGG...............
+........wwwwwwwwwwwwwwwwwwwwwwwwww......
+......wwwwwwwwwwwwwwwwwwwwwwwwwwwwww....
+.....wwwwwwwwwwwwwwwwwwwwwwccccccwwww...
+.....wwwwwwwwwwwwwwwwwwwwwwccccccwwwww..
+.....wBBBBBBBBBBBBBBBBBBBBwccccccwwwww..
+.....wBBBBBBBBBBBBBBBBBBBBwwwwwwwwwwww..
+.....wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwY.
+.....WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW..
+.....WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW..
+....KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK.
+.....KkkkkkKKKKKKKKKKKKKKKKKKKkkkkkKK...
+......kGGGk...................kGGGk.....
+.....kGGkGGk.................kGGkGGk....
+.....kGkkkGk.................kGkkkGk....
+.....kGGkGGk.................kGGkGGk....
+......kGGGk...................kGGGk.....

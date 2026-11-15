@@ -1,0 +1,9 @@
+titre: Dix canons à eau
+theme: ordre
+texte: En janvier 2021, les CRS avaient en dotation 10 engins lanceurs d'eau, dont deux achetés en 1996, relève une commission d'enquête de l'Assemblée nationale. Un engin embarque de 4 000 à 7 500 litres d'eau.
+portee: Rapport n° 3786, enregistré le 20 janvier 2021 : il juge ce matériel insuffisant ou vétuste et recommande de « généraliser le recours aux engins lanceurs d'eau dans le cadre des manifestations les plus problématiques » (recommandation n° 15). Le chiffre ne couvre que les CRS et date de 2021 : le parc a pu changer depuis. À Sainte-Soline, du 24 au 26 mars 2023, quatre engins lanceurs d'eau figuraient dans le dispositif, selon la gendarmerie.
+periode: état de janvier 2021
+source.titre: Assemblée nationale — Rapport n° 3786 de la commission d'enquête relative à l'état des lieux, la déontologie, les pratiques et les doctrines de maintien de l'ordre
+source.url: https://www.assemblee-nationale.fr/dyn/15/rapports/ceordre/l15b3786_rapport-enquete.pdf
+source.nature: officielle
+verifie: 2026-11-15

@@ -85,7 +85,7 @@ export function showHeroCard(bundle, hero, { audio = null, reduced = false, resc
     audio?.play('tambour');
     const timers = [
       setTimeout(() => audio?.play('cuivres'), 480),
-      setTimeout(() => audio?.speak(hero.id, hero.voix || hero.nom), 560),
+      setTimeout(() => audio?.speak(hero.id), 560),
       setTimeout(() => audio?.play('cymbale'), 600),
       setTimeout(close, reduced ? 1700 : 3200),
     ];

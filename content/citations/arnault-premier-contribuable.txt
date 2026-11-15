@@ -1,0 +1,12 @@
+texte: Je suis certainement le tout premier contribuable à titre personnel.
+auteur: Bernard Arnault
+fonction: PDG de LVMH
+date: 2025-09-20
+contexte: Déclaration au Sunday Times, en réponse à l'économiste Gabriel Zucman et à son projet d'impôt plancher de 2 % sur les patrimoines de plus de 100 millions d'euros.
+categorie: puissants
+mot: PREMIER CONTRIBUABLE
+note: Phrase complète : « Car enfin, comment me mettre moi directement en cause alors que je suis certainement le tout premier contribuable à titre personnel et l'un des plus importants à travers les sociétés que je dirige ? » À ne pas confondre avec sa déclaration du 21 mai 2025 au Sénat, qui portait sur les impôts du groupe LVMH (voir arnault-plus-d-impots).
+source.titre: franceinfo — Bernard Arnault qualifie Gabriel Zucman de "militant d'extrême gauche", l'économiste dénonce le "caractère caricatural" de ses attaques
+source.url: https://www.franceinfo.fr/economie/budget/bernard-arnault-qualifie-de-militant-d-extreme-gauche-l-economiste-gabriel-zucman-qui-propose-de-taxer-les-grandes-patrimoines_7503808.html
+source.nature: presse
+verifie: 2026-11-15

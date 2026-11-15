@@ -1,0 +1,40 @@
+nom: La voisine
+apport: 20
+slogan: SLOGAN UN
+slogan: SLOGAN DEUX
+origine: Croisée devant chez elle.
+fiche: garde-a-vue
+--- image
+vvvvvvvvvv
+vvvvvvvvvv
+vvvvvvvvvv
+vvvvvvvvvv
+vvvvvvvvvv
+vvvvvvvvvv
+vvvvvvvvvv
+vvvvvvvvvv
+vvvvvvvvvv
+vvvvvvvvvv
+vvvvvvvvvv
+vvvvvvvvvv
+vvvvvvvvvv
+vvvvvvvvvv
+vvvvvvvvvv
+vvvvvvvvvv
+--- image2
+yyyyyyyyyy
+yyyyyyyyyy
+yyyyyyyyyy
+yyyyyyyyyy
+yyyyyyyyyy
+yyyyyyyyyy
+yyyyyyyyyy
+yyyyyyyyyy
+yyyyyyyyyy
+yyyyyyyyyy
+yyyyyyyyyy
+yyyyyyyyyy
+yyyyyyyyyy
+yyyyyyyyyy
+yyyyyyyyyy
+yyyyyyyyyy

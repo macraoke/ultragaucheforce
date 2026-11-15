@@ -1,0 +1,12 @@
+texte: La vie, la santé, l'amour sont précaires, pourquoi le travail échapperait-il à cette loi ?
+auteur: Laurence Parisot
+fonction: présidente du Medef
+date: 2005-08
+contexte: Entretien au Figaro, quelques semaines après son élection à la tête du Medef, à propos de la précarité de l'emploi.
+categorie: puissants
+mot: PRÉCAIRES
+note: Citation lue dans le compte rendu du Sénat du 11 octobre 2010, où la sénatrice Annie Jarraud-Vergnolle la date du Figaro du 31 août 2005 ; un autre compte rendu du Sénat la date du 30 août 2005. L'entretien d'origine n'a pas été relu. Le compte rendu du 24 juin 2016 la coupe en deux phrases : « …sont précaires. Pourquoi le travail échapperait-il à cette loi ? »
+source.titre: Sénat — Compte rendu intégral de la séance du 11 octobre 2010
+source.url: https://www.senat.fr/seances/s201010/s20101011/s20101011014.html
+source.nature: officielle
+verifie: 2026-11-15

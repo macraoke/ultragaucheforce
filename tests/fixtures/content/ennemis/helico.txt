@@ -1,0 +1,18 @@
+nom: Hélico
+pv: 6
+vitesse: 60
+deplacement: vol
+reaction: projecteur
+vue: 260
+panique: 2
+fin: panne
+largeur: 30
+hauteur: 12
+faisceau.largeur: 64
+faisceau.balayage: 0
+renfort.ennemi: fonceur
+renfort.nombre: 2
+renfort.max: 1
+--- repos
+kk
+kk

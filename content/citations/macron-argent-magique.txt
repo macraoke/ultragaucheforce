@@ -1,0 +1,12 @@
+texte: Il n'y a pas d'argent magique.
+auteur: Emmanuel Macron
+fonction: président de la République
+date: 2018-04-05
+contexte: Au CHU de Rouen, à une soignante qui réclamait davantage de moyens pour l'hôpital.
+categorie: puissants
+mot: ARGENT MAGIQUE
+note: France 24 et franceinfo datent l'échange d'avril 2018 sans préciser le jour ; la visite au CHU de Rouen, avec un échange tendu avec des soignantes, a eu lieu le 5 avril 2018 (Le Quotidien du médecin). franceinfo transcrit la forme orale « Y'a pas d'argent magique » et parle d'une aide-soignante ; d'autres médias parlent d'une infirmière.
+source.titre: France 24 — Emmanuel Macron, le bilan (3/4) : la réduction des dépenses sociales contrariée par les crises
+source.url: https://www.france24.com/fr/france/20220319-emmanuel-macron-le-bilan-3-4-la-r%C3%A9duction-des-d%C3%A9penses-sociales-contrari%C3%A9e-par-les-crises
+source.nature: presse
+verifie: 2026-11-15

@@ -261,7 +261,7 @@ test('panique : premier tract, paliers, manchettes du niveau d’abord, renforts
   const enemies = game.enemies.length;
   game.step({ fire: true });
   assert.equal(game.panic, 6, 'premier tract');
-  assert.match(game.events.find((e) => e.type === 'headline').text, /UN TRACT A ÉTÉ DISTRIBUÉ/, 'le premier tract fait la une');
+  assert.match(game.events.find((e) => e.type === 'headline').text, /^MANCHETTE COMMUNE/, 'le premier tract fait la une');
   game.step({ fire: true });
   run(game, 30, { fire: true });
   assert.equal(game.panic, 6, 'les tracts suivants n’ajoutent rien');

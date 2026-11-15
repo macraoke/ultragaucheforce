@@ -1,0 +1,9 @@
+# Bandeaux réellement affichés par des chaînes d'info, relevés par l'observatoire des médias Acrimed.
+# Une ligne = un bandeau : TEXTE | chaîne, date — source
+LFI : le nazisme est-il passé à l'extrême gauche ? | CNews, 12 oct. 2023 — https://www.acrimed.org/Conflit-israelo-palestinien-calomnies-mediatiques
+10 septembre : bloquer tout pour gagner rien ? | LCI, 10 sept. 2025 — https://www.acrimed.org/Bloquons-tout-haro-sur-les-ingenieurs-du-chaos
+Manif anti-police : Fallait-il l'interdire ? | BFM-TV, 24 sept. 2023 — https://www.acrimed.org/IMG/pdf/mediacritiques48.pdf
+Députée frappée ? Une vidéo sème le trouble | BFM-TV, 31 oct. 2022 — https://www.acrimed.org/IMG/pdf/mediacritiques45.pdf
+Retraites : le RN peine à se faire entendre ? | Franceinfo, 24 janv. 2023 — https://www.acrimed.org/IMG/pdf/mediacritiques47.pdf
+Retraites : révoltés ou résignés ? | Franceinfo et France Inter, 8 janv. 2023 — https://www.acrimed.org/IMG/pdf/mediacritiques46.pdf
+Marine Le Pen, la grande gagnante de la colère sociale ? | France 5, 1er mai 2023 — https://www.acrimed.org/IMG/pdf/mediacritiques47.pdf

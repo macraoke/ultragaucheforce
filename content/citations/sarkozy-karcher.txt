@@ -1,0 +1,12 @@
+texte: Le terme « nettoyer au Kärcher » est un terme qui s'impose car il faut nettoyer cela.
+auteur: Nicolas Sarkozy
+fonction: ministre de l'Intérieur
+date: 2005-06
+contexte: À La Courneuve (Seine-Saint-Denis), face à des jeunes de la cité des 4000, une dizaine de jours après la mort d'un enfant de 11 ans tué par balle devant chez lui.
+categorie: diabolisation
+mot: KÄRCHER
+note: La formule d'origine a été prononcée sans caméra, dans l'appartement de la famille de l'enfant, lors d'une première visite en juin 2005 ; elle a été rapportée par la journaliste Marion Van Renterghem, présente sur place. La phrase retenue ici est celle de l'archive filmée, où il la revendique. Un habitant lui répond qu'on ne « nettoie pas les gens ». Il ajoute : « on va donc nettoyer, au propre comme au figuré, la cité des 4000 ».
+source.titre: INA — Nicolas Sarkozy en 2005 : «Le terme "nettoyer au Kärcher" est un terme qui s'impose»
+source.url: https://www.ina.fr/ina-eclaire-actu/nicolas-sarkozy-2005-karcher-banlieue-violences-politique-4000-courneuve
+source.nature: presse
+verifie: 2026-11-15

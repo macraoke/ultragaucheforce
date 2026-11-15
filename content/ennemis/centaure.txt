@@ -1,0 +1,56 @@
+# Un blindé : les tracts ne lui font rien, il ne cède que devant le nombre.
+nom: Le Centaure
+pv: 20
+vitesse: 14
+deplacement: vehicule
+reaction: tire
+vue: 230
+fin: panne
+largeur: 32
+hauteur: 20
+debordement: 150
+fiche: centaure-blindes
+arme.type: tir
+arme.cadence: 0.3
+arme.vitesse: 140
+arme.gravite: 380
+arme.elan: 230
+arme.dispersion: 60
+arme.nombre: 3
+arme.portee: 420
+arme.degats: 1
+arme.terrain: 0
+arme.explosion: 16
+arme.fratricide: 1
+arme.gaz: 4
+arme.taille: 5
+arme.image: projectile
+arme.son: gaz
+auteur: UltraGauche Force
+--- repos
+.................kkkkkk.................
+...............kkkkkkkkkk...........k...
+...............kKKKKKKKKkkkkkkkkkkkkk...
+...............kkkkkkkkkk...............
+........nnnnnnnnnnnnnnnnnnnnnnnnnn......
+......nnnnnnnnnnnnnnnnnnnnnnnnnnnnnn....
+.....nnnccccnnnnnnnnnnnnnnnnnccccnnnn...
+....nnnnccccnnnnnnnnnnnnnnnnnccccnnnnn..
+....nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn..
+....nnwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwnn..
+....nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnY.
+....nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn..
+...KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK.
+....KKkkkkkKKKKKKKKKKKKKKKKKKkkkkkKKK...
+.....kkGGGkk................kkGGGkk.....
+....kkGGkGGkk..............kkGGkGGkk....
+....kkGkkkGkk..............kkGkkkGkk....
+....kkGGkGGkk..............kkGGkGGkk....
+.....kkGGGkk................kkGGGkk.....
+......kkkkk..................kkkkk......
+--- projectile
+.hh.
+hYYh
+hGGh
+hGGh
+.hh.

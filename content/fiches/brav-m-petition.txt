@@ -1,0 +1,9 @@
+titre: BRAV-M : 263 867 signatures
+theme: ordre
+texte: La pétition pour la dissolution de la BRAV-M, publiée le 23 mars 2023 sur le site de l'Assemblée nationale, affiche 263 867 signatures. La commission des lois l'a classée le 5 avril 2023.
+portee: Compteur de la plateforme des pétitions de l'Assemblée ; la chaîne LCP cite 263 887 signatures, un record pour cette plateforme. Les BRAV-M, brigades de répression de l'action violente motorisées de la préfecture de police de Paris, sont des binômes à moto constitués pendant le mouvement des Gilets jaunes avec des personnels de la direction de l'ordre public et de la Garde républicaine (rapport n° 3786 de l'Assemblée nationale, janvier 2021). Le rapporteur du classement, Éric Poulliat, a jugé le portrait dressé par la pétition « caricatural à plus d'un titre ».
+periode: 23 mars au 5 avril 2023
+source.titre: Assemblée nationale — Pétition pour la dissolution de la BRAV-M (plateforme des pétitions, initiative n° 1319)
+source.url: https://petitions.assemblee-nationale.fr/initiatives/i-1319
+source.nature: officielle
+verifie: 2026-11-15

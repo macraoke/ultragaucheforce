@@ -1,0 +1,13 @@
+# Véhicule qui avance sur le héros et le pousse.
+nom: Blindé
+pv: 8
+vitesse: 30
+deplacement: vehicule
+reaction: fonce
+vue: 220
+fin: panne
+largeur: 28
+hauteur: 20
+--- repos
+gg
+gg

@@ -1,0 +1,12 @@
+texte: Une volonté clairement formulée de mettre à terre l'économie française.
+auteur: Bernard Arnault
+fonction: PDG de LVMH
+date: 2025-09-20
+contexte: Déclaration au Sunday Times contre la taxe Zucman, impôt plancher de 2 % proposé sur les patrimoines de plus de 100 millions d'euros.
+categorie: puissants
+mot: METTRE À TERRE
+note: Phrase complète : « Il ne s'agit ni d'un débat technique ni économique, mais bien d'une volonté clairement formulée de mettre à terre l'économie française ». Dans la même déclaration, il prête à Gabriel Zucman « une pseudo compétence universitaire qui elle-même fait largement débat » (Public Sénat écrit « pseudo-compétence universitaire qui, elle-même, fait largement débat ») au service d'une idéologie « qui vise la destruction de l'économie libérale, la seule qui fonctionne pour le bien de tous ». Réponse de Gabriel Zucman : voir arnault-zucman.
+source.titre: franceinfo — Bernard Arnault qualifie Gabriel Zucman de "militant d'extrême gauche", l'économiste dénonce le "caractère caricatural" de ses attaques
+source.url: https://www.franceinfo.fr/economie/budget/bernard-arnault-qualifie-de-militant-d-extreme-gauche-l-economiste-gabriel-zucman-qui-propose-de-taxer-les-grandes-patrimoines_7503808.html
+source.nature: presse
+verifie: 2026-11-15

@@ -1,0 +1,14 @@
+nom: Buisson
+auteur: UltraGauche Force
+--- image
+....................
+.............V......
+......V...VVVVVVV...
+...VVVVVVVVVVVvVVV..
+..VVVVVvVVVVvvvvvVV.
+.VVVVvvvvvVvvvvvvvV.
+.VVVvvvvvvvVvvvvvVVV
+VVVVVvvvvvVVVVvVVVV.
+.VVVVVVvVVVVVVVVVVV.
+.VVVVVVVVVVVVVVVVV..
+VVVVVVVVVVVVVVVVVVVV

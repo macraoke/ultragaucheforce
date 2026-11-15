@@ -3,6 +3,7 @@
 
 import { TILE } from './world.js';
 import { hitsSolid, overlap } from './physics.js';
+import { joinRecruit } from './manif.js';
 
 const DEFAULTS = {
   vx: 0, vy: 0, team: 'luttes', word: null, def: null, image: 'projectile',
@@ -80,7 +81,8 @@ function burst(game, p) {
   const cy = p.y + p.h / 2;
   if (p.explosion > 0) {
     game.explode(cx, cy, p.explosion, {
-      team: p.team, friendly: p.friendly, damage: Math.max(1, p.damage), terrain: Math.max(1, p.terrain),
+      team: p.team, friendly: p.friendly, terrain: Math.max(1, p.terrain),
+      damage: Math.max(1, p.damage) * (p.team === 'luttes' ? game.power() : 1),
     });
   } else {
     game.sfx('impact', cx);
@@ -93,6 +95,7 @@ function burst(game, p) {
 
 function touchActors(game, p) {
   if (p.team === 'luttes') {
+    const damage = p.damage * game.power(); // le nombre fait la force
     for (const e of game.enemies) {
       if (e.state === 'done' || p.hits.has(e) || !overlap(p, e)) continue;
       p.hits.add(e);
@@ -100,13 +103,13 @@ function touchActors(game, p) {
       // Un projectile perçant (« perce ») n'abîme pas l'automate protégé, mais continue sa route.
       const blocked = e.def.bouclier && Math.sign(p.vx) === -e.facing && !p.armor;
       if (blocked) e.flash = 0.05;
-      else game.hurtEnemy(e, p.damage, 'luttes');
+      else game.hurtEnemy(e, damage, 'luttes');
       if (!p.pierce) return burst(game, p);
     }
     const boss = game.boss;
     if (boss && boss.state !== 'ejecting' && boss.state !== 'gone' && !p.hits.has(boss) && overlap(p, boss)) {
       p.hits.add(boss);
-      game.hurtBoss(p.damage);
+      game.hurtBoss(damage);
       if (!p.pierce) return burst(game, p);
     }
     for (const cage of game.props) {
@@ -114,6 +117,12 @@ function touchActors(game, p) {
       p.hits.add(cage);
       cage.hp -= Math.max(1, p.damage);
       if (cage.hp <= 0) game.rescue(cage);
+      if (!p.pierce) return burst(game, p);
+    }
+    // Un tract tendu à une recrue : elle rejoint la manif.
+    for (const r of game.recruits) {
+      if (r.joined || !overlap(p, r)) continue;
+      joinRecruit(game, r);
       if (!p.pierce) return burst(game, p);
     }
     return;

@@ -1,0 +1,12 @@
+texte: Nous sommes d'ailleurs celui qui payons le plus d'impôt en France.
+auteur: Bernard Arnault
+fonction: PDG de LVMH
+date: 2025-05-21
+contexte: Audition sous serment devant la commission d'enquête du Sénat sur l'utilisation des aides publiques aux grandes entreprises, à propos de la surtaxe d'impôt sur les sociétés.
+categorie: puissants
+mot: LE PLUS D'IMPÔT
+note: Propos relevés par Public Sénat : « Je constate une chose : notre groupe est probablement celui qui, parmi tous ceux du CAC 40 que vous avez interrogés, est le plus patriote. Nous sommes d'ailleurs celui qui payons le plus d'impôt en France tout en ayant uniquement 8 % du chiffre d'affaires en France. » Le compte rendu officiel du Sénat, réécrit, donne : « Notre groupe est probablement le plus patriote parmi tous ceux du CAC 40 » et « Nous sommes celui qui payons de loin le plus d'impôts en France » (https://www.senat.fr/compte-rendu-commissions/20250519/aides_publiques.html). Il parle des impôts du groupe LVMH, pas des siens.
+source.titre: Public Sénat — Aides aux entreprises : un face à face sous tension au Sénat entre Bernard Arnault et le communiste Fabien Gay
+source.url: https://www.publicsenat.fr/actualites/economie/aides-aux-entreprises-un-face-a-face-sous-tension-au-senat-entre-bernard-arnault-et-le-communiste-fabien-gay
+source.nature: presse
+verifie: 2026-11-15

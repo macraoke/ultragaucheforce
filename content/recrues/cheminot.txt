@@ -1,0 +1,22 @@
+nom: Le cheminot
+apport: 30
+slogan: GRÈVE, BLOCAGE, MANIF SAUVAGE
+fiche: programme-train
+auteur: UltraGauche Force
+--- image
+..nnnnnn..
+.nnnnnnnn.
+..ssssss..
+..skssks..
+..ssssss..
+...ssss...
+..oooooo..
+.ooGooGoo.
+.oooooooo.
+.ooGooGoo.
+..oooooo..
+..KKKKKK..
+..KK..KK..
+..KK..KK..
+..KK..KK..
+.kkk.kkk..

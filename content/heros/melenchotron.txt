@@ -3,10 +3,10 @@ inspiration: Jean-Luc Mélenchon
 traitement: le tribun, en plus fort
 cri: LA RÉPUBLIQUE, C'EST MOI !
 citation: melenchon-republique-cest-moi
-voix: Le Mélenchotron !
 pv: 2
 vitesse: 140
 saut: 3.2
+fiche: hologramme-2017
 auteur: UltraGauche Force
 
 # Arme : la vague de verbe, courte portée, traverse tout.
@@ -18,7 +18,7 @@ arme.degats: 2
 arme.terrain: 1
 arme.perce: 1
 arme.taille: 14
-arme.mots: CAMARADES ! | LE PEUPLE ! | LA RUE ! | RÉSISTANCE ! | L'UNION POPULAIRE !
+arme.mots: LE BRUIT ! | LA FUREUR ! | LE TUMULTE ! | LE FRACAS !
 arme.son: tir
 
 # Spéciale : comme en meeting, il se dédouble.

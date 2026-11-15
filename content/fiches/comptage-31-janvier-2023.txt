@@ -1,0 +1,9 @@
+titre: Paris, trois comptages
+theme: ordre
+texte: Paris, 31 janvier 2023, manifestation contre la réforme des retraites : 500 000 personnes selon la CGT, 87 000 selon la préfecture de police, 55 000 selon le cabinet indépendant Occurrence.
+portee: Chiffres rapportés par France 24 le jour même. Pour toute la France : 2,8 millions selon la CGT, 1,272 million selon la police. Le cabinet Occurrence n'est pas toujours le plus bas : le 7 février 2023 à Paris, il compte 60 000 personnes, la police 57 000 et la CGT 400 000. Le 7 mars 2023, la CGT annonce 3,5 millions de manifestants en France et le ministère de l'Intérieur 1,28 million. La méthode de chaque comptage n'a pas été vérifiée.
+periode: 31 janvier 2023, avec les journées du 7 février et du 7 mars 2023
+source.titre: France 24 — En direct : 500 000 manifestants à Paris selon la CGT, 87 000 selon la police
+source.url: https://www.france24.com/fr/france/20230131-en-direct-une-deuxi%C3%A8me-journ%C3%A9e-de-mobilisation-en-france-contre-la-r%C3%A9forme-des-retraites
+source.nature: presse
+verifie: 2026-11-15

@@ -9,7 +9,7 @@ const { bundle, errors } = loadContent();
 const count = (dir) => Object.keys(bundle[dir]).length;
 const summary = [
   `${count('niveaux')} niveaux, ${count('heros')} héros, ${count('ennemis')} ennemis, ${count('boss')} boss, ${count('drapeaux')} drapeaux`,
-  `${count('citations')} citations, ${count('fiches')} fiches, ${bundle.manchettes.length} manchettes, ${bundle.pancartes.length} pancartes, ${count('sons')} bruitages`,
+  `${count('recrues')} recrues, ${count('citations')} citations, ${count('fiches')} fiches, ${bundle.manchettes.length} manchettes, ${bundle.pancartes.length} pancartes, ${count('sons')} bruitages`,
 ];
 
 for (const e of errors) {

@@ -1,0 +1,15 @@
+nom: Clôture
+auteur: UltraGauche Force
+--- image
+..t.....t.....t.
+.tt....tt....tt.
+.tt....tt....tt.
+TTTTTTTTTTTTTTTT
+.tt....tt....tt.
+.tt....tt....tt.
+.tt....tt....tt.
+.tt....tt....tt.
+TTTTTTTTTTTTTTTT
+.tt....tt....tt.
+.tt....tt....tt.
+.tt....tt....tt.

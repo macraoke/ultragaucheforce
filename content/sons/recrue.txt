@@ -1,0 +1,4 @@
+nom: Une recrue rejoint la manif
+zzfx: 1,.05,440,.01,.08,.2,1,1.5,6,,220,.06,,,,,,.7,.03
+auteur: UltraGauche Force
+licence: CC0-1.0

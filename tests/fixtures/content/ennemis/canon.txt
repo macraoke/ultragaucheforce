@@ -1,0 +1,18 @@
+# Canon à eau : véhicule, jet continu.
+nom: Canon
+pv: 10
+vitesse: 10
+deplacement: vehicule
+reaction: tire
+vue: 220
+fin: panne
+largeur: 32
+hauteur: 20
+arme.type: jet
+arme.duree: 2
+arme.pause: 1
+arme.portee: 160
+arme.poussee: 220
+--- repos
+gg
+gg
