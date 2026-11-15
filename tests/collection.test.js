@@ -3,7 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { loadContent } from '../tools/content.mjs';
-import { SHELVES, allCards, cardId, cardName, citationOfWord, isLongSign, whereToFind } from '../src/client/collection.js';
+import { SHELVES, allCards, cardId, cardName, citationOfWord, whereToFind } from '../src/client/collection.js';
 
 const { bundle } = loadContent();
 const cards = allCards(bundle);
@@ -26,11 +26,11 @@ test('collection : chaque rayon a ses cartes ; faits et propositions se partagen
   assert.equal(of('faits').length + of('propositions').length, Object.keys(bundle.fiches).length);
 });
 
-test('collection : seules les pancartes et les bandeaux qui ont une source deviennent des cartes', () => {
-  const lines = { ...bundle, pancartes: [...bundle.pancartes, { texte: 'SANS SOURCE', credit: '' }] };
+test('collection : toute pancarte, tout bandeau devient une carte, avec ou sans source', () => {
+  const lines = { ...bundle, pancartes: [...bundle.pancartes, { texte: 'SANS SOURCE', credit: '', rarete: 0 }] };
   const signs = allCards(lines).filter((c) => c.kind === 'pancartes');
-  assert.equal(signs.length, bundle.pancartes.filter((p) => p.credit).length);
-  assert.ok(signs.every((c) => c.item.credit.includes('https://')));
+  assert.equal(signs.length, bundle.pancartes.length + 1);
+  assert.equal(allCards(bundle).filter((c) => c.kind === 'manchettes').length, bundle.manchettes.length);
 });
 
 test('collection : chaque carte se gagne quelque part en jouant', () => {
@@ -38,8 +38,8 @@ test('collection : chaque carte se gagne quelque part en jouant', () => {
   assert.deepEqual(lost, [], 'cartes sans aucun chemin : attache-les à un personnage, un niveau, une scène');
   const hint = (kind, id) => whereToFind(bundle, kind, kind === 'pancartes' ? bundle.pancartes.find((p) => p.texte === id) : bundle[kind][id]);
   assert.deepEqual(hint('pancartes', 'MACRON, RENDS-NOUS LE POGNON !'), ['La retraitée'], 'un slogan arrive avec sa recrue');
-  assert.deepEqual(hint('pancartes', 'TAXEZ LES RICHES'), ['dans le cortège']);
-  assert.deepEqual(hint('pancartes', 'ILS SONT 42 MILLIARDAIRES, NOUS SOMMES 60 MILLIONS DANS LA GALÈRE'), ['à un piquet de grève']);
+  assert.deepEqual(hint('pancartes', 'TAXEZ LES RICHES'), ['à ramasser dans un niveau']);
+  assert.ok(bundle.campagne.some((id) => bundle.niveaux[id].carte.some((row) => row.includes('E'))), 'aucune pancarte à ramasser dans la campagne');
   assert.deepEqual(hint('citations', 'melenchon-bruit-et-fureur'), ['Le Mélenchotron'], 'les mots du héros viennent de sa citation');
   assert.deepEqual(hint('fiches', 'procuration'), ['à la fin de la campagne']);
   assert.deepEqual(hint('fiches', 'patrimoine-moitie'), ['en taxant une fortune']);
@@ -53,5 +53,4 @@ test('collection : un mot crié en jeu retrouve sa citation, par son mot-clé ou
   for (const speaker of [...Object.values(bundle.heros), ...Object.values(bundle.ennemis)]) {
     for (const word of speaker.arme?.mots || []) assert.ok(citationOfWord(bundle, word), `${speaker.id} : « ${word} » ne vient d'aucune citation`);
   }
-  assert.ok(bundle.pancartes.some(isLongSign) && bundle.pancartes.some((p) => !isLongSign(p)));
 });

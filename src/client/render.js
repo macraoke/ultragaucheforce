@@ -97,6 +97,10 @@ export class Renderer {
         // Un camarade libéré : une vie de plus, comme dans Broforce.
         this.floaters.push({ x: e.x, y: e.y - 10, text: '+1', t: 2.4, color: '#f6c21c', size: 20 });
         this.burst(e.x, e.y, '#f6c21c', 14, 90);
+      } else if (e.type === 'sign') {
+        const color = ['#f4f4f4', '#41a6f6', '#c9558c', '#f6c21c'][e.rarity] || '#f4f4f4';
+        this.floaters.push({ x: e.x, y: e.y - 10, text: '+ PANCARTE', t: 1.8, color, size: 9 });
+        this.burst(e.x, e.y, color, 12, 80);
       } else if (e.type === 'overrun') {
         this.floaters.push({ x: e.x, y: e.y - 12, text: 'ON EST LÀ !', t: 1.8, color: '#f6c21c', size: 10 }); // « On est là, même si Macron le veut pas »
         this.burst(e.x, e.y, '#94b0c2', 10, 70);
@@ -428,11 +432,13 @@ export class Renderer {
 
   prop(p) {
     const d = this.bundle.decors;
-    const rows = { cage: d.cage, piquet: d.piquet, sortie: d.sortie, panneau: d.panneau }[p.kind]?.sprites;
+    const rows = { cage: d.cage, piquet: d.piquet, sortie: d.sortie, panneau: d.panneau, pancarte: d.pancarte }[p.kind]?.sprites;
     if (!rows) return;
+    const loose = p.kind === 'pancarte'; // à ramasser : elle se balance, et disparaît une fois prise
+    if (loose && p.on) return;
     const img = sprite(p.on && rows.image2 ? rows.image2 : rows.image, this.palette);
     const x = Math.round(p.x + p.w / 2 - img.width / 2 - this.cx);
-    const y = Math.round(p.y + p.h - img.height - this.cy);
+    const y = Math.round(p.y + p.h - img.height - this.cy + (loose ? Math.sin(this.clock * 4 + p.x) * 1.5 - 1 : 0));
     this.ctx.drawImage(img, x, y);
     if (p.kind === 'sortie') {
       if (p.on !== false) this.label('SORTIE ▶', x + img.width / 2, y - 9, { size: 6, color: '#1a1c2c', bg: '#f6c21c' });
@@ -460,7 +466,7 @@ export class Renderer {
 
   /** La vraie pancarte écrite sur un décor (banderole, tag) : toujours la même au même endroit. */
   written(d) {
-    this.signs ??= this.bundle.pancartes.filter((p) => p.credit && p.texte.length <= 24);
+    this.signs ??= this.bundle.pancartes.filter((p) => p.texte.length <= 24);
     return this.signs.length ? this.signs[Math.floor(d.x / 16 + d.y * 7) % this.signs.length].texte : '';
   }
 

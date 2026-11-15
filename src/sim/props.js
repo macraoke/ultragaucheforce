@@ -1,7 +1,8 @@
-// Accessoires du niveau : cage, piquet de grève, sortie, panneau.
+// Accessoires du niveau : cage, piquet de grève, sortie, panneau, pancarte à ramasser.
 // (Le cortège, les recrues et la nasse vivent dans manif.js.)
 
 import { overlap } from './physics.js';
+import { pickUpSign } from './manif.js';
 
 const SIGN_RANGE = 22;
 
@@ -21,6 +22,8 @@ export function updateProps(game) {
       game.sfx('piquet', prop.x);
       game.addPanic(4);
       game.addCrowd(10); // le piquet de grève rejoint la manif
+    } else if (prop.kind === 'pancarte' && !prop.on && touching) {
+      pickUpSign(game, prop);
     } else if (prop.kind === 'sortie' && prop.on && touching) {
       game.status = 'won';
       game.emit('won', {});

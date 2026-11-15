@@ -406,9 +406,12 @@ export class Hud {
     inner.style.animationDuration = `${Math.max(2, seconds - 2)}s`;
   }
 
-  toast(text) {
-    const note = h('p', {}, text);
-    this.q('toasts').append(note);
+  /** Une note en haut à gauche ; trois au plus à la fois. `tone` : une classe (la rareté d'une pancarte). */
+  toast(text, tone = '') {
+    const note = h('p', { className: tone }, text);
+    const box = this.q('toasts');
+    while (box.children.length > 2) box.firstChild.remove();
+    box.append(note);
     setTimeout(() => note.remove(), 4200);
   }
 }

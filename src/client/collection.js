@@ -6,6 +6,7 @@
 // touche une, elle s'ouvre en grand avec ses références (`openCard`, `collectionCard`).
 
 import { h, link, frenchDate } from './dom.js';
+import { RARITIES } from '../content/rules.js';
 import { sprite, spriteElement } from './sprites.js';
 import { isFound } from './save.js';
 
@@ -15,8 +16,8 @@ export const SHELVES = [
   { id: 'en-face', titre: 'En face', kinds: ['ennemis', 'boss'] },
   { id: 'lieux', titre: 'Lieux', kinds: ['niveaux'] },
   { id: 'paroles', titre: 'Paroles', kinds: ['citations'] },
-  { id: 'pancartes', titre: 'Pancartes', kinds: ['pancartes'], keep: (p) => p.credit },
-  { id: 'tele', titre: 'Vu à la télé', kinds: ['manchettes'], keep: (m) => m.credit },
+  { id: 'pancartes', titre: 'Pancartes', kinds: ['pancartes'] },
+  { id: 'tele', titre: 'Vu à la télé', kinds: ['manchettes'] },
   { id: 'faits', titre: 'Faits', kinds: ['fiches'], keep: (f) => f.theme !== 'programme' },
   { id: 'propositions', titre: 'Propositions', kinds: ['fiches'], keep: (f) => f.theme === 'programme' },
   { id: 'luttes', titre: 'Luttes', kinds: ['drapeaux'] },
@@ -66,9 +67,8 @@ export function markSeen(save, shelf) {
   save.vues = { ...save.vues, [shelf]: save.decouvertes.length };
 }
 
-/** Au-delà, une pancarte est trop longue pour le cortège : on la gagne à un piquet de grève. */
-export const LONG_SIGN = 26;
-export const isLongSign = (sign) => sign.texte.length > LONG_SIGN;
+/** Une pancarte ou un bandeau a une rareté ; les autres cartes n'en ont pas. */
+export const rarityName = (item) => (item.rarete === undefined ? '' : RARITIES[item.rarete]);
 
 /** Les trois démarches que rappelle l'appel au vote. */
 export const VOTE_FICHES = ['presidentielle-dates', 'inscription-listes', 'procuration'];
@@ -116,7 +116,7 @@ export function whereToFind(bundle, kind, item) {
     case 'manchettes': return ['PANIQUE TV'];
     case 'pancartes': {
       const carriers = Object.values(bundle.recrues || {}).filter((r) => r.slogan.includes(item.texte)).map((r) => r.nom);
-      return carriers.length ? carriers : [isLongSign(item) ? 'à un piquet de grève' : 'dans le cortège'];
+      return carriers.length ? carriers : ['à ramasser dans un niveau'];
     }
     case 'citations': {
       if (item.categorie !== 'gauche') return ['PANIQUE TV'];
@@ -223,7 +223,7 @@ function facts(kind, item) {
 function textBody(kind, item) {
   if (kind === 'pancartes' || kind === 'manchettes') {
     const [where, url] = item.credit.split(' — ');
-    return [h('p', { className: 'dapres' }, where), url && h('p', { className: 'source' }, link(url, 'source'))];
+    return [where && h('p', { className: 'dapres' }, where), url && h('p', { className: 'source' }, link(url, 'source'))];
   }
   if (kind === 'citations') {
     return [h('blockquote', {}, `« ${item.texte} »`),
@@ -242,7 +242,9 @@ export function collectionCard(bundle, card, found = true) {
   const { kind, badge, item, number } = card;
   const where = whereToFind(bundle, kind, item);
   const art = artOf(bundle, kind, item);
-  const head = h('header', {}, h('span', {}, `N° ${String(number).padStart(3, '0')}`), h('span', { className: 'genre' }, badge));
+  const rarity = found && rarityName(item);
+  const head = h('header', {}, h('span', {}, `N° ${String(number).padStart(3, '0')}`),
+    h('span', { className: `genre${rarity ? ` rarete-${item.rarete}` : ''}` }, rarity ? `${badge} · ${rarity}` : badge));
   const picture = art ? h('div', { className: 'vignette' }, art) : h('div', { className: 'vignette vide' }, found ? '' : '?');
   if (!found) {
     return h('article', { className: `carte ${kind} cachee` }, head, picture,
@@ -265,8 +267,9 @@ export function collectionCard(bundle, card, found = true) {
 export function miniCard(bundle, card, { found = true, fresh = false, onOpen = null } = {}) {
   const { kind, item, number } = card;
   const art = artOf(bundle, kind, item, 56);
-  return h('button', { type: 'button', className: `carte-mini ${kind}${found ? '' : ' cachee'}`, onclick: onOpen },
-    h('span', { className: 'numero' }, `N° ${String(number).padStart(3, '0')}`),
+  const rare = found && item.rarete > 0;
+  return h('button', { type: 'button', className: `carte-mini ${kind}${found ? '' : ' cachee'}${rare ? ` rarete-${item.rarete}` : ''}`, onclick: onOpen },
+    h('span', { className: 'numero' }, `N° ${String(number).padStart(3, '0')}`, rare && h('b', {}, '★'.repeat(item.rarete))),
     fresh && h('span', { className: 'nouveau' }, 'Nouveau'),
     h('span', { className: 'vignette' }, art || (found ? emblem(kind, item) : h('span', { className: 'signe' }, '?'))),
     h('span', { className: 'nom' }, found ? shortName(kind, item) : '???'));

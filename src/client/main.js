@@ -12,7 +12,7 @@ import { showHeroCard } from './herocard.js';
 import { showTaxScene } from './tax.js';
 import { showAtelier } from './atelier.js';
 import { loadSave, storeSave, discover } from './save.js';
-import { cardName, citationOfWord, isLongSign } from './collection.js';
+import { cardName, citationOfWord, rarityName } from './collection.js';
 import { registerServiceWorker } from './sw-register.js';
 
 const bundle = await (await fetch('content.json')).json();
@@ -107,19 +107,14 @@ function toMenu() {
  */
 function collect(kind, id, quiet = false) {
   const lines = kind === 'pancartes' || kind === 'manchettes'; // sans fiche : identifiées par leur texte
-  const item = lines ? bundle[kind].find((p) => p.credit && p.texte === id) : bundle[kind]?.[id];
+  const item = lines ? bundle[kind].find((p) => p.texte === id) : bundle[kind]?.[id];
   if (!item || !discover(save, kind, id)) return;
   won.push(`${kind}:${id}`);
-  if (!quiet) hud.toast(`Nouvelle carte : ${cardName(item)}`);
+  if (kind === 'pancartes') hud.toast(`Pancarte ${rarityName(item)} : « ${item.texte} »`, `rarete-${item.rarete}`);
+  else if (!quiet) hud.toast(`Nouvelle carte : ${cardName(item)}`);
   collect('citations', item.citation, true);
   for (const fiche of [item.fiche].flat()) collect('fiches', fiche, true);
   for (const slogan of item.slogan || []) collect('pancartes', slogan, true); // une recrue arrive avec ses slogans
-}
-
-/** Une pancarte trop longue pour le cortège se gagne à un piquet de grève, et à la fin d'un niveau. */
-function collectLongSign() {
-  const next = bundle.pancartes.find((p) => p.credit && isLongSign(p) && !save.decouvertes.includes(`pancartes:${p.texte}`));
-  if (next) collect('pancartes', next.texte);
 }
 
 /** Ce que porte le cortège entre dans la Collection : de vraies pancartes, les drapeaux des luttes. */
@@ -140,12 +135,15 @@ function readSigns() {
   });
 }
 
+/** Les pancartes déjà dans la Collection : une pancarte ramassée en donne d'abord une autre. */
+const ownedSigns = () => save.decouvertes.filter((key) => key.startsWith('pancartes:')).map((key) => key.slice('pancartes:'.length));
+
 function start(id, level = null) {
   custom = level;
   const again = current?.id === (id ?? 'atelier'); // « Recommencer » : les cartes déjà gagnées dans ce niveau restent
   current = { id: id ?? 'atelier', level: level ?? bundle.niveaux[id] };
   // Dans l'Atelier, on essaie le niveau avec le héros que dit sa fiche, pas celui de la sauvegarde.
-  game = new Game(bundle, id, { seed: Math.floor(Math.random() * 1e9), level, hero: level ? '' : save.heros });
+  game = new Game(bundle, id, { seed: Math.floor(Math.random() * 1e9), level, hero: level ? '' : save.heros, owned: ownedSigns() });
   renderer.snap(game);
   hud.reset();
   if (!begin && !again) won = []; // un changement de héros sur le carton d'ouverture garde les cartes déjà gagnées
@@ -188,7 +186,6 @@ async function win() {
     collect('boss', boss.id, true);
   }
   for (const fiche of [level.fiche].flat()) collect('fiches', fiche, true);
-  collectLongSign();
   const index = bundle.campagne.indexOf(id);
   if (index >= 0) {
     save.termines[id] = true;
@@ -222,7 +219,7 @@ function handle(events) {
       if (e.kind === 'mot') collect('citations', citationOfWord(bundle, e.id)?.id, true);
       else collect({ ennemi: 'ennemis', recrue: 'recrues' }[e.kind] || e.kind, e.id);
     } else if (e.type === 'recruit') collectCortege();
-    else if (e.type === 'checkpoint') collectLongSign();
+    else if (e.type === 'sign') collect('pancartes', e.text);
     else if (e.type === 'heroCard') {
       const hero = bundle.heros[e.hero];
       collect('heros', hero.id, true);

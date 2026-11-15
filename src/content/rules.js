@@ -17,7 +17,21 @@ export const MARKERS = {
   Q: 'piquet de grève (point de reprise)',
   Y: 'boss',
   N: 'nasse (les lignes se referment quand le héros passe ici)',
+  E: 'pancarte à ramasser',
 };
+
+/** Les raretés d'une pancarte ou d'un bandeau, de la plus courante à la plus rare. */
+export const RARITIES = ['commune', 'rare', 'épique', 'légendaire'];
+const RARITY_STEPS = [55, 83, 96]; // sur cent lignes : 55 communes, 28 rares, 13 épiques, 4 légendaires
+
+/** La rareté d'une ligne se tire de son texte : personne ne la règle, et elle est la même pour tout le monde. */
+export function rarityOf(text) {
+  let h = 2166136261;
+  for (const c of text) h = Math.imul(h ^ c.codePointAt(0), 16777619);
+  h = Math.imul(h ^ (h >>> 15), 2246822519);
+  const roll = ((h ^ (h >>> 13)) >>> 0) % 100;
+  return RARITY_STEPS.filter((step) => roll >= step).length;
+}
 
 export const THEMES = ['richesses', 'droits', 'ordre', 'democratie', 'programme', 'luttes'];
 export const NATURES = ['officielle', 'presse', 'associative', 'militante', 'createur'];
@@ -522,7 +536,7 @@ export function buildContent(files) {
         if (address !== undefined && !/^https:\/\/\S+$/.test(address)) {
           report(line, 'Après « — », il faut l’adresse de la source : elle commence par https://');
         }
-        bundle[dir].push({ texte, credit });
+        bundle[dir].push({ texte, credit, rarete: rarityOf(texte) });
       }
       continue;
     }

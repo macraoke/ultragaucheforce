@@ -8,6 +8,9 @@
   --rouge-sombre: #a22633;
   --or: #f6c21c;
   --bleu: #3b5dc9;
+  --rare: #3b5dc9;
+  --epique: #8e4fc2;
+  --or-sombre: #c98f1e;
   --blanc: #f4f4f4;
   --titre: Impact, Haettenschweiler, 'Arial Narrow Bold', 'HelveticaNeue-CondensedBlack', 'Roboto Condensed', 'Arial Narrow', sans-serif;
   --texte: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -293,6 +296,9 @@ body.sobre #hud-panique i { animation: none; }
 @keyframes bandeau-entre { from { transform: translateY(100%); } }
 
 #toasts { position: absolute; left: 10px; top: 4.6em; z-index: 6; display: grid; gap: 6px; pointer-events: none; }
+#toasts p.rarete-1 { border-left-color: var(--rare); }
+#toasts p.rarete-2 { border-left-color: var(--epique); }
+#toasts p.rarete-3 { border-left-color: var(--or); background: #4a3a0c; }
 #toasts p { margin: 0; padding: .45em .7em; background: var(--nuit); border-left: 5px solid var(--or); font: 700 .8rem/1.2 var(--texte); animation: bandeau-entre .25s; }
 
 /* Commandes tactiles : l'image remplit l'écran, tout l'écran répond. Le manche et les trois cibles ne sont que des repères. */
@@ -476,6 +482,13 @@ article.carte.cachee h3 { letter-spacing: .2em; }
 .grille-album { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
 button.carte-mini { position: relative; display: grid; grid-template-rows: auto 60px 2.3em; gap: 4px; height: 128px; min-width: 0; padding: 6px 6px 5px; overflow: hidden; background: var(--papier); color: var(--nuit); border: 3px solid var(--nuit); border-radius: 8px; box-shadow: 3px 3px 0 var(--rouge); font: 700 .68rem/1.15 var(--texte); letter-spacing: 0; text-transform: none; text-align: center; }
 button.carte-mini:hover { background: var(--blanc); }
+button.carte-mini.rarete-1 { border-color: var(--rare); box-shadow: 3px 3px 0 var(--rare); }
+button.carte-mini.rarete-2 { border-color: var(--epique); box-shadow: 3px 3px 0 var(--epique); }
+button.carte-mini.rarete-3 { border-color: var(--or-sombre); box-shadow: 3px 3px 0 var(--or), 0 0 12px var(--or); }
+.carte-mini .numero b { float: right; letter-spacing: 0; }
+article.carte .genre.rarete-1 { background: var(--rare); color: var(--blanc); }
+article.carte .genre.rarete-2 { background: var(--epique); color: var(--blanc); }
+article.carte .genre.rarete-3 { background: var(--or); color: var(--nuit); }
 .carte-mini .numero { font: 900 .6rem/1 var(--titre); letter-spacing: .06em; text-align: left; opacity: .7; }
 .carte-mini .vignette { display: grid; place-items: center; min-width: 0; overflow: hidden; border-radius: 5px; background: linear-gradient(#f6c21c, #ef7d57); }
 .carte-mini .vignette canvas { max-width: 100%; max-height: 100%; }

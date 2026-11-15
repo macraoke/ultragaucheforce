@@ -32,7 +32,7 @@ import { updateProjectiles } from './projectile.js';
 import { updateBoss, hurtBoss } from './boss.js';
 import { loadLevel, toList, playable } from './level.js';
 import { updateProps } from './props.js';
-import { updateRecruits, updateCortege, syncCortege, updateKettle } from './manif.js';
+import { updateRecruits, updateCortege, syncCortege, updateKettle, drawSign } from './manif.js';
 
 export const DT = 1 / 60;
 
@@ -49,9 +49,10 @@ export class Game {
   /**
    * @param {object} bundle   contenu assemblé par `buildContent`
    * @param {string} levelId  identifiant dans `bundle.niveaux`
-   * @param {{seed?: number, invincible?: boolean, level?: object, hero?: string}} opts
+   * @param {{seed?: number, invincible?: boolean, level?: object, hero?: string, owned?: Iterable<string>}} opts
    *        `level` remplace `bundle.niveaux[levelId]` (Atelier, tests) ;
-   *        `hero` : le héros de départ choisi par le joueur (sinon celui du niveau)
+   *        `hero` : le héros de départ choisi par le joueur (sinon celui du niveau) ;
+   *        `owned` : les pancartes que le joueur a déjà (une pancarte ramassée en donne d'abord une autre)
    */
   constructor(bundle, levelId, opts = {}) {
     const level = opts.level ?? bundle.niveaux?.[levelId];
@@ -62,6 +63,7 @@ export class Game {
     this.rng = makeRng(opts.seed ?? 1);
     this.invincible = Boolean(opts.invincible);
     this.choice = opts.hero ?? ''; // lu par loadLevel
+    this.owned = new Set(opts.owned ?? []);
 
     this.events = [];
     this.status = 'playing';
@@ -74,7 +76,7 @@ export class Game {
     this.sign = null;
     this.stats = {
       breakdownsByPlayer: 0, breakdownsBySelf: 0, gassed: 0, tiles: 0, rescues: 0, tracts: 0, deaths: 0,
-      recruits: 0, dispersed: 0, overrun: 0, overrunOrder: 0,
+      recruits: 0, dispersed: 0, overrun: 0, overrunOrder: 0, signs: 0,
     };
 
     this.enemies = [];
@@ -98,7 +100,6 @@ export class Game {
     this.headlines = 0;
     this.respawnTimer = 0;
     this.held = { jump: false, special: false };
-    this.signOffset = this.rng.int(1000);
 
     loadLevel(this); // world, hero, checkpoint, enemies, props, decors, boss
     this.stack = Array(START_LIVES).fill(this.hero.def.id);
@@ -386,7 +387,7 @@ export class Game {
     if (this.stats.tracts === 1) {
       this.addPanic(6);
       const pool = this.banners();
-      if (pool.length) this.headline(this.rng.pick(pool)); // le premier tract fait la une, sans entamer les manchettes du niveau
+      if (pool.length) this.headline(drawSign(this, pool)); // le premier tract fait la une, sans entamer les manchettes du niveau
     }
   }
 
@@ -397,16 +398,14 @@ export class Game {
   headline(text = null) {
     const own = this.level.manchette || [];
     const pool = this.banners();
-    const pick = text ?? own[this.headlines++] ?? (pool.length ? this.rng.pick(pool) : null);
+    const pick = text ?? own[this.headlines++] ?? drawSign(this, pool);
     if (!pick) return;
     this.emit('headline', typeof pick === 'string' ? { text: pick } : { text: pick.texte, credit: pick.credit });
   }
 
-  /** Le fonds commun des alertes : les vrais bandeaux (ceux qui ont un crédit), s'il y en a. */
+  /** Le fonds commun des alertes. */
   banners() {
-    const all = this.bundle.manchettes || [];
-    const sourced = all.filter((m) => m.credit);
-    return sourced.length ? sourced : all;
+    return this.bundle.manchettes || [];
   }
 
   /** La panique ne redescend jamais ; chaque palier franchi déclenche une manchette et des renforts bornés. */

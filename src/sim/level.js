@@ -28,6 +28,7 @@ export function loadLevel(game) {
       else if (c === 'S') prop('sortie', { y: feet - 32, w: 48, h: 32, on: !level.boss });
       else if (c === 'K') prop('cage', { hp: 3 });
       else if (c === 'Q') prop('piquet');
+      else if (c === 'E') prop('pancarte');
       else if (c === 'Y') bossAt = { x: cx, y: feet };
       else if (c === 'N') game.nasses.push({ x: cx, y: feet, on: false });
       else if (c >= '1' && c <= '9') prop('panneau', { text: level.panneaux?.[c] ?? '', n: c });

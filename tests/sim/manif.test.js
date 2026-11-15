@@ -302,3 +302,32 @@ test('alertes de PANIQUE TV : les manchettes du niveau d’abord, puis les bande
     ['FLASH SPÉCIAL', undefined],
   ]);
 });
+
+// ---------------------------------------------------------------- pancartes
+
+test('pancarte à ramasser : une seule fois, d’abord une que le joueur n’a pas, et la manif grossit', () => {
+  const lvl = () => flat({ cortege: true, draw: (put, ground) => put(ground, 8, 'E') });
+  const game = settle(play(lvl(), { owned: ['PANCARTE UN'] }));
+  const before = game.crowd;
+  let events = run(game, 60, { right: true });
+  assert.deepEqual(of(events, 'sign').map((e) => e.text), ['PANCARTE DEUX'], 'elle donne celle qui manque, avec ou sans source');
+  assert.equal(game.stats.signs, 1);
+  assert.equal(game.crowd, before + 5);
+  assert.ok(game.cortege.some((m) => m.label === 'PANCARTE DEUX'), 'le cortège la porte');
+
+  events = [...run(game, 40, { left: true }), ...run(game, 60, { right: true })];
+  assert.equal(of(events, 'sign').length, 0, 'on ne la ramasse pas deux fois');
+
+  const full = settle(play(lvl(), { owned: ['PANCARTE UN', 'PANCARTE DEUX'] }));
+  assert.equal(of(run(full, 60, { right: true }), 'sign').length, 1, 'collection complète : on en ramasse une quand même');
+});
+
+test('cortège : toutes les pancartes peuvent être portées, les rares moins souvent', () => {
+  const bundle = { ...fixtureBundle(), pancartes: [{ texte: 'COMMUNE', credit: '', rarete: 0 }, { texte: 'LÉGENDAIRE', credit: 'vue — https://exemple.org', rarete: 3 }] };
+  const seen = { COMMUNE: 0, LÉGENDAIRE: 0 };
+  for (let seed = 1; seed <= 200; seed++) {
+    const game = play(flat({ cortege: true }), { bundle, seed });
+    seen[game.cortege.find((m) => m.kind === 'pancarte').label]++;
+  }
+  assert.ok(seen.LÉGENDAIRE > 0 && seen.COMMUNE > seen.LÉGENDAIRE * 4, JSON.stringify(seen));
+});
