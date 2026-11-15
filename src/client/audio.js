@@ -1,4 +1,4 @@
-// Bruitages et voix off. Tout est local : sons synthétisés (une ligne de texte dans
+// Bruitages. Tout est local : sons synthétisés (une ligne de texte dans
 // `content/sons/`) ou petits fichiers compressés du dépôt. Aucun son ne vient du réseau.
 
 import { buildSamples, SAMPLE_RATE } from './zzfx.js';

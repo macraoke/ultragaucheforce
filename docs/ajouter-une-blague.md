@@ -1,46 +1,61 @@
-# Ajouter une blague
+# Ajouter une pancarte ou un bandeau
 
-Une ligne de texte, et c'est dans le jeu.
+Une ligne de texte, et c'est dans le jeu. Le jeu n'affiche que du vrai : ce qui a été écrit, scandé ou diffusé, avec où, quand et le lien.
 
-- Une **manchette** défile sur le bandeau de PANIQUE TV quand la panique monte.
-- Une **pancarte** est brandie par le cortège.
+- Une **pancarte** vue en manif, un **slogan** scandé : [`content/pancartes/`](../content/pancartes). Le cortège les brandit, les banderoles et les tags les reprennent.
+- Un **bandeau** de chaîne d'info : [`content/manchettes/`](../content/manchettes). PANIQUE TV le diffuse en alerte quand la panique monte.
+
+Chacune devient une carte de la Collection, rayons « Pancartes » et « Vu à la télé » : on la trouve en la croisant dans le jeu.
 
 ## Comment
 
-1. Ouvrez [`content/manchettes/`](../content/manchettes) ou [`content/pancartes/`](../content/pancartes) sur GitHub.
+1. Ouvrez [`content/pancartes/`](../content/pancartes) ou [`content/manchettes/`](../content/manchettes) sur GitHub.
 2. **Add file → Create new file**, à votre pseudo : `camille.txt`.
-3. Une blague par ligne. **Commit changes… → Propose changes**.
+3. Une par ligne. **Commit changes… → Propose changes**.
 
 Votre fichier à vous, pas celui d'un autre : zéro conflit.
 
-## Une manchette
+## Le format
 
-<!-- fichier: content/manchettes/camille.txt -->
 ```text
-# Manchettes de Camille
-UN INDIVIDU AURAIT SOURI « DE MANIÈRE REVENDICATIVE »
-LA PRÉFECTURE CONFIRME : IL Y AVAIT DES GENS
-UN GOÛTER PARTAGÉ SÈME LE TROUBLE DANS LES MARCHÉS
+TEXTE | où et quand — https://adresse-de-la-source
 ```
 
-Le ressort : un fait minuscule, annoncé comme une catastrophe. Conditionnel, guillemets, « sources proches du dossier ». Majuscules, moins de cent caractères.
+Une ligne du jeu :
 
-## Une pancarte
+```text
+TU NOUS METS 64 ANS, ON TE MAI 68 | vue à Paris, mars 2023 — https://www.carenews.com/news/reforme-des-retraites-a-la-manifestation-du-7-mars-les-jeunes-interrogent-la-place-du-travail
+```
+
+Sans crédit après la barre verticale, la ligne n'entre pas dans la Collection.
+
+## Une pancarte, un slogan
 
 <!-- fichier: content/pancartes/camille.txt -->
 ```text
-# Pancartes de Camille
-PLUS DE PROFS, MOINS DE PROFITS
-J'AI MAL À MON SERVICE PUBLIC
-ICI BIENTÔT UNE BIBLIOTHÈQUE
+# Pancartes relevées par Camille
+LE TEXTE EXACT DE LA PANCARTE | vue à Lyon, janv. 2023 — https://adresse-de-l-article
+LE SLOGAN TEL QU'IL EST SCANDÉ | scandé à Paris, sept. 2025 — https://adresse-de-l-article
 ```
 
-Trente caractères, quarante au plus : au-delà, c'est illisible à l'écran.
+- En majuscules, mot pour mot, comme la source le rapporte.
+- « vue à … » pour une pancarte, « scandé à … » pour un slogan : la ville, le mois, l'année.
+- La source : un article ou un reportage que vous avez lu. Pas une image qui circule.
+- Jusqu'à 26 caractères, le cortège la porte ; jusqu'à 24, elle va aussi sur les banderoles et les tags. Plus longue, elle vit dans la Collection.
+- Quatre au plus par article source.
 
-Une pancarte **vraiment vue** en manif se crédite après une barre verticale :
+Une recrue peut la reprendre : clé `slogan` de [sa fiche](ajouter-un-personnage.md#une-recrue).
 
+## Un bandeau
+
+<!-- fichier: content/manchettes/camille.txt -->
 ```text
-LE TEXTE DE LA PANCARTE | vue à Paris, mars 2023 — https://adresse-de-la-source
+# Bandeaux relevés par Camille
+Le texte exact du bandeau ? | Nom de la chaîne, 24 sept. 2023 — https://adresse-de-la-source
 ```
 
-Quatre au plus par article source.
+- Le texte tel qu'il était à l'écran, ponctuation comprise. Le jeu l'affiche en majuscules.
+- La chaîne et le jour.
+- La source : un article ou un observatoire des médias qui cite le bandeau. Ceux du jeu viennent des relevés d'[Acrimed](https://www.acrimed.org).
+
+Entre deux alertes, PANIQUE TV fait défiler de vraies déclarations : celles de [`content/citations/`](ajouter-une-source.md).

@@ -6,7 +6,7 @@
 
 - [ ] `npm run verifier` passe (ou le robot est au vert).
 - [ ] `npm test` passe, si j'ai touché au code.
-- [ ] Le réel est sourcé : chaque citation ou chiffre renvoie à une page que j'ai lue.
+- [ ] C'est sourcé : chaque citation, chiffre, pancarte, slogan ou bandeau renvoie à une page que j'ai lue.
 - [ ] C'est à moi ou déjà libre, et je dis d'où ça vient.
 - [ ] C'est dans [la charte](https://github.com/macraoke/ultragaucheforce/blob/main/CHARTE.md).
 

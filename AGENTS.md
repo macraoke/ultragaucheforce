@@ -32,7 +32,7 @@ Node 22. Aucune dépendance, aucune étape de build pour jouer.
 
 | Dossier | Contenu | Règle |
 |---|---|---|
-| `content/` | héros, ennemis, boss, niveaux, drapeaux, citations, fiches, sons, pancartes | des fiches texte ; ni code, ni JSON |
+| `content/` | héros, recrues, ennemis, boss, niveaux, tuiles, décors, drapeaux, citations, fiches, sons, pancartes, manchettes | des fiches texte ; ni code, ni JSON |
 | `src/sim/` | la simulation | pure : ni DOM, ni `Math.random`, ni `Date` ; hasard par `game.rng` |
 | `src/content/` | lecture et validation du contenu | partagé par le jeu, l'Atelier, les outils, la CI |
 | `src/client/` | rendu, entrées, sons, écrans | lit la simulation, ne la modifie pas |
@@ -40,7 +40,8 @@ Node 22. Aucune dépendance, aucune étape de build pour jouer.
 | `tests/` | `tests/sim/` et ses fiches d'essai dans `tests/fixtures/content/` | |
 | `docs/` | un guide par type de contribution | à tenir à jour avec le code |
 
-- Un contenu se change dans `content/`. Un héros qui combine des comportements existants ne touche pas à `src/`.
+- Un contenu se change dans `content/`. Un personnage qui combine des comportements existants ne touche pas à `src/`.
+- Chaque fiche devient une carte de la Collection (`src/client/collection.js`) : `citation`, `fiche` et `origine` font son texte.
 - Une mécanique se change dans `src/sim/behaviors.js` : réglages déclarés et bornés, un test, sa ligne dans `docs/ajouter-un-personnage.md`.
 - Identifiants en anglais ; commentaires, contenu et docs en français.
 - Le format : `CONTRIBUER.md`. Les clés de chaque fiche : `docs/`. En cas de doute, `src/content/rules.js` fait foi.
@@ -48,10 +49,10 @@ Node 22. Aucune dépendance, aucune étape de build pour jouer.
 
 ## N'inventez jamais une source
 
-- Une entrée de `content/citations/` ou `content/fiches/` n'existe que si la page source a été ouverte **pendant cette session** et que les mots ou le nombre y figurent.
+- Une entrée de `content/citations/`, `content/fiches/`, `content/pancartes/` ou `content/manchettes/` n'existe que si la page source a été ouverte **pendant cette session** et que les mots ou le nombre y figurent.
 - Ni citation de mémoire, ni adresse devinée, ni date approximative. Page inaccessible : pas d'entrée, et on le dit.
 - `verifie` est la date réelle de la relecture.
-- Une réplique inventée va dans `replique` ou dans une manchette, jamais dans `content/citations/`.
+- Ce que dit un personnage (`cri`, `replique`, `sommation`, `slogan`, `arme.mots`) reprend des mots réels : une citation, un slogan, un texte officiel déjà dans `content/`.
 
 ## Avant de proposer
 

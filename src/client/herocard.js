@@ -1,6 +1,6 @@
 // Le carton de déblocage d'un héros : volontairement démesuré.
 // Tricolore qui claque, drapeaux des luttes, portrait géant, nom énorme, vraie citation
-// sourcée, tambours, cuivres et voix off. Se ferme tout seul ou au premier toucher.
+// sourcée, tambours et cuivres. Se ferme tout seul ou au premier toucher.
 
 import { spriteElement } from './sprites.js';
 import { frenchDate } from './dom.js';

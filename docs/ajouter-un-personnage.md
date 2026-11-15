@@ -1,9 +1,10 @@
-# Ajouter un personnage : héros, ennemi ou boss
+# Ajouter un personnage : héros, recrue, unité d'en face ou boss
 
 Une fiche texte : des réglages, puis des dessins. Tant qu'il combine des comportements existants, pas une ligne de code : déposez le fichier, il est dans le jeu.
 
 - Un héros : `content/heros/mon-heros.txt`
-- Un ennemi : `content/ennemis/mon-ennemi.txt`
+- Une recrue : `content/recrues/ma-recrue.txt`
+- Une unité d'en face : `content/ennemis/mon-unite.txt`
 - Un boss : `content/boss/mon-boss.txt`
 
 Pour voir le résultat : `npm start`, puis la Galerie (http://localhost:8080/galerie.html).
@@ -14,26 +15,40 @@ Chaque section `--- nom` est une image : une lettre par pixel, les lettres étan
 
 | Section | Rôle |
 |---|---|
-| `repos` | obligatoire : le personnage immobile |
+| `repos` | héros, unité, boss : obligatoire, le personnage immobile |
 | `marche1`, `marche2` | les deux pas de la marche (sinon `repos`) |
 | `saut` | en l'air (sinon `marche1`) |
 | `portrait` | héros : le portrait géant du carton de déblocage ; boss : obligatoire |
 | `projectile` | ce que lance son arme |
 | `onde` | héros : l'onde de la spéciale `sol` |
-| `fin` | ennemi : une fois en grève ou en panne |
+| `fin` | unité : une fois hors service |
 | `ejecte` | boss : la caricature qui s'éjecte, indemne |
+| `image`, `image2` | recrue : obligatoire, et sa seconde pose |
 
 Un héros fait une douzaine de pixels de large pour dix-huit de haut. Les fichiers existants sont les meilleurs modèles.
+
+## La carte
+
+Chaque personnage devient une carte de la Collection. Trois clés l'écrivent :
+
+| Clé | Sur la carte |
+|---|---|
+| `citation` | une vraie citation de `content/citations/`, avec son auteur, sa date et sa source (héros, unité, boss) |
+| `fiche` | un fait sourcé de `content/fiches/` ; répétez la ligne pour en mettre plusieurs |
+| `origine` | une phrase, s'il reste quelque chose à dire |
+
+Citations et fiches s'ajoutent d'abord dans leur dossier : [ajouter une source](ajouter-une-source.md).
+
+Ce que dit un personnage est réel : un slogan scandé, une pancarte vue, les mots exacts d'une déclaration ou d'un texte officiel.
 
 ## Un héros
 
 <!-- fichier: content/heros/casseroliere.txt -->
 ```text
-# Née d'un arrêté préfectoral de 2023 qui interdisait les « dispositifs sonores portatifs ».
 nom: La Casserolière
 traitement: archétype — une manifestante armée d'une casserole
 cri: ON EST LÀ !
-voix: La Casserolière !
+fiche: casseroles-arrete
 pv: 2
 vitesse: 145
 saut: 3.2
@@ -82,51 +97,89 @@ speciale.etourdit: 3
 | `nom` | obligatoire | |
 | `inspiration` | la personnalité publique caricaturée, s'il y en a une | |
 | `traitement` | en une phrase : archétype, ou nature de la caricature | |
-| `cri` | la phrase du carton de déblocage | |
-| `voix` | ce que dit la voix off (sinon le nom) | |
-| `citation` | une vraie citation de `content/citations/`, affichée sous le cri | |
+| `cri` | la phrase du carton de déblocage : un slogan réel ou ses propres mots | |
+| `citation`, `fiche`, `origine` | sa carte | |
 | `pv` | points de vie | 1 à 5 |
 | `vitesse` | pixels par seconde | 60 à 220 |
 | `saut` | hauteur du saut, en cases | 1,5 à 5 |
 | `largeur`, `hauteur` | la boîte de collision, en pixels | 6 à 16, 8 à 24 |
 | `statut` | `jouable`, ou `test` pour l'écarter des sauvetages | |
 
-Une vraie citation s'ajoute d'abord dans [`content/citations/`](ajouter-une-source.md).
+## Une recrue
 
-## Un ennemi
+Elle attend sur place. Le héros la touche, ou lui tend un tract : elle rejoint la manif.
 
-<!-- fichier: content/ennemis/prefet-automate.txt -->
+<!-- fichier: content/recrues/pompier.txt -->
 ```text
-nom: Le Préfet Automate
-pv: 2
-vitesse: 0
-deplacement: fixe
-reaction: tire
-vue: 160
-fin: panne
-replique: ARRÊTÉ N° 4 242 : IL EST INTERDIT D'INTERDIRE D'INTERDIRE.
+nom: Le pompier
+apport: 25
+slogan: DES MOYENS, PAS DES MIRACLES
+fiche: programme-services-publics-ruraux
 auteur: ton pseudo
+--- image
+...GGGG...
+..GGGGGG..
+..ssssss..
+..skssks..
+..ssssss..
+...ssss...
+..nnnnnn..
+.nnYYYYnn.
+.nnnnnnnn.
+.nnRRRRnn.
+..nnnnnn..
+..nnnnnn..
+..nn..nn..
+..YY..YY..
+..nn..nn..
+.kkk..kkk.
+```
 
-arme.type: tir
-arme.cadence: 0.6
-arme.vitesse: 90
-arme.portee: 200
-arme.degats: 1
-arme.terrain: 0
-arme.taille: 10
-arme.mots: ARRÊTÉ ! | INTERDIT ! | DISPERSION !
-arme.son: mot
+| Clé | Rôle | Bornes |
+|---|---|---|
+| `nom` | obligatoire | |
+| `apport` | combien de personnes rejoignent la manif | 1 à 500 |
+| `multiplie` | à la place d'`apport` : la manif est multipliée (une assemblée générale) | 1,5 à 5 |
+| `slogan` | ce qu'elle lance en rejoignant : un slogan réellement scandé ou une pancarte vue ; répétable | |
+| `fiche`, `origine` | sa carte | |
+
+`apport` ou `multiplie`, jamais les deux. Le dessin `image` donne sa taille (48 pixels au plus) ; `image2` l'anime. Son gain s'affiche au-dessus d'elle : `+ 25`, `× 2`.
+
+Pour la placer, un niveau la déclare dans sa légende : `p: pompier`.
+
+## Une unité d'en face
+
+<!-- fichier: content/ennemis/compagnie-d-intervention.txt -->
+```text
+# Les sommations sont celles de l'article R. 211-11 du code de la sécurité intérieure.
+nom: La compagnie d'intervention
+pv: 3
+vitesse: 30
+deplacement: marche
+reaction: charge
+vue: 190
+bouclier: oui
+fin: greve
+ecriteau: CODE 562
+fiche: sommations-mots-exacts
+sommation: PREMIÈRE SOMMATION : NOUS ALLONS FAIRE USAGE DE LA FORCE.
+sommation: DERNIÈRE SOMMATION : NOUS ALLONS FAIRE USAGE DE LA FORCE.
+charge.distance: 150
+charge.vitesse: 210
+charge.pause: 2.4
+charge.disperse: 6
+auteur: ton pseudo
 
 --- repos
 ..kkkkkk..
-..khhhhk..
-..hchhch..
-..hhhhhh..
-...nnnn...
-..nnYYnn..
-.nnnnnnnn.
-.nnnnnnnn.
-..nnnnnn..
+.kbbbbbbk.
+.kccccsk..
+..ssssss..
+.nnnnnnnWW
+.nnnnnnnWc
+.nnKKnnnWc
+.nnnnnnnWc
+..nnnnnnWW
 ..nn..nn..
 ..nn..nn..
 .kkk..kkk.
@@ -136,17 +189,52 @@ arme.son: mot
 |---|---|---|
 | `pv` | points de vie | 1 à 20 |
 | `vitesse` | pixels par seconde | 0 à 200 |
-| `deplacement` | | `marche`, `vol`, `fixe` |
-| `reaction` | ce qu'il fait en voyant le héros | `tire`, `fonce`, `cadre` (filme et fait monter la panique), `rien` |
+| `deplacement` | | `marche`, `vol`, `fixe`, `moto` (traverse, dépasse le héros, fait demi-tour), `vehicule` (lourd : ni recul ni étourdissement, on ne le traverse pas, on le saute) |
+| `reaction` | ce qu'elle fait en voyant le héros | `tire`, `fonce`, `cadre` (filme et fait monter la panique), `charge` (sommations, puis ruée), `projecteur` (en vol : un faisceau balaie le sol), `rien` |
 | `vue` | distance de détection, en pixels | 32 à 400 |
 | `bouclier` | pare les tirs de face | `oui`, `non` |
-| `contact` | dégâts au toucher | 0 à 3 |
-| `panique` | points de panique par seconde quand il « cadre » | 0 à 30 |
-| `fin` | à zéro point de vie | `greve`, `panne` |
-| `replique` | une phrase qu'il prononce ; répétez la ligne pour en mettre plusieurs | |
+| `contact` | dégâts au toucher ; une ruée blesse toujours | 0 à 3 |
+| `panique` | points de panique par seconde quand elle « cadre », ou quand le héros est dans son faisceau | 0 à 30 |
+| `debordement` | une ligne : elle ne cède que devant ce nombre de manifestants | 0 à 5000 |
+| `fin` | à zéro point de vie | `greve`, `panne` (elle fume) |
+| `ecriteau` | ce qu'on lit au-dessus d'elle une fois hors service | |
+| `replique` | une phrase qu'elle prononce ; répétable | |
+| `sommation` | réaction `charge` : dites une par une avant la première ruée ; répétable | |
+| `citation`, `fiche`, `origine` | sa carte | |
 | `largeur`, `hauteur` | boîte de collision | 6 à 32 |
 
-L'arme est facultative. Pour placer l'ennemi, un niveau le déclare dans sa légende : `p: prefet-automate`.
+L'arme est facultative. Pour placer l'unité, un niveau la déclare dans sa légende : `c: compagnie-d-intervention`.
+
+### Une ligne : `debordement`
+
+Tant que la manif compte moins de monde, la ligne tient : les tracts ne lui font rien et on ne la saute pas. Elle cède dès que le héros arrive devant elle assez nombreux. Devant une ligne qui tient, des passants rejoignent la manif peu à peu : on finit toujours par passer, mais recruter va bien plus vite.
+
+Modèles : [`barrage`](../content/ennemis/barrage.txt), [`centaure`](../content/ennemis/centaure.txt), [`grille`](../content/ennemis/grille.txt).
+
+### Une charge : `reaction: charge`
+
+| Réglage | Effet | Bornes | Défaut |
+|---|---|---|---|
+| `charge.distance` | longueur de la ruée, en pixels | 32 à 480 | 160 |
+| `charge.vitesse` | pixels par seconde | 60 à 400 | 220 |
+| `charge.pause` | secondes avant la charge suivante | 0,5 à 8 | 2,5 |
+| `charge.disperse` | pour cent de la manif dispersés quand la ruée traverse le cortège | 0 à 30 | 5 |
+
+Les sommations ne sont dites qu'une fois. Modèle : [`crs`](../content/ennemis/crs.txt).
+
+### Un projecteur : `reaction: projecteur`
+
+Pour une unité qui vole. Tant que le héros reste dans le faisceau, la panique monte ; au bout d'une seconde et demie, des renforts descendent à la corde.
+
+| Réglage | Effet | Bornes | Défaut |
+|---|---|---|---|
+| `faisceau.largeur` | largeur éclairée au sol, en pixels | 24 à 200 | 64 |
+| `faisceau.balayage` | amplitude du va-et-vient, en pixels | 0 à 200 | 90 |
+| `renfort.ennemi` | l'unité déposée (un fichier de `content/ennemis/`) | | |
+| `renfort.nombre` | unités déposées à chaque fois | 1 à 4 | 2 |
+| `renfort.max` | nombre de déposes au plus | 0 à 6 | 2 |
+
+Modèle : [`helicoptere`](../content/ennemis/helicoptere.txt).
 
 ## Un boss
 
@@ -157,8 +245,10 @@ Le modèle : [`content/boss/arnault-armure.txt`](../content/boss/arnault-armure.
 | `nom`, `inspiration`, `traitement` | comme un héros | |
 | `pv`, `vitesse` | | 5 à 400, 0 à 200 |
 | `largeur`, `hauteur` | boîte de collision | 16 à 96 |
-| `replique` | une phrase qu'il lance ; répétable | |
-| `citation` | une vraie citation de `content/citations/` | |
+| `replique` | une phrase qu'il lance : ses propres mots, tirés de ses citations ; répétable | |
+| `citation`, `fiche`, `origine` | sa carte | |
+| `assis` | `oui` : il reste assis sur sa fortune, sans bouger ni charger | |
+| `leve` | il se lève quand ses points de vie passent sous cette fraction | 0 à 1 (défaut 0,7) |
 | `fortune.montant` | en milliards d'euros | |
 | `fortune.fiche` | la fiche de `content/fiches/` qui source ce montant ; sans elle, pas de scène de taxation | |
 | `phase.1.jusqua` | la phase dure tant que les points de vie dépassent cette fraction | 0 à 1 |
@@ -166,6 +256,8 @@ Le modèle : [`content/boss/arnault-armure.txt`](../content/boss/arnault-armure.
 | `phase.1.attaques` | les attaques de la phase, séparées par une barre verticale : `salve \| charge` | |
 
 Jusqu'à cinq phases (`phase.1` à `phase.5`). Les dessins `repos` et `portrait` sont obligatoires.
+
+Pour l'asseoir sur sa fortune, le niveau pose le `Y` au sommet d'un tas de tuiles `L` (liasses). Si on creuse le tas, il tombe avec.
 
 ## Les comportements disponibles
 
@@ -194,9 +286,29 @@ Lance un ou plusieurs projectiles devant soi.
 | `arme.gaz` | secondes de nuage laissé à l'impact | 0 à 6 | 0 |
 | `arme.taille` | côté du projectile, en pixels | 2 à 24 | 4 |
 | `arme.recul` | pousse le tireur en arrière | 0 à 200 | 0 |
+| `arme.vise` | unités seulement : 1 = tiré vers le héros plutôt qu'à l'horizontale | 0 ou 1 | 0 |
+| `arme.visee` | unités seulement : secondes de visée avant un tir visé ; le joueur voit venir le coup | 0 à 2 | 0 |
 | `arme.image` | le dessin du projectile (une section de la fiche) | | `projectile` |
 | `arme.mots` | des mots lancés à la place d'un dessin, séparés par une barre verticale : `BING ! \| BANG !` | | |
 | `arme.son` | un bruitage de `content/sons/` | | `tir` |
+
+Un mot lancé par une unité qui reprend le `mot` d'une citation fait entrer cette citation dans la Collection.
+
+Plus la manif est nombreuse, plus les projectiles du héros font de dégâts.
+
+### Arme : `arme.type: jet`
+
+Réservée aux unités. Un jet continu qui repousse le héros et le cortège, sans blesser. Il s'arrête au premier mur.
+
+| Réglage | Effet | Bornes | Défaut |
+|---|---|---|---|
+| `arme.duree` | secondes de jet | 0,3 à 6 | 1,5 |
+| `arme.pause` | secondes entre deux jets | 0,5 à 10 | 3 |
+| `arme.portee` | longueur du jet, en pixels | 32 à 320 | 140 |
+| `arme.poussee` | vitesse de recul imposée, en pixels par seconde | 20 à 600 | 220 |
+| `arme.son` | un bruitage de `content/sons/` | | `jet` |
+
+Modèle : [`canon-a-eau`](../content/ennemis/canon-a-eau.txt).
 
 ### Spéciales des héros : `speciale.type`
 
@@ -211,7 +323,7 @@ Toutes acceptent aussi `speciale.nom` (le cri affiché), `speciale.charges` (0 �
 
 ### Attaques de boss
 
-Les réglages s'écrivent au nom de l'attaque : `salve.nombre: 5`.
+Les réglages s'écrivent au nom de l'attaque : `salve.nombre: 5`. Un boss assis n'emploie que les attaques à distance : `salve`, `invocation`, `pluie`.
 
 | Attaque | Effet | Réglages (bornes, défaut) |
 |---|---|---|

@@ -17,13 +17,16 @@ Sans l'Atelier : créez `content/niveaux/mon-niveau.txt` (voir [CONTRIBUER.md](.
 ```text
 titre: La place du marché
 auteur: ton pseudo
-accroche: Un automate, un drone, une cellule, un camion-sono.
-intro: UN MARCHÉ AURAIT LIEU SUR LA PLACE DU MARCHÉ
+citation: macron-traverse-la-rue
+fiche: droit-de-manifester
 fond: ville
-manchette: LES TOMATES SERAIENT « ANORMALEMENT ROUGES »
-panneau.1: Libère ton camarade, puis file vers le camion-sono.
-b: bouclier
+cortege: oui
+manif: 5
+panneau.1: Touche-la : elle rejoint la manif
+s: soignante
+b: bac
 d: drone
+=: banderole
 --- carte
 ........................................
 ........................................
@@ -32,7 +35,7 @@ d: drone
 ........................................
 .........................PPP............
 ........................................
-..D...1......b...........K......Q...S...
+..D...1..s...=.......b...K......Q...S...
 GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 ```
@@ -45,18 +48,27 @@ Déposé dans `content/niveaux/`, il apparaît dans « Niveaux de la communauté
 |---|---|
 | `titre` | obligatoire |
 | `auteur` | votre pseudo, pour le crédit |
-| `accroche` | la phrase sous le titre |
-| `intro` | la manchette du carton d'ouverture (parodie de PANIQUE TV) |
+| `citation` | la vraie déclaration qui ouvre le niveau (un fichier de `content/citations/`) |
+| `fiche` | un fait sourcé de `content/fiches/` ; répétable ; la première s'affiche à la fin du niveau |
+| `accroche` | une phrase sous le titre |
 | `fond` | `campagne`, `ville` ou `citadelle` |
-| `manchette` | une manchette propre au niveau ; répétez la ligne pour en mettre plusieurs |
+| `cortege` | `oui` : la manif suit le héros |
+| `manif` | combien de manifestants au départ (10 avec un cortège, sauf indication ; 5000 au plus) |
 | `panneau.1` à `panneau.9` | le texte du panneau placé par le chiffre correspondant sur la carte |
-| une lettre minuscule | la légende : `b: bouclier` place un ennemi ou un décor à chaque `b` de la carte |
+| un signe de légende | `b: bac` place une unité, une recrue ou un décor à chaque `b` de la carte |
 | `heros` | le héros de départ (sinon le premier disponible) |
 | `camarades` | l'ordre des héros libérés, séparés par une barre verticale : `melenchotron \| zuc-man` (sinon au hasard) |
 | `boss` | l'identifiant d'un boss de `content/boss/` ; il faut alors un `Y` sur la carte |
-| `cortege` | `oui` : des manifestants suivent le héros |
-| `fiche` | la fiche sourcée affichée à la fin (un fichier de `content/fiches/`) |
+| `nasse.ennemi` | l'unité qui forme la nasse ; obligatoire s'il y a un `N` sur la carte |
+| `nasse.nombre` | unités de chaque côté (1 à 6, défaut 3) |
+| `nasse.vitesse` | vitesse à laquelle les lignes se referment, en pixels par seconde (4 à 80, défaut 18) |
+| `manchette` | une alerte de PANIQUE TV propre au niveau ; répétable |
+| `intro` | le texte du carton d'ouverture, quand il n'y a pas de `citation` |
 | `musique` | une piste de `content/musiques/` |
+
+Un signe de légende est une minuscule, ou l'un de ceux-ci : `+ * @ & % $ ! ? = ~ ^ < > _ , ;`.
+
+Le niveau devient une carte de la Collection, avec sa citation et ses fiches.
 
 ## La carte
 
@@ -65,11 +77,12 @@ Déposé dans `content/niveaux/`, il apparaît dans « Niveaux de la communauté
 | `.` | vide |
 | `D` | départ du héros (un seul) |
 | `S` | sortie : le camion-sono (au moins une ; il occupe la case du `S` et les deux à sa droite) |
-| `K` | camarade en garde à vue : le libérer donne une vie et change de héros |
-| `Q` | piquet de grève : point de reprise |
+| `K` | camarade en garde à vue : le libérer donne une vie, change de héros et amène 20 personnes |
+| `Q` | piquet de grève : point de reprise, et 10 personnes de plus |
 | `Y` | boss |
+| `N` | nasse : deux lignes se referment quand le héros passe ici |
 | `1` à `9` | panneau |
-| `a` à `z` | ennemi ou décor déclaré dans l'en-tête |
+| un signe de légende | unité, recrue ou décor déclaré dans l'en-tête |
 | une majuscule | une tuile |
 
 Les tuiles disponibles (la liste à jour est dans l'Atelier et dans [`content/tuiles/`](../content/tuiles)) :
@@ -85,17 +98,53 @@ Les tuiles disponibles (la liste à jour est dans l'Atelier et dans [`content/tu
 | `V` | vitrine | 1 |
 | `M` | marbre | 4 |
 | `H` | haie | 2 |
+| `L` | liasses de billets | 2 |
+| `C` | bâche de bassine | 1 |
 | `X` | tonneau : explose, et fait exploser ses voisins | 1 |
 | `A` | acier | indestructible |
 | `O` | socle rocheux | indestructible |
 
-Ennemis : `bouclier`, `editorialiste`, `drone`, `faux-jeune`. Décors : `vache`, et tout fichier de [`content/decors/`](../content/decors).
+Unités : tout fichier de [`content/ennemis/`](../content/ennemis) (`crs`, `bac`, `drone`…). Recrues : tout fichier de [`content/recrues/`](../content/recrues) (`soignante`, `cheminot`, `ag`…). Décors : tout fichier de [`content/decors/`](../content/decors) (`kiosque`, `banderole`, `vache`…).
+
+## La manif
+
+Le but du joueur : arriver toujours plus nombreux.
+
+- Une **recrue** rejoint quand le héros la touche ou lui tend un tract. Son gain s'affiche au-dessus d'elle : `+ 20`, `× 2`.
+- Plus on est nombreux, plus les tracts font de dégâts.
+- Une charge, un nuage de gaz ou une chute du héros dispersent une part de la manif.
+- Le compteur affiche deux chiffres : celui des syndicats, et celui de la préfecture.
+
+## Les lignes
+
+Une unité qui porte `debordement` (le barrage, le blindé, la grille) est une ligne : on ne la casse pas, on ne la saute pas, elle cède quand le héros arrive assez nombreux. Le nombre s'affiche au-dessus d'elle.
+
+Devant une ligne qui tient, des passants rejoignent peu à peu : personne ne reste coincé. Pour que ce soit un choix et non une attente, placez avant elle de quoi la déborder, et davantage en hauteur pour qui explore.
+
+## La nasse
+
+Un `N` sur la carte, `nasse.ennemi` dans l'en-tête. Quand le héros passe sur le `N`, deux lignes apparaissent à neuf cases de chaque côté et se referment. La nasse est levée si le héros en sort (par les toits, par un tunnel), si une ligne cède, ou au bout de vingt secondes.
+
+Il faut du sol plat de chaque côté du `N`, et une issue en hauteur ou en sous-sol.
+
+## Un décor
+
+Un fichier `content/decors/mon-decor.txt` : un dessin `image` (et `image2` pour l'animer), sans collision.
+
+| Clé | Rôle |
+|---|---|
+| `nom` | obligatoire |
+| `devant` | `oui` : dessiné devant les personnages |
+| `ecrit` | `pancarte` : le jeu écrit sur le dessin une vraie pancarte de `content/pancartes/` (une banderole) ; `tag` : il la peint au-dessus, sans fond (un mur) |
+| `ecrit.y` | hauteur du texte, en pixels depuis le haut du dessin (0 à 96, défaut 8) |
+
+Au même endroit, c'est toujours la même pancarte. Modèles : [`banderole`](../content/decors/banderole.txt), [`tag`](../content/decors/tag.txt).
 
 ## Les règles que le robot vérifie
 
 - Au moins 8 lignes ; au plus 400 colonnes sur 60 lignes.
 - Exactement un `D`, au moins un `S`, un `Y` si et seulement si l'en-tête a un `boss`.
-- Chaque chiffre a son `panneau.N`, chaque minuscule sa légende.
+- Chaque chiffre a son `panneau.N`, chaque signe sa légende, un `N` son `nasse.ennemi`.
 - La sortie doit être atteignable : aucun mur indestructible ne doit couper la carte en deux.
 - En plus, pour la campagne : un robot joueur doit réussir à traverser le niveau.
 
@@ -106,8 +155,10 @@ Ennemis : `bouclier`, `editorialiste`, `drone`, `faux-jeune`. Décors : `vache`,
 - Pas de trou de plus de quatre cases de large.
 - Le héros tire à l'horizontale : placez ce qui doit être détruit à sa hauteur, ou près d'un tonneau.
 - Écartez les tonneaux de deux cases : assez près pour la réaction en chaîne, assez loin pour qu'on la voie.
-- Trois à six minutes suffisent : un gag, un sauvetage, un passage à casser, la sortie.
-- Un panneau, c'est un conseil ou une blague. Pas un roman.
+- **Des recrues sur le chemin au sol** avant chaque ligne : le robot joueur ne monte pas les chercher.
+- En hauteur, ce qui récompense : une assemblée générale, un camarade à libérer.
+- Trois à six minutes suffisent : un sauvetage, une ligne à déborder, un passage à casser, la sortie.
+- Un panneau, c'est un conseil en quelques mots.
 
 ## Les murs du fond (facultatif)
 

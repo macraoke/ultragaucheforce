@@ -14,7 +14,7 @@ La culture est politique. Cette page dit, une fois pour toutes, ce qui entre dan
 - De haine : rien qui vise l'origine, la religion, le genre, l'orientation, l'identité de genre ou le handicap.
 - De personnes privées, ni de vie privée.
 - De faits graves inventés sur une personne réelle.
-- D'appels à la violence, ni de violence réaliste contre une personne réelle : les ennemis sont des automates, un boss est une machine dont le pilote s'éjecte indemne.
+- D'appels à la violence, ni de violence réaliste : personne n'est blessé à l'écran. Une unité se met hors service, un boss est une machine dont le pilote s'éjecte indemne.
 - De procès à la place des juges : personne n'est désigné dans une affaire en cours.
 - De copie : ni images, ni sons, ni niveaux, ni code d'une œuvre qui n'est pas libre.
 
@@ -22,8 +22,8 @@ La culture est politique. Cette page dit, une fois pour toutes, ce qui entre dan
 
 | | Le réel | La parodie |
 |---|---|---|
-| Où | `content/citations/`, `content/fiches/`, ressources des drapeaux | manchettes, répliques, pancartes maison |
-| Règle | exact, daté, relié à une source lue | signé PANIQUE TV, ou dit par un automate |
+| Où | citations, fiches, pancartes, bandeaux télé, ce que disent les personnages, ressources des drapeaux | les noms des personnages, les situations du jeu, la chaîne PANIQUE TV |
+| Règle | exact, daté, relié à une source lue | ne se présente jamais comme une citation |
 
 Une phrase inventée n'est jamais attribuée à une personne réelle. Le mode d'emploi : [ajouter une source](docs/ajouter-une-source.md).
 

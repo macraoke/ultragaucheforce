@@ -119,7 +119,7 @@ export class Screens {
     };
     this.show('liste',
       h('h2', {}, 'Options'),
-      toggle('son', 'Bruitages et voix off'),
+      toggle('son', 'Bruitages'),
       toggle('musique', 'Radio Manif (musique, par SoundCloud)'),
       toggle('sobre', 'Effets réduits'),
       h('h3', {}, 'Commandes'),
@@ -142,7 +142,7 @@ export class Screens {
     this.show('liste',
       h('h2', {}, 'À propos'),
       h('p', {}, MENTION),
-      h('p', {}, 'Une blague, une pancarte, un drapeau, un niveau, un personnage, un son : tout le contenu est en fichiers texte, modifiables depuis GitHub.'),
+      h('p', {}, 'Une pancarte vue en manif, une citation, un drapeau, un niveau, un personnage, un son : tout le contenu est en fichiers texte, modifiables depuis GitHub.'),
       h('p', {}, link(REPO, 'Le dépôt'), ' · ', link(`${REPO}/blob/main/CONTRIBUER.md`, 'Contribuer'), ' · ',
         link(`${REPO}/blob/main/CHARTE.md`, 'La charte'), ' · ', h('a', { href: 'galerie.html' }, 'La Galerie')),
       h('h3', {}, 'Références'),

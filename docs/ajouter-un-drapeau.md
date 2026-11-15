@@ -1,6 +1,6 @@
 # Ajouter un drapeau
 
-Les drapeaux flottent dans le cortège et sur les cartons de héros. Chacun vient avec une à trois ressources pour comprendre la lutte qu'il porte ; on les retrouve dans la Bibliothèque.
+Les drapeaux flottent dans le cortège et sur les cartons de héros. Chacun vient avec une à trois ressources pour comprendre la lutte qu'il porte ; on les retrouve dans la Collection, rayon « Luttes ».
 
 Un drapeau = un fichier `content/drapeaux/mon-drapeau.txt`.
 

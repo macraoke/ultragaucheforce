@@ -3,10 +3,10 @@
 | | Où | Forme |
 |---|---|---|
 | Bruitage | `content/sons/` | une ligne de texte (son synthétisé) ou un petit fichier audio |
-| Voix off | `content/voix/` | un fichier audio au nom du héros |
+| Voix off | `content/voix/` | un enregistrement au nom du personnage (facultatif) |
 | Musique | `content/musiques/` | une fiche avec un lien SoundCloud |
 
-Bruitages et voix sont dans le dépôt et marchent hors-ligne. La musique passe par le lecteur de SoundCloud.
+Les bruitages sont dans le dépôt et marchent hors-ligne. La musique passe par le lecteur de SoundCloud.
 
 Pour tout écouter : `npm start`, puis http://localhost:8080/galerie.html.
 
@@ -30,7 +30,7 @@ licence: CC0-1.0
 
 Le nom du fichier est l'identifiant : une arme s'en sert avec `arme.son: klaxon`.
 
-Les sons que le jeu joue de lui-même : `saut`, `tir`, `impact`, `explosion`, `degat`, `sauvetage`, `piquet`, `panne`, `greve`, `gaz`, `speciale`, `mort`, `victoire`, `palier`, `boss`, `tambour`, `cuivres`, `clic`. Remplacez `content/sons/saut.txt`, vous changez le son du saut.
+Les sons que le jeu joue de lui-même : `saut`, `tir`, `impact`, `explosion`, `degat`, `sauvetage`, `piquet`, `panne`, `greve`, `gaz`, `speciale`, `mort`, `victoire`, `palier`, `boss`, `tambour`, `cuivres`, `clic`, et ceux de la manif et d'en face : `recrue`, `debordement`, `nasse`, `charge`, `visee`, `renfort`, `jet`. Remplacez `content/sons/saut.txt`, vous changez le son du saut.
 
 ## Un bruitage enregistré
 
@@ -49,13 +49,12 @@ source: https://adresse-de-la-page-d-origine
 
 ## Une voix off
 
-Le carton de déblocage annonce le héros d'une voix de catcheur. Elle vit dans `content/voix/<identifiant-du-héros>.mp3` : `content/voix/zuc-man.mp3`.
+Le jeu n'a pas de voix off pour l'instant : le carton de déblocage joue un roulement de tambour, des cuivres et une cymbale.
 
-- Deux à trois secondes, mono, moins de 100 Ko. Grave, lent, théâtral.
-- Le texte à dire : la clé `voix` de la fiche du héros.
-- Les voix du jeu sont générées avec [Piper](https://github.com/OHF-Voice/piper1-gpl), voix `fr_FR-siwis-medium` (corpus SIWIS).
-- La vôtre fait mieux ? Déposez-la à la place, avec votre nom pour les crédits.
-- Sans fichier, le jeu se rabat sur la synthèse vocale du navigateur.
+Une vraie voix d'annonceur est la bienvenue : masculine, grave, dynamique, façon bande-annonce télé. Déposez-la dans `content/voix/<identifiant-du-personnage>.mp3` (par exemple `content/voix/zuc-man.mp3`) : le jeu la joue au déblocage du héros, ou à l'entrée du boss.
+
+- Deux à trois secondes, mono, moins de 100 Ko.
+- Votre propre voix, sous licence libre, avec votre nom pour les crédits. Pas d'imitation d'une personne réelle.
 
 ## Une musique
 
