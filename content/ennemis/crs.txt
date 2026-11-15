@@ -1,4 +1,4 @@
-# Les sommations sont celles de l'article R. 211-11 du code de la sécurité intérieure, mot pour mot.
+# Les sommations sont des extraits de l'article R. 211-11 du code de la sécurité intérieure.
 nom: La compagnie de CRS
 pv: 3
 vitesse: 30

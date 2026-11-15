@@ -3,6 +3,7 @@
 
 import { h, frenchNumber, sourceLine } from './dom.js';
 import { sprite } from './sprites.js';
+import { taxFiches } from './collection.js';
 
 const RATE = 0.02; // l'impôt plancher discuté : 2 % par an
 const YEARS_PER_STACK = 10000; // une liasse dessinée = dix mille ans de Smic
@@ -88,7 +89,7 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null } =
       if (done) {
         root.replaceChildren();
         root.hidden = true;
-        return resolve(['smic', boss.fortune.fiche, 'impot-plancher', 'impot-plancher-rendement'].filter(fiche));
+        return resolve(taxFiches(bundle, boss));
       }
       done = true;
       audio?.play('tampon');

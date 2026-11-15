@@ -10,7 +10,7 @@
 //   boss {state: 'enter' | 'phase' | 'stand' | 'defeated'} · won · lost
 //   recruit {id, n, crowd, x, y} · dispersed {n, crowd} · overrun {x, y} · blocked {x, need, crowd}
 //   kettle {state: 'start', x} puis {state: 'end', reason: 'out' | 'broken' | 'time'} · drop {x, y, n}
-//   discover {kind: 'heros' | 'ennemi' | 'recrue' | 'boss' | 'mot' | 'panneau', id} : une seule fois par partie
+//   discover {kind: 'heros' | 'ennemi' | 'recrue' | 'boss' | 'mot', id} : une seule fois par partie
 //
 // La manif et le maintien de l'ordre :
 //   crowd        nombre de manifestants (entier, jamais plafonné) ; `cortege` en dessine 40 au plus
@@ -372,7 +372,7 @@ export class Game {
     this.stats.tracts++;
     if (this.stats.tracts === 1) {
       this.addPanic(6);
-      const pool = this.bundle.manchettes || [];
+      const pool = this.banners();
       if (pool.length) this.headline(this.rng.pick(pool)); // le premier tract fait la une, sans entamer les manchettes du niveau
     }
   }
@@ -383,10 +383,17 @@ export class Game {
    */
   headline(text = null) {
     const own = this.level.manchette || [];
-    const pool = this.bundle.manchettes || [];
+    const pool = this.banners();
     const pick = text ?? own[this.headlines++] ?? (pool.length ? this.rng.pick(pool) : null);
     if (!pick) return;
     this.emit('headline', typeof pick === 'string' ? { text: pick } : { text: pick.texte, credit: pick.credit });
+  }
+
+  /** Le fonds commun des alertes : les vrais bandeaux (ceux qui ont un crédit), s'il y en a. */
+  banners() {
+    const all = this.bundle.manchettes || [];
+    const sourced = all.filter((m) => m.credit);
+    return sourced.length ? sourced : all;
   }
 
   /** La panique ne redescend jamais ; chaque palier franchi déclenche une manchette et des renforts bornés. */
@@ -483,8 +490,10 @@ export class Game {
       if (e.state === 'done' || !sturdy(e)) continue;
       const top = e.blocking ? e.y - LINE_REACH : e.y;
       if (hero.x >= e.x + e.w || hero.x + hero.w <= e.x || hero.y >= e.y + e.h || hero.y + hero.h <= top) continue;
-      const x = hero.x + hero.w / 2 < e.x + e.w / 2 ? e.x - hero.w : e.x + e.w;
-      if (hitsSolid(world, x, hero.y, hero.w, hero.h)) continue; // coincé contre un mur : on ne l'écrase pas
+      // On l'écarte du côté où il se trouve ; si un mur l'en empêche, de l'autre ; coincé des deux côtés, on ne l'écrase pas.
+      const sides = hero.x + hero.w / 2 < e.x + e.w / 2 ? [e.x - hero.w, e.x + e.w] : [e.x + e.w, e.x - hero.w];
+      const x = sides.find((side) => !hitsSolid(world, side, hero.y, hero.w, hero.h));
+      if (x === undefined) continue;
       hero.x = x;
       hero.vx = 0;
       if (e.def.debordement > 0 && e.nag <= 0) {

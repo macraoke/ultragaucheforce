@@ -29,7 +29,6 @@ export function updateProps(game) {
       const near = Math.abs(prop.x + prop.w / 2 - (hero.x + hero.w / 2)) < SIGN_RANGE && Math.abs(prop.y - hero.y) < 40;
       if (!near) continue;
       game.sign = prop.text;
-      game.discover('panneau', `${game.levelId}.${prop.n}`, { text: prop.text });
     }
   }
 }

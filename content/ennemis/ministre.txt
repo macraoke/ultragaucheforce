@@ -1,4 +1,5 @@
 nom: Le premier flic de France
+origine: Les mots de trois ministres de l'Intérieur : Christophe Castaner, Gérald Darmanin et Bruno Retailleau.
 pv: 6
 vitesse: 0
 deplacement: fixe

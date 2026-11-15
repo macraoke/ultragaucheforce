@@ -58,7 +58,7 @@ export const WEAPONS = {
       }
       for (let i = 0; i < w.nombre; i++) {
         const word = w.mots?.length ? game.rng.pick(w.mots) : null;
-        if (word && team === 'ordre') game.discover('mot', word);
+        if (word) game.discover('mot', word); // un mot crié, par eux ou par nous, vient d'une vraie citation
         const width = word ? Math.max(w.taille, word.length * 5) : w.taille;
         // Plusieurs projectiles : éventail régulier ; un seul : petit écart au hasard.
         const spread = w.nombre > 1 ? (i / (w.nombre - 1) - 0.5) * 2 * w.dispersion : game.rng.range(-w.dispersion, w.dispersion);

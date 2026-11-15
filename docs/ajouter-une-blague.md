@@ -42,7 +42,6 @@ LE SLOGAN TEL QU'IL EST SCANDÉ | scandé à Paris, sept. 2025 — https://adres
 - « vue à … » pour une pancarte, « scandé à … » pour un slogan : la ville, le mois, l'année.
 - La source : un article ou un reportage que vous avez lu. Pas une image qui circule.
 - Jusqu'à 26 caractères, le cortège la porte ; jusqu'à 24, elle va aussi sur les banderoles et les tags. Plus longue, elle vit dans la Collection.
-- Quatre au plus par article source.
 
 Une recrue peut la reprendre : clé `slogan` de [sa fiche](ajouter-un-personnage.md#une-recrue).
 

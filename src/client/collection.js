@@ -20,7 +20,6 @@ export const SHELVES = [
 ];
 
 const BADGES = { heros: 'Camarade', recrues: 'Manif', ennemis: 'En face', boss: 'Fortune', niveaux: 'Lieu', citations: 'Parole', pancartes: 'Vu en manif', manchettes: 'Bandeau', fiches: 'Fait', drapeaux: 'Lutte' };
-const THEMES = { richesses: 'Richesses', droits: 'Tes droits', ordre: 'Maintien de l’ordre', democratie: 'Démocratie', programme: 'Programme', luttes: 'Luttes' };
 
 /** Toutes les cartes de l'album, numérotées. */
 export function allCards(bundle) {
@@ -42,21 +41,73 @@ export const cardName = (item) => item.nom || item.titre || item.auteur || item.
 /** L'identifiant d'une carte : celui de sa fiche ; une pancarte n'a que son texte. */
 export const cardId = (item) => item.id ?? item.texte;
 
-/** Où croise-t-on cette carte ? L'indice affiché sous une silhouette. */
-function whereToFind(bundle, kind, item) {
-  const levels = Object.values(bundle.niveaux).filter((lv) => {
-    if (kind === 'niveaux') return lv.id === item.id;
-    if (kind === 'heros') return lv.heros === item.id || lv.camarades.includes(item.id);
-    if (kind === 'boss') return lv.boss === item.id;
-    if (kind === 'fiches') return lv.fiche.includes(item.id);
-    return Object.values(lv.legende).some((l) => l.id === item.id);
-  }).map((lv) => lv.titre);
-  if (levels.length) return levels;
-  if (kind === 'citations') return [item.categorie === 'gauche' ? 'un camarade libéré' : 'PANIQUE TV'];
-  if (kind === 'pancartes') return ['dans le cortège'];
-  if (kind === 'manchettes') return ['PANIQUE TV'];
-  if (kind === 'fiches') return [THEMES[item.theme] || item.theme];
-  return [];
+/** Au-delà, une pancarte est trop longue pour le cortège : on la gagne à un piquet de grève. */
+export const LONG_SIGN = 26;
+export const isLongSign = (sign) => sign.texte.length > LONG_SIGN;
+
+/** Les trois démarches que rappelle l'appel au vote. */
+export const VOTE_FICHES = ['presidentielle-dates', 'inscription-listes', 'procuration'];
+
+/** Les fiches que la scène de taxe apprend au joueur. */
+export const taxFiches = (bundle, boss) =>
+  ['smic', boss.fortune.fiche, 'impot-plancher', 'impot-plancher-rendement', 'impot-plancher-parcours', 'patrimoine-moitie', 'patrimoine-top10']
+    .filter((id) => bundle.fiches[id]);
+
+/** La citation dont vient un mot crié en jeu (« ÉCOTERRORISME ! ») : son mot-clé, sinon ses propres mots. */
+export function citationOfWord(bundle, word) {
+  const bare = word.replace(/\s*!$/, '');
+  const all = Object.values(bundle.citations);
+  return all.find((c) => c.mot && bare.startsWith(c.mot)) || all.find((c) => c.texte.toUpperCase().includes(bare));
+}
+
+/** Les unités qu'on croise dans un niveau : sa légende, sa nasse, les renforts qu'elles appellent, ceux du boss. */
+function unitsOf(bundle, level) {
+  const ids = new Set(Object.values(level.legende).filter((l) => l.type === 'ennemi').map((l) => l.id));
+  if (level.nasse?.ennemi) ids.add(level.nasse.ennemi);
+  const called = bundle.boss[level.boss]?.attaques?.invocation?.ennemi;
+  if (called) ids.add(called);
+  for (const id of [...ids]) if (bundle.ennemis[id]?.renfort?.ennemi) ids.add(bundle.ennemis[id].renfort.ennemi);
+  return ids;
+}
+
+/**
+ * Où gagne-t-on cette carte ? L'indice affiché sous une silhouette, puis « Vu dans » sur la carte trouvée.
+ * Une liste vide voudrait dire qu'aucun chemin n'y mène : un test l'interdit.
+ */
+export function whereToFind(bundle, kind, item) {
+  const levels = Object.values(bundle.niveaux);
+  const titles = (keep) => levels.filter(keep).map((lv) => lv.titre);
+  const inLegend = (lv) => Object.values(lv.legende).some((l) => l.id === item.id);
+  const characters = ['heros', 'recrues', 'ennemis', 'boss'].flatMap((k) => Object.values(bundle[k] || {}));
+  const speakers = [...Object.values(bundle.heros), ...Object.values(bundle.ennemis)];
+  switch (kind) {
+    case 'niveaux': return [item.titre];
+    case 'heros': return titles((lv) => lv.heros === item.id || lv.camarades.includes(item.id));
+    case 'boss': return titles((lv) => lv.boss === item.id);
+    case 'recrues': return titles(inLegend);
+    case 'ennemis': return titles((lv) => unitsOf(bundle, lv).has(item.id));
+    case 'drapeaux': return levels.some((lv) => lv.cortege) ? ['dans le cortège'] : [];
+    case 'manchettes': return ['PANIQUE TV'];
+    case 'pancartes': {
+      const carriers = Object.values(bundle.recrues || {}).filter((r) => r.slogan.includes(item.texte)).map((r) => r.nom);
+      return carriers.length ? carriers : [isLongSign(item) ? 'à un piquet de grève' : 'dans le cortège'];
+    }
+    case 'citations': {
+      if (item.categorie !== 'gauche') return ['PANIQUE TV'];
+      const quoting = [...characters, ...levels].filter((x) => x.citation === item.id).map(cardName);
+      const saying = speakers.filter((x) => (x.arme?.mots || []).some((w) => citationOfWord(bundle, w) === item)).map(cardName);
+      return [...quoting, ...saying];
+    }
+    case 'fiches': {
+      const holders = [...characters, ...levels].filter((x) => [x.fiche].flat().includes(item.id)).map(cardName);
+      if (holders.length) return holders;
+      if (Object.values(bundle.boss).some((b) => taxFiches(bundle, b).includes(item.id))) return ['en taxant une fortune'];
+      if (item.theme === 'droits') return ['en libérant un camarade'];
+      if (item.theme === 'programme' || VOTE_FICHES.includes(item.id)) return ['à la fin de la campagne'];
+      return [];
+    }
+    default: return [];
+  }
 }
 
 /** Une miniature de niveau : un pixel par case, de la couleur dominante de sa tuile. */
@@ -166,7 +217,7 @@ export function collectionCard(bundle, card, found = true) {
     item.origine && h('p', { className: 'origine' }, item.origine),
     art ? references(bundle, item) : textBody(kind, item),
     facts(kind, item).filter(Boolean).map((line) => h('p', { className: 'stats' }, line)),
-    where.length && art && kind !== 'niveaux' ? h('p', { className: 'indice' }, `Vu dans : ${where.join(', ')}`) : null);
+    where.length && ['heros', 'recrues', 'ennemis', 'boss'].includes(kind) ? h('p', { className: 'indice' }, `Vu dans : ${where.join(', ')}`) : null);
 }
 
 /** Combien de cartes trouvées, sur combien ? `save` nul : tout compte comme trouvé (Galerie). */

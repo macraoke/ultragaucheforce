@@ -92,7 +92,7 @@ test('sortie inatteignable derrière un mur indestructible', () => {
 
 test('lettre d’ennemi non déclarée : ligne et colonne dans la carte', () => {
   const text = level([SKY, SKY, SKY, SKY, SKY, SKY, '..D...z..S..', GROUND]);
-  expectError(errorsOf('content/niveaux/essai.txt', text), { line: 9, col: 7, message: /Lettre « z » inconnue/ });
+  expectError(errorsOf('content/niveaux/essai.txt', text), { line: 9, col: 7, message: /Signe « z » inconnu/ });
 });
 
 test('légende qui désigne un ennemi inexistant', () => {
@@ -175,7 +175,7 @@ test('légende : un signe peut remplacer une lettre, vers un ennemi, une recrue 
   assert.deepEqual(bundle.niveaux.essai.legende, {
     '+': { type: 'decor', id: 'ballon' }, '!': { type: 'recrue', id: 'ag' }, c: { type: 'ennemi', id: 'crs' },
   });
-  expectError(errorsOf('content/niveaux/essai.txt', level([...sky, 'D.+........S', GROUND])), { line: 9, col: 3, message: /Lettre « \+ » inconnue/ });
+  expectError(errorsOf('content/niveaux/essai.txt', level([...sky, 'D.+........S', GROUND])), { line: 9, col: 3, message: /Signe « \+ » inconnu/ });
 });
 
 test('carte de collection : « fiche » se répète, et chaque référence doit exister', () => {

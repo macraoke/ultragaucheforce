@@ -12,7 +12,7 @@ import { showHeroCard } from './herocard.js';
 import { showTaxScene } from './tax.js';
 import { showAtelier } from './atelier.js';
 import { loadSave, storeSave, discover } from './save.js';
-import { cardName } from './collection.js';
+import { cardName, citationOfWord, isLongSign } from './collection.js';
 import { registerServiceWorker } from './sw-register.js';
 
 const bundle = await (await fetch('content.json')).json();
@@ -62,6 +62,7 @@ const screens = new Screens(screenRoot, {
     quit: () => toMenu(),
     atelier: () => openAtelier(),
     options: () => applyOptions(),
+    learn: (ids) => ids.forEach((id) => collect('fiches', id, true)),
     back: () => (mode === 'paused' ? screens.pause() : screens.menu()),
   },
 });
@@ -108,6 +109,13 @@ function collect(kind, id, quiet = false) {
   if (!quiet) hud.toast(`Nouvelle carte : ${cardName(item)}`);
   collect('citations', item.citation, true);
   for (const fiche of [item.fiche].flat()) collect('fiches', fiche, true);
+  for (const slogan of item.slogan || []) collect('pancartes', slogan, true); // une recrue arrive avec ses slogans
+}
+
+/** Une pancarte trop longue pour le cortège se gagne à un piquet de grève, et à la fin d'un niveau. */
+function collectLongSign() {
+  const next = bundle.pancartes.find((p) => p.credit && isLongSign(p) && !save.decouvertes.includes(`pancartes:${p.texte}`));
+  if (next) collect('pancartes', next.texte);
 }
 
 /** Ce que porte le cortège entre dans la Collection : de vraies pancartes, les drapeaux des luttes. */
@@ -173,6 +181,7 @@ async function win() {
     collect('boss', boss.id, true);
   }
   for (const fiche of [level.fiche].flat()) collect('fiches', fiche, true);
+  collectLongSign();
   const index = bundle.campagne.indexOf(id);
   if (index >= 0) {
     save.termines[id] = true;
@@ -201,10 +210,12 @@ function handle(events) {
     }
     else if (e.type === 'card') collect('fiches', e.id);
     else if (e.type === 'discover') {
-      // Un mot tiré par l'adversaire : la vraie citation dont il vient entre dans la Collection.
-      if (e.kind === 'mot') collect('citations', Object.values(bundle.citations).find((c) => c.mot && e.id.startsWith(c.mot))?.id, true);
+      // Un mot crié, par eux ou par nous : la vraie citation dont il vient entre dans la Collection.
+      if (e.kind === 'mot') collect('citations', citationOfWord(bundle, e.id)?.id, true);
       else collect({ ennemi: 'ennemis', recrue: 'recrues' }[e.kind] || e.kind, e.id);
-    } else if (e.type === 'recruit') collectCortege(); else if (e.type === 'heroCard') {
+    } else if (e.type === 'recruit') collectCortege();
+    else if (e.type === 'checkpoint') collectLongSign();
+    else if (e.type === 'heroCard') {
       const hero = bundle.heros[e.hero];
       collect('heros', hero.id, true);
       collectCortege(); // les soutiens venus avec le camarade libéré

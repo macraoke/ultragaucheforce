@@ -5,7 +5,7 @@ import { h, link, frenchDate, sourceLine } from './dom.js';
 import { spriteElement } from './sprites.js';
 import { REPO, VERSION, REFERENCES } from './config.js';
 import { storeSave } from './save.js';
-import { SHELVES, collectionCount, collectionShelf } from './collection.js';
+import { SHELVES, VOTE_FICHES, collectionCount, collectionShelf } from './collection.js';
 
 const MENTION = 'Satire citoyenne, libre et collaborative.';
 
@@ -223,14 +223,15 @@ export class Screens {
   /** Dernier écran : un appel au vote citoyen. Des dates, des démarches, des liens — pas de consigne. */
   final() {
     const f = this.bundle.fiches;
+    const steps = VOTE_FICHES.map((id) => f[id]).filter(Boolean);
     const programme = Object.values(f).filter((x) => x.theme === 'programme');
+    this.go.learn([...steps, ...programme].map((x) => x.id)); // ce qu'on lit ici entre dans la Collection
     this.show('vote',
       h('h2', {}, 'La Citadelle ne tombera pas toute seule'),
       h('p', { className: 'dates' }, 'Élection présidentielle : ', h('b', {}, 'dimanche 18 avril'), ' et ', h('b', {}, 'dimanche 2 mai 2027'), '.'),
       h('p', { className: 'appel' }, 'Allez voter.'),
       h('div', { className: 'cartes' },
-        [f['presidentielle-dates'], f['inscription-listes'], f.procuration].filter(Boolean).map((x) =>
-          h('article', {}, h('h3', {}, x.titre), h('p', {}, x.texte), sourceLine(x)))),
+        steps.map((x) => h('article', {}, h('h3', {}, x.titre), h('p', {}, x.texte), sourceLine(x)))),
       programme.length ? h('h3', {}, 'Le programme') : null,
       programme.length ? h('ul', {}, programme.map((x) => h('li', {}, x.texte, ' ', sourceLine(x)))) : null,
       h('p', { className: 'mention' }, 'Un jeu fait par des citoyens, en open source et collaboratif.'),
@@ -262,6 +263,7 @@ export class Hud {
     this.last = '';
     this.crowd = 0;
     clearTimeout(this.bannerTimer);
+    delete this.q('bandeau').dataset.alerte; // une alerte interrompue ne fige pas le fil de la partie suivante
     this.q('toasts').replaceChildren();
     this.nextQuote();
   }

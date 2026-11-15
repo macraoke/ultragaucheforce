@@ -403,7 +403,7 @@ export function buildLevel(f, ctx, report) {
       } else if (/[1-9]/.test(c)) {
         if (!has(out.panneaux, c)) report(map.line + y, `Panneau « ${c} » sans texte : ajoute « panneau.${c}: … » dans l'en-tête.`, x + 1);
       } else if (LEGEND.test(c)) {
-        if (!has(out.legende, c)) report(map.line + y, `Lettre « ${c} » inconnue : déclare-la dans l'en-tête, par exemple « ${c}: bouclier ».`, x + 1);
+        if (!has(out.legende, c)) report(map.line + y, `Signe « ${c} » inconnu : déclare-le dans l'en-tête, par exemple « ${c}: bac ».`, x + 1);
       } else {
         report(map.line + y, `Symbole « ${c} » inconnu. Tuiles : ${Object.keys(ctx.symbols).join(' ')} ; repères : ${Object.keys(MARKERS).join(' ')} ; vide : « . ».`, x + 1);
       }

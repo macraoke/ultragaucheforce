@@ -3,6 +3,7 @@ auteur: UltraGauche Force
 citation: lisnard-camp-entrainement
 fiche: sainte-soline-bilan
 fiche: tarnac-relaxe
+fiche: blesses-comptage
 fond: campagne
 cortege: oui
 manif: 3

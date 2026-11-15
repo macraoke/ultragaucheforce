@@ -238,7 +238,7 @@ test('nasse : elle prend fin si une ligne cède ou si le héros en sort par le h
 
 // ---------------------------------------------------------------- découvertes
 
-test('découvertes : chaque personnage, mot ou panneau est signalé une seule fois par partie', () => {
+test('découvertes : chaque personnage ou mot est signalé une seule fois par partie', () => {
   const game = play(flat({
     width: 90, cortege: true, panneaux: { 1: 'BIENVENUE' },
     legende: { v: recruit('voisine'), c: enemy('crieur'), f: enemy('fonceur') },
@@ -255,11 +255,10 @@ test('découvertes : chaque personnage, mot ou panneau est signalé une seule fo
   const events = [...game.events.splice(0), ...run(game, 900, (i) => ({ right: i < 60 || i > 500, left: i >= 60 && i < 90, fire: i > 100 }))];
   const found = of(events, 'discover').map((e) => `${e.kind}:${e.id}`);
   assert.equal(new Set(found).size, found.length, 'jamais deux fois la même');
-  for (const key of ['heros:alpha', 'heros:beta', 'panneau:essai.1', 'recrue:voisine', 'ennemi:fonceur', 'ennemi:crieur']) {
+  for (const key of ['heros:alpha', 'heros:beta', 'recrue:voisine', 'ennemi:fonceur', 'ennemi:crieur']) {
     assert.ok(found.includes(key), `${key} manque dans ${found.join(', ')}`);
   }
   assert.ok(found.includes('mot:MOT UN') || found.includes('mot:MOT DEUX'), 'les mots criés se collectionnent');
-  assert.equal(of(events, 'discover').find((e) => e.kind === 'panneau').text, 'BIENVENUE');
 
   const arena = play(flat({ boss: 'gros', draw: (put, ground) => put(ground, 12, 'Y') }), { invincible: true });
   const seen = [...arena.events.splice(0), ...run(arena, 120)];
