@@ -1,0 +1,4 @@
+nom: La ligne est débordée
+zzfx: 1,.1,160,.03,.25,.5,4,2,3,,,,,1.5,,,,.6,.1
+auteur: UltraGauche Force
+licence: CC0-1.0

@@ -13,13 +13,13 @@ body:
     id: idee
     attributes:
       label: L'idée
-      description: Le lieu, le gag d'ouverture, ce qu'on y casse, ce qu'en dit PANIQUE TV.
+      description: Le lieu, qui on y recrute, quelle ligne on y déborde, ce qu'on y casse.
     validations:
       required: true
   - type: textarea
     id: reference
     attributes:
-      label: La référence réelle, s'il y en a une, avec sa source
+      label: La déclaration ou le fait réel qui l'ouvre, avec sa source
   - type: textarea
     id: fichier
     attributes:

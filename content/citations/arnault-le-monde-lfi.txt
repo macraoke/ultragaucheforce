@@ -1,0 +1,12 @@
+texte: Le Monde, il est plutôt LFI.
+auteur: Bernard Arnault
+fonction: PDG de LVMH
+date: 2025-05-21
+contexte: Devant la commission d'enquête du Sénat sur les aides publiques, au rapporteur communiste Fabien Gay qui citait les enquêtes de presse OpenLux et Paradise Papers sur l'optimisation fiscale.
+categorie: diabolisation
+mot: PLUTÔT LFI
+note: Il ajoute, selon Public Sénat : « Ce qui a de mieux dans le Monde, ce sont les mots croisés, je les fais d'ailleurs tous les soirs. » Version du compte rendu officiel du Sénat : « Le journal Le Monde n'est pas marxiste, il est plutôt La France Insoumise (LFI)... » puis « Le mieux, dans ce journal, ce sont les mots croisés... » (https://www.senat.fr/compte-rendu-commissions/20250519/aides_publiques.html).
+source.titre: Public Sénat — Aides aux entreprises : un face à face sous tension au Sénat entre Bernard Arnault et le communiste Fabien Gay
+source.url: https://www.publicsenat.fr/actualites/economie/aides-aux-entreprises-un-face-a-face-sous-tension-au-senat-entre-bernard-arnault-et-le-communiste-fabien-gay
+source.nature: presse
+verifie: 2026-11-15

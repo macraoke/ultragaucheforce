@@ -12,6 +12,7 @@ import { showHeroCard } from './herocard.js';
 import { showTaxScene } from './tax.js';
 import { showAtelier } from './atelier.js';
 import { loadSave, storeSave, discover } from './save.js';
+import { cardName, citationOfWord, isLongSign } from './collection.js';
 import { registerServiceWorker } from './sw-register.js';
 
 const bundle = await (await fetch('content.json')).json();
@@ -30,6 +31,7 @@ let current = null; // { id, level } du niveau en cours
 let custom = null; // niveau de l'Atelier en cours de test
 let begin = null; // le carton d'ouverture attend : fonction qui lance vraiment le niveau
 let bot = {};
+let written = []; // banderoles et tags du niveau que le héros n'a pas encore lus
 let acc = 0;
 let last = performance.now();
 
@@ -60,6 +62,7 @@ const screens = new Screens(screenRoot, {
     quit: () => toMenu(),
     atelier: () => openAtelier(),
     options: () => applyOptions(),
+    learn: (ids) => ids.forEach((id) => collect('fiches', id, true)),
     back: () => (mode === 'paused' ? screens.pause() : screens.menu()),
   },
 });
@@ -95,12 +98,55 @@ function toMenu() {
   radio.play('menu');
 }
 
+/**
+ * Une rencontre : la carte entre dans la Collection, avec la citation et le fait qui l'expliquent.
+ * La première fois, on l'annonce (sauf `quiet`).
+ */
+function collect(kind, id, quiet = false) {
+  const lines = kind === 'pancartes' || kind === 'manchettes'; // sans fiche : identifiées par leur texte
+  const item = lines ? bundle[kind].find((p) => p.credit && p.texte === id) : bundle[kind]?.[id];
+  if (!item || !discover(save, kind, id)) return;
+  if (!quiet) hud.toast(`Nouvelle carte : ${cardName(item)}`);
+  collect('citations', item.citation, true);
+  for (const fiche of [item.fiche].flat()) collect('fiches', fiche, true);
+  for (const slogan of item.slogan || []) collect('pancartes', slogan, true); // une recrue arrive avec ses slogans
+}
+
+/** Une pancarte trop longue pour le cortège se gagne à un piquet de grève, et à la fin d'un niveau. */
+function collectLongSign() {
+  const next = bundle.pancartes.find((p) => p.credit && isLongSign(p) && !save.decouvertes.includes(`pancartes:${p.texte}`));
+  if (next) collect('pancartes', next.texte);
+}
+
+/** Ce que porte le cortège entre dans la Collection : de vraies pancartes, les drapeaux des luttes. */
+function collectCortege() {
+  for (const m of game.cortege) {
+    if (m.kind === 'pancarte') collect('pancartes', m.label, true);
+    else if (m.kind === 'drapeau') collect('drapeaux', m.label, true);
+  }
+}
+
+/** Passer devant une banderole ou un tag, c'est l'avoir lu. */
+function readSigns() {
+  const { hero } = game;
+  written = written.filter((d) => {
+    if (Math.abs(d.x - hero.x) > 96 || Math.abs(d.y - hero.y) > 96) return true;
+    collect('pancartes', renderer.written(d), true);
+    return false;
+  });
+}
+
 function start(id, level = null) {
   custom = level;
   current = { id: id ?? 'atelier', level: level ?? bundle.niveaux[id] };
   game = new Game(bundle, id, { seed: Math.floor(Math.random() * 1e9), level });
   renderer.snap(game);
   hud.reset();
+  if (id) collect('niveaux', id, true);
+  collect('citations', current.level.citation, true);
+  collect('heros', game.hero.def.id, true);
+  collectCortege();
+  written = game.decors.filter((d) => bundle.decors[d.id]?.ecrit);
   setMode('paused');
   begin = () => {
     begin = null;
@@ -130,20 +176,19 @@ async function win() {
   const { level, id } = current;
   const boss = bundle.boss[level.boss];
   if (boss?.fortune.montant) {
-    const learned = await showTaxScene(screenRoot, bundle, boss, { audio });
-    learned.forEach((f) => discover(save, f));
+    const learned = await showTaxScene(screenRoot, bundle, boss, { audio, hero: game.hero.def });
+    learned.forEach((f) => collect('fiches', f, true));
+    collect('boss', boss.id, true);
   }
-  // Les mots tirés par les automates du niveau viennent de vraies citations : on les note.
-  const words = new Set(Object.values(level.legende).flatMap((l) => bundle.ennemis[l.id]?.arme?.mots || []).map((w) => w.replace(/\s*!$/, '')));
-  for (const c of Object.values(bundle.citations)) if (c.mot && words.has(c.mot)) discover(save, c.id);
-  if (level.fiche) discover(save, level.fiche);
+  for (const fiche of [level.fiche].flat()) collect('fiches', fiche, true);
+  collectLongSign();
   const index = bundle.campagne.indexOf(id);
   if (index >= 0) {
     save.termines[id] = true;
     storeSave(save);
   }
   screens.end({
-    level, stats: game.stats, time: game.time, announced: game.announced(),
+    level, stats: game.stats, time: game.time, announced: game.announced(), counts: game.counts(),
     next: index >= 0 ? bundle.campagne[index + 1] : null,
     last: index === bundle.campagne.length - 1,
   });
@@ -155,19 +200,25 @@ function handle(events) {
   for (const e of events) {
     if (e.type === 'sfx') audio.play(e.id);
     else if (e.type === 'headline') {
-      hud.banner(e.text);
+      hud.banner(e.text, e.credit);
+      collect('manchettes', e.text, true);
       audio.play('papier', { volume: 0.6 });
     } else if (e.type === 'panic') audio.play(e.level >= 2 ? 'casseroles' : 'sifflet');
     else if (e.type === 'boss' && e.state === 'enter') {
-      audio.speak(game.boss.def.id, game.boss.def.nom);
+      audio.speak(game.boss.def.id);
       radio.play('boss');
     }
-    else if (e.type === 'card') {
-      const fact = bundle.fiches[e.id];
-      if (fact && discover(save, e.id)) hud.toast(`Fiche débloquée : ${fact.titre}`);
-    } else if (e.type === 'heroCard') {
+    else if (e.type === 'card') collect('fiches', e.id);
+    else if (e.type === 'discover') {
+      // Un mot crié, par eux ou par nous : la vraie citation dont il vient entre dans la Collection.
+      if (e.kind === 'mot') collect('citations', citationOfWord(bundle, e.id)?.id, true);
+      else collect({ ennemi: 'ennemis', recrue: 'recrues' }[e.kind] || e.kind, e.id);
+    } else if (e.type === 'recruit') collectCortege();
+    else if (e.type === 'checkpoint') collectLongSign();
+    else if (e.type === 'heroCard') {
       const hero = bundle.heros[e.hero];
-      if (hero.citation) discover(save, hero.citation);
+      collect('heros', hero.id, true);
+      collectCortege(); // les soutiens venus avec le camarade libéré
       setMode('card');
       showHeroCard(bundle, hero, { audio, reduced: save.options.sobre }).then(() => {
         if (mode !== 'card') return;
@@ -201,6 +252,7 @@ function frame(now) {
       else handle(events);
     }
     if (steps === 6) acc = 0; // onglet ralenti : on ne rattrape pas le retard
+    if (!demo && written.length) readSigns();
     renderer.tick(dt);
     if (demo && game.status !== 'playing') attract();
   }
@@ -210,6 +262,7 @@ function frame(now) {
 
 // ---------------------------------------------------------------- branchements
 
+hud.onQuote = (id) => mode === 'playing' && collect('citations', id, true);
 input.onPause = togglePause;
 input.onAny = () => audio.unlock();
 document.getElementById('pause').onclick = togglePause;

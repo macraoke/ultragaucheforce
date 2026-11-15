@@ -1,0 +1,17 @@
+nom: Chargeur
+pv: 3
+vitesse: 30
+deplacement: marche
+reaction: charge
+vue: 220
+contact: 1
+fin: greve
+sommation: PREMIÈRE SOMMATION
+sommation: DERNIÈRE SOMMATION
+charge.distance: 120
+charge.vitesse: 200
+charge.pause: 2
+charge.disperse: 10
+--- repos
+rr
+rr

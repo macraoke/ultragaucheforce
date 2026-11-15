@@ -1,5 +1,5 @@
 name: Un personnage
-description: Un héros, un ennemi ou un boss.
+description: Un héros, une recrue, une unité d'en face ou un boss.
 title: "Personnage : "
 labels: ["personnage"]
 body:
@@ -9,7 +9,8 @@ body:
       label: Son rôle
       options:
         - héros
-        - ennemi
+        - recrue de la manif
+        - unité d'en face
         - boss
     validations:
       required: true
@@ -30,7 +31,7 @@ body:
     id: gameplay
     attributes:
       label: Ce qu'il fait dans le jeu
-      description: Son arme, sa spéciale, sa façon de bouger.
+      description: Son arme, sa spéciale, sa façon de bouger ; pour une recrue, combien elle amène de monde.
     validations:
       required: true
   - type: input
@@ -40,5 +41,5 @@ body:
   - type: textarea
     id: sources
     attributes:
-      label: Citations ou chiffres réels utilisés, avec leurs sources
+      label: Citations, slogans ou chiffres réels utilisés, avec leurs sources
       description: Une adresse par ligne.

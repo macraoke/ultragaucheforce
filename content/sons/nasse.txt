@@ -1,0 +1,4 @@
+nom: La nasse se referme
+zzfx: 1,.05,110,.05,.3,.4,2,1,-1,,-40,.15,,,,,,.7,.1
+auteur: UltraGauche Force
+licence: CC0-1.0

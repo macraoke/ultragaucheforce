@@ -1,0 +1,12 @@
+texte: Vous en avez assez de cette bande de racailles ? On va vous en débarrasser.
+auteur: Nicolas Sarkozy
+fonction: ministre de l'Intérieur
+date: 2005-10-25
+contexte: Dans le quartier du Val d'Argent, à Argenteuil (Val-d'Oise), à des habitants, lors d'une visite sous les huées, deux jours avant la mort de deux adolescents à Clichy-sous-Bois et le début des émeutes de 2005.
+categorie: diabolisation
+mot: RACAILLES
+note: Visite du 25 octobre 2005 au soir ; l'archive de l'INA est le sujet du 20 heures de France 2 du 26 octobre. L'INA écrit « débarasser » dans sa description et « racaillles » dans son titre. Une variante sans « bande de » circule : « Vous en avez assez de cette racaille, on va vous en débarrasser ».
+source.titre: INA — Nicolas Sarkozy "Vous en avez assez de cette bande de racaillles, on va vous en débarrasser"
+source.url: https://www.ina.fr/ina-eclaire-actu/video/i09166721/nicolas-sarkozy-vous-en-avez-assez-de-cette-bande-de-racaillles-on-va-vous
+source.nature: presse
+verifie: 2026-11-15

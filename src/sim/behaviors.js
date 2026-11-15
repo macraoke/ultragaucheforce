@@ -7,9 +7,15 @@
 // Ajouter une mécanique = ajouter une entrée ici (déclaration + fonction). Rien d'autre.
 
 import { TILE } from './world.js';
+import { hitsSolid } from './physics.js';
 import { spawnProjectile } from './projectile.js';
 
-/** Armes principales (héros et ennemis). `fire(game, tireur, réglages, camp)`. */
+/**
+ * Armes principales (héros et ennemis).
+ * `fire(game, tireur, réglages, camp, cible)` pour un tir ponctuel, ou
+ * `update(game, tireur, réglages, dt, actif)` pour une arme continue (le jet du canon à eau).
+ * `only: 'ennemi'` réserve une arme aux fiches d'ennemis.
+ */
 export const WEAPONS = {
   tir: {
     doc: 'Lance un ou plusieurs projectiles devant soi.',
@@ -31,20 +37,34 @@ export const WEAPONS = {
       gaz: [0, 6, 0], // secondes de nuage laissé à l'impact
       taille: [2, 24, 4], // côté de la boîte de collision, pixels
       recul: [0, 200, 0], // pousse le tireur en arrière
+      vise: [0, 1, 0], // 1 = tiré vers le héros plutôt qu'à l'horizontale (ennemis seulement)
+      visee: [0, 2, 0], // secondes de visée avant un tir visé : le joueur voit venir le coup
     },
     texts: ['image', 'son'], // image = nom d'une section de sprite ; son = identifiant de bruitage
     lists: ['mots'], // si présent : le projectile est un mot écrit, tiré au hasard
-    fire(game, shooter, w, team) {
+    fire(game, shooter, w, team, target = null) {
       const dir = shooter.facing;
       const y = shooter.y + shooter.h * 0.35 - w.taille / 2;
+      // Tir visé (LBD) : vers le point donné, sinon vers le héros au moment du tir.
+      let ux = dir;
+      let uy = 0;
+      if (w.vise > 0 && team === 'ordre') {
+        const aim = target ?? { x: game.hero.x + game.hero.w / 2, y: game.hero.y + game.hero.h / 2 };
+        const ox = shooter.x + shooter.w / 2;
+        const oy = y + w.taille / 2;
+        const reach = Math.hypot(aim.x - ox, aim.y - oy) || 1;
+        ux = (aim.x - ox) / reach;
+        uy = (aim.y - oy) / reach;
+      }
       for (let i = 0; i < w.nombre; i++) {
         const word = w.mots?.length ? game.rng.pick(w.mots) : null;
+        if (word) game.discover('mot', word); // un mot crié, par eux ou par nous, vient d'une vraie citation
         const width = word ? Math.max(w.taille, word.length * 5) : w.taille;
         // Plusieurs projectiles : éventail régulier ; un seul : petit écart au hasard.
         const spread = w.nombre > 1 ? (i / (w.nombre - 1) - 0.5) * 2 * w.dispersion : game.rng.range(-w.dispersion, w.dispersion);
         spawnProjectile(game, {
-          x: dir > 0 ? shooter.x + shooter.w : shooter.x - width, y, w: width, h: w.taille,
-          vx: dir * w.vitesse, vy: spread - w.elan, team, word, def: shooter.def, image: w.image || 'projectile',
+          x: ux >= 0 ? shooter.x + shooter.w : shooter.x - width, y, w: width, h: w.taille,
+          vx: ux * w.vitesse, vy: uy * w.vitesse + spread - w.elan, team, word, def: shooter.def, image: w.image || 'projectile',
           gravity: w.gravite, range: w.portee, damage: w.degats, terrain: w.terrain, bounces: w.rebonds,
           explosion: w.explosion, pierce: w.perce > 0, armor: w.blindage > 0, friendly: w.fratricide > 0,
           gas: w.gaz, owner: shooter,
@@ -52,6 +72,52 @@ export const WEAPONS = {
       }
       shooter.vx -= dir * w.recul;
       game.sfx(w.son || 'tir', shooter.x);
+    },
+  },
+  jet: {
+    doc: 'Canon à eau : un jet continu qui repousse le héros et le cortège, sans blesser.',
+    only: 'ennemi',
+    params: {
+      duree: [0.3, 6, 1.5], // secondes de jet
+      pause: [0.5, 10, 3], // secondes entre deux jets
+      portee: [32, 320, 140], // longueur du jet, pixels (il s'arrête au premier mur)
+      poussee: [20, 600, 220], // vitesse de recul imposée, pixels par seconde
+    },
+    texts: ['son'],
+    update(game, shooter, w, dt, active) {
+      const state = (shooter.jetState ??= { on: false, t: w.pause / 2 });
+      shooter.jet = null;
+      if (!active) {
+        state.on = false;
+        state.t = Math.min(state.t, w.pause / 2);
+        return;
+      }
+      state.t -= dt;
+      if (state.t <= 0) {
+        state.on = !state.on;
+        state.t = state.on ? w.duree : w.pause;
+        if (state.on) game.sfx(w.son || 'jet', shooter.x);
+      }
+      if (!state.on) return;
+
+      const { world, hero } = game;
+      const dir = shooter.facing;
+      const x = dir > 0 ? shooter.x + shooter.w : shooter.x;
+      const y = shooter.y + shooter.h * 0.35;
+      let length = 0;
+      while (length < w.portee && !world.solid(Math.floor((x + dir * (length + 4)) / TILE), Math.floor(y / TILE))) length += 4;
+      shooter.jet = { x, y, length, dir };
+      const x0 = dir > 0 ? x : x - length;
+      const soaked = (cx, top, bottom) => cx >= x0 && cx <= x0 + length && top <= y + 6 && bottom >= y - 6;
+      const shove = dir * w.poussee * dt;
+      if (!hero.dead && soaked(hero.x + hero.w / 2, hero.y, hero.y + hero.h) && !hitsSolid(world, hero.x + shove, hero.y, hero.w, hero.h)) {
+        hero.x += shove;
+      }
+      for (const m of game.cortege) {
+        if (!soaked(m.x, m.y - 16, m.y)) continue;
+        m.pushed = 0.3; // le cortège recule lui aussi (voir updateCortege)
+        m.shove = dir * w.poussee;
+      }
     },
   },
 };
@@ -121,15 +187,48 @@ export const SPECIALS = {
   },
 };
 
-/** Déplacements et réactions des ennemis (mis en œuvre dans enemy.js). */
-export const MOVES = ['marche', 'vol', 'fixe'];
-export const REACTIONS = ['tire', 'fonce', 'cadre', 'rien'];
+/**
+ * Déplacements et réactions des ennemis (mis en œuvre dans enemy.js).
+ * moto = passages rapides, aller et retour ; vehicule = lourd, ni recul ni étourdissement, pousse le héros.
+ * charge = sommations puis ruée ; projecteur = (volant) balaie le sol d'un faisceau et dépose des renforts.
+ */
+export const MOVES = ['marche', 'vol', 'fixe', 'moto', 'vehicule'];
+export const REACTIONS = ['tire', 'fonce', 'cadre', 'rien', 'charge', 'projecteur'];
 export const ENDINGS = ['greve', 'panne'];
+
+/** Réglages complémentaires d'une fiche d'ennemi, écrits « groupe.réglage: valeur ». */
+export const ENEMY_GROUPS = {
+  charge: {
+    doc: 'Réaction « charge » : après les sommations, une ruée en ligne droite, puis une pause.',
+    params: {
+      distance: [32, 480, 160], // longueur de la ruée, pixels
+      vitesse: [60, 400, 220], // pixels par seconde
+      pause: [0.5, 8, 2.5], // secondes avant la charge suivante
+      disperse: [0, 30, 5], // pour cent du cortège dispersé quand la charge le traverse
+    },
+  },
+  faisceau: {
+    doc: 'Réaction « projecteur » : le cône de lumière.',
+    params: {
+      largeur: [24, 200, 64], // largeur éclairée au sol, pixels
+      balayage: [0, 200, 90], // amplitude du va-et-vient, pixels
+    },
+  },
+  renfort: {
+    doc: 'Réaction « projecteur » : renforts déposés à la corde près du héros resté dans le faisceau.',
+    params: {
+      nombre: [1, 4, 2], // unités déposées à chaque fois
+      max: [0, 6, 2], // nombre de déposes au plus
+    },
+    texts: ['ennemi'],
+  },
+};
 
 /** Attaques de boss, enchaînées par phases. `run(game, boss, réglages)`. */
 export const BOSS_ATTACKS = {
   salve: {
     doc: 'Rafale de projectiles visant le héros.',
+    distance: true, // attaque à distance : un boss « assis » peut s'en servir
     params: { nombre: [1, 12, 3], vitesse: [40, 300, 140], degats: [0, 3, 1], ecart: [0, 1, 0.25] },
     run(game, boss, a) {
       const { hero } = game;
@@ -157,6 +256,7 @@ export const BOSS_ATTACKS = {
   },
   invocation: {
     doc: 'Appelle des renforts.',
+    distance: true,
     params: { nombre: [1, 4, 2] },
     texts: ['ennemi'],
     run(game, boss, a) {
@@ -170,6 +270,7 @@ export const BOSS_ATTACKS = {
   },
   pluie: {
     doc: 'Fait tomber des projectiles du ciel.',
+    distance: true,
     params: { nombre: [1, 12, 5], vitesse: [40, 300, 120], degats: [0, 3, 1] },
     run(game, boss, a) {
       const { hero } = game;

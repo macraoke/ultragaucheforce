@@ -1,0 +1,9 @@
+# Un tag : le jeu peint ici une vraie pancarte ou un vrai slogan, choisi selon l'emplacement.
+nom: Tag
+ecrit: tag
+ecrit.y: 0
+auteur: UltraGauche Force
+--- image
+................
+.R..........R...
+.R..............

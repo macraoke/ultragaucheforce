@@ -4,7 +4,8 @@
 import { spriteElement } from './sprites.js';
 import { Audio } from './audio.js';
 import { showHeroCard } from './herocard.js';
-import { h, link, frenchDate } from './dom.js';
+import { h, link } from './dom.js';
+import { collectionAlbum } from './collection.js';
 
 const bundle = await (await fetch('content.json')).json();
 const audio = new Audio(bundle);
@@ -23,7 +24,6 @@ const drawings = (item, names, scale, dark = false) =>
       cvs.title = n;
       return cvs;
     }));
-const sourceLine = (s) => h('small', {}, 'Source : ', link(s.source.url, s.source.titre), h('span', { className: 'nature' }, s.source.nature), ` · vérifié le ${frenchDate(s.verifie)}`);
 const weapon = (w) => (w ? `${w.type} — ${Object.entries(w).filter(([k, v]) => k !== 'type' && typeof v === 'number' && v).map(([k, v]) => `${k} ${v}`).join(', ')}` : '—');
 
 root.append(
@@ -36,6 +36,8 @@ root.append(
 if (bundle.erreurs?.length) {
   section('Contenu à corriger', h('div', { className: 'erreurs' }, bundle.erreurs.map((e) => `${e.file}:${e.line} — ${e.message}`).join('\n')));
 }
+
+section('La Collection', collectionAlbum(bundle));
 
 section('Héros', grid(Object.values(bundle.heros).map((hero) =>
   h('article', {},
@@ -50,7 +52,7 @@ section('Héros', grid(Object.values(bundle.heros).map((hero) =>
     h('div', { className: 'actions' },
       h('button', { onclick: () => showHeroCard(bundle, hero, { audio }) }, 'Voir le carton'),
       h('button', { className: 'discret', onclick: () => showHeroCard(bundle, hero, { audio, reduced: true }) }, 'Effets réduits'),
-      h('button', { className: 'discret', onclick: () => audio.speak(hero.id, hero.voix || hero.nom) }, 'Voix off')),
+      bundle.voix[hero.id] && h('button', { className: 'discret', onclick: () => audio.speak(hero.id) }, 'Voix off')),
   ))));
 
 section('Ennemis', grid(Object.values(bundle.ennemis).map((e) =>
@@ -94,11 +96,3 @@ if (bundle.musiques && Object.keys(bundle.musiques).length) {
   section('Radio Manif — musiques (SoundCloud)', h('ul', { className: 'textes' },
     Object.values(bundle.musiques).map((m) => h('li', {}, link(m.url, `${m.titre} — ${m.artiste}`), ` (${m.ou})`))));
 }
-
-const texts = (title, items) => items.length && section(title, h('ul', { className: 'textes' }, items));
-texts('Manchettes de PANIQUE TV', bundle.manchettes.map((m) => h('li', {}, m)));
-texts('Pancartes', bundle.pancartes.map((p) => h('li', {}, p.texte, p.credit && h('small', {}, ` — ${p.credit}`))));
-texts('Citations réelles', Object.values(bundle.citations).map((c) =>
-  h('li', {}, h('b', {}, `« ${c.texte} »`), ` — ${c.auteur}, ${frenchDate(c.date)}. `, c.contexte, ' ', sourceLine(c))));
-texts('Fiches sourcées', Object.values(bundle.fiches).map((f) =>
-  h('li', {}, h('b', {}, `${f.titre}. `), f.texte, ' ', h('small', {}, f.portee), ' ', sourceLine(f))));

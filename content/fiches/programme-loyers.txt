@@ -1,0 +1,9 @@
+titre: Geler puis encadrer les loyers
+theme: programme
+texte: Le programme L'Avenir en commun propose de geler les loyers le temps de déployer un encadrement des loyers partout sur le territoire et à la baisse dans les grandes villes.
+portee: Édition 2027 du programme de La France insoumise, chapitre « Une France sans déserts de droits ». Le même chapitre prévoit de produire 200 000 logements publics par an et 30 000 logements jeunes pendant 5 ans, et d'interdire les expulsions locatives sans relogement public. Il s'agit de propositions d'un mouvement politique, pas de mesures en vigueur.
+periode: édition 2027, présentée en novembre 2026
+source.titre: Mélenchon 2027 — L'Avenir en commun, chapitre « Une France sans déserts de droits »
+source.url: https://melenchon2027.fr/programme/livre/fonder-la-6e-republique/chapitre3
+source.nature: militante
+verifie: 2026-11-15

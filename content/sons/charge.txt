@@ -1,0 +1,4 @@
+nom: Charge
+zzfx: 1,.1,90,.01,.1,.3,4,1,,,,,.05,1,,,,.8,.05
+auteur: UltraGauche Force
+licence: CC0-1.0

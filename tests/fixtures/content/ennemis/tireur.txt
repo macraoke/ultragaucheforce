@@ -1,0 +1,19 @@
+# Tir visé, précédé d'une visée (LBD).
+nom: Tireur
+pv: 2
+vitesse: 0
+deplacement: fixe
+reaction: tire
+vue: 260
+fin: greve
+arme.type: tir
+arme.cadence: 0.5
+arme.vitesse: 300
+arme.portee: 420
+arme.degats: 1
+arme.terrain: 0
+arme.vise: 1
+arme.visee: 0.8
+--- repos
+kk
+kk

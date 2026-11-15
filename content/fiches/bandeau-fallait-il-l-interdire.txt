@@ -1,0 +1,9 @@
+titre: « Fallait-il l'interdire ? »
+theme: democratie
+texte: Le 24 septembre 2023, au lendemain des marches contre les violences policières, l'émission politique du dimanche de BFM-TV ouvre sur ce bandeau : « Manif anti-police : Fallait-il l'interdire ? »
+portee: Bandeau relevé par l'observatoire des médias Acrimed dans sa revue Médiacritiques n° 48 (octobre-décembre 2023). L'invité était Jordan Bardella.
+periode: 24 septembre 2023
+source.titre: Acrimed — Médiacritiques n° 48
+source.url: https://www.acrimed.org/IMG/pdf/mediacritiques48.pdf
+source.nature: associative
+verifie: 2026-11-15

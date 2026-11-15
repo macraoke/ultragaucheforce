@@ -92,7 +92,7 @@ test('sortie inatteignable derrière un mur indestructible', () => {
 
 test('lettre d’ennemi non déclarée : ligne et colonne dans la carte', () => {
   const text = level([SKY, SKY, SKY, SKY, SKY, SKY, '..D...z..S..', GROUND]);
-  expectError(errorsOf('content/niveaux/essai.txt', text), { line: 9, col: 7, message: /Lettre « z » inconnue/ });
+  expectError(errorsOf('content/niveaux/essai.txt', text), { line: 9, col: 7, message: /Signe « z » inconnu/ });
 });
 
 test('légende qui désigne un ennemi inexistant', () => {
@@ -163,4 +163,47 @@ test('fiche texte : commentaires, clés répétées, sections, fins de ligne Win
 
 test('fichiers « une ligne = une contribution » : commentaires et lignes vides ignorés', () => {
   assert.deepEqual(parseLines('# titre\n\nUN\n  DEUX  \n').map((l) => l.text), ['UN', 'DEUX']);
+});
+
+// ---------------------------------------------------------------- itération 2 : cartes, légende, textes réels
+
+test('légende : un signe peut remplacer une lettre, vers un ennemi, une recrue ou un décor', () => {
+  const header = '+: ballon\n!: ag\nc: crs\n';
+  const sky = Array(6).fill(SKY);
+  const { bundle, errors } = buildContent(withFile('content/niveaux/essai.txt', level([...sky, 'D.+.!.c....S', GROUND], header)));
+  assert.deepEqual(errors.map(formatError), []);
+  assert.deepEqual(bundle.niveaux.essai.legende, {
+    '+': { type: 'decor', id: 'ballon' }, '!': { type: 'recrue', id: 'ag' }, c: { type: 'ennemi', id: 'crs' },
+  });
+  expectError(errorsOf('content/niveaux/essai.txt', level([...sky, 'D.+........S', GROUND])), { line: 9, col: 3, message: /Signe « \+ » inconnu/ });
+});
+
+test('carte de collection : « fiche » se répète, et chaque référence doit exister', () => {
+  const { bundle } = loadContent();
+  assert.deepEqual(bundle.ennemis.crs.fiche, ['sommations-mots-exacts', 'code-562']);
+  const text = textOf('content/ennemis/crs.txt').replace('fiche: code-562', 'fiche: fiche-fantome');
+  expectError(errorsOf('content/ennemis/crs.txt', text), { message: /« fiche-fantome » n'existe pas dans content\/fiches\// });
+  const opening = level([SKY, 'D..........S', GROUND], 'citation: citation-fantome\n');
+  expectError(errorsOf('content/niveaux/essai.txt', opening), { message: /« citation-fantome » n'existe pas dans content\/citations\// });
+});
+
+test('pancartes et bandeaux : le crédit suit le texte, après « | »', () => {
+  const files = withFile('content/manchettes/essai.txt', '# commentaire\nUn bandeau | Chaîne, 1er janv. 2023 — https://exemple.org/page\nUn autre\n');
+  const { bundle, errors } = buildContent(files);
+  assert.deepEqual(errors.map(formatError), []);
+  assert.deepEqual(bundle.manchettes.slice(-2), [
+    { texte: 'Un bandeau', credit: 'Chaîne, 1er janv. 2023 — https://exemple.org/page' },
+    { texte: 'Un autre', credit: '' },
+  ]);
+  assert.ok(bundle.pancartes.every((p) => typeof p.texte === 'string' && typeof p.credit === 'string'));
+  expectError(errorsOf('content/pancartes/essai.txt', 'UNE PANCARTE | vue à Paris — javascript:alert(1)\n'), { line: 1, message: /commence par https:\/\// });
+});
+
+test('décor écrit : « ecrit » vaut pancarte ou tag', () => {
+  const { bundle } = loadContent();
+  assert.equal(bundle.decors.banderole.ecrit, 'pancarte');
+  assert.equal(bundle.decors.tag.ecrit, 'tag');
+  assert.equal(bundle.decors.statue.ecrit, '');
+  const text = textOf('content/decors/banderole.txt').replace('ecrit: pancarte', 'ecrit: neon');
+  expectError(errorsOf('content/decors/banderole.txt', text), { line: lineOf(text, 'ecrit: neon'), message: /« ecrit: neon » n'existe pas/ });
 });

@@ -1,0 +1,9 @@
+titre: La nasse devant le juge
+theme: ordre
+texte: Le 10 juin 2021, le Conseil d'État a annulé le passage du schéma national du maintien de l'ordre sur l'encerclement des manifestants : rien ne garantissait un usage adapté, nécessaire et proportionné.
+portee: Schéma publié par le ministre de l'Intérieur le 16 septembre 2020, attaqué notamment par la CGT, la Ligue des droits de l'Homme, le Syndicat de la magistrature et le Syndicat national des journalistes. Trois règles visant les journalistes sont annulées le même jour. La technique n'est pas interdite pour autant : le schéma réécrit en décembre 2021 la limite à une durée « strictement nécessaire et proportionnée », avec un « point de sortie contrôlé », et le Conseil d'État a rejeté le recours contre cette rédaction le 29 décembre 2023 (décision n° 461513).
+periode: décision du 10 juin 2021 ; suite du 29 décembre 2023
+source.titre: Conseil d'État — Manœuvre d'encerclement, accréditation des journalistes… Le Conseil d'État annule plusieurs points du schéma du maintien de l'ordre
+source.url: https://www.conseil-etat.fr/actualites/manaeuvre-d-encerclement-accreditation-des-journalistes-le-conseil-d-etat-annule-plusieurs-points-du-schema-du-maintien-de-l-ordre
+source.nature: officielle
+verifie: 2026-11-15

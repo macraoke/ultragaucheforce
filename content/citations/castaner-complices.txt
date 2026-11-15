@@ -1,0 +1,12 @@
+texte: Ceux qui viennent manifester dans des villes où il y a de la casse qui est annoncée savent qu'ils seront complices de ces manifestations-là.
+auteur: Christophe Castaner
+fonction: ministre de l'Intérieur
+date: 2019-01-11
+contexte: Entretien en direct sur Facebook avec le journaliste Rémy Buisine (Brut), à la veille du neuvième samedi de mobilisation des « gilets jaunes ».
+categorie: diabolisation
+mot: COMPLICES
+note: Dans le même entretien, ceux qui appellent à manifester « savent qu'il y aura de la violence » et ont « leur part de responsabilité ». Ces propos lui ont valu des plaintes pour entrave à la liberté de manifestation, classées sans suite (titres de franceinfo et de Public Sénat).
+source.titre: franceinfo — VIDEO. "Gilets jaunes" : les participants aux manifestations violentes de samedi seront "complices" des casseurs, prévient Castaner
+source.url: https://www.franceinfo.fr/economie/transports/gilets-jaunes/video-gilets-jaunes-les-participants-aux-manifestations-violentes-de-samedi-seront-complices-des-casseurs-previent-castaner_3140589.html
+source.nature: presse
+verifie: 2026-11-15

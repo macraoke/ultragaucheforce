@@ -1,0 +1,12 @@
+texte: Le Gaulois réfractaire au changement.
+auteur: Emmanuel Macron
+fonction: président de la République
+date: 2018-08-29
+contexte: À Copenhague, en déplacement au Danemark, en comparant les Danois aux Français pour vanter la « flexisécurité » danoise.
+categorie: puissants
+mot: GAULOIS RÉFRACTAIRE
+note: Phrase rapportée : « Ce peuple luthérien, qui a vécu les transformations de ces dernières années, n'est pas exactement le Gaulois réfractaire au changement ». Le lendemain, il a invoqué un « trait d'humour » ; il a reconnu plus tard « une erreur » (titre de Public Sénat).
+source.titre: Public Sénat — « Gaulois réfractaire au changement »: une nouvelle pique de Macron fait polémique
+source.url: https://www.publicsenat.fr/actualites/politique/gaulois-refractaire-au-changement-une-nouvelle-pique-de-macron-fait-polemique
+source.nature: presse
+verifie: 2026-11-15

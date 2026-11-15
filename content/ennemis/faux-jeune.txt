@@ -1,5 +1,4 @@
-# D'après le mème d'octobre 2026, né d'une infiltration présumée d'un groupe Snapchat.
-nom: Le Faux Jeune
+nom: Le faux jeune
 pv: 2
 vitesse: 80
 deplacement: marche
@@ -9,13 +8,9 @@ contact: 1
 fin: panne
 largeur: 10
 hauteur: 16
+fiche: bismillah-meme
 replique: BISMILLAH, C'EST LES TÉNÈBRES.
-replique: WESH LA MIF, C'EST QUOI LES BAILS ?
-replique: YO LES POTOS, ON SE CAPTE AU BLOCUS ?
-replique: JE SUIS UN JEUNE. LOL. MDR.
-replique: TROP SWAG CETTE AG, LES DJEUNS.
 auteur: UltraGauche Force
-
 --- repos
 ..RRRRRR....
 RRRRRRRRR...

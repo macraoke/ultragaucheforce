@@ -1,0 +1,12 @@
+texte: Casse-toi, pauvre con !
+auteur: Nicolas Sarkozy
+fonction: président de la République
+date: 2008-02-23
+contexte: Au Salon de l'agriculture, à Paris, à un visiteur qui lui demandait de ne pas le toucher.
+categorie: puissants
+mot: CASSE-TOI
+note: L'INA écrit « Casse toi pauvre con ! » ; la scène a été diffusée au 20 heures du 24 février 2008. En septembre 2012, Libération a détourné la formule contre Bernard Arnault : « Casse-toi riche con ! » (voir arnault-fiscalement-domicilie).
+source.titre: INA — Nicolas Sarkozy "Casse toi pauvre con !"
+source.url: https://www.ina.fr/ina-eclaire-actu/video/i09216918/nicolas-sarkozy-casse-toi-pauvre-con
+source.nature: presse
+verifie: 2026-11-15

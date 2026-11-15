@@ -1,11 +1,11 @@
 nom: L'Écoterroriste
 traitement: un jardinier, comme le mot le laisse imaginer
-cri: ZAD PARTOUT !
+cri: ON EST PLUS CHAUDS QUE LE CLIMAT !
 citation: darmanin-ecoterrorisme
-voix: L'Éco terroriste !
 pv: 2
 vitesse: 150
 saut: 3.6
+fiche: soulevements-dissolution-annulee
 auteur: UltraGauche Force
 
 # Arme : des tomates lancées en cloche.
@@ -24,7 +24,7 @@ arme.son: tir
 
 # Spéciale : une haie pousse d'un coup, on peut l'escalader.
 speciale.type: mur
-speciale.nom: ZAD PARTOUT !
+speciale.nom: ZAD !
 speciale.charges: 3
 speciale.hauteur: 3
 speciale.distance: 1

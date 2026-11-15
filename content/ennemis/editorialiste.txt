@@ -1,19 +1,17 @@
-# Il tire des mots : ceux de `arme.mots` viennent des citations de `content/citations/`.
-nom: L'Éditorialiste
+# Ses mots viennent de `content/citations/` ; ses répliques sont de vrais bandeaux de chaînes d'info.
+nom: L'éditorialiste
 pv: 2
 vitesse: 14
 deplacement: marche
 reaction: tire
-vue: 170
+vue: 180
 fin: panne
 largeur: 12
 hauteur: 16
-replique: C'EST INADMISSIBLE !
-replique: ON NE PEUT PLUS RIEN DIRE !
-replique: À QUI PROFITE LE TRACT ?
-replique: LA QUESTION EST VITE RÉPONDUE.
-auteur: UltraGauche Force
-
+fiche: bandeau-fallait-il-l-interdire
+replique: MANIF ANTI-POLICE : FALLAIT-IL L'INTERDIRE ?
+replique: RETRAITES : RÉVOLTÉS OU RÉSIGNÉS ?
+replique: 10 SEPTEMBRE : BLOQUER TOUT POUR GAGNER RIEN ?
 arme.type: tir
 arme.cadence: 0.7
 arme.vitesse: 85
@@ -21,9 +19,9 @@ arme.portee: 250
 arme.degats: 1
 arme.terrain: 0
 arme.taille: 10
-arme.mots: ÉCOTERRORISME ! | ULTRAGAUCHE ! | BORDÉLISATION ! | EXTRÊME GAUCHE ! | CHAOS !
+arme.mots: ISLAMO-GAUCHISME ! | GUERRE CIVILE ! | MILICES ! | BORDÉLISATION ! | CAMPS D'ENTRAÎNEMENT ! | VOYOUS !
 arme.son: mot
-
+auteur: UltraGauche Force
 --- repos
 ..k......k..
 ...k....k...

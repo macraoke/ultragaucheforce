@@ -8,12 +8,11 @@ import { storeSave } from './save.js';
 
 const TEMPLATE = `titre: Mon niveau
 auteur: ton pseudo
-accroche: Une phrase qui donne envie d'y jouer.
-intro: ALERTE : UN NIVEAU A ÉTÉ CRÉÉ SANS AUTORISATION DES MARCHÉS
 fond: campagne
-manchette: UNE MANCHETTE PARODIQUE QUI S'AFFICHE QUAND LA PANIQUE MONTE
-panneau.1: Un panneau peut donner un conseil, ou faire une blague.
-b: bouclier
+cortege: oui
+panneau.1: Touche-la : elle rejoint la manif
+b: bac
+p: paysanne
 v: vache
 --- carte
 ........................................
@@ -23,7 +22,7 @@ v: vache
 ........................................
 .........................PPP............
 ........................................
-..D...1....v......FF.....b.....K....S...
+..D...1..p.v......FF.....b.....K....S...
 TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
 TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
 `;
@@ -99,7 +98,7 @@ export function showAtelier(root, { bundle, save, test, back }) {
         h('h3', {}, 'Légende'),
         h('table', {}, legend.map(([name, symbol]) => h('tr', {}, h('td', {}, h('code', {}, symbol)), h('td', {}, name)))),
         h('h3', {}, 'Ennemis et décors'),
-        h('p', {}, 'Choisis une lettre minuscule dans l’en-tête, par exemple ', h('code', {}, 'b: bouclier'), ', puis place-la sur la carte.'),
+        h('p', {}, 'Choisis une lettre minuscule dans l’en-tête, par exemple ', h('code', {}, 'b: bac'), ', puis place-la sur la carte.'),
         h('p', {}, h('b', {}, 'Ennemis : '), Object.keys(bundle.ennemis).join(', ')),
         h('p', {}, h('b', {}, 'Décors : '), Object.keys(bundle.decors).join(', ')),
         h('p', {}, h('b', {}, 'Fonds : '), 'campagne, ville, citadelle'))),

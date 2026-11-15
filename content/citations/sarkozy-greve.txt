@@ -1,0 +1,12 @@
+texte: Désormais, quand il y a une grève en France, personne ne s'en aperçoit.
+auteur: Nicolas Sarkozy
+fonction: président de la République
+date: 2008-07
+contexte: Discours devant le conseil national de l'UMP, un an après la loi sur le service minimum dans les transports.
+categorie: diabolisation
+mot: PERSONNE NE S'EN APERÇOIT
+note: L'INA date le discours du 6 juillet 2008 ; d'autres sources situent le conseil national la veille, samedi 5 juillet. Certaines transcriptions donnent « plus personne ne s'en aperçoit ». La phrase a indigné l'opposition et les syndicats (INA).
+source.titre: INA — Nicolas Sarkozy en 2008 : «Désormais, quand il y a une grève en France, personne ne s'en aperçoit»
+source.url: https://www.ina.fr/ina-eclaire-actu/sarkozy-2008-greve-politique-social
+source.nature: presse
+verifie: 2026-11-15

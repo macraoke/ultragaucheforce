@@ -1,0 +1,9 @@
+titre: Les mots des sommations
+theme: ordre
+texte: Avant de disperser un attroupement par la force, l'autorité dit au haut-parleur : « Première sommation : nous allons faire usage de la force. Quittez immédiatement les lieux », puis « Dernière sommation : » et les mêmes mots.
+portee: Article R. 211-11 du code de la sécurité intérieure, rédaction du décret n° 2021-556 du 5 mai 2021. Les sommations suivent une annonce : « Attention ! Attention ! Vous participez à un attroupement. Obéissance à la loi. Vous devez vous disperser et quitter les lieux ». Si le haut-parleur est impossible ou manifestement inopérant, une fusée rouge peut remplacer ou compléter chaque annonce ou sommation. Si des armes doivent être employées, la dernière sommation est répétée. L'article L. 211-9 prévoit aussi des cas d'emploi de la force sans sommation.
+periode: texte en vigueur depuis le 8 mai 2021
+source.titre: Légifrance — Code de la sécurité intérieure, article R. 211-11
+source.url: https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000043483861
+source.nature: officielle
+verifie: 2026-11-15

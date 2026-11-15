@@ -1,9 +1,11 @@
 # Ajouter une source
 
-Les blagues sont inventées. Le reste est vrai : chaque citation et chaque chiffre est exact, daté, relié à une page que quelqu'un a lue.
+Tout ce que le jeu affiche est vrai : chaque citation et chaque chiffre est exact, daté, relié à une page que quelqu'un a lue.
 
-- Une citation : `content/citations/auteur-sujet.txt`
-- Une fiche (chiffre, droit, fait) : `content/fiches/sujet.txt`
+- Une citation : `content/citations/auteur-sujet.txt`. Elle défile sur le bandeau de PANIQUE TV, ouvre un niveau, signe la carte d'un personnage.
+- Une fiche (chiffre, droit, fait, mesure de programme) : `content/fiches/sujet.txt`. Elle s'affiche sur les cartes, à la fin d'un niveau, dans la scène de taxation.
+
+L'une et l'autre deviennent des cartes de la Collection : rayons « Paroles », « Faits » et « Propositions » (thème `programme`).
 
 ## La méthode
 
@@ -37,8 +39,8 @@ verifie: 2026-11-15
 | `auteur`, `fonction` | qui parle, à quel titre au moment des faits |
 | `date` | `AAAA-MM-JJ`, `AAAA-MM` ou `AAAA` |
 | `contexte` | où, à qui, à propos de quoi |
-| `categorie` | `diabolisation`, `puissants` ou `gauche` |
-| `mot` | pour `diabolisation` : le mot qu'un automate criera (`ÉCOTERRORISME`) |
+| `categorie` | `diabolisation`, `puissants` ou `gauche` (celles de la gauche ne défilent pas sur le bandeau) |
+| `mot` | un mot de la citation, tel quel, que lancent les unités qui parlent (`COMPLICES`) : le voir passer fait entrer la citation dans la Collection |
 | `note` | phrase complète, variantes, réponse de la personne visée |
 | `source.titre`, `source.url` | la page lue |
 | `source.nature` | `officielle`, `presse`, `associative`, `militante` ou `createur` |

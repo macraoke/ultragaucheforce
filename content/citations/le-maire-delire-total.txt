@@ -1,0 +1,12 @@
+texte: Un délire total.
+auteur: Bruno Le Maire
+fonction: ministre de l'Économie
+date: 2024-06-14
+contexte: Sur franceinfo, à propos du programme du Nouveau Front populaire pour les élections législatives anticipées.
+categorie: diabolisation
+mot: DÉLIRE TOTAL
+note: Dans le même entretien : « c'est l'assurance du déclassement », « c'est 1981 puissance dix ! » et « il y a un bloc d'extrême gauche avec ses folies et son délire économique ».
+source.titre: franceinfo — Législatives 2024 : le programme du nouveau Front populaire est "un délire total", tacle le ministre de l'Économie Bruno Le Maire
+source.url: https://www.franceinfo.fr/elections/legislatives/legislatives-2024-le-programme-du-nouveau-front-populaire-est-un-delire-total-tacle-le-ministre-de-l-economie-bruno-le-maire_6603819.html
+source.nature: presse
+verifie: 2026-11-15

@@ -1,6 +1,6 @@
 // Le carton de déblocage d'un héros : volontairement démesuré.
 // Tricolore qui claque, drapeaux des luttes, portrait géant, nom énorme, vraie citation
-// sourcée, tambours, cuivres et voix off. Se ferme tout seul ou au premier toucher.
+// sourcée, tambours et cuivres. Se ferme tout seul ou au premier toucher.
 
 import { spriteElement } from './sprites.js';
 import { frenchDate } from './dom.js';
@@ -85,7 +85,7 @@ export function showHeroCard(bundle, hero, { audio = null, reduced = false, resc
     audio?.play('tambour');
     const timers = [
       setTimeout(() => audio?.play('cuivres'), 480),
-      setTimeout(() => audio?.speak(hero.id, hero.voix || hero.nom), 560),
+      setTimeout(() => audio?.speak(hero.id), 560),
       setTimeout(() => audio?.play('cymbale'), 600),
       setTimeout(close, reduced ? 1700 : 3200),
     ];

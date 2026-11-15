@@ -1,0 +1,9 @@
+titre: La garantie d'autonomie des jeunes
+theme: programme
+texte: Le programme L'Avenir en commun propose de financer l'autonomie des jeunes détachés du foyer fiscal parental grâce à la garantie d'autonomie qui les portera au-dessus du seuil de pauvreté (1 337 euros pour une personne seule).
+portee: Édition 2027 du programme de La France insoumise, chapitre « Une République de l'égalité réelle et des droits nouveaux ». Le montant de 1 337 euros est celui que le programme donne pour le seuil de pauvreté. Le même chapitre prévoit de créer un office pour l'autonomie des jeunes et d'instaurer réellement le repas à un euro dans les Crous pour tous les étudiants. Il s'agit de propositions d'un mouvement politique, pas de mesures en vigueur.
+periode: édition 2027, présentée en novembre 2026
+source.titre: Mélenchon 2027 — L'Avenir en commun, chapitre « Une République de l'égalité réelle et des droits nouveaux »
+source.url: https://melenchon2027.fr/programme/livre/mettre-en-securite-sociale/chapitre2
+source.nature: militante
+verifie: 2026-11-15

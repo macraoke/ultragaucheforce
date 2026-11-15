@@ -1,0 +1,9 @@
+titre: Le meeting en hologramme
+theme: luttes
+texte: Le 5 février 2017, Jean-Luc Mélenchon tient meeting près de Lyon pendant que son hologramme parle au même moment à Aubervilliers.
+portee: Meeting de la campagne présidentielle de 2017 ; l'article ne chiffre pas l'assistance.
+periode: 5 février 2017
+source.titre: Public Sénat — D'Aubervilliers à Lyon, Mélenchon « à la pointe de la technologie » auprès de ses électeurs
+source.url: https://www.publicsenat.fr/actualites/politique/d-aubervilliers-a-lyon-melenchon-a-la-pointe-de-la-technologie-aupres-de-ses
+source.nature: presse
+verifie: 2026-11-15

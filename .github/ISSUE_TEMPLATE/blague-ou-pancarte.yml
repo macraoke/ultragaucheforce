@@ -1,6 +1,6 @@
-name: Une blague
-description: Une manchette de PANIQUE TV ou une pancarte. Une ligne suffit.
-title: "Blague : "
+name: Une pancarte ou un bandeau
+description: Une pancarte vue en manif, un slogan scandé, un bandeau de chaîne d'info. Une ligne suffit.
+title: "Pancarte : "
 labels: ["blague"]
 body:
   - type: dropdown
@@ -8,21 +8,24 @@ body:
     attributes:
       label: C'est…
       options:
-        - une manchette de PANIQUE TV
-        - une pancarte inventée
-        - une pancarte vraiment vue en manif
+        - une pancarte vue en manif
+        - un slogan scandé en manif
+        - un bandeau vu sur une chaîne d'info
     validations:
       required: true
   - type: textarea
     id: texte
     attributes:
-      label: Le texte
-      description: En majuscules, court. Une par ligne.
-      placeholder: UN GOÛTER PARTAGÉ SÈME LE TROUBLE DANS LES MARCHÉS
+      label: Le texte exact
+      description: Mot pour mot. Une par ligne.
+      placeholder: TU NOUS METS 64 ANS, ON TE MAI 68
     validations:
       required: true
   - type: input
     id: source
     attributes:
-      label: Pancarte vue en manif — où, quand, et le lien
+      label: Où, quand, et le lien
+      description: La ville et la date pour une pancarte ou un slogan ; la chaîne et le jour pour un bandeau.
       placeholder: "vue à Paris, mars 2023 — https://…"
+    validations:
+      required: true

@@ -1,0 +1,12 @@
+texte: La meilleure façon de se payer un costard, c'est de travailler.
+auteur: Emmanuel Macron
+fonction: ministre de l'Économie
+date: 2016-05-27
+contexte: À Lunel (Hérault), à deux militants de la CGT qui l'interpellaient notamment sur le recours au 49.3 pour la loi travail.
+categorie: puissants
+mot: COSTARD
+note: Juste avant : « Vous n'allez pas me faire peur avec votre tee-shirt. » Le chapeau de l'article écrit « à votre T-shirt ».
+source.titre: France 3 Occitanie (franceinfo) — La réplique sur le costard d'Emmanuel Macron à Lunel interroge
+source.url: https://france3-regions.franceinfo.fr/occitanie/replique-costard-emmanuel-macron-lunel-interroge-1009533.html
+source.nature: presse
+verifie: 2026-11-15

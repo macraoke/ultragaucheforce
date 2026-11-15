@@ -1,0 +1,12 @@
+texte: Les non-vaccinés, j'ai très envie de les emmerder.
+auteur: Emmanuel Macron
+fonction: président de la République
+date: 2022-01-04
+contexte: Entretien avec des lecteurs du Parisien, en plein débat parlementaire sur le passe vaccinal et à trois mois de l'élection présidentielle.
+categorie: puissants
+mot: EMMERDER
+note: Passage : « Moi, je ne suis pas pour emmerder les Français. » puis « Eh bien, là, les non-vaccinés, j'ai très envie de les emmerder. » Il dit vouloir continuer à le faire « jusqu'au bout ».
+source.titre: franceinfo — VIDEO. "Emmerder les non-vaccinés" : la phrase d'Emmanuel Macron remise dans son contexte
+source.url: https://www.franceinfo.fr/sante/maladie/coronavirus/pass-sanitaire/video-emmerder-les-non-vaccines-la-phrase-d-emmanuel-macron-remise-dans-son-contexte_4905605.html
+source.nature: presse
+verifie: 2026-11-15

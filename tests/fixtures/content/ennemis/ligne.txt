@@ -1,0 +1,13 @@
+# Une ligne qui tient : on ne la casse pas, on la déborde à trente.
+nom: Ligne
+pv: 3
+vitesse: 0
+deplacement: fixe
+reaction: rien
+fin: greve
+debordement: 30
+origine: Un barrage d'essai.
+fiche: garde-a-vue
+--- repos
+gg
+gg

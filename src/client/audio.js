@@ -1,4 +1,4 @@
-// Bruitages et voix off. Tout est local : sons synthétisés (une ligne de texte dans
+// Bruitages. Tout est local : sons synthétisés (une ligne de texte dans
 // `content/sons/`) ou petits fichiers compressés du dépôt. Aucun son ne vient du réseau.
 
 import { buildSamples, SAMPLE_RATE } from './zzfx.js';
@@ -63,28 +63,12 @@ export class Audio {
     src.start();
   }
 
-  /**
-   * Voix off dramatique. Un enregistrement `content/voix/<id>.*` est prioritaire ;
-   * sinon la synthèse vocale du navigateur, réglée grave et lente.
-   */
-  speak(id, text) {
-    if (!this.enabled) return;
-    const file = this.bundle.voix?.[id];
-    if (file) {
-      const el = new window.Audio(file);
-      el.volume = Math.min(1, this.volume * 2.5);
-      el.play().catch(() => {});
-      return;
-    }
-    const synth = window.speechSynthesis;
-    if (!synth || !text) return;
-    const u = new SpeechSynthesisUtterance(text);
-    const french = synth.getVoices().filter((v) => v.lang.toLowerCase().startsWith('fr'));
-    u.voice = french.find((v) => /thomas|jacques|daniel|nicolas|google fran/i.test(v.name)) || french[0] || null;
-    u.lang = 'fr-FR';
-    u.pitch = 0.3;
-    u.rate = 0.8;
-    synth.cancel();
-    synth.speak(u);
+  /** Voix off : un enregistrement `content/voix/<id>.*`, s'il existe. Sans fichier, pas de voix. */
+  speak(id) {
+    const file = this.enabled && this.bundle.voix?.[id];
+    if (!file) return;
+    const el = new window.Audio(file);
+    el.volume = Math.min(1, this.volume * 2.5);
+    el.play().catch(() => {});
   }
 }

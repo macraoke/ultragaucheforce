@@ -1,0 +1,18 @@
+nom: L'Assis
+pv: 20
+largeur: 32
+hauteur: 40
+vitesse: 30
+assis: oui
+leve: 0.7
+replique: JE SUIS BIEN ASSIS
+replique: CETTE FOIS, JE ME LÈVE
+phase.1.jusqua: 0
+phase.1.rythme: 1
+phase.1.attaques: charge | salve
+--- repos
+kk
+kk
+--- portrait
+kk
+kk

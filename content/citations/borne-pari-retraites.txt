@@ -1,0 +1,11 @@
+texte: On ne peut pas faire de pari sur l'avenir de nos retraites.
+auteur: Élisabeth Borne
+fonction: Première ministre
+date: 2023-03-16
+contexte: À la tribune de l'Assemblée nationale, sous les cris de l'opposition, en engageant la responsabilité du gouvernement par l'article 49.3 pour faire adopter la réforme des retraites sans vote.
+categorie: puissants
+note: Compte rendu officiel : « On ne peut pas prendre le risque de voir 175 heures de débats parlementaires anéanties. » puis « On ne peut pas faire de pari sur l'avenir de nos retraites. » Aux députés qui couvrent sa voix : « Les cris, au moment même où je m'exprime, n'en sont qu'une preuve supplémentaire ! » La presse a parfois cité « 175 heures de débat parlementaire s'effondrer ».
+source.titre: Assemblée nationale — Compte rendu de la deuxième séance du jeudi 16 mars 2023
+source.url: https://www.assemblee-nationale.fr/dyn/16/comptes-rendus/seance/session-ordinaire-de-2022-2023/deuxieme-seance-du-jeudi-16-mars-2023
+source.nature: officielle
+verifie: 2026-11-15

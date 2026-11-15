@@ -6,11 +6,17 @@ pv: 70
 largeur: 30
 hauteur: 40
 vitesse: 30
-citation: arnault-zucman
-replique: MES MALLES ! MES TRÈS CHÈRES MALLES !
-replique: DEUX POUR CENT ?! ET POURQUOI PAS TROIS ?
-replique: JE DEMANDE LA NATIONALITÉ BELGE !
-replique: QUI VA PENSER AUX SACS À MAIN ?
+citation: arnault-premier-contribuable
+fiche: impots-milliardaires
+# Assis sur sa fortune tant que sa vie n'est pas passée sous la moitié.
+assis: oui
+leve: 0.5
+# Ses répliques sont ses propres mots (voir content/citations/arnault-*.txt).
+replique: JE SUIS CERTAINEMENT LE TOUT PREMIER CONTRIBUABLE À TITRE PERSONNEL.
+replique: IL EST D'ABORD UN MILITANT D'EXTRÊME GAUCHE.
+replique: POUR POUSSER À LA DÉLOCALISATION, C'EST IDÉAL !
+replique: « LE MONDE », IL EST PLUTÔT LFI.
+replique: EN GÉNÉRAL, ÇA MÈNE À LA CATASTROPHE.
 auteur: UltraGauche Force
 
 # La fortune, en milliards d'euros, et la fiche sourcée qui la documente.
@@ -28,7 +34,7 @@ phase.2.attaques: salve | charge | pluie
 salve.nombre: 3
 salve.vitesse: 130
 salve.ecart: 0.3
-invocation.ennemi: faux-jeune
+invocation.ennemi: crs
 invocation.nombre: 1
 charge.vitesse: 170
 pluie.nombre: 6

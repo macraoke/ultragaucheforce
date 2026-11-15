@@ -1,16 +1,17 @@
 # Contribuer
 
-Ici, on ajoute une blague comme on ajoute un niveau : en écrivant un fichier texte. Pas de code, rien à installer.
+Ici, on ajoute une pancarte comme on ajoute un niveau : en écrivant un fichier texte. Pas de code, rien à installer.
 
 | Je veux… | Où | Guide |
 |---|---|---|
 | lancer une idée | [une issue](https://github.com/macraoke/ultragaucheforce/issues/new/choose) | |
-| une manchette de PANIQUE TV | `content/manchettes/` | [blague](docs/ajouter-une-blague.md) |
-| une pancarte | `content/pancartes/` | [blague](docs/ajouter-une-blague.md) |
+| une pancarte vue en manif, un slogan scandé | `content/pancartes/` | [pancarte ou bandeau](docs/ajouter-une-blague.md) |
+| un bandeau vu sur une chaîne d'info | `content/manchettes/` | [pancarte ou bandeau](docs/ajouter-une-blague.md) |
 | un niveau | l'Atelier du jeu, puis `content/niveaux/` | [niveau](docs/ajouter-un-niveau.md) |
-| un héros, un ennemi, un boss | `content/heros/`, `content/ennemis/`, `content/boss/` | [personnage](docs/ajouter-un-personnage.md) |
+| un héros, une recrue, une unité d'en face, un boss | `content/heros/`, `content/recrues/`, `content/ennemis/`, `content/boss/` | [personnage](docs/ajouter-un-personnage.md) |
+| un décor | `content/decors/` | [niveau](docs/ajouter-un-niveau.md#un-décor) |
 | un drapeau | `content/drapeaux/` | [drapeau](docs/ajouter-un-drapeau.md) |
-| un bruitage, une musique, une voix off | `content/sons/`, `content/musiques/`, `content/voix/` | [son](docs/ajouter-un-son.md) |
+| un bruitage, une musique, une voix | `content/sons/`, `content/musiques/`, `content/voix/` | [son](docs/ajouter-un-son.md) |
 | une vraie citation, un chiffre | `content/citations/`, `content/fiches/` | [source](docs/ajouter-une-source.md) |
 | une nouvelle mécanique | `src/sim/behaviors.js` | [mécanique](docs/ajouter-une-mecanique.md) |
 
@@ -33,6 +34,20 @@ arme.cadence: 4
 
 Déposer un fichier suffit : aucune liste à tenir à jour.
 
+## La Collection
+
+Tout ce qu'on dépose devient une carte, que le joueur trouve en la croisant dans le jeu. Neuf rayons : Camarades, En face, Lieux, Paroles, Pancartes, Vu à la télé, Faits, Propositions, Luttes.
+
+Sur la carte d'un personnage ou d'un lieu, trois clés font le texte :
+
+| Clé | Sur la carte |
+|---|---|
+| `citation` | une vraie citation de `content/citations/`, signée, datée, avec le lien |
+| `fiche` | un fait sourcé de `content/fiches/` ; répétable |
+| `origine` | une phrase, s'il reste quelque chose à dire |
+
+Une pancarte, un slogan ou un bandeau porte sa source sur sa ligne : `TEXTE | où et quand — lien`.
+
 ## Proposer depuis GitHub
 
 1. Sur [le dépôt](https://github.com/macraoke/ultragaucheforce), ouvrez le dossier voulu.
@@ -45,7 +60,7 @@ Créez votre propre fichier plutôt que de modifier celui d'un autre : deux prop
 
 - Un robot relit : format, références, sources, tests, build. Ce qui cloche est écrit en français, sur la ligne fautive.
 - Première contribution ? GitHub attend qu'un mainteneur lâche le robot. Patience.
-- Un mainteneur relit à son tour : drôle ? jouable ? sourcé ? dans [la charte](CHARTE.md) ?
+- Un mainteneur relit à son tour : drôle ? jouable ? vrai et sourcé ? dans [la charte](CHARTE.md) ?
 
 ## Tester chez soi
 

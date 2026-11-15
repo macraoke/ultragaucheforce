@@ -36,10 +36,47 @@ Le prix : un format maison. Il tient en moins de cent lignes (`src/content/parse
 
 ## Des fichiers pour les sons, SoundCloud pour la musique
 
-- **Bruitages et voix off** : dans le dépôt, sous licence libre, joués hors-ligne. Une ligne de texte pour un son synthétisé, quelques kilo-octets pour un enregistrement.
+- **Bruitages** : dans le dépôt, sous licence libre, joués hors-ligne. Une ligne de texte pour un son synthétisé, quelques kilo-octets pour un enregistrement.
+- **Pas de voix de synthèse** : elle sonnait comme une annonce de hall de gare. Le déblocage d'un héros se fait au tambour et aux cuivres, le nom écrit en grand. `content/voix/` reste ouvert à un vrai enregistrement.
 - **Musique** : le lecteur officiel de SoundCloud. Un lien suffit pour proposer un morceau, les artistes gardent la main, le dépôt reste léger.
 
 Le prix : pas de musique hors-ligne, et un lecteur tiers avec ses traceurs. Il n'est chargé que si la musique est activée.
+
+## Le but : une manif qui grossit
+
+On ne gagne pas en tirant plus, mais en arrivant plus nombreux.
+
+- **Le nombre est la ressource** : chaque recrue ajoute du monde, une assemblée générale multiplie. Plus on est nombreux, plus les tracts font de dégâts.
+- **Une ligne cède au nombre**, pas aux coups : barrage, blindé, grille. Explorer pour recruter devient le cœur du niveau.
+- **Jamais d'impasse** : devant une ligne qui tient, des passants rejoignent peu à peu. Une nasse est levée au bout de vingt secondes.
+- **Disperser, pas éliminer** : une charge ou du gaz dispersent une part de la manif ; une unité finit hors service, un boss s'éjecte.
+
+## En face : des unités réelles
+
+CRS, BAC, BRAV-M, gendarmes mobiles, canon à eau, hélicoptère, blindé, et ceux qui parlent : un ministre, un éditorialiste.
+
+- **Une carte par unité** : une compagnie, un escadron, une fonction. Une personnalité parle avec ses propres mots.
+- **Un comportement par unité**, tiré de ce qui est documenté : sommations puis charge, visée du LBD, lacrymogènes en cloche, nasse.
+- **Une fiche sourcée par unité** : textes officiels, rapports parlementaires, Conseil d'État, Défenseur des droits.
+
+## Tout texte est une référence
+
+Ce que le jeu affiche a été dit, écrit, scandé ou diffusé : citations signées et datées, pancartes vues en manif, slogans, bandeaux de chaînes d'info, sommations du code de la sécurité intérieure. Chaque ligne porte où, quand et le lien.
+
+- **PANIQUE TV ne parodie plus, elle cite** : le réel suffit.
+- Restent écrits par nous : les noms des personnages, les panneaux d'aide, l'interface.
+
+## La Collection
+
+Chaque fiche de `content/` devient une carte, trouvée en la croisant dans le jeu : personnages, lieux, paroles, pancartes, bandeaux, faits, propositions, luttes.
+
+- **Jouer, c'est découvrir** : la carte donne la citation exacte, le fait, et le lien vers la source.
+- **Rien à déclarer** : `citation`, `fiche` et `origine` dans une fiche suffisent ; aucune liste de cartes à tenir.
+- La sauvegarde reste locale : la liste des cartes trouvées, rien d'autre.
+
+## La fortune, assise
+
+Le boss est assis sur sa fortune, dans le niveau comme dans la scène de fin : un tas de liasses à l'échelle, une liasse pour dix mille ans de Smic. Un seul geste, « Taxer 2 % », et un seul constat : il lui reste 98 %.
 
 ## Hors-ligne : seulement dans la version construite
 

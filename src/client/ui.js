@@ -5,12 +5,8 @@ import { h, link, frenchDate, sourceLine } from './dom.js';
 import { spriteElement } from './sprites.js';
 import { REPO, VERSION, REFERENCES } from './config.js';
 import { storeSave } from './save.js';
+import { SHELVES, VOTE_FICHES, collectionCount, collectionShelf } from './collection.js';
 
-const THEMES = {
-  richesses: 'Richesses', droits: 'Tes droits', ordre: 'Maintien de l’ordre', democratie: 'Démocratie',
-  programme: 'Programme', luttes: 'Luttes',
-};
-const CATEGORIES = { diabolisation: 'Les mots pour faire peur', puissants: 'Paroles de puissants', gauche: 'La gauche se cite' };
 const MENTION = 'Satire citoyenne, libre et collaborative.';
 
 export class Screens {
@@ -59,7 +55,7 @@ export class Screens {
       h('nav', {},
         this.button('Jouer', () => this.go.play(this.nextLevel()), 'gros'),
         this.button('Niveaux', () => this.levels()),
-        this.button('Bibliothèque', () => this.library()),
+        this.button(`Collection ${collectionCount(this.bundle, this.save).found}/${collectionCount(this.bundle).total}`, () => this.collection()),
         this.button('Atelier', () => this.go.atelier()),
         h('a', { className: 'bouton', href: 'galerie.html' }, 'Galerie'),
         this.button('Options', () => this.options()),
@@ -94,45 +90,18 @@ export class Screens {
       h('div', { className: 'pied' }, this.back(), this.button('Ouvrir l’Atelier', () => this.go.atelier())));
   }
 
-  // ------------------------------------------------------------------ Bibliothèque
+  // ------------------------------------------------------------------ Collection
 
-  quoteItem(c) {
-    return h('li', { className: this.save.decouvertes.includes(c.id) ? 'vu' : '' },
-      h('b', {}, `« ${c.texte} »`), ` — ${c.auteur}, ${c.fonction ? `${c.fonction}, ` : ''}${frenchDate(c.date)}. `,
-      c.contexte, ' ', c.note && h('em', {}, c.note, ' '), sourceLine(c));
-  }
-
-  factItem(f) {
-    return h('li', { className: this.save.decouvertes.includes(f.id) ? 'vu' : '' },
-      h('b', {}, `${f.titre}. `), f.texte, ' ', f.portee && h('em', {}, f.portee, ' '), sourceLine(f));
-  }
-
-  library(tab = 'fiches') {
-    const { fiches, citations, drapeaux } = this.bundle;
-    const tabs = { fiches: 'Fiches', citations: 'Ils l’ont vraiment dit', luttes: 'Luttes' };
-    let body;
-    if (tab === 'fiches') {
-      body = Object.entries(THEMES).map(([theme, title]) => {
-        const list = Object.values(fiches).filter((f) => f.theme === theme);
-        return list.length ? [h('h3', {}, title), h('ul', {}, list.map((f) => this.factItem(f)))] : [];
-      });
-    } else if (tab === 'citations') {
-      body = Object.entries(CATEGORIES).map(([cat, title]) => {
-        const list = Object.values(citations).filter((c) => c.categorie === cat);
-        return list.length ? [h('h3', {}, title), h('ul', {}, list.map((c) => this.quoteItem(c)))] : [];
-      });
-    } else {
-      body = h('div', { className: 'cartes' }, Object.values(drapeaux).map((d) =>
-        h('article', {},
-          spriteElement(d.sprites.image, this.bundle.palette, 5),
-          h('h3', {}, d.nom), h('p', {}, d.description),
-          d.ressources.map((r) => h('p', {}, link(r.url, r.titre), h('span', { className: 'nature' }, r.nature))))));
-    }
+  /** L'album : un rayon par onglet ; ce qui n'a pas encore été croisé en jouant reste en silhouette. */
+  collection(tab = SHELVES[0].id) {
+    const all = collectionCount(this.bundle, this.save);
     this.show('biblio',
-      h('h2', {}, 'La Bibliothèque'),
-      h('div', { className: 'onglets' }, Object.entries(tabs).map(([id, title]) =>
-        this.button(title, () => this.library(id), id === tab ? '' : 'discret'))),
-      h('div', { className: 'contenu' }, body),
+      h('h2', {}, 'La Collection ', h('small', {}, `${all.found} / ${all.total}`)),
+      h('div', { className: 'onglets' }, SHELVES.map((shelf) => {
+        const { found, total } = collectionCount(this.bundle, this.save, shelf.id);
+        return total ? this.button(`${shelf.titre} ${found}/${total}`, () => this.collection(shelf.id), shelf.id === tab ? '' : 'discret') : null;
+      })),
+      h('div', { className: 'contenu album' }, collectionShelf(this.bundle, tab, this.save)),
       h('div', { className: 'pied' }, this.back(() => this.go.back())));
   }
 
@@ -150,7 +119,7 @@ export class Screens {
     };
     this.show('liste',
       h('h2', {}, 'Options'),
-      toggle('son', 'Bruitages et voix off'),
+      toggle('son', 'Bruitages'),
       toggle('musique', 'Radio Manif (musique, par SoundCloud)'),
       toggle('sobre', 'Effets réduits'),
       h('h3', {}, 'Commandes'),
@@ -173,14 +142,13 @@ export class Screens {
     this.show('liste',
       h('h2', {}, 'À propos'),
       h('p', {}, MENTION),
-      h('p', {}, 'Une blague, une pancarte, un drapeau, un niveau, un personnage, un son : tout le contenu est en fichiers texte, modifiables depuis GitHub.'),
+      h('p', {}, 'Une pancarte vue en manif, une citation, un drapeau, un niveau, un personnage, un son : tout le contenu est en fichiers texte, modifiables depuis GitHub.'),
       h('p', {}, link(REPO, 'Le dépôt'), ' · ', link(`${REPO}/blob/main/CONTRIBUER.md`, 'Contribuer'), ' · ',
         link(`${REPO}/blob/main/CHARTE.md`, 'La charte'), ' · ', h('a', { href: 'galerie.html' }, 'La Galerie')),
       h('h3', {}, 'Références'),
       h('ul', {}, REFERENCES.map((r) => h('li', {}, link(r.url, r.titre), ` — ${r.note}`))),
       h('h3', {}, 'Licences et crédits'),
-      h('p', {}, 'Code : MIT. Contenus : CC BY-SA 4.0. Bruitages synthétisés avec ZzFX de Frank Force (MIT). ',
-        'Voix off générées avec Piper, voix fr_FR-siwis-medium (corpus SIWIS).'),
+      h('p', {}, 'Code : MIT. Contenus : CC BY-SA 4.0. Bruitages synthétisés avec ZzFX de Frank Force (MIT).'),
       h('ul', {}, Object.values(this.bundle.sons).filter((s) => s.fichier).map((s) =>
         h('li', {}, link(s.source, s.nom), ` — ${s.auteur}, ${s.licence}`))),
       h('p', {}, h('b', {}, 'Radio Manif : '), Object.values(this.bundle.musiques).map((m, i) => [i ? ' · ' : '', link(m.url, `${m.titre} (${m.artiste})`)])),
@@ -195,18 +163,20 @@ export class Screens {
       this.button('Reprendre', () => this.go.resume(), 'gros'),
       this.button('Retour au piquet de grève', () => this.go.checkpoint()),
       this.button('Recommencer le niveau', () => this.go.restart()),
-      this.button('Bibliothèque', () => this.library()),
+      this.button('Collection', () => this.collection()),
       this.button('Options', () => this.options()),
       this.button('Quitter', () => this.go.quit(), 'discret'));
   }
 
-  /** Carton d'ouverture : PANIQUE TV exagère un événement ordinaire. */
+  /** Carton d'ouverture : PANIQUE TV ouvre sur une vraie déclaration, signée, datée et sourcée. */
   intro(level, done) {
+    const quote = this.bundle.citations[level.citation];
     this.show('intro',
-      h('div', { className: 'tv' }, h('strong', {}, 'PANIQUE TV'), h('em', {}, 'ÉDITION SPÉCIALE')),
-      level.intro && h('p', { className: 'manchette' }, level.intro),
+      h('div', { className: 'tv' }, h('strong', {}, 'PANIQUE TV'), h('em', {}, quote ? 'ILS L’ONT DIT' : 'ÉDITION SPÉCIALE')),
+      quote ? h('p', { className: 'manchette' }, `« ${quote.texte} »`) : level.intro && h('p', { className: 'manchette' }, level.intro),
+      quote && h('p', { className: 'signature' }, `${quote.auteur}, ${frenchDate(quote.date)} · `, link(quote.source.url, 'source')),
       h('h2', {}, level.titre),
-      h('p', {}, level.accroche),
+      level.accroche && h('p', {}, level.accroche),
       this.button('C’est parti', done, 'gros'));
   }
 
@@ -218,29 +188,31 @@ export class Screens {
       this.button('Menu', () => this.go.quit(), 'discret'));
   }
 
-  /** Fin de niveau : ce que PANIQUE TV annonce, ce qui s'est réellement passé, puis un fait sourcé. */
-  end({ level, stats, time, announced, next, last }) {
-    const fact = this.bundle.fiches[level.fiche];
-    const seen = this.bundle.pancartes.filter((p) => p.credit);
-    const sign = seen[Math.floor(Math.random() * seen.length)];
+  /** Fin de niveau : les deux comptages de la manif, ce que PANIQUE TV annonce, puis un fait sourcé. */
+  end({ level, stats, time, announced, counts, next, last }) {
+    const fact = this.bundle.fiches[level.fiche?.[0]];
     const minutes = `${Math.floor(time / 60)} min ${String(Math.floor(time % 60)).padStart(2, '0')} s`;
+    const n = (x) => x.toLocaleString('fr-FR');
+    const line = (count, one, many) => (count ? h('li', {}, `${n(count)} ${count > 1 ? many : one}`) : null);
     this.show('fin',
       h('h2', {}, 'Niveau terminé'),
       h('p', { className: 'temps' }, `${level.titre} — ${minutes}`),
       h('div', { className: 'bilans' },
+        counts.syndicats ? h('article', {},
+          h('h3', {}, 'La manif'),
+          h('p', { className: 'chiffre' }, `✊ ${n(counts.syndicats)}`),
+          h('p', {}, `selon les syndicats · ${n(counts.prefecture)} selon la préfecture`)) : null,
         h('article', { className: 'annonce' },
           h('h3', {}, 'Selon PANIQUE TV'),
-          h('p', { className: 'chiffre' }, announced.toLocaleString('fr-FR')),
-          h('p', {}, 'blessés annoncés à l’antenne')),
-        h('article', {},
-          h('h3', {}, 'Dans ta partie'),
-          h('ul', {},
-            h('li', {}, `${stats.breakdownsByPlayer} automate(s) en panne ou en grève à cause de toi`),
-            h('li', {}, `${stats.breakdownsBySelf} automate(s) mis hors service par leurs propres grenades`),
-            h('li', {}, `${stats.gassed} manifestant(s) gazé(s)`),
-            h('li', {}, `${stats.tracts} tract(s) distribué(s), ${stats.rescues} camarade(s) libéré(s), ${stats.tiles} morceau(x) de décor en moins`)))),
+          h('p', { className: 'chiffre' }, n(announced)),
+          h('p', {}, 'blessés annoncés à l’antenne'))),
+      h('ul', { className: 'partie' },
+        line(stats.recruits, 'recrue', 'recrues'),
+        line(stats.rescues, 'camarade libéré', 'camarades libérés'),
+        line(stats.overrun, 'ligne débordée', 'lignes débordées'),
+        line(stats.breakdownsBySelf, 'unité gazée par son propre camp', 'unités gazées par leur propre camp'),
+        line(stats.gassed, 'manifestant gazé', 'manifestants gazés')),
       fact && h('article', { className: 'fiche' }, h('h3', {}, `Et en vrai ? ${fact.titre}`), h('p', {}, fact.texte), sourceLine(fact)),
-      sign && h('p', { className: 'pancarte' }, h('b', {}, `« ${sign.texte} »`), h('small', {}, ` ${sign.credit.split(' — ')[0]}`)),
       h('div', { className: 'pied' },
         next && this.button('Niveau suivant', () => this.go.play(next), 'gros'),
         last && this.button('La suite', () => this.final(), 'gros'),
@@ -251,20 +223,21 @@ export class Screens {
   /** Dernier écran : un appel au vote citoyen. Des dates, des démarches, des liens — pas de consigne. */
   final() {
     const f = this.bundle.fiches;
+    const steps = VOTE_FICHES.map((id) => f[id]).filter(Boolean);
     const programme = Object.values(f).filter((x) => x.theme === 'programme');
+    this.go.learn([...steps, ...programme].map((x) => x.id)); // ce qu'on lit ici entre dans la Collection
     this.show('vote',
       h('h2', {}, 'La Citadelle ne tombera pas toute seule'),
       h('p', { className: 'dates' }, 'Élection présidentielle : ', h('b', {}, 'dimanche 18 avril'), ' et ', h('b', {}, 'dimanche 2 mai 2027'), '.'),
       h('p', { className: 'appel' }, 'Allez voter.'),
       h('div', { className: 'cartes' },
-        [f['presidentielle-dates'], f['inscription-listes'], f.procuration].filter(Boolean).map((x) =>
-          h('article', {}, h('h3', {}, x.titre), h('p', {}, x.texte), sourceLine(x)))),
+        steps.map((x) => h('article', {}, h('h3', {}, x.titre), h('p', {}, x.texte), sourceLine(x)))),
       programme.length ? h('h3', {}, 'Le programme') : null,
       programme.length ? h('ul', {}, programme.map((x) => h('li', {}, x.texte, ' ', sourceLine(x)))) : null,
       h('p', { className: 'mention' }, 'Un jeu fait par des citoyens, en open source et collaboratif.'),
       h('div', { className: 'pied' },
         this.button('Menu', () => this.go.quit(), 'gros'),
-        this.button('Bibliothèque', () => this.library(), 'discret'),
+        this.button('Collection', () => this.collection(), 'discret'),
         h('a', { className: 'bouton discret', href: REPO, target: '_blank', rel: 'noopener' }, 'Contribuer au jeu')));
   }
 }
@@ -278,24 +251,41 @@ export class Hud {
     this.q = (id) => document.getElementById(id);
     this.last = '';
     this.bannerTimer = 0;
+    this.rotation = 0;
+    this.turn = 0;
+    this.onQuote = () => {}; // une vraie citation passe à l'antenne : la Collection la note
+    // Le fil permanent de PANIQUE TV : de vraies déclarations, datées et signées.
+    this.quotes = Object.values(bundle.citations).filter((c) => c.categorie !== 'gauche');
   }
 
-  /** Nouvelle partie : plus de bandeau ni de notification de la précédente. */
+  /** Nouvelle partie : le fil repart, sans alerte ni notification de la précédente. */
   reset() {
     this.last = '';
+    this.crowd = 0;
     clearTimeout(this.bannerTimer);
-    this.q('bandeau').hidden = true;
+    delete this.q('bandeau').dataset.alerte; // une alerte interrompue ne fige pas le fil de la partie suivante
     this.q('toasts').replaceChildren();
+    this.nextQuote();
   }
 
+  /** Le bandeau reste à l'antenne pendant toute la partie. */
   setVisible(on) {
     this.el.hidden = !on;
-    if (!on) this.q('bandeau').hidden = true;
+    this.q('bandeau').hidden = !on;
+    clearInterval(this.rotation);
+    if (on) this.rotation = setInterval(() => this.q('bandeau').dataset.alerte || this.nextQuote(), 9000);
+  }
+
+  nextQuote() {
+    const quote = this.quotes[this.turn++ % Math.max(1, this.quotes.length)];
+    if (!quote) return;
+    this.show(`« ${quote.texte} » — ${quote.auteur}, ${quote.date.slice(0, 4)}`, 'Ils l’ont dit', 8.5);
+    this.onQuote(quote.id);
   }
 
   update(game) {
     const { hero, boss } = game;
-    const state = [hero.def.id, hero.hp, game.lives, hero.charges, game.panicLevel, Math.round(game.panic), game.announced(),
+    const state = [hero.def.id, hero.hp, game.lives, hero.charges, game.panicLevel, Math.round(game.panic), game.announced(), game.crowd,
       boss?.active && boss.state !== 'gone' ? boss.hp : -1].join('|');
     if (state === this.last) return; // on ne touche au DOM que si quelque chose a changé
     this.last = state;
@@ -303,6 +293,21 @@ export class Hud {
     this.q('hud-coeurs').textContent = '♥'.repeat(Math.max(0, hero.hp)) + '♡'.repeat(Math.max(0, hero.def.pv - hero.hp));
     this.q('hud-vies').textContent = `× ${game.lives}`;
     this.q('hud-charges').textContent = hero.def.speciale ? '★'.repeat(hero.charges) + '☆'.repeat(Math.max(0, hero.def.speciale.charges - hero.charges)) : '';
+    // La manif : les deux comptages, comme au journal du soir.
+    const march = this.q('hud-manif');
+    march.hidden = !game.crowd;
+    if (game.crowd) {
+      const { syndicats, prefecture } = game.counts();
+      const grew = syndicats > (this.crowd || 0);
+      this.crowd = syndicats;
+      march.querySelector('b').textContent = `✊ ${syndicats.toLocaleString('fr-FR')}`;
+      march.querySelector('small').textContent = `préfecture : ${prefecture.toLocaleString('fr-FR')}`;
+      if (grew) {
+        march.classList.remove('grossit');
+        void march.offsetWidth; // relance l'animation
+        march.classList.add('grossit');
+      }
+    }
     const gauge = this.q('hud-panique');
     gauge.dataset.niveau = game.panicLevel;
     gauge.querySelector('i').style.width = `${Math.min(100, game.panic)}%`;
@@ -317,21 +322,32 @@ export class Hud {
     }
   }
 
-  /** Bandeau d'info en continu : la parodie, toujours signée PANIQUE TV. */
-  banner(text, seconds = 6) {
+  /** Alerte info : un bandeau interrompt le fil quelques secondes. `credit` : la chaîne et la date d'un vrai bandeau. */
+  banner(text, credit = '', seconds = 7) {
     const el = this.q('bandeau');
-    const line = el.querySelector('span');
-    const inner = h('i', {}, text);
-    line.replaceChildren(inner);
-    el.hidden = false;
-    const overflow = inner.scrollWidth - line.clientWidth + 24;
-    inner.style.setProperty('--decalage', `${-Math.max(0, overflow)}px`);
-    inner.style.animationDuration = `${seconds - 1.5}s`;
+    el.dataset.alerte = 'oui';
+    const origin = credit.split(' — ')[0];
+    this.show(origin ? `« ${text} » — ${origin}` : text, origin ? 'Vu à la télé' : 'Alerte info', seconds);
     el.classList.remove('entre');
     void el.offsetWidth; // relance l'animation
     el.classList.add('entre');
     clearTimeout(this.bannerTimer);
-    this.bannerTimer = setTimeout(() => { el.hidden = true; }, seconds * 1000);
+    this.bannerTimer = setTimeout(() => {
+      delete el.dataset.alerte;
+      this.nextQuote();
+    }, seconds * 1000);
+  }
+
+  /** Affiche une ligne dans le bandeau ; si elle est trop longue, elle défile. */
+  show(text, label, seconds) {
+    const el = this.q('bandeau');
+    el.querySelector('em').textContent = label;
+    const line = el.querySelector('span');
+    const inner = h('i', {}, text);
+    line.replaceChildren(inner);
+    const overflow = inner.scrollWidth - line.clientWidth + 24;
+    inner.style.setProperty('--decalage', `${-Math.max(0, overflow)}px`);
+    inner.style.animationDuration = `${Math.max(2, seconds - 2)}s`;
   }
 
   toast(text) {

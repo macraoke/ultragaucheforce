@@ -1,0 +1,33 @@
+nom: Le RAID
+pv: 5
+vitesse: 60
+deplacement: marche
+reaction: fonce
+vue: 170
+bouclier: oui
+contact: 1
+fin: greve
+largeur: 10
+hauteur: 16
+fiche: raid-emeutes-2023
+ecriteau: CODE 562
+auteur: UltraGauche Force
+--- repos
+.....k......
+.....k......
+...kkkkkk...
+..kkkkkkkk..
+..kcccccck..
+..kkkkkkkk..
+...kkkkkk...
+..kkkkkkkk..
+.kkkwwwkkkk.
+.kkkkkkkkkkK
+.kkkkkkkkksK
+.kkkkkkkkk.K
+..kkkkkkkk..
+..KKKKKKKK..
+..kkk..kkk..
+..kkk..kkk..
+..kkk..kkk..
+.kkkk.kkkk..

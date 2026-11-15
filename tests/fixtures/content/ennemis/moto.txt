@@ -1,0 +1,13 @@
+nom: Moto
+pv: 2
+vitesse: 180
+deplacement: moto
+reaction: rien
+vue: 220
+contact: 1
+fin: panne
+largeur: 20
+hauteur: 14
+--- repos
+kk
+kk

@@ -1,6 +1,10 @@
 // Le boss : une machine pilotée par sa fiche (phases, rythme, attaques du registre).
 // À zéro point de vie la machine se disloque (« ejecting ») : la caricature s'éjecte indemne,
 // puis le boss disparaît (« gone ») et la sortie s'ouvre.
+//
+// Le boss obéit à la gravité : posé sur un tas de tuiles destructibles, il descend à mesure qu'on creuse.
+// « assis: oui » : tant que sa vie n'est pas passée sous « leve », il ne bouge pas de son tas (`seated`)
+// et n'emploie que ses attaques à distance.
 
 import { TILE } from './world.js';
 import { moveBox, overlap } from './physics.js';
@@ -15,7 +19,7 @@ export function createBoss(def, cx, feetY) {
   return {
     x: cx - def.largeur / 2, y: feetY - def.hauteur, w: def.largeur, h: def.hauteur, vx: 0, vy: 0,
     hp: def.pv, hpMax: def.pv, def, active: false, phase: 0, facing: -1, flash: 0, bubble: null, state: 'idle',
-    timer: 1.2, turn: 0, boom: 0, line: 0, charge: null, hitX: 0, hitY: 0,
+    timer: 1.2, turn: 0, boom: 0, line: 0, charge: null, hitX: 0, hitY: 0, seated: Boolean(def.assis),
   };
 }
 
@@ -30,6 +34,7 @@ export function wakeBoss(game, boss) {
   boss.active = true;
   bossSays(boss);
   game.emit('boss', { state: 'enter' });
+  game.discover('boss', boss.def.id);
   game.sfx('boss', boss.x);
 }
 
@@ -77,11 +82,13 @@ export function updateBoss(game, boss, dt) {
       if (c.t <= 0) boss.state = 'idle';
     } else {
       boss.facing = dx >= 0 ? 1 : -1;
-      boss.vx = Math.abs(dx) > 90 ? boss.facing * def.vitesse : 0;
+      boss.vx = !boss.seated && Math.abs(dx) > 90 ? boss.facing * def.vitesse : 0;
       boss.timer -= dt;
       if (boss.timer <= 0 && !hero.dead) {
         const { attaques, rythme } = def.phases[boss.phase];
-        const name = attaques[boss.turn++ % attaques.length];
+        // Assis sur sa fortune, il ne se lève pas pour si peu : ses attaques à distance seulement.
+        const usable = boss.seated ? attaques.filter((a) => BOSS_ATTACKS[a].distance) : attaques;
+        const name = usable[boss.turn++ % usable.length];
         boss.timer = rythme;
         if (name) BOSS_ATTACKS[name].run(game, boss, def.attaques[name]);
       }
@@ -108,7 +115,14 @@ export function hurtBoss(game, boss, amount) {
   boss.hp = Math.max(0, boss.hp - amount);
   boss.flash = 0.1;
   game.sfx('impact', boss.x);
-  if (boss.hp > 0) return;
+  if (boss.hp > 0) {
+    if (boss.seated && boss.hp / boss.hpMax < boss.def.leve) {
+      boss.seated = false; // cette fois, il se lève
+      bossSays(boss);
+      game.emit('boss', { state: 'stand' });
+    }
+    return;
+  }
   boss.state = 'ejecting';
   boss.timer = EJECT_TIME;
   boss.boom = 0;

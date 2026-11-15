@@ -88,6 +88,14 @@ export class Renderer {
         this.shake = Math.max(this.shake, Math.min(9, e.r / 5));
       } else if (e.type === 'shake') this.shake = Math.max(this.shake, e.force);
       else if (e.type === 'bubble') this.floaters.push({ x: e.x, y: e.y, text: e.text, t: 1.6, color: e.color || '#f4f4f4' });
+      else if (e.type === 'recruit') {
+        this.floaters.push({ x: e.x, y: e.y - 14, text: `+ ${e.n.toLocaleString('fr-FR')}`, t: 1.8, color: '#f6c21c', size: 11 });
+        this.burst(e.x, e.y, '#f6c21c', 10, 80);
+        this.burst(e.x, e.y, '#e43b44', 8, 60);
+      } else if (e.type === 'overrun') {
+        this.floaters.push({ x: e.x, y: e.y - 12, text: 'ON EST LÀ !', t: 1.8, color: '#f6c21c', size: 10 }); // « On est là, même si Macron le veut pas »
+        this.burst(e.x, e.y, '#94b0c2', 10, 70);
+      }
     }
   }
 
@@ -134,13 +142,19 @@ export class Renderer {
     tctx.clearRect(0, 0, this.textCanvas.width, this.textCanvas.height);
     tctx.setTransform(this.scale, 0, 0, this.scale, 0, 0);
 
+    this.crowd = game.crowd || 0;
+    this.boxes = []; // les pancartes déjà posées à cette image : aucune ne recouvre l'autre
     this.backWalls(game, cx, cy);
     for (const d of game.decors) if (!this.bundle.decors[d.id]?.devant) this.decor(d);
+    for (const e of game.enemies) if (e.beam) this.beam(e);
     this.tiles(game.world, cx, cy);
     for (const p of game.props) this.prop(p);
-    game.cortege.forEach((m, i) => this.marcher(m, i));
+    for (const r of game.recruits || []) this.recruit(r);
     const talker = game.enemies.filter((e) => e.bubble && e.state !== 'done')
       .sort((a, b) => Math.abs(a.x - game.hero.x) - Math.abs(b.x - game.hero.x))[0];
+    // Une seule voix à la fois, et les pancartes du cortège s'effacent devant elle.
+    if (talker) this.reserve(talker.bubble.text, talker.x + talker.w / 2 - cx, talker.y - 10 - cy, 5.5, 80);
+    game.cortege.forEach((m, i) => this.marcher(m, i));
     for (const e of game.enemies) this.enemy(e, e === talker);
     if (game.boss) this.boss(game.boss);
     this.hero(game.hero);
@@ -153,8 +167,9 @@ export class Renderer {
     for (const d of game.decors) if (this.bundle.decors[d.id]?.devant) this.decor(d);
 
     for (const f of this.floaters) {
-      this.label(f.text, f.x - cx, f.y - cy, { size: 7, color: f.color, alpha: Math.min(1, f.t * 2) });
+      this.label(f.text, f.x - cx, f.y - cy, { size: f.size || 7, color: f.color, alpha: Math.min(1, f.t * 2), width: 150 });
     }
+    if (game.kettle) this.label('NASSE', this.viewW / 2, 34, { size: 12, color: Math.floor(this.clock * 3) % 2 ? '#e43b44' : '#f4f4f4' });
     if (game.sign && !this.demo) this.board(game.sign, this.viewW / 2, 30);
   }
 
@@ -287,15 +302,92 @@ export class Renderer {
     if (e.state === 'done') {
       this.actor(e, s.fin || s.repos);
       const cx = e.x + e.w / 2 - this.cx;
-      if (e.def.fin === 'greve') this.label('EN GRÈVE', cx, e.y - 9 - this.cy, { size: 5, color: '#1a1c2c', bg: '#f4f4f4' });
-      else if (Math.floor(this.clock * 3 + e.x) % 3 === 0) this.burst(e.x + e.w / 2, e.y, '#94b0c2', 1, 12);
+      if (e.def.ecriteau) this.label(e.def.ecriteau, cx, e.y - 9 - this.cy, { size: 5, color: '#1a1c2c', bg: '#f4f4f4' });
+      if (e.def.fin === 'panne' && Math.floor(this.clock * 3 + e.x) % 3 === 0) this.burst(e.x + e.w / 2, e.y, '#94b0c2', 1, 12);
       return;
     }
     const moving = e.state === 'patrol' || e.state === 'alert' || e.def.deplacement === 'vol';
+    if (e.rope) this.line(e.rope.x, e.rope.y, e.x + e.w / 2, e.y, '#1a1c2c');
+    if (e.jet) this.jet(e.jet);
     this.actor(e, this.frames(s, moving, e.animTime, e.def.deplacement === 'vol' ? 14 : 7), { flash: e.flash > 0 });
+    if (e.aim) this.aim(e);
+    if (e.rush?.phase === 'ruee') {
+      this.ctx.fillStyle = '#f4f4f4';
+      for (let k = 0; k < 3; k++) this.ctx.fillRect(Math.round(e.x + (e.facing > 0 ? -8 - k * 5 : e.w + 4 + k * 5) - this.cx), Math.round(e.y + 3 + k * 5 - this.cy), 4, 1);
+    }
+    // Une ligne qui tient affiche combien il faut être pour la déborder.
+    if (e.blocking && e.def.debordement > 0) {
+      const enough = this.crowd >= e.def.debordement;
+      this.label(`✊ ${e.def.debordement.toLocaleString('fr-FR')}`, e.x + e.w / 2 - this.cx, e.y - (speaks ? 22 : 10) - this.cy,
+        { size: 6.5, color: '#f4f4f4', bg: enough ? '#257953' : '#e43b44' });
+    }
     if (e.state === 'stunned') this.label('✶ ✶', e.x + e.w / 2 - this.cx, e.y - 5 - this.cy, { size: 6, color: '#f6c21c' });
     if (e.def.reaction === 'cadre' && e.state === 'alert') this.viewfinder(e);
     if (speaks) this.label(e.bubble.text, e.x + e.w / 2 - this.cx, e.y - 10 - this.cy, { size: 5.5, color: '#1a1c2c', bg: '#f4f4f4', width: 80 });
+  }
+
+  /** Un trait d'un pixel entre deux points du monde. */
+  line(x0, y0, x1, y1, color, dash = []) {
+    const { ctx } = this;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1;
+    ctx.setLineDash(dash);
+    ctx.beginPath();
+    ctx.moveTo(Math.round(x0 - this.cx) + 0.5, Math.round(y0 - this.cy) + 0.5);
+    ctx.lineTo(Math.round(x1 - this.cx) + 0.5, Math.round(y1 - this.cy) + 0.5);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  /** La visée du LBD : un trait pointillé et un viseur qui se resserre jusqu'au tir. */
+  aim(e) {
+    const { x, y, t } = e.aim;
+    this.line(e.x + e.w / 2, e.y + e.h * 0.35, x, y, '#e43b44', [2, 2]);
+    const r = Math.round(3 + t * 7);
+    const { ctx } = this;
+    ctx.strokeStyle = Math.floor(this.clock * 12) % 2 ? '#e43b44' : '#f4f4f4';
+    ctx.strokeRect(Math.round(x - r - this.cx) + 0.5, Math.round(y - r - this.cy) + 0.5, r * 2, r * 2);
+  }
+
+  /** Le jet du canon à eau. */
+  jet(j) {
+    const { ctx } = this;
+    const x = Math.round((j.dir > 0 ? j.x : j.x - j.length) - this.cx);
+    const y = Math.round(j.y - this.cy);
+    ctx.fillStyle = '#41a6f6';
+    ctx.fillRect(x, y - 3, j.length, 6);
+    ctx.fillStyle = '#9be7f5';
+    ctx.fillRect(x, y - 2, j.length, 3);
+    ctx.fillStyle = '#f4f4f4';
+    for (let k = 0; k < j.length; k += 9) ctx.fillRect(x + ((k + Math.floor(this.clock * 90)) % Math.max(1, j.length)), y - 1, 4, 1);
+    const tip = j.dir > 0 ? j.x + j.length : j.x - j.length;
+    if (Math.random() < 0.6) this.burst(tip, j.y, '#9be7f5', 1, 50);
+  }
+
+  /** Le projecteur de l'hélicoptère : un cône de lumière jusqu'au sol. */
+  beam(e) {
+    const { ctx } = this;
+    const { x, y, w, lit } = e.beam;
+    const ox = e.x + e.w / 2 - this.cx;
+    const oy = e.y + e.h - this.cy;
+    ctx.fillStyle = lit ? 'rgb(255 224 138 / .45)' : 'rgb(255 255 255 / .22)';
+    ctx.beginPath();
+    ctx.moveTo(ox - 2, oy);
+    ctx.lineTo(ox + 2, oy);
+    ctx.lineTo(x + w / 2 - this.cx, y - this.cy);
+    ctx.lineTo(x - w / 2 - this.cx, y - this.cy);
+    ctx.fill();
+  }
+
+  /** Une recrue qui attend : son gain s'affiche au-dessus d'elle, comme une porte à franchir. */
+  recruit(r) {
+    if (r.joined) return;
+    const s = r.def.sprites;
+    const rows = s.image2 && Math.floor(r.animTime * 3) % 2 ? s.image2 : s.image;
+    this.actor(r, rows, { flip: false, dy: Math.round(Math.sin(this.clock * 5 + r.x) * 1) });
+    const gain = r.def.multiplie > 0 ? `× ${String(r.def.multiplie).replace('.', ',')}` : `+ ${r.def.apport}`;
+    this.reserve(gain, r.x + r.w / 2 - this.cx, r.y - 12 - this.cy, 8, 0);
+    this.label(gain, r.x + r.w / 2 - this.cx, r.y - 12 - this.cy, { size: 8, color: '#1a1c2c', bg: '#f6c21c' });
   }
 
   /** Le cadre du drone : ce que PANIQUE TV choisit de montrer. */
@@ -343,7 +435,23 @@ export class Renderer {
     if (!def) return;
     const two = def.sprites.image2 && Math.floor(this.clock * 2 + d.x) % 2;
     const img = sprite(two ? def.sprites.image2 : def.sprites.image, this.palette);
-    this.ctx.drawImage(img, Math.round(d.x - this.cx), Math.round(d.y - img.height - this.cy));
+    const x = Math.round(d.x - this.cx);
+    const y = Math.round(d.y - img.height - this.cy);
+    if (x > this.viewW || x + img.width < 0) return;
+    this.ctx.drawImage(img, x, y);
+    const text = def.ecrit && this.written(d);
+    if (!text) return;
+    if (def.ecrit === 'tag') this.label(text, x + 8, y - 6, { size: 6.5, color: '#e43b44', width: 110 });
+    else {
+      this.reserve(text, x + img.width / 2, y + def.ecritY, 6, 0);
+      this.label(text, x + img.width / 2, y + def.ecritY, { size: 6, color: '#1a1c2c', stroke: false });
+    }
+  }
+
+  /** La vraie pancarte écrite sur un décor (banderole, tag) : toujours la même au même endroit. */
+  written(d) {
+    this.signs ??= this.bundle.pancartes.filter((p) => p.credit && p.texte.length <= 24);
+    return this.signs.length ? this.signs[Math.floor(d.x / 16 + d.y * 7) % this.signs.length].texte : '';
   }
 
   /** Un membre du cortège, avec sa pancarte, son drapeau ou sa trompette. */
@@ -371,9 +479,11 @@ export class Renderer {
       const sway = Math.round(Math.sin(this.clock * 5 + i) * 1);
       this.ctx.drawImage(cloth, m.facing < 0 ? hand - cloth.width : hand + 1, y - 16 + sway);
     } else if (m.kind === 'pancarte') {
+      const top = y - 12 - (i % 2) * 14;
+      if (!this.reserve(m.label, hand, top, 4.6, 44)) return; // elle reste baissée plutôt que d'en cacher une autre
       this.ctx.fillStyle = '#6b3a2a';
       this.ctx.fillRect(hand, y - 8 - (i % 2) * 14, 1, 10 + (i % 2) * 14);
-      this.board(m.label, hand, y - 12 - (i % 2) * 14, { size: 4.6, width: 44 });
+      this.board(m.label, hand, top, { size: 4.6, width: 44 });
     }
   }
 
@@ -426,8 +536,18 @@ export class Renderer {
     return lines;
   }
 
+  /** Réserve la place d'un texte à l'écran ; faux si un autre l'occupe déjà. */
+  reserve(text, x, y, size, width) {
+    const lines = this.wrap(text, size, width);
+    const w = Math.max(...lines.map((l) => this.tctx.measureText(l).width)) + 8;
+    const box = { x0: x - w / 2, x1: x + w / 2, y0: y - (lines.length - 1) * size * 1.1 - 3, y1: y + size * 1.1 + 3 };
+    if (this.boxes.some((b) => box.x0 < b.x1 && box.x1 > b.x0 && box.y0 < b.y1 && box.y1 > b.y0)) return false;
+    this.boxes.push(box);
+    return true;
+  }
+
   /** Texte centré en (x, y) : contour sombre, ou fond plein si `bg` est donné. */
-  label(text, x, y, { size = 6, color = '#f4f4f4', bg = null, width = 0, alpha = 1 } = {}) {
+  label(text, x, y, { size = 6, color = '#f4f4f4', bg = null, width = 0, alpha = 1, stroke = true } = {}) {
     const { tctx } = this;
     const lines = this.wrap(text, size, width);
     const w = Math.max(...lines.map((l) => tctx.measureText(l).width));
@@ -443,7 +563,7 @@ export class Renderer {
       tctx.fillRect(x - w / 2 - 2, top - 1, w + 4, lines.length * lh + 1);
     }
     lines.forEach((l, i) => {
-      if (!bg) {
+      if (!bg && stroke) {
         tctx.lineWidth = size / 4;
         tctx.lineJoin = 'round';
         tctx.strokeStyle = '#1a1c2c';

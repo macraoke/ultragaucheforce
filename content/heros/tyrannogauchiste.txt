@@ -1,12 +1,13 @@
 nom: Le TyrannoGauchiste
 traitement: l'ultragauche telle que la télé l'imagine
 cri: TAXEZ LES RICHES !
-voix: Le Tyranno Gauchiste !
 pv: 3
 vitesse: 125
 saut: 3
 largeur: 12
 hauteur: 16
+citation: darmanin-terrorisme-intellectuel
+fiche: impots-milliardaires
 auteur: UltraGauche Force
 
 # Arme : une rafale de tracts.

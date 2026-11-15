@@ -1,0 +1,18 @@
+# Ses projectiles sont des mots.
+nom: Crieur
+pv: 2
+vitesse: 0
+deplacement: fixe
+reaction: tire
+vue: 220
+fin: panne
+arme.type: tir
+arme.cadence: 2
+arme.vitesse: 100
+arme.portee: 200
+arme.degats: 0
+arme.terrain: 0
+arme.mots: MOT UN | MOT DEUX
+--- repos
+kk
+kk

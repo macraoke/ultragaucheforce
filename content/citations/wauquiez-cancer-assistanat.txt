@@ -1,0 +1,11 @@
+texte: Le cancer de la société française.
+auteur: Laurent Wauquiez
+fonction: ministre des Affaires européennes
+date: 2011-05-08
+contexte: Sur BFMTV (émission BFMTV 2012-Le Point-RMC), à propos des « dérives de l'assistanat », en proposant de plafonner le cumul des minima sociaux à 75 % du Smic.
+categorie: diabolisation
+note: Europe 1 rapporte qu'il a dénoncé les « dérives de l'assistanat » comme « le cancer de la société française » ; la phrase entière prononcée sur BFMTV n'a pas été retrouvée. Le lendemain sur Europe 1 : « Cette question de la différence entre le travail et l'assistanat est aujourd'hui l'un des vrais cancers de la société française parce que ça n'encourage pas les gens à reprendre un travail ». « Cancer de l'assistanat » est le raccourci de la presse, pas ses mots.
+source.titre: Europe 1 — Wauquiez : "l'assistanat est un cancer"
+source.url: https://www.europe1.fr/politique/Wauquiez-l-assistanat-est-un-cancer-315908
+source.nature: presse
+verifie: 2026-11-15
