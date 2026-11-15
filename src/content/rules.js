@@ -34,6 +34,9 @@ const url = (required = false) => ({ t: 'url', req: required });
 const day = (required = false) => ({ t: 'day', req: required });
 const CREDITS = { auteur: str('anonyme'), licence: str('CC-BY-SA-4.0') };
 
+/** Appartenance stricte : `'constructor' in {}` est vrai, `has({}, 'constructor')` ne l'est pas. */
+const has = (obj, key) => Object.hasOwn(obj, key);
+
 const splitList = (raw) => (raw ? raw.split('|').map((s) => s.trim()).filter(Boolean) : []);
 
 function setPath(obj, path, value) {
@@ -132,7 +135,7 @@ function readBehavior(f, prefix, registry, report, { optional = false, ...extra 
     if (!optional) report(1, `Il manque « ${key}: … » (choix : ${names}).`);
     return null;
   }
-  if (!registry[type]) {
+  if (!has(registry, type)) {
     report(f.lineOf(key), `« ${key}: ${type} » n'existe pas. Choix possibles : ${names}.`);
     return null;
   }
@@ -151,7 +154,7 @@ function readSprites(f, palette, report, { required = [], size = null, max = 96 
     const rows = s.rows.map((r) => r.replaceAll(' ', '.').padEnd(w, '.'));
     rows.forEach((row, y) => {
       for (let x = 0; x < row.length; x++) {
-        if (row[x] !== '.' && !(row[x] in palette)) {
+        if (row[x] !== '.' && !has(palette, row[x])) {
           report(s.line + y, `Couleur inconnue « ${row[x]} » : elle n'est pas dans content/palette.txt.`, x + 1);
         }
       }
@@ -215,7 +218,7 @@ function buildBoss(f, ctx, report) {
     if (!f.has(`${p}.attaques`)) continue;
     const names = splitList(f.get(`${p}.attaques`));
     for (const name of names) {
-      if (!BOSS_ATTACKS[name]) {
+      if (!has(BOSS_ATTACKS, name)) {
         report(f.lineOf(`${p}.attaques`), `Attaque inconnue « ${name} ». Choix possibles : ${attacks.join(', ')}.`);
       } else {
         out.attaques[name] ??= readParams(f, name, BOSS_ATTACKS[name], report);
@@ -224,7 +227,7 @@ function buildBoss(f, ctx, report) {
     out.phases.push({
       jusqua: readValue(f, `${p}.jusqua`, num(0, 1, 0), report),
       rythme: readValue(f, `${p}.rythme`, num(0.4, 8, 2), report),
-      attaques: names.filter((name) => BOSS_ATTACKS[name]),
+      attaques: names.filter((name) => has(BOSS_ATTACKS, name)),
     });
   }
   if (!out.phases.length) report(1, 'Un boss a besoin d’au moins une phase : « phase.1.attaques: salve | charge ».');
@@ -235,7 +238,7 @@ function buildBoss(f, ctx, report) {
 function buildTile(f, ctx, report) {
   const spec = { nom: req(), symbole: req(), pv: num(0, 20, 1), solide: bool(true), explose: num(0, 80, 0), ...CREDITS };
   const out = readFields(f, spec, report);
-  if (out.symbole && (!/^[A-Z]$/.test(out.symbole) || out.symbole in MARKERS)) {
+  if (out.symbole && (!/^[A-Z]$/.test(out.symbole) || has(MARKERS, out.symbole))) {
     report(f.lineOf('symbole'), `« symbole » doit être une lettre majuscule libre (réservées : ${Object.keys(MARKERS).join(', ')}).`);
   }
   out.sprites = readSprites(f, ctx.palette, report, { required: ['image'], size: TILE });
@@ -288,7 +291,7 @@ function buildFact(f, ctx, report) {
 }
 
 function buildSound(f, ctx, report) {
-  const spec = { nom: str(), zzfx: str(), fichier: str(), volume: num(0, 1, 1), auteur: str(), licence: str('CC0-1.0'), source: str() };
+  const spec = { nom: str(), zzfx: str(), fichier: str(), volume: num(0, 1, 1), auteur: str(), licence: str('CC0-1.0'), source: url() };
   const out = readFields(f, spec, report);
   noSections(f, report);
   if (!out.zzfx === !out.fichier) report(1, 'Un bruitage a besoin de « zzfx: … » (son synthétisé) OU de « fichier: … » (enregistrement), pas les deux.');
@@ -325,14 +328,14 @@ export function buildLevel(f, ctx, report) {
   for (const { key, value, line } of f.fields) {
     if (isSign(key)) out.panneaux[key.at(-1)] = value;
     if (!isLegend(key)) continue;
-    const type = value in ctx.ennemis ? 'ennemi' : value in ctx.decors ? 'decor' : null;
+    const type = has(ctx.ennemis, value) ? 'ennemi' : has(ctx.decors, value) ? 'decor' : null;
     if (type) out.legende[key] = { type, id: value };
     else report(line, `« ${key}: ${value} » : aucun ennemi ni décor ne s'appelle « ${value} ».`);
   }
-  if (out.boss && !(out.boss in ctx.boss)) report(f.lineOf('boss'), `Le boss « ${out.boss} » n'existe pas dans content/boss/.`);
+  if (out.boss && !has(ctx.boss, out.boss)) report(f.lineOf('boss'), `Le boss « ${out.boss} » n'existe pas dans content/boss/.`);
   out.camarades = splitList(out.camarades);
   for (const id of [out.heros, ...out.camarades]) {
-    if (id && !(id in ctx.heros)) report(f.lineOf(id === out.heros ? 'heros' : 'camarades'), `Le héros « ${id} » n'existe pas dans content/heros/.`);
+    if (id && !has(ctx.heros, id)) report(f.lineOf(id === out.heros ? 'heros' : 'camarades'), `Le héros « ${id} » n'existe pas dans content/heros/.`);
   }
 
   const map = f.sections.carte;
@@ -348,14 +351,14 @@ export function buildLevel(f, ctx, report) {
   rows.forEach((row, y) => {
     for (let x = 0; x < row.length; x++) {
       const c = row[x];
-      if (c === '.' || c in ctx.symbols) continue;
-      if (c in MARKERS) {
-        if (c in count) count[c]++;
+      if (c === '.' || has(ctx.symbols, c)) continue;
+      if (has(MARKERS, c)) {
+        if (has(count, c)) count[c]++;
         if (c === 'D') start = { x, y };
       } else if (/[1-9]/.test(c)) {
-        if (!(c in out.panneaux)) report(map.line + y, `Panneau « ${c} » sans texte : ajoute « panneau.${c}: … » dans l'en-tête.`, x + 1);
+        if (!has(out.panneaux, c)) report(map.line + y, `Panneau « ${c} » sans texte : ajoute « panneau.${c}: … » dans l'en-tête.`, x + 1);
       } else if (/[a-z]/.test(c)) {
-        if (!(c in out.legende)) report(map.line + y, `Lettre « ${c} » inconnue : déclare-la dans l'en-tête, par exemple « ${c}: bouclier ».`, x + 1);
+        if (!has(out.legende, c)) report(map.line + y, `Lettre « ${c} » inconnue : déclare-la dans l'en-tête, par exemple « ${c}: bouclier ».`, x + 1);
       } else {
         report(map.line + y, `Symbole « ${c} » inconnu. Tuiles : ${Object.keys(ctx.symbols).join(' ')} ; repères : ${Object.keys(MARKERS).join(' ')} ; vide : « . ».`, x + 1);
       }
@@ -379,7 +382,7 @@ export function buildLevel(f, ctx, report) {
     out.murs = back.rows.map((r) => r.replaceAll(' ', '.').padEnd(width, '.'));
     out.murs.forEach((row, y) => {
       for (let x = 0; x < row.length; x++) {
-        if (row[x] !== '.' && !(row[x] in ctx.symbols)) {
+        if (row[x] !== '.' && !has(ctx.symbols, row[x])) {
           report(back.line + y, `Symbole « ${row[x]} » inconnu dans les murs du fond : seules les tuiles y ont leur place.`, x + 1);
         }
       }
@@ -497,7 +500,7 @@ export function buildContent(files) {
   const campaign = byPath.get('content/campagne.txt');
   if (campaign) {
     for (const { text, line } of parseLines(campaign.text)) {
-      if (text in bundle.niveaux) bundle.campagne.push(text);
+      if (has(bundle.niveaux, text)) bundle.campagne.push(text);
       else reporter(campaign.path)(line, `Le niveau « ${text} » n'existe pas dans content/niveaux/.`);
     }
   }
@@ -506,7 +509,7 @@ export function buildContent(files) {
   const refs = (dir, target, get) => {
     for (const item of Object.values(bundle[dir])) {
       const id = get(item);
-      if (id && !(id in bundle[target])) reporter(`content/${dir}/${item.id}.txt`)(1, `« ${id} » n'existe pas dans content/${target}/.`);
+      if (id && !has(bundle[target], id)) reporter(`content/${dir}/${item.id}.txt`)(1, `« ${id} » n'existe pas dans content/${target}/.`);
     }
   };
   refs('heros', 'citations', (h) => h.citation);
@@ -516,11 +519,11 @@ export function buildContent(files) {
   refs('niveaux', 'musiques', (n) => n.musique);
   for (const b of Object.values(bundle.boss)) {
     const ally = b.attaques?.invocation?.ennemi;
-    if (ally && !(ally in bundle.ennemis)) reporter(`content/boss/${b.id}.txt`)(1, `« invocation.ennemi: ${ally} » : cet ennemi n'existe pas.`);
+    if (ally && !has(bundle.ennemis, ally)) reporter(`content/boss/${b.id}.txt`)(1, `« invocation.ennemi: ${ally} » : cet ennemi n'existe pas.`);
   }
   for (const h of Object.values(bundle.heros)) {
     const tile = h.speciale?.tuile;
-    if (tile && !(tile in bundle.tuiles)) reporter(`content/heros/${h.id}.txt`)(1, `« speciale.tuile: ${tile} » : cette tuile n'existe pas.`);
+    if (tile && !has(bundle.tuiles, tile)) reporter(`content/heros/${h.id}.txt`)(1, `« speciale.tuile: ${tile} » : cette tuile n'existe pas.`);
   }
 
   return { bundle, errors };

@@ -17,6 +17,7 @@ export class Radio {
     this.widget = null;
     this.current = null;
     this.loading = null;
+    this.onAsk = () => {}; // le joueur demande la musique : à main.js d'enregistrer ce choix
   }
 
   /** Les pistes prévues pour un endroit : un niveau précis, « menu », « jeu », ou « partout ». */
@@ -30,9 +31,16 @@ export class Radio {
   }
 
   setEnabled(on) {
-    this.enabled = on && this.tracks.length > 0 && navigator.onLine !== false;
-    this.box.hidden = !this.enabled;
-    if (!this.enabled) this.widget?.pause();
+    const possible = this.tracks.length > 0 && navigator.onLine !== false;
+    this.enabled = on && possible;
+    this.box.hidden = !possible;
+    if (this.enabled) return;
+    this.widget?.pause();
+    // Tant que le joueur n'a rien demandé, aucun lecteur n'est chargé : juste un bouton.
+    if (possible && !this.loading) {
+      this.box.replaceChildren(h('button', { type: 'button', onclick: () => this.onAsk() }, '▶ Radio Manif'),
+        h('p', {}, 'Musique par SoundCloud'));
+    }
   }
 
   /** Charge le lecteur à la première utilisation seulement. */

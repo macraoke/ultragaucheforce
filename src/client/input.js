@@ -45,6 +45,7 @@ export class Input {
     this.keys = {};
     this.touch = {};
     this.pointers = new Map();
+    this.active = false; // vrai seulement en pleine partie : ailleurs, le clavier sert aux menus
     this.onPause = () => {};
     this.onAny = () => {}; // premier geste : sert à débloquer le son
 
@@ -53,7 +54,7 @@ export class Input {
       if (e.repeat) return;
       if (PAUSE_KEYS.includes(e.code)) return this.onPause();
       const action = KEYS[e.code];
-      if (!action || e.target.matches?.('input, textarea, select')) return;
+      if (!action || !this.active) return;
       this.keys[e.code] = action;
       e.preventDefault();
     });
@@ -119,6 +120,35 @@ export class Input {
       fire: b(2) || b(7) || b(5),
       special: b(1) || b(6) || b(4),
     };
+  }
+
+  /** Manette hors partie : croix ou stick pour changer de bouton, A pour valider, Start pour reprendre. */
+  pollMenu() {
+    const pad = [...(navigator.getGamepads?.() || [])].find(Boolean);
+    if (!pad) return;
+    const b = (i) => Boolean(pad.buttons[i]?.pressed);
+    const now = {
+      next: b(13) || b(15) || pad.axes[1] > 0.5 || pad.axes[0] > 0.5,
+      prev: b(12) || b(14) || pad.axes[1] < -0.5 || pad.axes[0] < -0.5,
+      ok: b(0),
+      start: b(9),
+    };
+    const was = this.padMenu || {};
+    this.padMenu = now;
+    this.padPause = now.start; // évite un second basculement au retour en partie
+    const pressed = (k) => now[k] && !was[k];
+    if (pressed('start')) return this.onPause();
+    const card = document.querySelector('.carton');
+    if (card) {
+      if (pressed('ok')) card.dispatchEvent(new Event('pointerdown'));
+      return;
+    }
+    const items = [...document.querySelectorAll('#ecran button:not(:disabled), #ecran a.bouton')];
+    if (!items.length) return;
+    const at = items.indexOf(document.activeElement);
+    if (pressed('ok')) (items[at] || items[0]).click();
+    else if (pressed('next')) items[(at + 1) % items.length].focus();
+    else if (pressed('prev')) items[(at - 1 + items.length) % items.length].focus();
   }
 
   /** L'état lu par la simulation. */

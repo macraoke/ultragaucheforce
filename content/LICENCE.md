@@ -12,7 +12,7 @@ Pour un contenu précis, ajoutez l'auteur donné par la clé `auteur` de sa fich
 
 ## Cas particuliers
 
-- **Bruitages** : chaque fiche de `content/sons/` porte sa licence (`CC0-1.0` pour les sons synthétisés ; `CC0-1.0` ou `CC-BY-4.0` pour les enregistrements, avec leur auteur et leur `source`).
+- **Bruitages** : chaque fiche de `content/sons/` porte sa licence (`CC0-1.0` pour les sons synthétisés ; `CC0-1.0`, `CC-BY-4.0` ou `CC-BY-SA-3.0` pour les enregistrements, avec leur auteur et leur `source`).
 - **Voix off** : générées avec Piper, voix `fr_FR-siwis-medium`, entraînée sur le corpus SIWIS.
 - **Musiques** : elles ne sont pas dans le dépôt. `content/musiques/` ne contient que des liens ; chaque piste reste sous la licence de son artiste.
 - **Citations réelles** : brèves, sourcées, reproduites pour informer et commenter ; elles appartiennent à leurs auteurs.

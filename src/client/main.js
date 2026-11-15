@@ -28,9 +28,16 @@ let game = null;
 let mode = 'menu'; // menu (démo en fond) | playing | paused | card | over
 let current = null; // { id, level } du niveau en cours
 let custom = null; // niveau de l'Atelier en cours de test
+let begin = null; // le carton d'ouverture attend : fonction qui lance vraiment le niveau
 let bot = {};
 let acc = 0;
 let last = performance.now();
+
+radio.onAsk = () => {
+  save.options.musique = true;
+  storeSave(save);
+  applyOptions();
+};
 
 function applyOptions() {
   audio.enabled = save.options.son;
@@ -46,7 +53,8 @@ const screens = new Screens(screenRoot, {
     resume: () => setMode('playing'),
     restart: () => (custom ? start(null, custom) : start(current.id)),
     checkpoint: () => {
-      game.killHero?.();
+      game.respawn();
+      renderer.snap(game);
       setMode('playing');
     },
     quit: () => toMenu(),
@@ -64,6 +72,7 @@ function setMode(next) {
   radio.setVisible(next !== 'playing' && next !== 'card');
   renderer.demo = next === 'menu';
   input.release();
+  input.active = next === 'playing';
   acc = 0;
 }
 
@@ -77,6 +86,7 @@ function attract() {
 }
 
 function toMenu() {
+  begin = null;
   custom = null;
   current = null;
   setMode('menu');
@@ -92,10 +102,12 @@ function start(id, level = null) {
   renderer.snap(game);
   hud.reset();
   setMode('paused');
-  screens.intro(current.level, () => {
+  begin = () => {
+    begin = null;
     setMode('playing');
     radio.play(current.level.musique || current.id);
-  });
+  };
+  screens.intro(current.level, () => begin?.());
 }
 
 function openAtelier() {
@@ -108,7 +120,8 @@ function togglePause() {
   if (mode === 'playing') {
     setMode('paused');
     screens.pause();
-  } else if (mode === 'paused' && screens.open) setMode('playing');
+  } else if (begin) begin();
+  else if (mode === 'paused' && screens.open) setMode('playing');
 }
 
 async function win() {
@@ -173,6 +186,7 @@ function frame(now) {
   requestAnimationFrame(frame);
   const dt = Math.min(0.1, (now - last) / 1000);
   last = now;
+  if (mode !== 'playing') input.pollMenu();
   if (!game) return;
   const demo = mode === 'menu';
   if (mode === 'playing' || demo) {

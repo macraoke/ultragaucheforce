@@ -10,6 +10,9 @@ import { formatError } from '../src/content/rules.js';
 import { makeIcons } from './png.mjs';
 
 const PORT = Number(process.env.PORT) || 8080;
+// Par défaut, seule cette machine peut se connecter. Pour tester sur un téléphone du même
+// réseau : HOST=0.0.0.0 npm start
+const HOST = process.env.HOST || '127.0.0.1';
 const TYPES = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8',
   '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.txt': 'text/plain; charset=utf-8',
@@ -45,6 +48,6 @@ createServer(async (req, res) => {
   } catch {
     send(404, 'text/plain; charset=utf-8', 'Introuvable');
   }
-}).listen(PORT, () => {
+}).listen(PORT, HOST, () => {
   console.log(`UltraGauche Force : http://localhost:${PORT}  (Galerie : http://localhost:${PORT}/galerie.html)`);
 });

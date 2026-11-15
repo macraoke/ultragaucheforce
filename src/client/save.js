@@ -7,7 +7,7 @@ const KEY = 'ugf:sauvegarde:v1'; // préfixé : le domaine peut être partagé a
 const DEFAULTS = {
   termines: {}, // identifiant de niveau → vrai
   decouvertes: [], // identifiants de fiches, citations et drapeaux rencontrés
-  options: { son: true, musique: true, sobre: false },
+  options: { son: true, musique: false, sobre: false }, // la musique (lecteur SoundCloud) ne se lance que sur demande
   brouillon: '',
 };
 
