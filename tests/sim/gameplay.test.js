@@ -275,12 +275,10 @@ test('panique : premier tract, paliers, manchettes du niveau d’abord, renforts
   assert.equal(game.enemies.length, enemies + 2, 'deux renforts');
   assert.ok(game.enemies.slice(-2).every((e) => e.def.reaction === 'cadre'), 'des drones de PANIQUE TV');
 
-  const announced = game.announced();
   game.addPanic(40);
   events = game.events.splice(0);
   assert.equal(game.panicLevel, 2);
   assert.equal(events.find((e) => e.type === 'headline').text, 'MANCHETTE DU NIVEAU DEUX');
-  assert.ok(game.announced() > announced, 'le chiffre annoncé gonfle avec la panique');
 
   game.addPanic(500);
   assert.equal(game.panic, 100);

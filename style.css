@@ -225,13 +225,27 @@ button.discret { background: transparent; color: var(--papier); border-color: va
 
 body.jeu { overflow: hidden; overscroll-behavior: none; }
 
+/* Téléphone tenu debout : le jeu se joue quand même en paysage. Tout pivote d'un quart de tour. */
+html.pivote { overflow: hidden; }
+html.pivote body {
+  position: fixed;
+  top: 0;
+  left: 100vw;
+  width: 100vh;
+  height: 100vw;
+  left: 100dvw;
+  width: 100dvh;
+  height: 100dvw;
+  transform-origin: 0 0;
+  transform: rotate(90deg);
+}
+
 #app {
   position: fixed;
   inset: 0;
   display: flex;
   flex-direction: column;
   background: #000;
-  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   touch-action: none;
   user-select: none;
   -webkit-user-select: none;
@@ -249,17 +263,10 @@ body.jeu { overflow: hidden; overscroll-behavior: none; }
 #hud-coeurs { color: var(--rouge); font-size: 1.3em; letter-spacing: .08em; }
 #hud-charges { color: var(--or); font-size: 1.2em; }
 #hud-manif { flex-basis: 100%; color: var(--or); font-size: 1.5em; transform-origin: left center; }
-#hud-manif small { font-size: .5em; color: var(--blanc); vertical-align: middle; }
 #hud-manif[hidden] { display: none; }
 #hud-manif.grossit { animation: grossit .45s cubic-bezier(.2, 1.6, .4, 1); }
 @keyframes grossit { 0% { transform: scale(1.7); } 100% { transform: scale(1); } }
 body.sobre #hud-manif.grossit { animation: none; }
-#hud-panique { position: relative; width: 9em; height: 1.35em; background: var(--nuit); border: 2px solid var(--blanc); overflow: hidden; text-shadow: none; }
-#hud-panique i { position: absolute; inset: 0 auto 0 0; background: #38b764; transition: width .3s; }
-#hud-panique[data-niveau='1'] i { background: var(--or); }
-#hud-panique[data-niveau='2'] i { background: var(--rouge); animation: clignote .5s steps(2) infinite; }
-#hud-panique b { position: relative; display: block; text-align: center; line-height: 1.25em; color: var(--blanc); text-shadow: 0 1px 0 var(--nuit); font-weight: 900; }
-#hud-annonce { color: var(--or); }
 #pause { pointer-events: auto; font-size: 1em; padding: .35em .6em; box-shadow: 2px 2px 0 var(--rouge); text-shadow: none; }
 #hud-boss { position: absolute; left: 50%; top: 3.2em; transform: translateX(-50%); width: min(60%, 420px); text-align: center; }
 #hud-boss span { display: block; height: .8em; margin-top: .25em; background: var(--nuit); border: 2px solid var(--blanc); }
@@ -269,48 +276,44 @@ body.sobre #hud-panique i { animation: none; }
 
 /* Bandeau PANIQUE TV */
 #bandeau { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; display: flex; align-items: stretch; font: 900 clamp(.75rem, 2.6vmin, 1.25rem)/1 var(--titre); text-transform: uppercase; letter-spacing: .03em; pointer-events: none; overflow: hidden; }
-#bandeau strong { background: var(--rouge); color: var(--blanc); padding: .5em .7em; white-space: nowrap; }
+#bandeau strong { display: flex; align-items: center; gap: .5em; background: var(--rouge); color: var(--blanc); padding: .35em .6em; white-space: nowrap; }
+/* La jauge de panique est celle de la chaîne : elle vit à côté de son nom. */
+#hud-panique { position: relative; width: 6.2em; height: 1.4em; background: var(--nuit); border: 2px solid var(--blanc); overflow: hidden; font-size: .8em; }
+#hud-panique i { position: absolute; inset: 0 auto 0 0; background: #38b764; transition: width .3s; }
+#hud-panique[data-niveau='1'] i { background: var(--or); }
+#hud-panique[data-niveau='2'] i { background: var(--rouge-sombre); animation: clignote .5s steps(2) infinite; }
+#hud-panique b { position: relative; display: block; text-align: center; line-height: 1.3em; color: var(--blanc); text-shadow: 0 1px 0 var(--nuit); }
 #bandeau em { background: var(--nuit); color: var(--or); padding: .5em .6em; font-style: normal; white-space: nowrap; }
 #bandeau[data-alerte] em { background: var(--or); color: var(--nuit); }
-#bandeau span { flex: 1; min-width: 0; background: var(--blanc); color: var(--nuit); padding: .5em .8em; white-space: nowrap; overflow: hidden; }
-#bandeau span i { display: inline-block; font-style: normal; animation: defile 4.5s linear .8s both; }
+#bandeau > span { flex: 1; min-width: 0; background: var(--blanc); color: var(--nuit); padding: .5em .8em; white-space: nowrap; overflow: hidden; }
+#bandeau > span i { display: inline-block; font-style: normal; animation: defile 4.5s linear .8s both; }
 @keyframes defile { to { transform: translateX(var(--decalage, 0)); } }
 #bandeau[hidden], #hud[hidden], #hud-boss[hidden] { display: none; }
 #bandeau.entre { animation: bandeau-entre .3s cubic-bezier(.2, 1.3, .4, 1); }
 @keyframes bandeau-entre { from { transform: translateY(100%); } }
-@media (orientation: landscape) {
-  body.tactile #bandeau { bottom: auto; top: 4.4em; } /* sous les deux lignes du HUD */
-  body.tactile #toasts { top: 8em; }
-}
 
 #toasts { position: absolute; left: 10px; top: 4.6em; z-index: 6; display: grid; gap: 6px; pointer-events: none; }
 #toasts p { margin: 0; padding: .45em .7em; background: var(--nuit); border-left: 5px solid var(--or); font: 700 .8rem/1.2 var(--texte); animation: bandeau-entre .25s; }
 
-/* Commandes tactiles : une seule surface, les boutons ne sont que des repères visuels */
+/* Commandes tactiles : l'image remplit l'écran, tout l'écran répond. Le manche et les trois cibles ne sont que des repères. */
 #tactile { display: none; }
-body.tactile #tactile { display: block; position: absolute; inset: 0; z-index: 5; }
-body.tactile:not(.en-jeu) #tactile { display: none; }
-#tactile .groupe { position: absolute; bottom: calc(14px + env(safe-area-inset-bottom)); display: flex; align-items: flex-end; gap: 14px; }
-#tactile .gauche { left: calc(18px + env(safe-area-inset-left)); }
-#tactile .droite { right: calc(18px + env(safe-area-inset-right)); }
-#tactile b { width: 68px; height: 68px; border-radius: 50%; display: grid; place-items: center; font: 900 .85rem/1 var(--titre); letter-spacing: .04em; color: var(--blanc); background: rgb(26 28 44 / .45); border: 3px solid rgb(244 244 244 / .65); }
-#tactile b.petit { width: 54px; height: 54px; font-size: .75rem; }
-#tactile b.appuye { background: rgb(246 194 28 / .75); color: var(--nuit); border-color: var(--nuit); }
+body.tactile.en-jeu #tactile { display: block; position: absolute; inset: 0; z-index: 5; }
+#tactile b, #tactile .manche { position: absolute; transform: translate(-50%, -50%); border-radius: 50%; pointer-events: none; }
+#tactile b { width: 21vmin; height: 21vmin; display: grid; place-items: center; font: 900 clamp(.7rem, 3.6vmin, 1rem)/1 var(--titre); letter-spacing: .04em; color: rgb(244 244 244 / .75); background: rgb(26 28 44 / .22); border: 2px solid rgb(244 244 244 / .4); }
+#tactile b[data-action='special'] { width: 15vmin; height: 15vmin; color: rgb(246 194 28 / .9); border-color: rgb(246 194 28 / .55); }
+#tactile b.appuye { background: rgb(246 194 28 / .6); color: var(--nuit); border-color: var(--nuit); }
+#tactile .manche { width: 26vmin; height: 26vmin; background: rgb(26 28 44 / .16); border: 2px solid rgb(244 244 244 / .3); }
+#tactile .manche i { position: absolute; left: 50%; top: 50%; width: 11vmin; height: 11vmin; border-radius: 50%; background: rgb(244 244 244 / .4); transform: translate(calc(-50% + var(--dx, 0px)), calc(-50% + var(--dy, 0px))); }
+#tactile .manche.appuye { border-color: rgb(244 244 244 / .6); }
+#tactile .manche.appuye i { background: rgb(246 194 28 / .8); }
 
-@media (orientation: portrait) {
-  body.tactile #scene { flex: 0 0 auto; height: min(62vw, 46vh); }
-  body.tactile #tactile { position: relative; flex: 1; inset: auto; background: var(--nuit); border-top: 4px solid var(--rouge); }
-  body.tactile #tactile .groupe { bottom: 50%; transform: translateY(50%); }
-  #tactile .groupe { gap: 10px; }
-  #tactile .gauche { left: calc(12px + env(safe-area-inset-left)); }
-  #tactile .droite { right: calc(12px + env(safe-area-inset-right)); }
-  #tactile b { width: min(21vw, 84px); height: min(21vw, 84px); font-size: 1rem; background: var(--encre); }
-  #tactile b.petit { position: absolute; right: min(11vw, 44px); bottom: calc(min(21vw, 84px) + 14px); width: min(17vw, 66px); height: min(17vw, 66px); }
-  #hud { font-size: .68rem; }
-  #hud .bloc { top: 5px; gap: .2em .6em; }
-  #hud .gauche { left: 6px; }
-  #hud .droite { right: 6px; }
-}
+/* Au pouce : le HUD s'écarte des encoches et le bandeau passe en haut, hors des pouces. */
+body.tactile #hud .gauche { left: max(10px, env(safe-area-inset-left)); }
+body.tactile #hud .droite { right: max(10px, env(safe-area-inset-right)); }
+body.tactile #bandeau { bottom: auto; top: 4.4em; }
+body.tactile #toasts { top: 8em; left: max(10px, env(safe-area-inset-left)); }
+html.pivote body.tactile #hud .gauche, html.pivote body.tactile #toasts { left: max(10px, env(safe-area-inset-top)); }
+html.pivote body.tactile #hud .droite { right: max(10px, env(safe-area-inset-bottom)); }
 
 /* ------------------------------------------------------------------ écrans */
 
@@ -357,8 +360,9 @@ body.tactile:not(.en-jeu) #tactile { display: none; }
 .intro .tv em { background: var(--or); color: var(--nuit); padding: .45em .7em; font-style: normal; }
 .intro .manchette { font: 900 clamp(1.2rem, 4.4vmin, 2rem)/1.05 var(--titre); text-transform: uppercase; background: var(--blanc); color: var(--nuit); padding: .5em .7em; transform: rotate(-1deg); }
 .fin .temps { font-weight: 700; }
-.fin .bilans { display: grid; grid-template-columns: minmax(150px, 1fr) 2fr; gap: 12px; }
-.fin .annonce { background: var(--rouge); text-align: center; text-transform: uppercase; font-family: var(--titre); }
+.fin .bilans { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.fin .bilans ul { margin: .4em 0 0; padding: 0; list-style: none; text-align: left; font: 400 .85rem/1.5 var(--texte); text-transform: none; }
+.fin .annonce { background: var(--rouge); }
 .fin .annonce h3 { color: var(--blanc); }
 .fin .chiffre { font-size: clamp(2.4rem, 9vmin, 4.5rem); line-height: 1; margin: 0; }
 .fin .fiche { margin-top: 12px; border-left: 6px solid var(--or); }
@@ -403,7 +407,6 @@ body.tactile:not(.en-jeu) #tactile { display: none; }
 #radio iframe { display: block; width: 100%; height: 76px; border: 0; margin: 4px 0; }
 #radio p { margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-.fin .partie { display: flex; flex-wrap: wrap; gap: .2em 1.4em; padding: 0; margin: .8em 0; list-style: none; font-weight: 700; }
 .fin .pancarte { margin-top: 12px; padding: .6em .8em; background: var(--papier); color: var(--nuit); transform: rotate(-1deg); font-family: var(--titre); text-transform: uppercase; }
 .fin .pancarte small { font: 400 .75rem var(--texte); text-transform: none; }
 

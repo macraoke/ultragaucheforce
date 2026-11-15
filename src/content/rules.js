@@ -218,7 +218,8 @@ function buildEnemy(f, ctx, report) {
 
 /** Une recrue : quelqu'un (ou une assemblée) qui rejoint la manif quand le héros passe ou lui tend un tract. */
 function buildRecruit(f, ctx, report) {
-  const spec = { nom: req(), apport: num(1, 500, 0), multiplie: num(1.5, 5, 0), slogan: list(), ...CARD, ...CREDITS };
+  // `soin` : points de vie rendus au héros quand la recrue le rejoint (un medic).
+  const spec = { nom: req(), apport: num(1, 500, 0), multiplie: num(1.5, 5, 0), soin: num(0, 3, 0), slogan: list(), ...CARD, ...CREDITS };
   const out = readFields(f, spec, report);
   if (f.has('apport') === f.has('multiplie')) {
     report(1, 'Une recrue a besoin de « apport: … » (des gens qui rejoignent) OU de « multiplie: … » (la manif est multipliée), pas les deux.');
@@ -358,6 +359,7 @@ export function buildLevel(f, ctx, report) {
     // `citation` : la vraie phrase qui ouvre le niveau ; `fiche` (répétable) : la première sert à l'écran de fin.
     citation: str(), fiche: list(),
     manif: num(0, 5000, 0), 'nasse.ennemi': str(), 'nasse.nombre': num(1, 6, 3), 'nasse.vitesse': num(4, 80, 18),
+    'nasse.rythme': num(0, 600, 0), // secondes entre deux nasses qui reviennent d'elles-mêmes (0 : seulement aux repères « N »)
     ...CREDITS,
   };
   const isLegend = (k) => LEGEND.test(k);

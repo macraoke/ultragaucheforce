@@ -53,7 +53,7 @@ test('niveau : une recrue se place comme un ennemi, « manif » fixe la foule de
 
 test('niveau : le repère « N » demande une nasse décrite dans l’en-tête', () => {
   assert.ok(MARKERS.N, '« N » est un repère réservé, comme D, S, K, Q et Y');
-  assert.deepEqual(fixtureBundle().niveaux.manif.nasse, { ennemi: 'garde', nombre: 2, vitesse: 20 });
+  assert.deepEqual(fixtureBundle().niveaux.manif.nasse, { ennemi: 'garde', nombre: 2, vitesse: 20, rythme: 0 });
   const path = 'content/niveaux/manif.txt';
   expect(edit(path, (t) => t.replace('nasse.ennemi: garde\n', '')), /La carte contient une nasse « N » : ajoute « nasse\.ennemi: … »/);
   expect(edit(path, (t) => t.replace('nasse.ennemi: garde', 'nasse.ennemi: licorne')), /« nasse\.ennemi: licorne » : cet ennemi n'existe pas/);

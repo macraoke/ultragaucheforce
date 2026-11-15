@@ -1,47 +1,69 @@
-// Commandes tactiles : quels boutons sont enfoncés pour des doigts donnés ?
+// Commandes tactiles : quelles actions pour des doigts donnés ?
 // Le multi-toucher réel n'est pas vérifiable sur la machine de développement : la règle est
 // donc une fonction pure, testée ici.
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { touchedActions } from '../src/client/input.js';
+import { touchActions, ZONES } from '../src/client/input.js';
 
-// Deux boutons à gauche, deux à droite, comme à l'écran.
-const button = (action, left, top, size = 60) => ({ action, left, top, right: left + size, bottom: top + size });
-const BUTTONS = [button('left', 20, 300), button('right', 100, 300), button('fire', 600, 300), button('jump', 690, 300)];
+const VIEW = { w: 800, h: 360 }; // un téléphone tenu en paysage
+const at = (action) => {
+  const t = ZONES.targets.find((z) => z.action === action);
+  return { x: t.x * VIEW.w, y: t.y * VIEW.h };
+};
+/** Un doigt posé en (ox, oy) puis glissé de (dx, dy). */
+const finger = (ox, oy, dx = 0, dy = 0) => ({ ox, oy, x: ox + dx, y: oy + dy });
+const tap = (action) => finger(at(action).x, at(action).y);
 
-test('un doigt sur un bouton l’enfonce', () => {
-  assert.deepEqual(touchedActions([{ x: 50, y: 330 }], BUTTONS), { left: true });
+test('moitié gauche : le manche naît où le pouce se pose, n’importe où', () => {
+  for (const [ox, oy] of [[40, 300], [200, 120], [390, 20]]) {
+    assert.deepEqual(touchActions([finger(ox, oy)], VIEW), {}, 'posé, sans glisser : rien');
+    assert.deepEqual(touchActions([finger(ox, oy, -30)], VIEW), { left: true });
+    assert.deepEqual(touchActions([finger(ox, oy, 30)], VIEW), { right: true });
+  }
 });
 
-test('le pouce qui glisse de ◀ à ▶ change de direction sans se lever', () => {
-  const slide = [50, 70, 85, 95, 110, 130].map((x) => touchedActions([{ x, y: 330 }], BUTTONS));
-  assert.deepEqual(slide[0], { left: true });
-  assert.deepEqual(slide.at(-1), { right: true });
-  assert.ok(slide.every((pressed) => Object.keys(pressed).length === 1), 'jamais de trou ni de double appui pendant la glissade');
+test('le manche a une course morte : un pouce qui tremble ne fait pas marcher', () => {
+  assert.deepEqual(touchActions([finger(100, 250, ZONES.dead - 1)], VIEW), {});
+  assert.deepEqual(touchActions([finger(100, 250, ZONES.dead + 1)], VIEW), { right: true });
 });
 
-test('deux doigts, deux boutons : avancer et tirer en même temps', () => {
-  assert.deepEqual(touchedActions([{ x: 130, y: 330 }, { x: 630, y: 330 }], BUTTONS), { right: true, fire: true });
+test('pousser le manche vers le haut fait sauter, en avançant ou non', () => {
+  const lift = VIEW.h * ZONES.lift + 2;
+  assert.deepEqual(touchActions([finger(100, 300, 0, -lift)], VIEW), { jump: true });
+  assert.deepEqual(touchActions([finger(100, 300, 30, -lift)], VIEW), { right: true, jump: true });
+  assert.deepEqual(touchActions([finger(100, 300, 30, -10)], VIEW), { right: true }, 'un petit écart ne suffit pas');
 });
 
-test('trois doigts : avancer, tirer et sauter', () => {
-  const pressed = touchedActions([{ x: 50, y: 330 }, { x: 630, y: 330 }, { x: 720, y: 330 }], BUTTONS);
-  assert.deepEqual(pressed, { left: true, fire: true, jump: true });
+test('moitié droite : chaque cible répond, et tout l’écran répond (la plus proche gagne)', () => {
+  assert.deepEqual(touchActions([tap('fire')], VIEW), { fire: true });
+  assert.deepEqual(touchActions([tap('jump')], VIEW), { jump: true });
+  assert.deepEqual(touchActions([tap('special')], VIEW), { special: true });
+  assert.deepEqual(touchActions([finger(790, 350)], VIEW), { fire: true }, 'le coin en bas à droite : tir');
+  assert.deepEqual(touchActions([finger(790, 10)], VIEW), { special: true }, 'le coin en haut à droite : spéciale');
+  assert.deepEqual(touchActions([finger(420, 350)], VIEW), { jump: true }, 'le bas, près du milieu : saut');
+  for (let x = 410; x < 800; x += 30) {
+    for (let y = 5; y < 360; y += 30) assert.ok(Object.keys(touchActions([finger(x, y)], VIEW)).length >= 1, `(${x}, ${y}) ne fait rien`);
+  }
 });
 
-test('un doigt loin de tout bouton ne fait rien', () => {
-  assert.deepEqual(touchedActions([{ x: 400, y: 100 }], BUTTONS), {});
-  assert.deepEqual(touchedActions([], BUTTONS), {});
+test('le pouce à cheval entre TIR et SAUT fait les deux ; jamais avec SPÉ', () => {
+  const fire = at('fire');
+  const jump = at('jump');
+  const middle = finger((fire.x + jump.x) / 2, (fire.y + jump.y) / 2);
+  assert.deepEqual(touchActions([middle], VIEW), { fire: true, jump: true });
+  const special = at('special');
+  const between = finger((fire.x + special.x) / 2, (fire.y + special.y) / 2 - 1);
+  assert.equal(Object.keys(touchActions([between], VIEW)).length, 1, 'entre TIR et SPÉ : une seule action');
 });
 
-test('un doigt juste à côté d’un bouton compte quand même (marge de tolérance)', () => {
-  assert.deepEqual(touchedActions([{ x: 10, y: 295 }], BUTTONS), { left: true });
-  assert.deepEqual(touchedActions([{ x: 10, y: 295 }], BUTTONS, 0), {}, 'sans marge, il est dehors');
+test('deux pouces : avancer et tirer ; trois doigts : avancer, tirer, sauter', () => {
+  assert.deepEqual(touchActions([finger(120, 260, 40), tap('fire')], VIEW), { right: true, fire: true });
+  assert.deepEqual(touchActions([finger(120, 260, -40), tap('fire'), tap('jump')], VIEW), { left: true, fire: true, jump: true });
 });
 
-test('entre deux boutons, le plus proche gagne', () => {
-  // ◀ finit à 80, ▶ commence à 100 : les marges se recouvrent entre les deux.
-  assert.deepEqual(touchedActions([{ x: 86, y: 330 }], BUTTONS), { left: true });
-  assert.deepEqual(touchedActions([{ x: 94, y: 330 }], BUTTONS), { right: true });
+test('un doigt garde son côté : parti de la droite, il reste une action même s’il glisse à gauche', () => {
+  const slid = { ox: 700, oy: 300, x: 300, y: 300 };
+  assert.deepEqual(touchActions([slid], VIEW), { jump: true });
+  assert.deepEqual(touchActions([], VIEW), {});
 });

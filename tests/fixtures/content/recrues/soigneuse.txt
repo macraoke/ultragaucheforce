@@ -1,0 +1,37 @@
+nom: La soigneuse
+apport: 5
+soin: 1
+--- image
+vvvvvvvvvv
+vvvvvvvvvv
+vvvvvvvvvv
+vvvvvvvvvv
+vvvvvvvvvv
+vvvvvvvvvv
+vvvvvvvvvv
+vvvvvvvvvv
+vvvvvvvvvv
+vvvvvvvvvv
+vvvvvvvvvv
+vvvvvvvvvv
+vvvvvvvvvv
+vvvvvvvvvv
+vvvvvvvvvv
+vvvvvvvvvv
+--- image2
+yyyyyyyyyy
+yyyyyyyyyy
+yyyyyyyyyy
+yyyyyyyyyy
+yyyyyyyyyy
+yyyyyyyyyy
+yyyyyyyyyy
+yyyyyyyyyy
+yyyyyyyyyy
+yyyyyyyyyy
+yyyyyyyyyy
+yyyyyyyyyy
+yyyyyyyyyy
+yyyyyyyyyy
+yyyyyyyyyy
+yyyyyyyyyy

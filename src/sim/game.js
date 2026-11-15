@@ -17,7 +17,6 @@
 //   recruits     [{ id, def, x, y, w, h, joined, animTime }] : à rejoindre en les touchant ou en leur tendant un tract
 //   addCrowd(n)  des gens rejoignent · disperse(part) en disperse une part (jamais sous 1 avec un cortège)
 //   power()      multiplicateur des dégâts des projectiles du héros : le nombre fait la force
-//   counts()     { syndicats, prefecture } : les deux comptages
 //   kettle       null | { x, t, limit, x0, x1 } : nasse en cours (x0, x1 = bords intérieurs des lignes)
 //   Ennemis : blocking, aim, jet, beam, rush, rope (voir enemy.js) · boss.seated (voir boss.js)
 //
@@ -84,6 +83,7 @@ export class Game {
     this.recruits = [];
     this.nasses = []; // repères « N » de la carte
     this.kettle = null;
+    this.kettleClock = 0; // secondes depuis la dernière nasse (niveaux à `nasse.rythme`)
 
     this.fuses = []; // explosions à retardement
     this.trail = []; // trace du héros, suivie par le cortège et les doubles
@@ -465,12 +465,6 @@ export class Game {
     return 1 + Math.log10(1 + this.crowd) / 2;
   }
 
-  /** Les deux comptages d'une manif. */
-  counts() {
-    // Le rapport des deux comptages de Paris, le 31 janvier 2023 : 500 000 selon la CGT, 87 000 selon la préfecture.
-    return { syndicats: this.crowd, prefecture: Math.max(1, Math.round((this.crowd * 87) / 500)) };
-  }
-
   /** Signale une découverte (personnage, mot, panneau…) : une seule fois par partie. */
   discover(kind, id, more = {}) {
     const key = `${kind}:${id}`;
@@ -503,12 +497,6 @@ export class Game {
         if (this.crowd < e.def.debordement) this.addCrowd(Math.ceil(e.def.debordement * 0.04));
       }
     }
-  }
-
-  /** Le nombre de « blessés » annoncé par PANIQUE TV : il gonfle avec la panique, pas avec les faits. */
-  announced() {
-    const s = this.stats;
-    return Math.round(this.panic * 8.47 + (s.breakdownsByPlayer + s.breakdownsBySelf) * 47 + s.tracts * 0.5);
   }
 }
 

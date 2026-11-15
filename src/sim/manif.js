@@ -53,7 +53,11 @@ export function joinRecruit(game, r) {
   const x = r.x + r.w / 2;
   game.stats.recruits++;
   game.addCrowd(n);
-  game.emit('recruit', { id: def.id, n, crowd: game.crowd, x, y: r.y });
+  // Un medic soigne : il rend des points de vie au héros, sans dépasser son maximum.
+  const { hero } = game;
+  const healed = def.soin > 0 && !hero.dead ? Math.min(def.soin, hero.def.pv - hero.hp) : 0;
+  hero.hp += healed;
+  game.emit('recruit', { id: def.id, n, crowd: game.crowd, x, y: r.y, healed });
   if (def.slogan.length) game.emit('bubble', { x, y: r.y - 6, text: def.slogan[(game.stats.recruits - 1) % def.slogan.length] });
   game.sfx('recrue', x);
   game.discover('recrue', def.id);
@@ -150,6 +154,8 @@ export function standingAt(world, cx, nearY) {
 
 /**
  * La nasse : quand le héros passe un repère « N », des lignes apparaissent des deux côtés et se referment.
+ * Avec `nasse.rythme` dans l'en-tête du niveau, elle revient aussi d'elle-même, toutes les tant de secondes,
+ * là où le héros se trouve (au sol, hors combat de boss).
  * Jamais une impasse : elle prend fin si le héros en sort par le haut, si une ligne cède, ou au bout de NASSE_TIME.
  * `game.kettle` = null | { x, t, limit, x0, x1 } (x0 et x1 : bords intérieurs des deux lignes).
  */
@@ -161,7 +167,11 @@ export function updateKettle(game, dt) {
     if (hero.dead) return;
     const feet = hero.y + hero.h;
     const mark = game.nasses.find((n) => !n.on && Math.abs(n.x - cx) <= TILE / 2 && feet <= n.y + TILE && feet >= n.y - NASSE_HEIGHT);
+    const pace = game.level.nasse?.rythme || 0;
+    game.kettleClock += dt;
     if (mark) startKettle(game, mark);
+    else if (pace > 0 && game.kettleClock >= pace && hero.onGround && !game.boss?.active) startKettle(game, { x: cx, y: feet });
+    if (game.kettle) game.kettleClock = 0;
     return;
   }
   k.t += dt;

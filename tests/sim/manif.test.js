@@ -60,10 +60,18 @@ test('recrue « multiplie » : l’assemblée générale double la manif, quelle
   assert.equal(alone.cortege.length, 0);
 });
 
-test('les deux comptages : selon les syndicats, selon la préfecture', () => {
-  const game = play(flat({ cortege: true, manif: 900 }));
-  assert.deepEqual(game.counts(), { syndicats: 900, prefecture: 157 }, 'le rapport des comptages de Paris, le 31 janvier 2023');
-  assert.deepEqual(play(flat()).counts(), { syndicats: 0, prefecture: 1 });
+test('recrue qui soigne : un medic rend des points de vie au héros, sans dépasser son maximum', () => {
+  const lvl = () => flat({ cortege: true, legende: { m: recruit('soigneuse') }, draw: (put, ground) => put(ground, 9, 'm') });
+  const hurt = settle(play(lvl()));
+  hurt.hero.hp = 1;
+  const events = run(hurt, 60, { right: true });
+  assert.equal(hurt.hero.hp, 2);
+  assert.equal(of(events, 'recruit')[0].healed, 1);
+
+  const fine = settle(play(lvl()));
+  const full = fine.hero.hp;
+  assert.equal(of(run(fine, 60, { right: true }), 'recruit')[0].healed, 0, 'en pleine forme : rien à soigner');
+  assert.equal(fine.hero.hp, full);
 });
 
 // ---------------------------------------------------------------- dispersions
@@ -213,6 +221,20 @@ test('nasse : les lignes apparaissent des deux côtés, se referment, et finisse
   assert.ok(game.enemies.every((e) => e.state === 'done' && !e.blocking));
   run(game, 600, { right: true });
   assert.equal(game.status, 'won', 'jamais une impasse : on sort du niveau');
+});
+
+test('nasse au rythme du niveau : elle revient d’elle-même, là où le héros se trouve, sans repère', () => {
+  const game = settle(play(flat({ width: 70, nasse: { ennemi: 'statue', nombre: 2, vitesse: 20, rythme: 3 } }), { invincible: true }));
+  assert.equal(of(run(game, 60 * 2), 'kettle').length, 0, 'pas avant le délai');
+  const events = run(game, 60 * 2);
+  assert.deepEqual(of(events, 'kettle').map((e) => e.state), ['start']);
+  assert.ok(Math.abs(game.kettle.x - (game.hero.x + game.hero.w / 2)) < TILE, 'autour du héros');
+  const later = run(game, 60 * 30);
+  assert.ok(of(later, 'kettle').filter((e) => e.state === 'end').length >= 1, 'toujours levée');
+  assert.ok(of(later, 'kettle').filter((e) => e.state === 'start').length >= 1, 'puis elle revient');
+
+  const calm = settle(play(flat({ width: 70, nasse: { ennemi: 'statue', nombre: 2, vitesse: 20, rythme: 0 } }), { invincible: true }));
+  assert.equal(of(run(calm, 60 * 20), 'kettle').length, 0, 'rythme 0 : seulement aux repères');
 });
 
 test('nasse : elle prend fin si une ligne cède ou si le héros en sort par le haut', () => {

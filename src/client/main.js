@@ -188,7 +188,7 @@ async function win() {
     storeSave(save);
   }
   screens.end({
-    level, stats: game.stats, time: game.time, announced: game.announced(), counts: game.counts(),
+    level, stats: game.stats, time: game.time, crowd: game.crowd,
     next: index >= 0 ? bundle.campagne[index + 1] : null,
     last: index === bundle.campagne.length - 1,
   });
@@ -268,10 +268,12 @@ input.onAny = () => audio.unlock();
 document.getElementById('pause').onclick = togglePause;
 addEventListener('pointerdown', () => audio.unlock(), true);
 function layout() {
+  const thumbs = document.body.classList.contains('tactile');
+  // Au pouce, le jeu se joue en paysage : téléphone tenu debout, tout pivote d'un quart de tour.
+  document.documentElement.classList.toggle('pivote', thumbs && innerHeight > innerWidth);
   renderer.resize();
-  // Au pouce et en paysage, les boutons couvrent le bas de l'écran : on remonte l'action.
-  const thumbs = document.body.classList.contains('tactile') && innerWidth > innerHeight;
-  renderer.anchor = thumbs ? 0.64 : 0.8;
+  renderer.anchor = thumbs ? 0.76 : 0.8; // les pouces occupent les coins du bas : on remonte un peu l'action
+  input.refreshTouch();
 }
 addEventListener('resize', layout);
 document.addEventListener('visibilitychange', () => {
@@ -284,6 +286,13 @@ addEventListener('touchstart', () => {
   document.body.classList.add('tactile');
   layout();
 }, { once: true, passive: true });
+// Au premier toucher, on demande le plein écran, puis le paysage : là où le navigateur le permet.
+addEventListener('pointerup', (e) => {
+  if (e.pointerType !== 'touch' || document.fullscreenElement) return;
+  document.documentElement.requestFullscreen?.({ navigationUI: 'hide' })
+    ?.then(() => screen.orientation?.lock?.('landscape'))
+    .catch(() => {}); // refusé (iPhone, réglage du navigateur) : le pivot de la page fait le travail
+}, { once: true });
 
 // Crochet de débogage (`?debug`) : piloter et inspecter la partie sans jouer en temps réel.
 if (new URLSearchParams(location.search).has('debug')) {

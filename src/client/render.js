@@ -38,10 +38,10 @@ export class Renderer {
 
   /** Adapte la taille interne à la zone d'affichage : échelle entière, pixels nets, aucun bord perdu. */
   resize() {
-    const box = this.canvas.parentElement.getBoundingClientRect();
+    const box = this.canvas.parentElement; // sa taille de mise en page : la même quand tout l'écran pivote
     const dpr = window.devicePixelRatio || 1;
-    const W = Math.max(160, Math.floor(box.width * dpr));
-    const H = Math.max(120, Math.floor(box.height * dpr));
+    const W = Math.max(160, Math.floor(box.clientWidth * dpr));
+    const H = Math.max(120, Math.floor(box.clientHeight * dpr));
     let scale = Math.max(1, Math.min(Math.round(H / 216), Math.floor(W / 300)));
     while (H / scale > 280) scale++;
     this.scale = scale;
@@ -169,7 +169,6 @@ export class Renderer {
     for (const f of this.floaters) {
       this.label(f.text, f.x - cx, f.y - cy, { size: f.size || 7, color: f.color, alpha: Math.min(1, f.t * 2), width: 150 });
     }
-    if (game.kettle) this.label('NASSE', this.viewW / 2, 34, { size: 12, color: Math.floor(this.clock * 3) % 2 ? '#e43b44' : '#f4f4f4' });
     if (game.sign && !this.demo) this.board(game.sign, this.viewW / 2, 30);
   }
 

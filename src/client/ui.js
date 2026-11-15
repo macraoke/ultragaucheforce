@@ -188,30 +188,36 @@ export class Screens {
       this.button('Menu', () => this.go.quit(), 'discret'));
   }
 
-  /** Fin de niveau : les deux comptages de la manif, ce que PANIQUE TV annonce, puis un fait sourcé. */
-  end({ level, stats, time, announced, counts, next, last }) {
+  /**
+   * Fin de niveau : la manif, puis le bilan des blessés tel qu'on l'annonce côté forces de l'ordre,
+   * avec ce qui le compose. `won` : les cartes gagnées pendant le niveau.
+   */
+  end({ level, stats, time, crowd, next, last, won = [] }) {
     const fact = this.bundle.fiches[level.fiche?.[0]];
     const minutes = `${Math.floor(time / 60)} min ${String(Math.floor(time % 60)).padStart(2, '0')} s`;
     const n = (x) => x.toLocaleString('fr-FR');
-    const line = (count, one, many) => (count ? h('li', {}, `${n(count)} ${count > 1 ? many : one}`) : null);
+    const line = (count, one, many) => (count ? h('li', {}, h('b', {}, n(count)), ` ${count > 1 ? many : one}`) : null);
+    const hurt = stats.breakdownsBySelf + stats.breakdownsByPlayer + stats.overrun;
     this.show('fin',
       h('h2', {}, 'Niveau terminé'),
       h('p', { className: 'temps' }, `${level.titre} — ${minutes}`),
       h('div', { className: 'bilans' },
-        counts.syndicats ? h('article', {},
+        h('article', {},
           h('h3', {}, 'La manif'),
-          h('p', { className: 'chiffre' }, `✊ ${n(counts.syndicats)}`),
-          h('p', {}, `selon les syndicats · ${n(counts.prefecture)} selon la préfecture`)) : null,
+          h('p', { className: 'chiffre' }, `✊ ${n(crowd)}`),
+          h('ul', {},
+            line(stats.recruits, 'recrue', 'recrues'),
+            line(stats.rescues, 'camarade libéré', 'camarades libérés'),
+            line(stats.overrun, 'ligne débordée', 'lignes débordées'),
+            line(stats.gassed, 'manifestant gazé', 'manifestants gazés'))),
         h('article', { className: 'annonce' },
-          h('h3', {}, 'Selon PANIQUE TV'),
-          h('p', { className: 'chiffre' }, n(announced)),
-          h('p', {}, 'blessés annoncés à l’antenne'))),
-      h('ul', { className: 'partie' },
-        line(stats.recruits, 'recrue', 'recrues'),
-        line(stats.rescues, 'camarade libéré', 'camarades libérés'),
-        line(stats.overrun, 'ligne débordée', 'lignes débordées'),
-        line(stats.breakdownsBySelf, 'unité gazée par son propre camp', 'unités gazées par leur propre camp'),
-        line(stats.gassed, 'manifestant gazé', 'manifestants gazés')),
+          h('h3', {}, 'Forces de l’ordre'),
+          h('p', { className: 'chiffre' }, n(hurt)),
+          h('p', {}, hurt > 1 ? 'blessés annoncés, dont :' : 'blessé annoncé, dont :'),
+          h('ul', {},
+            line(stats.breakdownsBySelf, 'gazé par ses propres grenades', 'gazés par leurs propres grenades'),
+            line(stats.breakdownsByPlayer, 'atteint par un tract', 'atteints par un tract'),
+            line(stats.overrun, 'débordé par le nombre', 'débordés par le nombre')))),
       fact && h('article', { className: 'fiche' }, h('h3', {}, `Et en vrai ? ${fact.titre}`), h('p', {}, fact.texte), sourceLine(fact)),
       h('div', { className: 'pied' },
         next && this.button('Niveau suivant', () => this.go.play(next), 'gros'),
@@ -285,7 +291,7 @@ export class Hud {
 
   update(game) {
     const { hero, boss } = game;
-    const state = [hero.def.id, hero.hp, game.lives, hero.charges, game.panicLevel, Math.round(game.panic), game.announced(), game.crowd,
+    const state = [hero.def.id, hero.hp, game.lives, hero.charges, game.panicLevel, Math.round(game.panic), game.crowd,
       boss?.active && boss.state !== 'gone' ? boss.hp : -1].join('|');
     if (state === this.last) return; // on ne touche au DOM que si quelque chose a changé
     this.last = state;
@@ -293,26 +299,23 @@ export class Hud {
     this.q('hud-coeurs').textContent = '♥'.repeat(Math.max(0, hero.hp)) + '♡'.repeat(Math.max(0, hero.def.pv - hero.hp));
     this.q('hud-vies').textContent = `× ${game.lives}`;
     this.q('hud-charges').textContent = hero.def.speciale ? '★'.repeat(hero.charges) + '☆'.repeat(Math.max(0, hero.def.speciale.charges - hero.charges)) : '';
-    // La manif : les deux comptages, comme au journal du soir.
+    // La manif : combien on est. Le compteur sursaute quand elle grossit.
     const march = this.q('hud-manif');
     march.hidden = !game.crowd;
-    if (game.crowd) {
-      const { syndicats, prefecture } = game.counts();
-      const grew = syndicats > (this.crowd || 0);
-      this.crowd = syndicats;
-      march.querySelector('b').textContent = `✊ ${syndicats.toLocaleString('fr-FR')}`;
-      march.querySelector('small').textContent = `préfecture : ${prefecture.toLocaleString('fr-FR')}`;
-      if (grew) {
+    if (game.crowd !== this.crowd) {
+      march.textContent = `✊ ${game.crowd.toLocaleString('fr-FR')}`;
+      if (game.crowd > this.crowd) {
         march.classList.remove('grossit');
         void march.offsetWidth; // relance l'animation
         march.classList.add('grossit');
       }
+      this.crowd = game.crowd;
     }
+    // La panique est celle de la chaîne : sa jauge vit dans le bandeau, à côté de son nom.
     const gauge = this.q('hud-panique');
     gauge.dataset.niveau = game.panicLevel;
     gauge.querySelector('i').style.width = `${Math.min(100, game.panic)}%`;
     gauge.querySelector('b').textContent = ['Calme', 'Alerte', 'Hystérie'][game.panicLevel];
-    this.q('hud-annonce').textContent = `Blessés annoncés : ${game.announced().toLocaleString('fr-FR')}`;
     const bar = this.q('hud-boss');
     const fighting = Boolean(boss?.active && boss.state !== 'gone');
     bar.hidden = !fighting;
@@ -342,7 +345,7 @@ export class Hud {
   show(text, label, seconds) {
     const el = this.q('bandeau');
     el.querySelector('em').textContent = label;
-    const line = el.querySelector('span');
+    const line = el.querySelector(':scope > span'); // le texte qui défile, pas la jauge
     const inner = h('i', {}, text);
     line.replaceChildren(inner);
     const overflow = inner.scrollWidth - line.clientWidth + 24;
