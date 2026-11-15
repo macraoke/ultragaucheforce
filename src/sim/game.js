@@ -39,6 +39,7 @@ export const DT = 1 / 60;
 const PANIC_STEPS = [34, 67]; // seuils ALERTE puis HYSTÉRIE
 const MAX_REINFORCEMENTS = 4; // renforts bornés : la panique ne rend jamais un niveau infaisable
 const FUSE = 0.12; // délai entre la destruction d'un tonneau et son explosion (réaction en chaîne)
+const START_LIVES = 3; // trois fois le héros de départ
 const RESPAWN_DELAY = 0.8;
 const TRAIL_LENGTH = 600;
 const MAX_EVENTS = 400;
@@ -61,12 +62,13 @@ export class Game {
     this.rng = makeRng(opts.seed ?? 1);
     this.invincible = Boolean(opts.invincible);
     this.choice = opts.hero ?? ''; // lu par loadLevel
-    this.freed = []; // identifiants des camarades libérés pendant le niveau, dans l'ordre
 
     this.events = [];
     this.status = 'playing';
     this.time = 0;
-    this.lives = 3;
+    // Les vies sont des personnages, empilés : on joue celui du dessus. Une garde à vue libérée en pose un de plus ;
+    // quand il tombe, on repart avec le suivant.
+    this.stack = [];
     this.panic = 0;
     this.panicLevel = 0;
     this.sign = null;
@@ -99,7 +101,7 @@ export class Game {
     this.signOffset = this.rng.int(1000);
 
     loadLevel(this); // world, hero, checkpoint, enemies, props, decors, boss
-    this.starter = this.hero.def.id; // le héros avec lequel on est parti : la base de la pile de vies
+    this.stack = Array(START_LIVES).fill(this.hero.def.id);
     this.recordTrail();
     this.addCrowd(level.manif ?? (level.cortege ? 10 : 0));
     this.discover('heros', this.hero.def.id);
@@ -295,6 +297,11 @@ export class Game {
 
   // ------------------------------------------------------------ vies, sauvetages, reprises
 
+  /** Le nombre de vies : la hauteur de la pile de personnages. */
+  get lives() {
+    return this.stack.length;
+  }
+
   killHero() {
     const { hero } = this;
     if (hero.dead) return;
@@ -304,7 +311,7 @@ export class Game {
     this.disperse(0.15); // sans son héros, une partie de la manif se disperse
     this.emit('death', {});
     this.sfx('mort', hero.x);
-    if (!this.invincible) this.lives--;
+    if (!this.invincible) this.stack.pop();
     if (this.lives <= 0) {
       this.status = 'lost';
       this.emit('lost', {});
@@ -315,9 +322,10 @@ export class Game {
 
   respawn() {
     const { hero } = this;
-    setHeroDef(hero, hero.def, this.checkpoint.x, this.checkpoint.y);
+    const next = this.bundle.heros?.[this.stack.at(-1)] || hero.def; // le personnage du dessus de la pile
+    setHeroDef(hero, next, this.checkpoint.x, this.checkpoint.y);
     Object.assign(hero, { vx: 0, vy: 0, dead: false, invuln: 2, gasTime: 0, onGround: false });
-    this.emit('respawn', {});
+    this.emit('respawn', { hero: next.id });
   }
 
   /** Libère le camarade d'une cage : +1 vie, changement de héros, fiche « droits ». Une seule fois par cage. */
@@ -326,7 +334,6 @@ export class Game {
     cage.on = true;
     const { hero, bundle, level } = this;
     this.stats.rescues++;
-    this.lives++;
 
     // Héros suivant : la liste du niveau s'il en a une, sinon un autre héros jouable au hasard.
     let next = toList(level.camarades).map((id) => bundle.heros?.[id])[this.stats.rescues - 1];
@@ -338,8 +345,8 @@ export class Game {
     this.unstick(hero);
     hero.invuln = Math.max(hero.invuln, 1);
 
+    this.stack.push(next.id); // une vie de plus, et c'est lui qu'on joue
     this.sfx('sauvetage', cage.x);
-    this.freed.push(next.id);
     this.emit('heroCard', { hero: next.id, x: cage.x + cage.w / 2, y: cage.y });
     this.discover('heros', next.id);
     const card = Object.values(bundle.fiches || {}).find((f) => f.theme === 'droits' && !this.unlocked.includes(f.id));

@@ -17,14 +17,37 @@ test('héros de départ : celui que le joueur choisit, sinon celui du niveau', (
 test('héros choisi : le sauvetage donne quand même un autre héros, et la pile grandit', () => {
   const lvl = flat({ heros: 'alpha', camarades: ['beta'], draw: (put, ground) => put(ground, 6, 'K') });
   const game = play(lvl, { hero: 'beta' });
-  assert.deepEqual(game.freed, []);
+  assert.deepEqual(game.stack, ['beta', 'beta', 'beta'], 'trois vies du héros choisi');
   const lives = game.lives;
   const events = run(game, 240, { right: true, fire: true });
   const card = events.find((e) => e.type === 'heroCard');
   assert.ok(card, 'le camarade est libéré');
   assert.notEqual(game.hero.def.id, 'beta', 'on ne libère pas le héros qu’on joue déjà');
-  assert.deepEqual(game.freed, [game.hero.def.id]);
+  assert.deepEqual(game.stack, ['beta', 'beta', 'beta', game.hero.def.id], 'le camarade libéré se pose sur la pile');
   assert.equal(game.lives, lives + 1);
   assert.ok(Number.isFinite(card.x) && Number.isFinite(card.y), 'le carton sait où afficher le +1');
   assert.ok(Object.hasOwn(fixtureBundle().heros, card.hero));
+});
+
+test('les vies sont des personnages : libéré, on le joue ; tombé, on repart avec celui d’en dessous', () => {
+  const lvl = flat({ heros: 'alpha', camarades: ['beta'], draw: (put, ground) => put(ground, 6, 'K') });
+  const game = play(lvl);
+  assert.deepEqual(game.stack, ['alpha', 'alpha', 'alpha']);
+  run(game, 240, { right: true, fire: true });
+  assert.deepEqual(game.stack, ['alpha', 'alpha', 'alpha', 'beta']);
+  assert.equal(game.hero.def.id, 'beta');
+  assert.equal(game.lives, 4);
+
+  game.killHero();
+  assert.deepEqual(game.stack, ['alpha', 'alpha', 'alpha'], 'il quitte la pile');
+  const events = run(game, 120);
+  assert.equal(game.hero.def.id, 'alpha', 'on repart avec le personnage suivant');
+  assert.equal(events.find((e) => e.type === 'respawn').hero, 'alpha');
+
+  for (let i = 0; i < 3; i++) {
+    game.killHero();
+    run(game, 120);
+  }
+  assert.equal(game.lives, 0);
+  assert.equal(game.status, 'lost');
 });

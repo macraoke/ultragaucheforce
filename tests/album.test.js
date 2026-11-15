@@ -31,14 +31,12 @@ test('badge « Nouveau » : une carte trouvée depuis la dernière visite de son
   assert.ok(!isFresh({ decouvertes: ['heros:zuc-man'] }, card('heros', 'melenchotron')), 'une vieille sauvegarde sans « vues »');
 });
 
-test('pile de vies : les camarades libérés d’abord, puis le héros de départ ; au-delà de six, un nombre', () => {
-  const game = { lives: 3, freed: [], starter: 'tyrannogauchiste' };
-  assert.deepEqual(livesHeads(game), { heads: ['tyrannogauchiste', 'tyrannogauchiste', 'tyrannogauchiste'], more: 0 });
-  Object.assign(game, { lives: 5, freed: ['zuc-man', 'melenchotron'] });
-  assert.deepEqual(livesHeads(game).heads, ['melenchotron', 'zuc-man', 'tyrannogauchiste', 'tyrannogauchiste', 'tyrannogauchiste']);
-  Object.assign(game, { lives: 1 });
-  assert.deepEqual(livesHeads(game), { heads: ['melenchotron'], more: 0 }, 'une vie perdue : la pile rétrécit par le bas');
-  Object.assign(game, { lives: 9 });
-  assert.deepEqual([livesHeads(game).heads.length, livesHeads(game).more], [6, 3]);
-  assert.deepEqual(livesHeads({ lives: 0, freed: [], starter: 'x' }), { heads: [], more: 0 });
+test('pile de vies : le personnage qu’on joue d’abord ; au-delà de six, un nombre', () => {
+  const stack = ['tyrannogauchiste', 'tyrannogauchiste', 'tyrannogauchiste'];
+  assert.deepEqual(livesHeads({ stack }), { heads: stack, more: 0 });
+  assert.deepEqual(livesHeads({ stack: [...stack, 'zuc-man', 'melenchotron'] }).heads,
+    ['melenchotron', 'zuc-man', 'tyrannogauchiste', 'tyrannogauchiste', 'tyrannogauchiste']);
+  const many = livesHeads({ stack: Array(9).fill('zuc-man') });
+  assert.deepEqual([many.heads.length, many.more], [6, 3]);
+  assert.deepEqual(livesHeads({ stack: [] }), { heads: [], more: 0 });
 });

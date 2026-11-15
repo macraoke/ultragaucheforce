@@ -1,17 +1,16 @@
-// La pile de vies, façon Broforce : une tête par vie. Les camarades libérés pendant le
-// niveau s'empilent devant le héros de départ.
+// La pile de vies, façon Broforce : une tête par vie. On joue le personnage du dessus ;
+// chaque garde à vue libérée en pose un de plus.
 
 import { h } from './dom.js';
 import { spriteElement } from './sprites.js';
 
 /**
- * Les têtes à montrer, de la plus récente à la plus ancienne.
+ * Les têtes à montrer, celle qu'on joue d'abord.
  * @returns {{heads: string[], more: number}}  identifiants de héros, et combien de vies ne sont pas dessinées
  */
 export function livesHeads(game, max = 6) {
-  const freed = [...game.freed].reverse();
-  const shown = Math.min(Math.max(0, game.lives), max);
-  return { heads: Array.from({ length: shown }, (_, i) => freed[i] ?? game.starter), more: Math.max(0, game.lives - shown) };
+  const heads = [...game.stack].reverse();
+  return { heads: heads.slice(0, max), more: Math.max(0, heads.length - max) };
 }
 
 /** La pile, prête à poser dans le HUD. */
