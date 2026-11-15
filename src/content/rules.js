@@ -510,9 +510,13 @@ export function buildContent(files) {
     const [, dir, id] = m;
     const report = reporter(file.path);
     if (LINE_FOLDERS.includes(dir)) {
-      for (const { text } of parseLines(file.text)) {
+      for (const { text, line } of parseLines(file.text)) {
         const [texte, credit = ''] = text.split('|').map((s) => s.trim());
-        bundle[dir].push({ texte, credit }); // crédit : « où et quand — adresse de la source »
+        const address = credit.split(' — ')[1]; // crédit : « où et quand — adresse de la source »
+        if (address !== undefined && !/^https:\/\/\S+$/.test(address)) {
+          report(line, 'Après « — », il faut l’adresse de la source : elle commence par https://');
+        }
+        bundle[dir].push({ texte, credit });
       }
       continue;
     }

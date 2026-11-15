@@ -7,8 +7,9 @@ export function h(tag, props = {}, ...children) {
   return node;
 }
 
-/** Lien externe (sources, ressources) : s'ouvre toujours dans un nouvel onglet. */
-export const link = (url, text) => h('a', { href: url, target: '_blank', rel: 'noopener' }, text);
+/** Lien externe (sources, ressources) : s'ouvre dans un nouvel onglet. Seule une adresse https devient un lien. */
+export const link = (url, text) =>
+  (/^https:\/\//.test(url) ? h('a', { href: url, target: '_blank', rel: 'noopener' }, text) : h('span', {}, text));
 
 const MONTHS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
 

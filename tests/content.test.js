@@ -196,6 +196,7 @@ test('pancartes et bandeaux : le crédit suit le texte, après « | »', () => {
     { texte: 'Un autre', credit: '' },
   ]);
   assert.ok(bundle.pancartes.every((p) => typeof p.texte === 'string' && typeof p.credit === 'string'));
+  expectError(errorsOf('content/pancartes/essai.txt', 'UNE PANCARTE | vue à Paris — javascript:alert(1)\n'), { line: 1, message: /commence par https:\/\// });
 });
 
 test('décor écrit : « ecrit » vaut pancarte ou tag', () => {

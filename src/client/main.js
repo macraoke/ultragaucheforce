@@ -31,6 +31,7 @@ let current = null; // { id, level } du niveau en cours
 let custom = null; // niveau de l'Atelier en cours de test
 let begin = null; // le carton d'ouverture attend : fonction qui lance vraiment le niveau
 let bot = {};
+let written = []; // banderoles et tags du niveau que le héros n'a pas encore lus
 let acc = 0;
 let last = performance.now();
 
@@ -109,6 +110,24 @@ function collect(kind, id, quiet = false) {
   for (const fiche of [item.fiche].flat()) collect('fiches', fiche, true);
 }
 
+/** Ce que porte le cortège entre dans la Collection : de vraies pancartes, les drapeaux des luttes. */
+function collectCortege() {
+  for (const m of game.cortege) {
+    if (m.kind === 'pancarte') collect('pancartes', m.label, true);
+    else if (m.kind === 'drapeau') collect('drapeaux', m.label, true);
+  }
+}
+
+/** Passer devant une banderole ou un tag, c'est l'avoir lu. */
+function readSigns() {
+  const { hero } = game;
+  written = written.filter((d) => {
+    if (Math.abs(d.x - hero.x) > 96 || Math.abs(d.y - hero.y) > 96) return true;
+    collect('pancartes', renderer.written(d), true);
+    return false;
+  });
+}
+
 function start(id, level = null) {
   custom = level;
   current = { id: id ?? 'atelier', level: level ?? bundle.niveaux[id] };
@@ -118,6 +137,8 @@ function start(id, level = null) {
   if (id) collect('niveaux', id, true);
   collect('citations', current.level.citation, true);
   collect('heros', game.hero.def.id, true);
+  collectCortege();
+  written = game.decors.filter((d) => bundle.decors[d.id]?.ecrit);
   setMode('paused');
   begin = () => {
     begin = null;
@@ -183,12 +204,10 @@ function handle(events) {
       // Un mot tiré par l'adversaire : la vraie citation dont il vient entre dans la Collection.
       if (e.kind === 'mot') collect('citations', Object.values(bundle.citations).find((c) => c.mot && e.id.startsWith(c.mot))?.id, true);
       else collect({ ennemi: 'ennemis', recrue: 'recrues' }[e.kind] || e.kind, e.id);
-    } else if (e.type === 'recruit') {
-      // Les pancartes arrivées avec les nouveaux venus : de vraies pancartes, vues en manif.
-      for (const m of game.cortege) if (m.kind === 'pancarte') collect('pancartes', m.label, true);
-    } else if (e.type === 'heroCard') {
+    } else if (e.type === 'recruit') collectCortege(); else if (e.type === 'heroCard') {
       const hero = bundle.heros[e.hero];
       collect('heros', hero.id, true);
+      collectCortege(); // les soutiens venus avec le camarade libéré
       setMode('card');
       showHeroCard(bundle, hero, { audio, reduced: save.options.sobre }).then(() => {
         if (mode !== 'card') return;
@@ -222,6 +241,7 @@ function frame(now) {
       else handle(events);
     }
     if (steps === 6) acc = 0; // onglet ralenti : on ne rattrape pas le retard
+    if (!demo && written.length) readSigns();
     renderer.tick(dt);
     if (demo && game.status !== 'playing') attract();
   }
