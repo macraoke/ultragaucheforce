@@ -1,0 +1,36 @@
+# Un plateau : il ne bouge pas, il cadre, et la panique monte. Sa réplique est un vrai bandeau de la chaîne.
+nom: Le plateau de CNews
+pv: 6
+vitesse: 0
+deplacement: fixe
+reaction: cadre
+vue: 200
+panique: 5
+fin: panne
+largeur: 32
+hauteur: 22
+replique: LFI : LE NAZISME EST-IL PASSÉ À L'EXTRÊME GAUCHE ?
+auteur: UltraGauche Force
+--- repos
+.....KKK.......KKK.......KKK....
+.....KKK.......KKK.......KKK....
+....yyyyy.....yyyyy.....yyyyy...
+................................
+....TTTT......GGGG......kkkk....
+....TTTT......GGGG......kkkk....
+...ssssss....ssssss....ssssss...
+...skssks....skssks....skssks...
+...ssssss....ssssss....ssssss...
+...ssrrss....ssrrss....ssrrss...
+..nnnwwnnn..KKKwwKKK..rrrwwrrr..
+..nnnwwnnn..KKKwwKKK..rrrwwrrr..
+..nnnwwnnn..KKKwwKKK..rrrwwrrr..
+RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR
+nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
+nnnnnnnwwnwwnnwwwnwnwnnwwnnnnnnn
+nnnnnnwnnnwnwnwnnnwnwnwnnnnnnnnn
+nnnnnnwnnnwnwnwwnnwnwnnwnnnnnnnn
+nnnnnnwnnnwnwnwnnnwwwnnnwnnnnnnn
+nnnnnnnwwnwnwnwwwnwnwnwwnnnnnnnn
+nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
+kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk

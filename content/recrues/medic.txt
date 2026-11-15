@@ -1,0 +1,22 @@
+# Elle soigne : un point de vie rendu au héros quand elle le rejoint.
+nom: La street medic
+apport: 5
+soin: 1
+auteur: UltraGauche Force
+--- image
+...wwww...
+..wwRRww..
+..wwwwww..
+..cccccc..
+..sGGGGs..
+...GGGG...
+..wwwwww..
+.wwwRRwww.
+.wwRRRRww.
+.wwwRRwww.
+..wwwwww..
+..gggggg..
+..gg..gg..
+..gg..gg..
+..gg..gg..
+.kkk.kkk..

@@ -8,8 +8,6 @@ vue: 180
 fin: panne
 largeur: 12
 hauteur: 16
-fiche: bandeau-fallait-il-l-interdire
-replique: MANIF ANTI-POLICE : FALLAIT-IL L'INTERDIRE ?
 replique: RETRAITES : RÉVOLTÉS OU RÉSIGNÉS ?
 replique: 10 SEPTEMBRE : BLOQUER TOUT POUR GAGNER RIEN ?
 arme.type: tir

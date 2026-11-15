@@ -147,6 +147,7 @@ export class Renderer {
     tctx.setTransform(this.scale, 0, 0, this.scale, 0, 0);
 
     this.crowd = game.crowd || 0;
+    this.heroBox = game.hero;
     this.boxes = []; // les pancartes déjà posées à cette image : aucune ne recouvre l'autre
     this.backWalls(game, cx, cy);
     for (const d of game.decors) if (!this.bundle.decors[d.id]?.devant) this.decor(d);
@@ -396,8 +397,11 @@ export class Renderer {
   /** Le cadre du drone : ce que PANIQUE TV choisit de montrer. */
   viewfinder(e) {
     const { ctx } = this;
-    const x = Math.round(e.x + e.w / 2 - 22 - this.cx);
-    const y = Math.round(e.y + e.h + 4 - this.cy);
+    // Un drone cadre ce qu'il survole ; une équipe au sol cadre le héros lui-même.
+    const aloft = e.def.deplacement === 'vol';
+    const at = aloft ? { x: e.x + e.w / 2, y: e.y + e.h + 4 } : { x: this.heroBox.x + this.heroBox.w / 2, y: this.heroBox.y - 10 };
+    const x = Math.round(at.x - 22 - this.cx);
+    const y = Math.round(at.y - this.cy);
     ctx.strokeStyle = Math.floor(this.clock * 4) % 2 ? '#e43b44' : '#f4f4f4';
     ctx.lineWidth = 1;
     ctx.strokeRect(x + 0.5, y + 0.5, 44, 30);

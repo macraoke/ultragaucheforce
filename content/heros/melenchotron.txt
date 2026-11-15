@@ -11,10 +11,10 @@ auteur: UltraGauche Force
 
 # Arme : la vague de verbe, courte portée, traverse tout.
 arme.type: tir
-arme.cadence: 3.5
+arme.cadence: 2
 arme.vitesse: 150
 arme.portee: 96
-arme.degats: 2
+arme.degats: 3
 arme.terrain: 1
 arme.perce: 1
 arme.taille: 14

@@ -30,6 +30,9 @@ r: retraitee
 s: soignante
 t: tracteurs
 a: ag
+o: medic
+l: presse-independante
+f: bfm
 v: vache
 m: meule
 b: arbre
@@ -64,7 +67,7 @@ x: tente
 ...............................................................................P.....................P............TTTTTTTTTTTTTTTTTTTTTTTTTTT.................TTT..........................................TTT............................................
 ...............................................................................P.....................P............T.........................T.................TTT..........................................TTT............................................
 .................................F.............................................P....F................P............P.........................P................TTTT..........................................TTTT...........................................
-...D..1..b...v..ccc..i.....2....FF..3..p...u..k...*.j..j..x..=...e.4..g..m.m...P...FF...g.....XX.....P...Q..5..q..P...m.m....g....XX....m...P.....q...t.....TTTTT...p.....q.......g..=......g.q......j.....TTTTT.6......n....g....Q..b.ccc..b..7...S......
+...D..1..b...v..ccc..i.....2.f..FF..3..p...u..k...*.j..j..x..=...e.4..g..m.m...P...FF...g.....XX.....P...Q..5..q..P...m.m....g....XX....m...P.....q...t...o.TTTTT...p.....q.......g..=......g.q..l...j.....TTTTT.6......n....g....Q..b.ccc..b..7...S......
 TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
 OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
