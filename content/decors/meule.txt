@@ -1,0 +1,11 @@
+nom: Meule de fromage
+auteur: UltraGauche Force
+--- image
+...yyyyyy...
+.yyYYYYYYyy.
+yYYYYjYYYYYy
+yYYjYYYYYjYy
+yYYYYYYjYYYy
+jYYYjYYYYYYj
+.jjYYYYYYjj.
+...jjjjjj...

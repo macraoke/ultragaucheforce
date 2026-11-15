@@ -140,8 +140,14 @@ function handle(events) {
   renderer.absorb(events);
   for (const e of events) {
     if (e.type === 'sfx') audio.play(e.id);
-    else if (e.type === 'headline') hud.banner(e.text);
-    else if (e.type === 'panic') audio.play('palier');
+    else if (e.type === 'headline') {
+      hud.banner(e.text);
+      audio.play('papier', { volume: 0.6 });
+    } else if (e.type === 'panic') audio.play(e.level >= 2 ? 'casseroles' : 'sifflet');
+    else if (e.type === 'boss' && e.state === 'enter') {
+      audio.speak(game.boss.def.id, game.boss.def.nom);
+      radio.play('boss');
+    }
     else if (e.type === 'card') {
       const fact = bundle.fiches[e.id];
       if (fact && discover(save, e.id)) hud.toast(`Fiche débloquée : ${fact.titre}`);
@@ -149,7 +155,11 @@ function handle(events) {
       const hero = bundle.heros[e.hero];
       if (hero.citation) discover(save, hero.citation);
       setMode('card');
-      showHeroCard(bundle, hero, { audio, reduced: save.options.sobre }).then(() => mode === 'card' && setMode('playing'));
+      showHeroCard(bundle, hero, { audio, reduced: save.options.sobre }).then(() => {
+        if (mode !== 'card') return;
+        setMode('playing');
+        if (game.level.cortege) audio.play('slogan'); // le cortège salue le camarade libéré
+      });
     } else if (e.type === 'won') win();
     else if (e.type === 'lost') {
       setMode('over');
@@ -227,6 +237,9 @@ if (new URLSearchParams(location.search).has('debug')) {
 
 renderer.resize();
 applyOptions();
-registerServiceWorker();
+registerServiceWorker((apply) => {
+  screens.update = apply; // une nouvelle version attend : le menu la propose, jamais en pleine partie
+  if (mode === 'menu' && screens.open) screens.menu();
+});
 toMenu();
 requestAnimationFrame(frame);

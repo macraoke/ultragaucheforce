@@ -1,4 +1,5 @@
 nom: Éclat de cuivres
-zzfx: 1.2,0,262,.03,.25,.4,2,1.2,,,131,.12,,,,,.04,.85,.05
-auteur: UltraGauche Force
+fichier: cuivres.mp3
+auteur: plasterbrain
 licence: CC0-1.0
+source: https://freesound.org/s/397355/

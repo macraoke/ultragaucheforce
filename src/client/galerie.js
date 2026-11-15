@@ -29,8 +29,7 @@ const weapon = (w) => (w ? `${w.type} — ${Object.entries(w).filter(([k, v]) =>
 root.append(
   h('h1', {}, 'La Galerie ', h('b', {}, 'UltraGauche Force')),
   h('p', { className: 'intro' },
-    'Tout ce qui compose le jeu, lu directement dans le dossier ', h('code', {}, 'content/'),
-    ' : chaque dessin est une grille de lettres, chaque bruitage une ligne de texte. Modifier un fichier puis recharger cette page suffit. ',
+    'Tout le contenu du jeu, lu dans ', h('code', {}, 'content/'), '. Modifie un fichier, recharge la page. ',
     link('index.html', 'Retour au jeu')),
 );
 
@@ -44,7 +43,6 @@ section('Héros', grid(Object.values(bundle.heros).map((hero) =>
     drawings(hero, ['repos', 'marche1', 'marche2', 'saut', 'projectile', 'onde'], 4),
     h('h3', {}, hero.nom),
     hero.inspiration && h('p', {}, h('b', {}, 'Caricature de : '), hero.inspiration),
-    h('p', {}, hero.traitement),
     h('p', {}, h('b', {}, 'Cri : '), `« ${hero.cri} »`),
     h('p', {}, h('small', {}, `${hero.pv} PV · vitesse ${hero.vitesse} · saut ${hero.saut} tuiles`)),
     h('p', {}, h('small', {}, `Arme : ${weapon(hero.arme)}`)),
@@ -55,7 +53,7 @@ section('Héros', grid(Object.values(bundle.heros).map((hero) =>
       h('button', { className: 'discret', onclick: () => audio.speak(hero.id, hero.voix || hero.nom) }, 'Voix off')),
   ))));
 
-section('Ennemis — des automates, jamais des personnes', grid(Object.values(bundle.ennemis).map((e) =>
+section('Ennemis', grid(Object.values(bundle.ennemis).map((e) =>
   h('article', {},
     drawings(e, ['repos', 'marche1', 'fin', 'projectile'], 4),
     h('h3', {}, e.nom),
@@ -64,13 +62,12 @@ section('Ennemis — des automates, jamais des personnes', grid(Object.values(bu
     h('p', {}, e.replique.map((r) => `« ${r} »`).join(' ')),
   ))));
 
-section('Boss — une fortune réelle, une machine, un pilote qui s’éjecte indemne', grid(Object.values(bundle.boss).map((b) =>
+section('Boss', grid(Object.values(bundle.boss).map((b) =>
   h('article', {},
     drawings(b, ['repos'], 3),
     drawings(b, ['portrait', 'ejecte', 'projectile'], 4, true),
     h('h3', {}, b.nom),
     h('p', {}, h('b', {}, 'Caricature de : '), b.inspiration),
-    h('p', {}, b.traitement),
     h('p', {}, h('b', {}, 'Fortune documentée : '), `${String(b.fortune.montant).replace('.', ',')} Md€`),
     h('p', {}, b.replique.map((r) => `« ${r} »`).join(' ')),
     h('p', {}, h('small', {}, `${b.pv} PV · phases : ${b.phases.map((p) => p.attaques.join(' + ')).join(' → ')}`)),
@@ -90,7 +87,7 @@ section('Tuiles et décors', grid([
   ...Object.values(bundle.decors).map((d) => h('article', {}, drawings(d, ['image', 'image2'], 3), h('h3', {}, d.nom))),
 ], true));
 
-section('Bruitages — libres, dans le dépôt, hors-ligne', h('div', { className: 'actions' },
+section('Bruitages', h('div', { className: 'actions' },
   Object.values(bundle.sons).map((s) => h('button', { className: 'discret', onclick: () => audio.play(s.id) }, s.nom || s.id))));
 
 if (bundle.musiques && Object.keys(bundle.musiques).length) {
@@ -99,7 +96,7 @@ if (bundle.musiques && Object.keys(bundle.musiques).length) {
 }
 
 const texts = (title, items) => items.length && section(title, h('ul', { className: 'textes' }, items));
-texts('Manchettes de PANIQUE TV (parodie)', bundle.manchettes.map((m) => h('li', {}, m)));
+texts('Manchettes de PANIQUE TV', bundle.manchettes.map((m) => h('li', {}, m)));
 texts('Pancartes', bundle.pancartes.map((p) => h('li', {}, p.texte, p.credit && h('small', {}, ` — ${p.credit}`))));
 texts('Citations réelles', Object.values(bundle.citations).map((c) =>
   h('li', {}, h('b', {}, `« ${c.texte} »`), ` — ${c.auteur}, ${frenchDate(c.date)}. `, c.contexte, ' ', sourceLine(c))));

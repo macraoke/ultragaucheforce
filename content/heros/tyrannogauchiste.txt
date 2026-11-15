@@ -1,6 +1,5 @@
-# Le héros de départ : « l'ultragauche » telle que la télé l'imagine.
 nom: Le TyrannoGauchiste
-traitement: archétype — le monstre d'ultragauche fantasmé par les plateaux télé, armé de tracts
+traitement: l'ultragauche telle que la télé l'imagine
 cri: TAXEZ LES RICHES !
 voix: Le Tyranno Gauchiste !
 pv: 3

@@ -1,6 +1,6 @@
 nom: Le Mélenchotron
 inspiration: Jean-Luc Mélenchon
-traitement: caricature originale et affectueuse d'un tribun ; ses attaques sont une invention de fiction, sans voix imitée
+traitement: le tribun, en plus fort
 cri: LA RÉPUBLIQUE, C'EST MOI !
 citation: melenchon-republique-cest-moi
 voix: Le Mélenchotron !

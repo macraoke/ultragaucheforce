@@ -220,7 +220,7 @@ export class Game {
     const { hero } = this;
     if (hero.dead || amount <= 0 || this.invincible || hero.invuln > 0) return;
     hero.hp -= amount;
-    hero.invuln = 1;
+    hero.invuln = 1.4;
     this.sfx('degat', hero.x);
     this.emit('shake', { force: 4 });
     if (hero.hp <= 0) this.killHero();

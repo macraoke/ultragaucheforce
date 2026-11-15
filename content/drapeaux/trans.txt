@@ -1,6 +1,15 @@
 nom: Drapeau trans
 description: Les fiertés et les droits des personnes trans.
 auteur: UltraGauche Force
+ressource.1.titre: Que sont les transidentités ? — OUTrans
+ressource.1.url: https://www.outrans.org/ressources/quest-ce-que-la-transidentite/
+ressource.1.nature: associative
+ressource.2.titre: Droits des personnes transgenres : la décision-cadre de la Défenseure des droits
+ressource.2.url: https://www.defenseurdesdroits.fr/droits-des-personnes-transgenres-la-defenseure-des-droits-publie-une-nouvelle-decision-cadre-891
+ressource.2.nature: officielle
+ressource.3.titre: Les bases sur la transidentité en 5 minutes — Wiki Trans
+ressource.3.url: https://wikitrans.co/intro/
+ressource.3.nature: associative
 --- image
 bbbbbbbbbbbbbbbbbb
 bbbbbbbbbbbbbbbbbb

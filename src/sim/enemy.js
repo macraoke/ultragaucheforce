@@ -143,5 +143,11 @@ export function updateEnemy(game, e, dt) {
       e.cooldown = 1 / def.arme.cadence;
     }
   }
-  if (def.contact > 0 && !hero.dead && overlap(e, hero)) game.hurtHero(def.contact);
+  if (def.contact > 0 && !hero.dead && hero.invuln <= 0 && overlap(e, hero)) {
+    game.hurtHero(def.contact);
+    // Après avoir bousculé le héros, l'automate recule et reste sonné : on a le temps de réagir.
+    e.kick = Math.sign(e.x + e.w / 2 - (hero.x + hero.w / 2) || 1) * 160;
+    e.state = 'stunned';
+    e.stun = Math.max(e.stun, 1.6);
+  }
 }

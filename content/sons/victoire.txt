@@ -1,4 +1,5 @@
-nom: Niveau terminé
-zzfx: 1,0,523,.02,.2,.5,2,1,,,262,.12,,,,,.08,.8,.05
-auteur: UltraGauche Force
-licence: CC0-1.0
+nom: Niveau terminé : L’Internationale par la fanfare de Bevagna, 1er mai 2007 (extrait)
+fichier: internationale.mp3
+auteur: Fanfare de Bevagna, enregistrée par Zyance
+licence: CC-BY-SA-3.0
+source: https://commons.wikimedia.org/wiki/File:Banda_Bevagna.ogg

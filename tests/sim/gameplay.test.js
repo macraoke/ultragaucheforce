@@ -236,17 +236,20 @@ test('les automates dorment tant que le héros est loin (distance fixe, pas l’
   assert.notEqual(far.state, 'sleep', 'réveillé à l’approche du héros');
 });
 
-test('contact : deux points de vie, avec une seconde d’invulnérabilité entre deux coups', () => {
+test('contact : deux points de vie ; après un coup, le héros est invulnérable et l’automate recule, sonné', () => {
   const game = settle(play(flat({ legende: { f: enemy('fonceur') }, draw: (put, ground) => put(ground, 8, 'f') })));
   const { hero } = game;
   let events = [];
   for (let i = 0; i < 200 && hero.hp === hero.def.pv; i++) events = events.concat(run(game, 1));
   assert.equal(hero.hp, 1, 'premier contact : un point de vie en moins');
   assert.ok(events.some((e) => e.type === 'sfx' && e.id === 'degat'));
+  const foe = game.enemies[0];
+  assert.equal(foe.state, 'stunned', 'l’automate qui a bousculé le héros reste sonné');
   run(game, 50);
-  assert.equal(hero.hp, 1, 'toujours au contact, mais invulnérable pendant une seconde');
-  events = run(game, 30);
-  assert.ok(hero.dead, 'second contact : à terre');
+  assert.equal(hero.hp, 1, 'invulnérable juste après le coup');
+  events = [];
+  for (let i = 0; i < 600 && !hero.dead; i++) events = events.concat(run(game, 1));
+  assert.ok(hero.dead, 'second contact, plus tard : à terre');
   assert.equal(game.lives, 2);
   assert.ok(types(events).includes('death'));
 });

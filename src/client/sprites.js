@@ -3,7 +3,9 @@
 
 const cache = new WeakMap(); // grille → { variante → canvas }
 
-function bake(rows, palette, flip, flash) {
+const dim = (hex) => `#${[1, 3, 5].map((i) => Math.round(parseInt(hex.slice(i, i + 2), 16) * 0.42 + [26, 28, 44][(i - 1) / 2] * 0.58).toString(16).padStart(2, '0')).join('')}`;
+
+function bake(rows, palette, flip, flash, back) {
   const h = rows.length;
   const w = rows[0].length;
   const cvs = document.createElement('canvas');
@@ -14,19 +16,20 @@ function bake(rows, palette, flip, flash) {
     for (let x = 0; x < w; x++) {
       const c = rows[y][x];
       if (c === '.') continue;
-      ctx.fillStyle = flash ? '#ffffff' : palette[c] || '#ff00ff';
+      const color = palette[c] || '#ff00ff';
+      ctx.fillStyle = flash ? '#ffffff' : back ? dim(color) : color;
       ctx.fillRect(flip ? w - 1 - x : x, y, 1, 1);
     }
   }
   return cvs;
 }
 
-/** Image d'un dessin. `flip` = regarde à gauche ; `flash` = silhouette blanche (coup reçu). */
-export function sprite(rows, palette, flip = false, flash = false) {
+/** Image d'un dessin. `flip` = regarde à gauche ; `flash` = silhouette blanche (coup reçu) ; `back` = assombri (mur du fond). */
+export function sprite(rows, palette, flip = false, flash = false, back = false) {
   let variants = cache.get(rows);
   if (!variants) cache.set(rows, (variants = {}));
-  const key = (flip ? 'f' : '') + (flash ? 'w' : '');
-  return (variants[key] ??= bake(rows, palette, flip, flash));
+  const key = (flip ? 'f' : '') + (flash ? 'w' : '') + (back ? 'd' : '');
+  return (variants[key] ??= bake(rows, palette, flip, flash, back));
 }
 
 /** Un élément <canvas> agrandi, aux pixels nets, pour les menus, les cartons et la Galerie. */

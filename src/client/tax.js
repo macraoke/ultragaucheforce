@@ -52,7 +52,7 @@ export function showTaxScene(root, bundle, boss, { audio = null } = {}) {
         h('h2', {}, 'Une vie de travail'),
         life,
         h('p', { className: 'gros' }, `${YEARS} ans au Smic : ${frenchNumber(YEARS * 12)} liasses, soit ${frenchNumber(career)} €.`),
-        h('p', {}, h('small', {}, `Hypothèse : ${YEARS} années de travail au Smic d’aujourd’hui, sans jamais rien dépenser.`)),
+        h('p', {}, h('small', {}, `${YEARS} ans au Smic d’aujourd’hui, sans rien dépenser.`)),
       ],
       () => {
         paint(false);
@@ -60,7 +60,7 @@ export function showTaxScene(root, bundle, boss, { audio = null } = {}) {
           h('h2', {}, boss.nom),
           picture,
           h('p', { className: 'gros' }, `Chaque point doré est une VIE ENTIÈRE de travail au Smic. Il y en a ${frenchNumber(careers)}.`),
-          h('p', {}, 'Le petit carré rouge, en haut à gauche : neuf vies de travail.'),
+          h('p', {}, 'Le carré rouge, en haut à gauche : neuf vies. Cherche bien.'),
           real(boss.fortune.fiche),
         ];
       },
@@ -75,7 +75,6 @@ export function showTaxScene(root, bundle, boss, { audio = null } = {}) {
           h('p', { className: 'gros' },
             `2 % par an : ${frenchNumber((fortune * RATE) / 1e9, 1)} milliards d’euros, soit ${frenchNumber(taxed)} vies de travail au Smic… chaque année. La bande verte, en bas. Il reste 98 %.`),
           services,
-          h('p', {}, h('small', {}, 'Ordre de grandeur arithmétique, pas une prévision de recettes. Les lumières qui se rallument sont une image.')),
           real('impot-plancher'),
           real('impot-plancher-rendement'),
         ];

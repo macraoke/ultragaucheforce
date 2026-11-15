@@ -1,4 +1,3 @@
-# Automate du maintien de l'ordre : fictif, sans insigne réel.
 # Ses grenades lacrymogènes touchent aussi son propre camp (fratricide: 1).
 nom: Le Bouclier
 pv: 3

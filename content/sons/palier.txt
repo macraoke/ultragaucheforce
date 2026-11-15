@@ -1,4 +1,5 @@
-nom: La panique monte
-zzfx: 1,0,880,.01,.1,.2,5,.5,,,-220,.1,.2
-auteur: UltraGauche Force
+nom: La panique monte : sirène de mégaphone
+fichier: sirene.mp3
+auteur: doomyd
 licence: CC0-1.0
+source: https://freesound.org/s/537684/

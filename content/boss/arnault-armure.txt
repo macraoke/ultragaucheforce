@@ -1,16 +1,15 @@
-# Un boss = une fortune réelle documentée, pilotant une MACHINE.
-# On casse la machine ; la caricature s'éjecte indemne (dessin « ejecte »).
+# Un boss = une fortune documentée aux commandes d'une machine. Le dessin « ejecte » sert à sa sortie.
 nom: L'Arnault-Armure du Luxe
 inspiration: Bernard Arnault
-traitement: caricature originale ; une armure de malles dont le pilote s'éjecte indemne en parachute doré. Les répliques sont inventées.
+traitement: une armure de malles ; le pilote s'éjecte en parachute doré
 pv: 70
 largeur: 30
 hauteur: 40
 vitesse: 30
 citation: arnault-zucman
 replique: MES MALLES ! MES TRÈS CHÈRES MALLES !
-replique: DEUX POUR CENT ?! ET POURQUOI PAS TROIS, TANT QU'ON Y EST ?
-replique: ATTENTION, JE DEMANDE LA NATIONALITÉ BELGE !
+replique: DEUX POUR CENT ?! ET POURQUOI PAS TROIS ?
+replique: JE DEMANDE LA NATIONALITÉ BELGE !
 replique: QUI VA PENSER AUX SACS À MAIN ?
 auteur: UltraGauche Force
 

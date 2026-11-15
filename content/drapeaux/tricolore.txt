@@ -1,6 +1,15 @@
 nom: Drapeau tricolore
 description: Bleu, blanc, rouge : né de la Révolution de 1789.
 auteur: UltraGauche Force
+ressource.1.titre: Le drapeau français — Élysée
+ressource.1.url: https://www.elysee.fr/la-presidence/le-drapeau-francais
+ressource.1.nature: officielle
+ressource.2.titre: La Révolution française de 1789 à 1792 — Nota Bene (vidéo, 18 min)
+ressource.2.url: https://www.youtube.com/watch?v=Au7DPVUpc6A
+ressource.2.nature: createur
+ressource.3.titre: La Commune de Paris — Karambolage, ARTE (vidéo, 5 min)
+ressource.3.url: https://www.youtube.com/watch?v=_S1iWRWhcvc
+ressource.3.nature: presse
 --- image
 BBBBBBwwwwwwRRRRRR
 BBBBBBwwwwwwRRRRRR

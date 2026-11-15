@@ -1,4 +1,5 @@
-nom: Piquet de grève allumé
-zzfx: 1,0,330,.01,.08,.22,,1,,,165,.06
-auteur: UltraGauche Force
-licence: CC0-1.0
+nom: Piquet de grève allumé : « Résistance ! » — Belfort, 13 avril 2023 (extrait)
+fichier: resistance.mp3
+auteur: Thomas Bresson
+licence: CC-BY-4.0
+source: https://commons.wikimedia.org/wiki/File:2023-04-13_manif-Belfort-R%C3%A9sistance.mp3

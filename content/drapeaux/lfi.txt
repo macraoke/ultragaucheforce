@@ -1,6 +1,15 @@
 nom: Drapeau de La France insoumise (stylisé)
-description: Le mouvement, tel qu’on le croise dans les cortèges. Ce jeu n’en est pas une production.
+description: Le mouvement, tel qu'on le croise dans les cortèges.
 auteur: UltraGauche Force
+ressource.1.titre: L'Avenir en commun, édition 2027 : le programme en ligne
+ressource.1.url: https://melenchon2027.fr/programme/livre/
+ressource.1.nature: militante
+ressource.2.titre: Découvrir le programme
+ressource.2.url: https://melenchon2027.fr/programme/decouvrir/
+ressource.2.nature: militante
+ressource.3.titre: Ce qui change dans le nouveau programme — LCP
+ressource.3.url: https://lcp.fr/actualites/presidentielle-2027-ce-qui-change-dans-le-nouveau-programme-de-jean-luc-melenchon-444841
+ressource.3.nature: presse
 --- image
 mmmmmmmmmRRRRRRRRR
 mmmmmmmmwwRRRRRRRR

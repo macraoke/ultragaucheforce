@@ -1,5 +1,4 @@
-# Robot de plateau télé. Il tire des MOTS : ceux de `arme.mots` sont tous tirés de
-# déclarations réelles, sourcées dans `content/citations/`.
+# Il tire des mots : ceux de `arme.mots` viennent des citations de `content/citations/`.
 nom: L'Éditorialiste
 pv: 2
 vitesse: 14

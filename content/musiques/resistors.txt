@@ -1,0 +1,6 @@
+titre: We're the Resistors
+artiste: Eric Skiff
+url: https://soundcloud.com/ericskiff/were-the-resistors
+ou: menu
+licence: CC-BY
+auteur: UltraGauche Force

@@ -371,6 +371,23 @@ export function buildLevel(f, ctx, report) {
     report(map.line, 'La sortie « S » est inatteignable : un mur indestructible sépare le départ de la sortie.');
   }
   out.carte = rows;
+
+  // Section facultative « --- murs » : les murs du fond, dessinés derrière l'action, sans collision.
+  const back = f.sections.murs;
+  out.murs = [];
+  if (back?.rows.length) {
+    out.murs = back.rows.map((r) => r.replaceAll(' ', '.').padEnd(width, '.'));
+    out.murs.forEach((row, y) => {
+      for (let x = 0; x < row.length; x++) {
+        if (row[x] !== '.' && !(row[x] in ctx.symbols)) {
+          report(back.line + y, `Symbole « ${row[x]} » inconnu dans les murs du fond : seules les tuiles y ont leur place.`, x + 1);
+        }
+      }
+    });
+    if (out.murs.length !== rows.length || out.murs[0].length !== width) {
+      report(back.line, `Les murs du fond doivent avoir la taille de la carte (${width} × ${rows.length}).`);
+    }
+  }
   return out;
 }
 

@@ -1,6 +1,5 @@
-# Né d'une citation réelle : en 2022, un ministre a parlé d'« écoterrorisme » à propos de manifestants.
 nom: L'Écoterroriste
-traitement: archétype — un jardinier armé d'un arrosoir, tel que le mot « écoterrorisme » le laisse imaginer
+traitement: un jardinier, comme le mot le laisse imaginer
 cri: ZAD PARTOUT !
 citation: darmanin-ecoterrorisme
 voix: L'Éco terroriste !
@@ -12,10 +11,10 @@ auteur: UltraGauche Force
 # Arme : des tomates lancées en cloche.
 arme.type: tir
 arme.cadence: 2.5
-arme.vitesse: 170
-arme.gravite: 520
-arme.elan: 190
-arme.portee: 420
+arme.vitesse: 220
+arme.gravite: 400
+arme.elan: 80
+arme.portee: 300
 arme.degats: 2
 arme.terrain: 2
 arme.explosion: 18

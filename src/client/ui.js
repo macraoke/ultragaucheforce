@@ -11,8 +11,7 @@ const THEMES = {
   programme: 'Programme', luttes: 'Luttes',
 };
 const CATEGORIES = { diabolisation: 'Les mots pour faire peur', puissants: 'Paroles de puissants', gauche: 'La gauche se cite' };
-const MENTION = 'Satire citoyenne indépendante, libre et collaborative : ni commandée ni financée par un parti. ' +
-  'Les répliques des personnages sont inventées ; les citations et les chiffres de la Bibliothèque sont réels et sourcés.';
+const MENTION = 'Satire citoyenne, libre et collaborative.';
 
 export class Screens {
   /**
@@ -62,7 +61,8 @@ export class Screens {
         this.button('Atelier', () => this.go.atelier()),
         h('a', { className: 'bouton', href: 'galerie.html' }, 'Galerie'),
         this.button('Options', () => this.options()),
-        this.button('À propos', () => this.about())),
+        this.button('À propos', () => this.about()),
+        this.update && this.button('Mettre à jour', this.update)),
       h('p', { className: 'mention' }, MENTION, ` v${VERSION}`));
   }
 
@@ -128,7 +128,6 @@ export class Screens {
     }
     this.show('biblio',
       h('h2', {}, 'La Bibliothèque'),
-      h('p', {}, 'Tout ce qui est ici est réel, daté et sourcé. La parodie, elle, reste dans le jeu.'),
       h('div', { className: 'onglets' }, Object.entries(tabs).map(([id, title]) =>
         this.button(title, () => this.library(id), id === tab ? '' : 'discret'))),
       h('div', { className: 'contenu' }, body),
@@ -150,8 +149,8 @@ export class Screens {
     this.show('liste',
       h('h2', {}, 'Options'),
       toggle('son', 'Bruitages et voix off'),
-      toggle('musique', 'Radio Manif : musique par le lecteur SoundCloud (service externe, en ligne)'),
-      toggle('sobre', 'Effets réduits : sans secousses ni clignotements'),
+      toggle('musique', 'Radio Manif (musique, par SoundCloud)'),
+      toggle('sobre', 'Effets réduits'),
       h('h3', {}, 'Commandes'),
       h('table', {},
         h('tr', {}, h('th', {}, ''), h('th', {}, 'Clavier'), h('th', {}, 'Manette'), h('th', {}, 'Tactile')),
@@ -172,11 +171,10 @@ export class Screens {
     this.show('liste',
       h('h2', {}, 'À propos'),
       h('p', {}, MENTION),
-      h('p', {}, 'Le jeu grandit par les contributions : une blague, une pancarte, un drapeau, un niveau, un personnage, un son. ',
-        'Tout le contenu est en fichiers texte, modifiables depuis GitHub sans rien installer.'),
+      h('p', {}, 'Une blague, une pancarte, un drapeau, un niveau, un personnage, un son : tout le contenu est en fichiers texte, modifiables depuis GitHub.'),
       h('p', {}, link(REPO, 'Le dépôt'), ' · ', link(`${REPO}/blob/main/CONTRIBUER.md`, 'Contribuer'), ' · ',
         link(`${REPO}/blob/main/CHARTE.md`, 'La charte'), ' · ', h('a', { href: 'galerie.html' }, 'La Galerie')),
-      h('h3', {}, 'Références assumées'),
+      h('h3', {}, 'Références'),
       h('ul', {}, REFERENCES.map((r) => h('li', {}, link(r.url, r.titre), ` — ${r.note}`))),
       h('h3', {}, 'Licences'),
       h('p', {}, 'Code : MIT. Contenus (dessins, textes, niveaux, sons) : CC BY-SA 4.0. Bruitages synthétisés avec ZzFX de Frank Force (MIT).'),
@@ -217,6 +215,8 @@ export class Screens {
   /** Fin de niveau : ce que PANIQUE TV annonce, ce qui s'est réellement passé, puis un fait sourcé. */
   end({ level, stats, time, announced, next, last }) {
     const fact = this.bundle.fiches[level.fiche];
+    const seen = this.bundle.pancartes.filter((p) => p.credit);
+    const sign = seen[Math.floor(Math.random() * seen.length)];
     const minutes = `${Math.floor(time / 60)} min ${String(Math.floor(time % 60)).padStart(2, '0')} s`;
     this.show('fin',
       h('h2', {}, 'Niveau terminé'),
@@ -233,8 +233,8 @@ export class Screens {
             h('li', {}, `${stats.breakdownsBySelf} automate(s) mis hors service par leurs propres grenades`),
             h('li', {}, `${stats.gassed} manifestant(s) gazé(s)`),
             h('li', {}, `${stats.tracts} tract(s) distribué(s), ${stats.rescues} camarade(s) libéré(s), ${stats.tiles} morceau(x) de décor en moins`)))),
-      fact && h('article', { className: 'fiche' }, h('h3', {}, `Et en vrai ? ${fact.titre}`), h('p', {}, fact.texte),
-        fact.portee && h('p', {}, h('em', {}, fact.portee)), sourceLine(fact)),
+      fact && h('article', { className: 'fiche' }, h('h3', {}, `Et en vrai ? ${fact.titre}`), h('p', {}, fact.texte), sourceLine(fact)),
+      sign && h('p', { className: 'pancarte' }, h('b', {}, `« ${sign.texte} »`), h('small', {}, ` ${sign.credit.split(' — ')[0]}`)),
       h('div', { className: 'pied' },
         next && this.button('Niveau suivant', () => this.go.play(next), 'gros'),
         last && this.button('La suite', () => this.final(), 'gros'),
@@ -253,10 +253,9 @@ export class Screens {
       h('div', { className: 'cartes' },
         [f['presidentielle-dates'], f['inscription-listes'], f.procuration].filter(Boolean).map((x) =>
           h('article', {}, h('h3', {}, x.titre), h('p', {}, x.texte), sourceLine(x)))),
-      programme.length ? h('h3', {}, 'Le programme mis en scène dans ce jeu') : null,
+      programme.length ? h('h3', {}, 'Le programme') : null,
       programme.length ? h('ul', {}, programme.map((x) => h('li', {}, x.texte, ' ', sourceLine(x)))) : null,
-      h('p', { className: 'mention' }, 'Ce jeu est l’initiative individuelle de citoyens, en open source et collaboratif. ',
-        'Il ne donne aucune consigne de vote : lisez les programmes, comparez, décidez.'),
+      h('p', { className: 'mention' }, 'Un jeu fait par des citoyens, en open source et collaboratif.'),
       h('div', { className: 'pied' },
         this.button('Menu', () => this.go.quit(), 'gros'),
         this.button('Bibliothèque', () => this.library(), 'discret'),
@@ -315,8 +314,13 @@ export class Hud {
   /** Bandeau d'info en continu : la parodie, toujours signée PANIQUE TV. */
   banner(text, seconds = 6) {
     const el = this.q('bandeau');
-    el.querySelector('span').textContent = text;
+    const line = el.querySelector('span');
+    const inner = h('i', {}, text);
+    line.replaceChildren(inner);
     el.hidden = false;
+    const overflow = inner.scrollWidth - line.clientWidth + 24;
+    inner.style.setProperty('--decalage', `${-Math.max(0, overflow)}px`);
+    inner.style.animationDuration = `${seconds - 1.5}s`;
     el.classList.remove('entre');
     void el.offsetWidth; // relance l'animation
     el.classList.add('entre');

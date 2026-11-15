@@ -1,5 +1,5 @@
-# Le drone de PANIQUE TV ne blesse personne : il CADRE le héros, et la panique monte.
-# Clin d'œil à « We Become What We Behold » de Nicky Case (domaine public).
+# Il ne blesse personne : il cadre le héros, et la panique monte.
+# Clin d'œil à « We Become What We Behold » de Nicky Case.
 nom: Le Drone de PANIQUE TV
 pv: 1
 vitesse: 60
@@ -11,7 +11,7 @@ fin: panne
 largeur: 14
 hauteur: 9
 replique: ON A LES IMAGES !
-replique: UNE VACHE SUSPECTE A ÉTÉ FILMÉE.
+replique: VACHE SUSPECTE !
 replique: ÉDITION SPÉCIALE !
 auteur: UltraGauche Force
 

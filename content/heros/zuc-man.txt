@@ -1,6 +1,6 @@
 nom: Zuc-Man
 inspiration: Gabriel Zucman
-traitement: caricature originale d'un économiste en super-héros ; son tampon est une invention de fiction
+traitement: l'économiste en super-héros
 cri: DEUX POUR CENT !
 citation: arnault-zucman
 voix: Zuc Man !

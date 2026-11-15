@@ -39,7 +39,10 @@ export function updateProps(game) {
 export function growCortege(game, count) {
   if (!game.level.cortege) return;
   const { hero, bundle } = game;
-  const signs = bundle.pancartes || [];
+  // Dans le cortège, seules les pancartes courtes restent lisibles ; les autres vivent dans la Bibliothèque.
+  const all = bundle.pancartes || [];
+  const short = all.filter((p) => p.texte.length <= 26);
+  const signs = short.length ? short : all;
   const flags = Object.keys(bundle.drapeaux || {});
   for (let i = 0; i < count && game.cortege.length < MAX_CORTEGE; i++) {
     const n = game.cortege.length;

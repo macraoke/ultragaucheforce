@@ -22,6 +22,7 @@ export class Renderer {
     this.tctx = textCanvas.getContext('2d');
     this.bundle = bundle;
     this.palette = bundle.palette;
+    this.bySymbol = Object.fromEntries(Object.values(bundle.tuiles).map((t) => [t.symbole, t]));
     this.cam = { x: 0, y: 0 };
     this.viewW = 384;
     this.viewH = 216;
@@ -132,11 +133,14 @@ export class Renderer {
     tctx.clearRect(0, 0, this.textCanvas.width, this.textCanvas.height);
     tctx.setTransform(this.scale, 0, 0, this.scale, 0, 0);
 
+    this.backWalls(game, cx, cy);
     for (const d of game.decors) if (!this.bundle.decors[d.id]?.devant) this.decor(d);
     this.tiles(game.world, cx, cy);
     for (const p of game.props) this.prop(p);
     game.cortege.forEach((m, i) => this.marcher(m, i));
-    for (const e of game.enemies) this.enemy(e);
+    const talker = game.enemies.filter((e) => e.bubble && e.state !== 'done')
+      .sort((a, b) => Math.abs(a.x - game.hero.x) - Math.abs(b.x - game.hero.x))[0];
+    for (const e of game.enemies) this.enemy(e, e === talker);
     if (game.boss) this.boss(game.boss);
     this.hero(game.hero);
     for (const p of game.projectiles) this.projectile(p);
@@ -192,6 +196,25 @@ export class Renderer {
               if ((Math.sin(wx * 3.1 + wy * 7.7 + i) + 1) / 2 > 0.62) ctx.fillRect(wx, wy, 3, 4);
             }
           }
+        }
+      }
+    }
+  }
+
+  /** Les murs du fond (section « --- murs » du niveau) : assombris, sans collision. */
+  backWalls(game, cx, cy) {
+    const rows = game.level?.murs;
+    if (!rows?.length) return;
+    const { world } = game;
+    const x0 = Math.max(0, Math.floor(cx / TILE));
+    const y0 = Math.max(0, Math.floor(cy / TILE));
+    const x1 = Math.min(world.w - 1, Math.floor((cx + this.viewW) / TILE));
+    const y1 = Math.min(rows.length - 1, Math.floor((cy + this.viewH) / TILE));
+    for (let ty = y0; ty <= y1; ty++) {
+      for (let tx = x0; tx <= x1; tx++) {
+        const def = this.bySymbol[rows[ty][tx]];
+        if (def && !world.tiles[ty * world.w + tx]) {
+          this.ctx.drawImage(sprite(def.sprites.image, this.palette, false, false, true), tx * TILE - cx, ty * TILE - cy);
         }
       }
     }
@@ -258,7 +281,7 @@ export class Renderer {
     if (!blink) this.actor(h, rows);
   }
 
-  enemy(e) {
+  enemy(e, speaks = false) {
     const s = e.def.sprites;
     if (e.state === 'done') {
       this.actor(e, s.fin || s.repos);
@@ -271,7 +294,7 @@ export class Renderer {
     this.actor(e, this.frames(s, moving, e.animTime, e.def.deplacement === 'vol' ? 14 : 7), { flash: e.flash > 0 });
     if (e.state === 'stunned') this.label('✶ ✶', e.x + e.w / 2 - this.cx, e.y - 5 - this.cy, { size: 6, color: '#f6c21c' });
     if (e.def.reaction === 'cadre' && e.state === 'alert') this.viewfinder(e);
-    if (e.bubble) this.label(e.bubble.text, e.x + e.w / 2 - this.cx, e.y - 10 - this.cy, { size: 5.5, color: '#1a1c2c', bg: '#f4f4f4', width: 92 });
+    if (speaks) this.label(e.bubble.text, e.x + e.w / 2 - this.cx, e.y - 10 - this.cy, { size: 5.5, color: '#1a1c2c', bg: '#f4f4f4', width: 80 });
   }
 
   /** Le cadre du drone : ce que PANIQUE TV choisit de montrer. */
@@ -309,7 +332,6 @@ export class Renderer {
     const y = Math.round(p.y + p.h - img.height - this.cy);
     this.ctx.drawImage(img, x, y);
     if (p.kind === 'sortie') {
-      this.label(p.on === false ? 'BATTEZ LE BOSS !' : 'CAMION-SONO', x + 17, y + 12, { size: 4.5, color: '#f4f4f4' });
       if (p.on !== false) this.label('SORTIE ▶', x + img.width / 2, y - 9, { size: 6, color: '#1a1c2c', bg: '#f6c21c' });
     }
     if (p.kind === 'cage' && !p.on) this.label('GARDE À VUE', x + 8, y - 8, { size: 4.5, color: '#f4f4f4', bg: '#333c57' });
@@ -350,7 +372,7 @@ export class Renderer {
     } else if (m.kind === 'pancarte') {
       this.ctx.fillStyle = '#6b3a2a';
       this.ctx.fillRect(hand, y - 8 - (i % 2) * 14, 1, 10 + (i % 2) * 14);
-      this.board(m.label, hand, y - 12 - (i % 2) * 14, { size: 4.6, width: 46 });
+      this.board(m.label, hand, y - 12 - (i % 2) * 14, { size: 4.6, width: 44 });
     }
   }
 

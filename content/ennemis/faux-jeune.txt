@@ -1,8 +1,7 @@
-# Robot fictif déguisé en lycéen. Parodie du mème d'octobre 2026 né d'une infiltration
-# policière PRÉSUMÉE d'un groupe Snapchat : rien n'est établi, et ce robot ne désigne personne.
+# D'après le mème d'octobre 2026, né d'une infiltration présumée d'un groupe Snapchat.
 nom: Le Faux Jeune
 pv: 2
-vitesse: 95
+vitesse: 80
 deplacement: marche
 reaction: fonce
 vue: 140
@@ -11,9 +10,9 @@ fin: panne
 largeur: 10
 hauteur: 16
 replique: BISMILLAH, C'EST LES TÉNÈBRES.
-replique: WESH LA MIF, C'EST QUOI LES BAILS DE LA RÉVOLUTION ?
+replique: WESH LA MIF, C'EST QUOI LES BAILS ?
 replique: YO LES POTOS, ON SE CAPTE AU BLOCUS ?
-replique: JE SUIS UN JEUNE COMME VOUS. LOL. MDR.
+replique: JE SUIS UN JEUNE. LOL. MDR.
 replique: TROP SWAG CETTE AG, LES DJEUNS.
 auteur: UltraGauche Force
 
