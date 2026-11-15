@@ -1,0 +1,38 @@
+name: Un bug
+description: Le jeu plante, se bloque, ou ne fait pas ce qu'il devrait.
+title: "Bug : "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: quoi
+    attributes:
+      label: Ce qui s'est passé
+      description: Et ce que vous attendiez.
+    validations:
+      required: true
+  - type: textarea
+    id: comment
+    attributes:
+      label: Comment le reproduire
+      description: Le niveau, le héros, ce que vous faisiez.
+    validations:
+      required: true
+  - type: input
+    id: appareil
+    attributes:
+      label: Votre appareil et votre navigateur
+      placeholder: iPhone 15, Safari — ou — PC, Firefox 140
+    validations:
+      required: true
+  - type: dropdown
+    id: commandes
+    attributes:
+      label: Vous jouiez…
+      options:
+        - au clavier
+        - au tactile
+        - à la manette
+  - type: textarea
+    id: capture
+    attributes:
+      label: Une capture d'écran, si possible

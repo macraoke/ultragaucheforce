@@ -1,0 +1,44 @@
+name: Un personnage
+description: Un héros, un ennemi ou un boss.
+title: "Personnage : "
+labels: ["personnage"]
+body:
+  - type: dropdown
+    id: role
+    attributes:
+      label: Son rôle
+      options:
+        - héros
+        - ennemi
+        - boss
+    validations:
+      required: true
+  - type: input
+    id: nom
+    attributes:
+      label: Son nom
+      placeholder: La Casserolière
+    validations:
+      required: true
+  - type: textarea
+    id: gag
+    attributes:
+      label: Le gag, en trois secondes
+    validations:
+      required: true
+  - type: textarea
+    id: gameplay
+    attributes:
+      label: Ce qu'il fait dans le jeu
+      description: Son arme, sa spéciale, sa façon de bouger.
+    validations:
+      required: true
+  - type: input
+    id: inspiration
+    attributes:
+      label: Personnalité publique caricaturée, s'il y en a une
+  - type: textarea
+    id: sources
+    attributes:
+      label: Citations ou chiffres réels utilisés, avec leurs sources
+      description: Une adresse par ligne.

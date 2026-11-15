@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Comment contribuer
+    url: https://github.com/macraoke/ultragaucheforce/blob/main/CONTRIBUER.md
+    about: Tout est en fichiers texte, sans rien installer.
+  - name: La charte
+    url: https://github.com/macraoke/ultragaucheforce/blob/main/CHARTE.md
+    about: Ce qui entre dans le jeu, ce qui n'y entre pas.
