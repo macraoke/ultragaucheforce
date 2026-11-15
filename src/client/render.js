@@ -313,7 +313,9 @@ export class Renderer {
     const moving = e.state === 'patrol' || e.state === 'alert' || e.def.deplacement === 'vol';
     if (e.rope) this.line(e.rope.x, e.rope.y, e.x + e.w / 2, e.y, '#1a1c2c');
     if (e.jet) this.jet(e.jet);
-    this.actor(e, this.frames(s, moving, e.animTime, e.def.deplacement === 'vol' ? 14 : 7), { flash: e.flash > 0 });
+    // Un plateau de télé ne se retourne pas : son enseigne resterait à l'envers.
+    const set = e.def.deplacement === 'fixe' && e.def.reaction === 'cadre';
+    this.actor(e, this.frames(s, moving, e.animTime, e.def.deplacement === 'vol' ? 14 : 7), { flash: e.flash > 0, ...(set && { flip: false }) });
     if (e.aim) this.aim(e);
     if (e.rush?.phase === 'ruee') {
       this.ctx.fillStyle = '#f4f4f4';
