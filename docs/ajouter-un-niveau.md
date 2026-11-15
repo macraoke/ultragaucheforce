@@ -108,3 +108,15 @@ Ennemis : `bouclier`, `editorialiste`, `drone`, `faux-jeune`. Décors : `vache`,
 - Écartez les tonneaux de deux cases : assez près pour la réaction en chaîne, assez loin pour qu'on la voie.
 - Trois à six minutes suffisent : un gag, un sauvetage, un passage à casser, la sortie.
 - Un panneau, c'est un conseil ou une blague. Pas un roman.
+
+## Les murs du fond (facultatif)
+
+Pour qu'un bâtiment ait un intérieur, ajoutez après la carte une section `--- murs`, de la même taille : les tuiles qu'on y dessine s'affichent assombries, derrière l'action, sans collision. Les niveaux de la campagne s'en servent pour la grange, le métro ou la Citadelle.
+
+```text
+--- murs
+........................................
+.........................BBB............
+.........................BBB............
+```
+(complétez avec des lignes de points jusqu'à la hauteur de la carte)

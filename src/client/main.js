@@ -36,7 +36,7 @@ function applyOptions() {
   audio.enabled = save.options.son;
   renderer.reduced = save.options.sobre;
   radio.setEnabled(save.options.musique);
-  if (save.options.musique) radio.play(mode === 'playing' && current ? current.id : 'menu');
+  if (save.options.musique) radio.play(mode === 'playing' && current ? current.level.musique || current.id : 'menu');
 }
 
 const screens = new Screens(screenRoot, {
@@ -94,12 +94,13 @@ function start(id, level = null) {
   setMode('paused');
   screens.intro(current.level, () => {
     setMode('playing');
-    radio.play(current.id);
+    radio.play(current.level.musique || current.id);
   });
 }
 
 function openAtelier() {
   setMode('menu');
+  document.body.dataset.ecran = 'atelier';
   showAtelier(screenRoot, { bundle, save, test: (level) => start(null, level), back: () => toMenu() });
 }
 
@@ -199,7 +200,13 @@ input.onPause = togglePause;
 input.onAny = () => audio.unlock();
 document.getElementById('pause').onclick = togglePause;
 addEventListener('pointerdown', () => audio.unlock(), true);
-addEventListener('resize', () => renderer.resize());
+function layout() {
+  renderer.resize();
+  // Au pouce et en paysage, les boutons couvrent le bas de l'écran : on remonte l'action.
+  const thumbs = document.body.classList.contains('tactile') && innerWidth > innerHeight;
+  renderer.anchor = thumbs ? 0.64 : 0.8;
+}
+addEventListener('resize', layout);
 document.addEventListener('visibilitychange', () => {
   last = performance.now();
   acc = 0;
@@ -208,7 +215,7 @@ document.addEventListener('visibilitychange', () => {
 if (matchMedia('(pointer: coarse)').matches) document.body.classList.add('tactile');
 addEventListener('touchstart', () => {
   document.body.classList.add('tactile');
-  renderer.resize();
+  layout();
 }, { once: true, passive: true });
 
 // Crochet de débogage (`?debug`) : piloter et inspecter la partie sans jouer en temps réel.
@@ -216,7 +223,7 @@ if (new URLSearchParams(location.search).has('debug')) {
   window.__ugf = {
     get game() { return game; },
     get mode() { return mode; },
-    bundle, start, toMenu, setMode, screens,
+    bundle, start, toMenu, setMode, screens, input, radio, audio,
     /** Redessine tout de suite (utile quand l'onglet est en arrière-plan). */
     draw(snap = false) {
       if (snap) renderer.snap(game);
@@ -235,7 +242,7 @@ if (new URLSearchParams(location.search).has('debug')) {
   };
 }
 
-renderer.resize();
+layout();
 applyOptions();
 registerServiceWorker((apply) => {
   screens.update = apply; // une nouvelle version attend : le menu la propose, jamais en pleine partie

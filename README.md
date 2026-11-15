@@ -7,7 +7,8 @@ Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les platea
 | | |
 |---|---|
 | ![Écran titre](docs/captures/titre.jpg) | ![Carton de héros](docs/captures/carton-heros.jpg) |
-| ![La manif passe par le métro](docs/captures/niveau-2-metro.jpg) | ![Zuc-Man face à l'Arnault-Armure](docs/captures/boss.jpg) |
+| ![La grange de Millevaches](docs/captures/niveau-1-grange.jpg) | ![La manif traverse l'immeuble](docs/captures/niveau-2-immeuble.jpg) |
+| ![Zuc-Man face à l'Arnault-Armure](docs/captures/boss.jpg) | ![L'Atelier : un niveau est un texte](docs/captures/atelier.jpg) |
 
 ![Une fortune à l'échelle, puis ce que pèsent 2 %](docs/captures/taxation-2-pour-cent.jpg)
 

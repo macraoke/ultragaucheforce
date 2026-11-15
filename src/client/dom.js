@@ -3,7 +3,7 @@
 /** Crée un élément : h('button', { onclick }, 'Texte', autreElement…) */
 export function h(tag, props = {}, ...children) {
   const node = Object.assign(document.createElement(tag), props);
-  node.append(...children.flat().filter((c) => c !== null && c !== undefined && c !== false && c !== ''));
+  node.append(...children.flat(Infinity).filter((c) => c !== null && c !== undefined && c !== false && c !== ''));
   return node;
 }
 

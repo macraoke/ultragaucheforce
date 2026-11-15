@@ -21,6 +21,8 @@ export class Radio {
 
   /** Les pistes prévues pour un endroit : un niveau précis, « menu », « jeu », ou « partout ». */
   pick(slot) {
+    const named = this.tracks.find((t) => t.id === slot); // un niveau peut désigner sa piste : « musique: … »
+    if (named) return named;
     const exact = this.tracks.filter((t) => t.ou === slot);
     const kind = slot === 'menu' ? [] : this.tracks.filter((t) => t.ou === 'jeu');
     const pool = exact.length ? exact : kind.length ? kind : this.tracks.filter((t) => t.ou === 'partout');

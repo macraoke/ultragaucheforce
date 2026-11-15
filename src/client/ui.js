@@ -27,6 +27,7 @@ export class Screens {
 
   show(className, ...children) {
     this.root.replaceChildren(h('section', { className: `panneau ${className}` }, ...children));
+    document.body.dataset.ecran = className.split(' ')[0]; // la feuille de style sait quel écran est ouvert
     this.root.hidden = false;
     this.open = true;
     this.root.querySelector('button, a')?.focus({ preventScroll: true });
@@ -34,6 +35,7 @@ export class Screens {
 
   close() {
     this.root.replaceChildren();
+    delete document.body.dataset.ecran;
     this.root.hidden = true;
     this.open = false;
   }
@@ -176,8 +178,12 @@ export class Screens {
         link(`${REPO}/blob/main/CHARTE.md`, 'La charte'), ' · ', h('a', { href: 'galerie.html' }, 'La Galerie')),
       h('h3', {}, 'Références'),
       h('ul', {}, REFERENCES.map((r) => h('li', {}, link(r.url, r.titre), ` — ${r.note}`))),
-      h('h3', {}, 'Licences'),
-      h('p', {}, 'Code : MIT. Contenus (dessins, textes, niveaux, sons) : CC BY-SA 4.0. Bruitages synthétisés avec ZzFX de Frank Force (MIT).'),
+      h('h3', {}, 'Licences et crédits'),
+      h('p', {}, 'Code : MIT. Contenus : CC BY-SA 4.0. Bruitages synthétisés avec ZzFX de Frank Force (MIT). ',
+        'Voix off générées avec Piper, voix fr_FR-siwis-medium (corpus SIWIS).'),
+      h('ul', {}, Object.values(this.bundle.sons).filter((s) => s.fichier).map((s) =>
+        h('li', {}, link(s.source, s.nom), ` — ${s.auteur}, ${s.licence}`))),
+      h('p', {}, h('b', {}, 'Radio Manif : '), Object.values(this.bundle.musiques).map((m, i) => [i ? ' · ' : '', link(m.url, `${m.titre} (${m.artiste})`)])),
       h('div', { className: 'pied' }, this.back()));
   }
 

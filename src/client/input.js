@@ -73,7 +73,11 @@ export class Input {
       this.refreshTouch();
     };
     pad.addEventListener('pointerdown', (e) => {
-      pad.setPointerCapture?.(e.pointerId);
+      try {
+        pad.setPointerCapture(e.pointerId); // le doigt reste suivi même s'il sort de la zone
+      } catch {
+        // pointeur déjà relâché ou navigateur sans capture : on suit quand même
+      }
       track(e);
     });
     pad.addEventListener('pointermove', (e) => this.pointers.has(e.pointerId) && track(e));

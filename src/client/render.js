@@ -31,6 +31,7 @@ export class Renderer {
     this.floaters = [];
     this.shake = 0;
     this.reduced = false;
+    this.anchor = 0.8; // hauteur des pieds du héros à l'écran (0 = haut, 1 = bas)
     this.demo = false; // démo du menu : pas de panneaux par-dessus le titre
     this.clock = 0;
   }
@@ -70,7 +71,7 @@ export class Renderer {
     const maxX = Math.max(0, world.w * TILE - this.viewW);
     const maxY = world.h * TILE - this.viewH;
     const x = hero.x + hero.w / 2 - this.viewW / 2 + hero.facing * 28;
-    const y = hero.y + hero.h - this.viewH * 0.8; // les pieds du héros aux quatre cinquièmes de l'écran
+    const y = hero.y + hero.h - this.viewH * this.anchor;
     return { x: Math.min(maxX, Math.max(0, x)), y: maxY < 0 ? maxY : Math.min(maxY, Math.max(0, y)) };
   }
 
