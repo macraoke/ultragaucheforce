@@ -1,0 +1,12 @@
+texte: Je ne crois pas que le modèle Amish permette de régler les défis de l'écologie contemporaine.
+auteur: Emmanuel Macron
+fonction: président de la République
+date: 2020-09-14
+contexte: Devant des entreprises du numérique réunies à l'Élysée, au lendemain de la demande de moratoire sur la 5G de 70 élus de gauche et écologistes.
+categorie: diabolisation
+mot: AMISH
+note: Phrase précédente : « J'entends beaucoup de voix qui s'élèvent pour nous expliquer qu'il faudrait relever la complexité des problèmes contemporains en revenant à la lampe à huile ! »
+source.titre: ID L'Info Durable (dépêche AFP) — Macron défend la 5G contre le "modèle Amish"
+source.url: https://www.linfodurable.fr/macron-defend-la-5g-contre-le-modele-amish-20031
+source.nature: presse
+verifie: 2026-11-15

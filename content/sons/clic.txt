@@ -1,0 +1,4 @@
+nom: Bouton de menu
+zzfx: .5,0,660,,.01,.03,1,1
+auteur: UltraGauche Force
+licence: CC0-1.0

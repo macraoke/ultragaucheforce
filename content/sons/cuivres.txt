@@ -1,0 +1,4 @@
+nom: Éclat de cuivres
+zzfx: 1.2,0,262,.03,.25,.4,2,1.2,,,131,.12,,,,,.04,.85,.05
+auteur: UltraGauche Force
+licence: CC0-1.0

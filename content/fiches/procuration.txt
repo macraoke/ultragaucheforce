@@ -1,0 +1,9 @@
+titre: Voter par procuration
+theme: democratie
+texte: Pour voter par procuration, vous choisissez librement un électeur, même inscrit dans une autre commune : il vote pour vous dans votre bureau de vote. La demande se fait en ligne (Maprocuration) ou sur papier.
+portee: Après la demande, il faut faire vérifier son identité en personne (commissariat ou gendarmerie, consulat à l'étranger), sauf identité numérique certifiée France Identité. Le jour du vote, un mandataire ne peut détenir qu'une seule procuration établie en France. À faire le plus tôt possible. Lien officiel : https://www.maprocuration.gouv.fr
+periode: droit en vigueur, fiche vérifiée le 2 février 2026
+source.titre: Service-Public.gouv.fr — Vote par procuration
+source.url: https://www.service-public.gouv.fr/particuliers/vosdroits/F1604
+source.nature: officielle
+verifie: 2026-11-15

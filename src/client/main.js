@@ -1,0 +1,232 @@
+// Démarrage du jeu dans le navigateur : charge le contenu, branche les entrées, fait tourner
+// la simulation à pas fixe (60 pas par seconde) et passe d'un écran à l'autre.
+
+import { Game, DT } from '../sim/game.js';
+import { botActions } from '../sim/bot.js';
+import { Renderer } from './render.js';
+import { Input } from './input.js';
+import { Audio } from './audio.js';
+import { Radio } from './music.js';
+import { Screens, Hud } from './ui.js';
+import { showHeroCard } from './herocard.js';
+import { showTaxScene } from './tax.js';
+import { showAtelier } from './atelier.js';
+import { loadSave, storeSave, discover } from './save.js';
+import { registerServiceWorker } from './sw-register.js';
+
+const bundle = await (await fetch('content.json')).json();
+const save = loadSave();
+const screenRoot = document.getElementById('ecran');
+const audio = new Audio(bundle);
+const radio = new Radio(bundle, document.getElementById('radio'));
+const renderer = new Renderer(document.getElementById('monde'), document.getElementById('textes'), bundle);
+const input = new Input(document.getElementById('tactile'));
+const hud = new Hud(bundle);
+
+/** @type {Game | null} */
+let game = null;
+let mode = 'menu'; // menu (démo en fond) | playing | paused | card | over
+let current = null; // { id, level } du niveau en cours
+let custom = null; // niveau de l'Atelier en cours de test
+let bot = {};
+let acc = 0;
+let last = performance.now();
+
+function applyOptions() {
+  audio.enabled = save.options.son;
+  renderer.reduced = save.options.sobre;
+  radio.setEnabled(save.options.musique);
+  if (save.options.musique) radio.play(mode === 'playing' && current ? current.id : 'menu');
+}
+
+const screens = new Screens(screenRoot, {
+  bundle, save, audio,
+  go: {
+    play: (id) => start(id),
+    resume: () => setMode('playing'),
+    restart: () => (custom ? start(null, custom) : start(current.id)),
+    checkpoint: () => {
+      game.killHero?.();
+      setMode('playing');
+    },
+    quit: () => toMenu(),
+    atelier: () => openAtelier(),
+    options: () => applyOptions(),
+    back: () => (mode === 'paused' ? screens.pause() : screens.menu()),
+  },
+});
+
+function setMode(next) {
+  mode = next;
+  if (next === 'playing') screens.close();
+  hud.setVisible(next === 'playing' || next === 'paused' || next === 'card');
+  document.body.classList.toggle('en-jeu', next === 'playing');
+  radio.setVisible(next !== 'playing' && next !== 'card');
+  renderer.demo = next === 'menu';
+  input.release();
+  acc = 0;
+}
+
+/** Fond du menu : une vraie partie, jouée par le robot de test. */
+function attract() {
+  const id = bundle.campagne[0];
+  if (!id) return (game = null);
+  game = new Game(bundle, id, { seed: Math.floor(Math.random() * 1e9), invincible: true });
+  bot = {};
+  renderer.snap(game);
+}
+
+function toMenu() {
+  custom = null;
+  current = null;
+  setMode('menu');
+  attract();
+  screens.menu();
+  radio.play('menu');
+}
+
+function start(id, level = null) {
+  custom = level;
+  current = { id: id ?? 'atelier', level: level ?? bundle.niveaux[id] };
+  game = new Game(bundle, id, { seed: Math.floor(Math.random() * 1e9), level });
+  renderer.snap(game);
+  hud.reset();
+  setMode('paused');
+  screens.intro(current.level, () => {
+    setMode('playing');
+    radio.play(current.id);
+  });
+}
+
+function openAtelier() {
+  setMode('menu');
+  showAtelier(screenRoot, { bundle, save, test: (level) => start(null, level), back: () => toMenu() });
+}
+
+function togglePause() {
+  if (mode === 'playing') {
+    setMode('paused');
+    screens.pause();
+  } else if (mode === 'paused' && screens.open) setMode('playing');
+}
+
+async function win() {
+  setMode('over');
+  audio.play('victoire');
+  const { level, id } = current;
+  const boss = bundle.boss[level.boss];
+  if (boss?.fortune.montant) {
+    const learned = await showTaxScene(screenRoot, bundle, boss, { audio });
+    learned.forEach((f) => discover(save, f));
+  }
+  // Les mots tirés par les automates du niveau viennent de vraies citations : on les note.
+  const words = new Set(Object.values(level.legende).flatMap((l) => bundle.ennemis[l.id]?.arme?.mots || []).map((w) => w.replace(/\s*!$/, '')));
+  for (const c of Object.values(bundle.citations)) if (c.mot && words.has(c.mot)) discover(save, c.id);
+  if (level.fiche) discover(save, level.fiche);
+  const index = bundle.campagne.indexOf(id);
+  if (index >= 0) {
+    save.termines[id] = true;
+    storeSave(save);
+  }
+  screens.end({
+    level, stats: game.stats, time: game.time, announced: game.announced(),
+    next: index >= 0 ? bundle.campagne[index + 1] : null,
+    last: index === bundle.campagne.length - 1,
+  });
+}
+
+/** Réagit aux événements émis par la simulation pendant un pas. */
+function handle(events) {
+  renderer.absorb(events);
+  for (const e of events) {
+    if (e.type === 'sfx') audio.play(e.id);
+    else if (e.type === 'headline') hud.banner(e.text);
+    else if (e.type === 'panic') audio.play('palier');
+    else if (e.type === 'card') {
+      const fact = bundle.fiches[e.id];
+      if (fact && discover(save, e.id)) hud.toast(`Fiche débloquée : ${fact.titre}`);
+    } else if (e.type === 'heroCard') {
+      const hero = bundle.heros[e.hero];
+      if (hero.citation) discover(save, hero.citation);
+      setMode('card');
+      showHeroCard(bundle, hero, { audio, reduced: save.options.sobre }).then(() => mode === 'card' && setMode('playing'));
+    } else if (e.type === 'won') win();
+    else if (e.type === 'lost') {
+      setMode('over');
+      screens.lost();
+    }
+  }
+}
+
+function frame(now) {
+  requestAnimationFrame(frame);
+  const dt = Math.min(0.1, (now - last) / 1000);
+  last = now;
+  if (!game) return;
+  const demo = mode === 'menu';
+  if (mode === 'playing' || demo) {
+    acc += dt;
+    let steps = 0;
+    while (acc >= DT && steps < 6 && (mode === 'playing' || mode === 'menu')) {
+      acc -= DT;
+      steps++;
+      game.step(demo ? botActions(game, bot) : input.actions());
+      const events = game.events.splice(0);
+      if (demo) renderer.absorb(events);
+      else handle(events);
+    }
+    if (steps === 6) acc = 0; // onglet ralenti : on ne rattrape pas le retard
+    renderer.tick(dt);
+    if (demo && game.status !== 'playing') attract();
+  }
+  renderer.draw(game, dt);
+  if (!demo) hud.update(game);
+}
+
+// ---------------------------------------------------------------- branchements
+
+input.onPause = togglePause;
+input.onAny = () => audio.unlock();
+document.getElementById('pause').onclick = togglePause;
+addEventListener('pointerdown', () => audio.unlock(), true);
+addEventListener('resize', () => renderer.resize());
+document.addEventListener('visibilitychange', () => {
+  last = performance.now();
+  acc = 0;
+  if (document.hidden && mode === 'playing' && !window.__ugf) togglePause(); // pas en débogage : on pilote onglet caché
+});
+if (matchMedia('(pointer: coarse)').matches) document.body.classList.add('tactile');
+addEventListener('touchstart', () => {
+  document.body.classList.add('tactile');
+  renderer.resize();
+}, { once: true, passive: true });
+
+// Crochet de débogage (`?debug`) : piloter et inspecter la partie sans jouer en temps réel.
+if (new URLSearchParams(location.search).has('debug')) {
+  window.__ugf = {
+    get game() { return game; },
+    get mode() { return mode; },
+    bundle, start, toMenu, setMode, screens,
+    /** Redessine tout de suite (utile quand l'onglet est en arrière-plan). */
+    draw(snap = false) {
+      if (snap) renderer.snap(game);
+      renderer.tick(1 / 60);
+      renderer.draw(game, 1 / 60);
+      hud.update(game);
+    },
+    /** Avance de n pas avec des actions fixes, ou avec le robot si `actions` vaut 'bot'. */
+    step(n = 1, actions = {}) {
+      for (let i = 0; i < n && game.status === 'playing'; i++) {
+        game.step(actions === 'bot' ? botActions(game, bot) : actions);
+        handle(game.events.splice(0));
+      }
+      return { x: Math.round(game.hero.x), y: Math.round(game.hero.y), status: game.status, lives: game.lives, panic: Math.round(game.panic) };
+    },
+  };
+}
+
+renderer.resize();
+applyOptions();
+registerServiceWorker();
+toMenu();
+requestAnimationFrame(frame);

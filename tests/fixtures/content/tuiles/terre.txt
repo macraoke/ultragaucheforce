@@ -1,0 +1,20 @@
+nom: Terre
+symbole: T
+pv: 2
+--- image
+tttttttttttttttt
+tttttttttttttttt
+tttttttttttttttt
+tttttttttttttttt
+tttttttttttttttt
+tttttttttttttttt
+tttttttttttttttt
+tttttttttttttttt
+tttttttttttttttt
+tttttttttttttttt
+tttttttttttttttt
+tttttttttttttttt
+tttttttttttttttt
+tttttttttttttttt
+tttttttttttttttt
+tttttttttttttttt

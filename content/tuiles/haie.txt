@@ -1,0 +1,21 @@
+nom: Haie de ZAD
+symbole: H
+pv: 2
+auteur: UltraGauche Force
+--- image
+.vvlvv..vlvv.vv.
+vvlvvvvvvvlvvvvv
+vlvvvVvvlvvvvVvl
+vvvvlvvvvvVvvvvv
+vVvvvvvlvvvvlvvV
+vvvlvvvvvVvvvvvv
+lvvvvVvvvvvvvvlv
+vvvvvvvlvvvVvvvv
+vvVvlvvvvvvvvVvv
+vvvvvvvvlvvvvvvl
+vlvvvvVvvvvvvvvv
+vvvvvvvvvvlvvVvv
+Vvvlvvvvvvvvvvvv
+vvvvvVvvlvvvvvlv
+vvvvvvvvvvVvvvvv
+VvvVvvVvvVvvVvvV

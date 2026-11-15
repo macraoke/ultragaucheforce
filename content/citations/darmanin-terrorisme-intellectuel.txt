@@ -1,0 +1,12 @@
+texte: Le terrorisme intellectuel de l'extrême gauche.
+auteur: Gérald Darmanin
+fonction: ministre de l'Intérieur et des Outre-mer
+date: 2023-04-02
+contexte: Entretien au Journal du dimanche, après les affrontements de Sainte-Soline et en plein mouvement contre la réforme des retraites.
+categorie: diabolisation
+mot: TERRORISME INTELLECTUEL
+note: Fragment tel que cité par Public Sénat. La phrase complète (« Je refuse de céder au terrorisme intellectuel de l'extrême gauche », d'après les reprises de presse et l'adresse de l'entretien sur lejdd.fr) n'a pas pu être relue sur la page du JDD, inaccessible. Au Sénat, Marie-Pierre de la Gontrie lui a reproché cet emploi du mot « terroriste » ; il a répondu : « Vous n'êtes pas la police des mots ».
+source.titre: Public Sénat — Maintien de l'ordre : « Le sujet n'est pas les manifestations, mais l'ultragauche », pour Gérald Darmanin
+source.url: https://www.publicsenat.fr/actualites/politique/maintien-de-l-ordre-le-sujet-n-est-pas-les-manifestations-mais-l-ultragauche-pour
+source.nature: presse
+verifie: 2026-11-15

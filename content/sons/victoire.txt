@@ -1,0 +1,4 @@
+nom: Niveau terminé
+zzfx: 1,0,523,.02,.2,.5,2,1,,,262,.12,,,,,.08,.8,.05
+auteur: UltraGauche Force
+licence: CC0-1.0

@@ -1,0 +1,15 @@
+nom: Alpha
+cri: ALPHA !
+pv: 2
+vitesse: 140
+saut: 3.2
+arme.type: tir
+arme.cadence: 8
+arme.vitesse: 280
+arme.portee: 240
+speciale.type: onde
+speciale.nom: BOUM
+speciale.charges: 3
+--- repos
+rr
+rr

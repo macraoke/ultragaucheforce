@@ -1,0 +1,12 @@
+texte: Votre projet politique de bordélisation du pays.
+auteur: Sébastien Lecornu
+fonction: Premier ministre
+date: 2026-10-06
+contexte: Réponse à Mathilde Panot, présidente du groupe La France insoumise, lors des questions au gouvernement à l'Assemblée nationale, en plein mouvement lycéen.
+categorie: diabolisation
+mot: BORDÉLISATION
+note: Phrase complète au compte rendu officiel : « La réalité, c'est que vous êtes ambiguë au sujet de la violence, car elle fait partie de votre projet politique de bordélisation du pays d'ici à l'élection présidentielle. » La dépêche AFP donne une version orale légèrement différente (« ambigus avec la violence car la violence fait partie de votre projet politique de bordélisation du pays entre maintenant et l'élection présidentielle »). Le verbe « bordéliser le pays » est un résumé de presse, pas ses mots.
+source.titre: Assemblée nationale — Compte rendu de la première séance du mardi 6 octobre 2026
+source.url: https://www.assemblee-nationale.fr/dyn/17/comptes-rendus/seance/session-ordinaire-de-2026-2027/premiere-seance-du-mardi-06-octobre-2026
+source.nature: officielle
+verifie: 2026-11-15

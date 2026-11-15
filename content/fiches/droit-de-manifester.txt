@@ -1,0 +1,9 @@
+titre: Déclarer, pas demander
+theme: droits
+texte: Manifester ne demande pas d'autorisation : les organisateurs doivent déclarer la manifestation 3 à 15 jours avant. Y participer comme simple manifestant, même sans déclaration, n'est pas puni par la loi.
+portee: Selon Amnesty International France. À ne pas confondre avec une manifestation interdite par arrêté : y participer est passible d'une contravention de 135 euros. Un soupçon de délit, comme des violences ou des dégradations, peut conduire à une interpellation.
+periode: droit en vigueur, page datée du 5 octobre 2026
+source.titre: Amnesty International France — Manifester en France : tout savoir sur tes droits
+source.url: https://www.amnesty.fr/nos-droits-en-manifestation/
+source.nature: associative
+verifie: 2026-11-15

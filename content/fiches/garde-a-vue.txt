@@ -1,0 +1,9 @@
+titre: Vos droits en garde à vue
+theme: droits
+texte: En garde à vue, vous pouvez vous taire, demander un avocat dès le début, être examiné par un médecin et faire prévenir un proche ou votre employeur. Elle dure 24 heures, prolongeable à 48 heures sous conditions.
+portee: Régime général. Seule obligation, décliner son identité. La prolongation à 48 heures suppose une infraction punie d'au moins un an de prison et la décision d'un magistrat ; des durées plus longues existent pour certaines infractions (jusqu'à 144 heures pour le terrorisme). Le magistrat peut retarder l'information du proche.
+periode: droit en vigueur, fiche vérifiée le 10 juillet 2025
+source.titre: Service-Public.gouv.fr — Garde à vue
+source.url: https://www.service-public.gouv.fr/particuliers/vosdroits/F14837
+source.nature: officielle
+verifie: 2026-11-15

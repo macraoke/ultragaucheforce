@@ -1,0 +1,23 @@
+# Le socle rocheux : indestructible (pv: 0). Sous la couche de sol, il empêche de creuser
+# jusqu'au vide et de rester coincé sous la sortie.
+nom: Socle rocheux
+symbole: O
+pv: 0
+auteur: UltraGauche Force
+--- image
+KKKKkKKKKKKKkKKK
+KgKKKKKKKgKKKKKK
+KKKKKKkKKKKKKKgK
+kKKKKKKKKKKkKKKK
+KKKgKKKKKKKKKKKK
+KKKKKKKKgKKKKkKK
+KKkKKKKKKKKKKKKK
+KKKKKgKKKKkKKKKK
+gKKKKKKKKKKKKKgK
+KKKKKKKkKKKKKKKK
+KKKgKKKKKKKgKKKK
+KKKKKKKKKKKKKKKk
+KkKKKKgKKKKKKKKK
+KKKKKKKKKKkKKgKK
+KKKKgKKKKKKKKKKK
+KKKKKKKKKKKKKKKK

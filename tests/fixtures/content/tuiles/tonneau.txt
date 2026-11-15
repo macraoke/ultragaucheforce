@@ -1,0 +1,21 @@
+nom: Tonneau
+symbole: X
+pv: 1
+explose: 40
+--- image
+vvvvvvvvvvvvvvvv
+vvvvvvvvvvvvvvvv
+vvvvvvvvvvvvvvvv
+vvvvvvvvvvvvvvvv
+vvvvvvvvvvvvvvvv
+vvvvvvvvvvvvvvvv
+vvvvvvvvvvvvvvvv
+vvvvvvvvvvvvvvvv
+vvvvvvvvvvvvvvvv
+vvvvvvvvvvvvvvvv
+vvvvvvvvvvvvvvvv
+vvvvvvvvvvvvvvvv
+vvvvvvvvvvvvvvvv
+vvvvvvvvvvvvvvvv
+vvvvvvvvvvvvvvvv
+vvvvvvvvvvvvvvvv

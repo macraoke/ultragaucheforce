@@ -1,0 +1,17 @@
+{
+  "name": "ultragauche-force",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Run-and-gun satirique, libre et collaboratif. Taxez les riches, abattez la Citadelle.",
+  "license": "MIT",
+  "scripts": {
+    "start": "node tools/dev.mjs",
+    "test": "node --test \"tests/**/*.test.js\"",
+    "verifier": "node tools/validate.mjs",
+    "build": "node tools/build.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

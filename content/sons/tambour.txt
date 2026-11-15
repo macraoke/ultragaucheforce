@@ -1,0 +1,4 @@
+nom: Roulement de tambour
+zzfx: 1,.05,180,.01,.9,.25,4,1.5,,,,,.045,1.5,,,,.9,.02,.7
+auteur: UltraGauche Force
+licence: CC0-1.0

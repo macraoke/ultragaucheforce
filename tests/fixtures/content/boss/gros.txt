@@ -1,0 +1,20 @@
+nom: Le Gros
+pv: 30
+largeur: 32
+hauteur: 40
+vitesse: 30
+replique: PREMIÈRE RÉPLIQUE
+replique: DEUXIÈME RÉPLIQUE
+phase.1.jusqua: 0.5
+phase.1.rythme: 1.5
+phase.1.attaques: salve | charge
+phase.2.jusqua: 0
+phase.2.rythme: 1.2
+phase.2.attaques: invocation | pluie | salve
+invocation.ennemi: fonceur
+--- repos
+kk
+kk
+--- portrait
+kk
+kk

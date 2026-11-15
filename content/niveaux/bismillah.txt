@@ -1,0 +1,48 @@
+# Niveau 2 de la campagne : la manif, puis la Citadelle.
+# Le « Faux Jeune » est un robot fictif ; le mème vient d'une infiltration PRÉSUMÉE, rien n'est établi.
+titre: Bismillah, c'est les ténèbres
+auteur: UltraGauche Force
+accroche: Une manif lycéenne, une fanfare, des pancartes… et des infiltrés au vocabulaire douteux. Au bout : la Citadelle.
+intro: DES LYCÉENS PARLERAIENT ENTRE EUX SUR UNE MESSAGERIE
+fond: ville
+boss: arnault-armure
+cortege: oui
+heros: ecoterroriste
+camarades: melenchotron | zuc-man
+fiche: sainte-soline-bilan
+
+manchette: UN ROBOT AURAIT ÉTÉ RECONNU À SON VOCABULAIRE : « BISMILLAH, C'EST LES TÉNÈBRES »
+manchette: PARIS : UNE FANFARE JOUERAIT « FAUX », SELON LA PRÉFECTURE
+manchette: UNE PANCARTE CONTIENDRAIT UN JEU DE MOTS « D'UNE RARE VIOLENCE »
+manchette: LE LUXE RETIENT SON SOUFFLE : UN TAMPON « 2 % » AURAIT ÉTÉ APERÇU
+
+panneau.1: MANIF LYCÉENNE. Le cortège te suit : chaque camarade libéré le fait grandir.
+panneau.2: Un Faux Jeune se reconnaît à son vocabulaire.
+panneau.3: BARRAGE. Par les toits, ou par le métro ?
+panneau.4: En garde à vue, tu as des droits. La fiche t'attend dans la Bibliothèque.
+panneau.5: QUARTIER DU LUXE. Une vitrine ne résiste pas à un tract bien senti.
+panneau.6: LA CITADELLE. 121,2 milliards derrière cette porte. Il te faut un tampon.
+
+b: bouclier
+e: editorialiste
+d: drone
+f: faux-jeune
+--- carte
+..............................................................................................................................................................................................
+..............................................................................................................................................................................................
+..............................................................................................................................................................................................
+.......................................d......................................................................................................................................................
+..........................................................................................................................e...................................................................
+...........................................................................d.................................MMMMMMM....MMMMM.................................................................
+..............................................................BPPPPPPPPPPPP..................................M.....M....M...M.................................................................
+..............................................................B..............................................M.....M....M...M.................................................................
+..............PPPPP...........................................B.........................................e....V.....V....V...V...............................PPPP......PPPP....................
+..............V...V...........................................B.......................RRRRR............MMM...V.....V....V...V.................................................................
+..............V...V............................PP.............B.......................P...R............MMM...V..X..V....V.f.V....X............................................................
+..D..1........V...V..2......f.......f.....f....PP..3..........B.b..b..b.e.........Q...P.K.R....4.....5.MMM...V..X..V..b.V...V.b..X....Q...6.....K...........................Y...........S.....
+GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG..GGGGGGGGGGGGGGGGGGGG..GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOGGG..GGGGGGGGGGGGGGGGGGGG..GGGOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO........................OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO......f.......f.........OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO

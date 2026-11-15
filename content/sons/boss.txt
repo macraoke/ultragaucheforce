@@ -1,0 +1,4 @@
+nom: Le boss gronde
+zzfx: 1.2,.05,80,.05,.3,.5,2,2,,,,,,.6,5,.1,,.7,.1
+auteur: UltraGauche Force
+licence: CC0-1.0

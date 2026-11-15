@@ -1,0 +1,21 @@
+nom: Garde
+pv: 2
+vitesse: 30
+deplacement: marche
+reaction: tire
+vue: 150
+bouclier: oui
+fin: greve
+replique: CIRCULEZ !
+arme.type: tir
+arme.cadence: 0.6
+arme.vitesse: 110
+arme.gravite: 500
+arme.elan: 160
+arme.explosion: 24
+arme.fratricide: 1
+arme.gaz: 3
+arme.portee: 300
+--- repos
+gg
+gg

@@ -1,0 +1,12 @@
+texte: Il est d'abord un militant d'extrême gauche.
+auteur: Bernard Arnault
+fonction: PDG de LVMH
+date: 2025-09-20
+contexte: Déclaration au Sunday Times contre l'économiste Gabriel Zucman, qui propose un impôt plancher de 2 % sur les patrimoines de plus de 100 millions d'euros.
+categorie: diabolisation
+mot: EXTRÊME GAUCHE
+note: Phrase complète : « On ne comprend pas les positions de monsieur Zucman si l'on oublie qu'il est d'abord un militant d'extrême gauche ». Gabriel Zucman a répondu que ces propos « sortent du domaine de la rationalité et sont sans fondement ».
+source.titre: franceinfo — Bernard Arnault qualifie Gabriel Zucman de "militant d'extrême gauche", l'économiste dénonce le "caractère caricatural" de ses attaques
+source.url: https://www.franceinfo.fr/economie/budget/bernard-arnault-qualifie-de-militant-d-extreme-gauche-l-economiste-gabriel-zucman-qui-propose-de-taxer-les-grandes-patrimoines_7503808.html
+source.nature: presse
+verifie: 2026-11-15

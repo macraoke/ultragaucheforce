@@ -1,0 +1,4 @@
+nom: Coup de tampon
+zzfx: 1,.05,130,,.03,.14,1,2,-7,,,,,.5,,,,.8,.03
+auteur: UltraGauche Force
+licence: CC0-1.0

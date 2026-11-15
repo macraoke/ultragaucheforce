@@ -1,0 +1,21 @@
+nom: Botte de foin
+symbole: F
+pv: 1
+auteur: UltraGauche Force
+--- image
+jYyYyYyYYyYyYyYj
+YyYyYjYyyYyYjYyY
+yYyYyYyYYyjYyYyY
+YyjYYyYyyYyYYyYy
+TTTTTTTTTTTTTTTT
+yYyYjYyYYyYyYyYj
+YyYyYyYyjYyYyYyY
+yYjYyYyYYyYyYjYy
+YyYyYyjYyYyYYyYy
+yYyYyYyYYyYjyYyY
+YjYyYyYyyYyYYyYy
+TTTTTTTTTTTTTTTT
+yYyYYyYjYyYyjYyY
+YyYyjYyYyYyYYyYy
+yYyYyYyYYjYyYyYj
+jYyYYyYyyYyYyYyj

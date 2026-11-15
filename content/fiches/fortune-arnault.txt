@@ -1,0 +1,9 @@
+titre: 121,2 milliards estimés
+theme: richesses
+texte: Selon le classement Challenges publié le 8 juillet 2026, la famille Arnault est la première fortune professionnelle de France, avec un patrimoine estimé à 121,2 milliards d'euros.
+portee: Estimation fondée sur la valeur des actions et parts d'entreprises (cours de Bourse, ou estimation pour les titres non cotés), ici surtout LVMH, dont la famille détient plus de la moitié. Ce n'est pas de l'argent disponible, et les biens personnels comme l'immobilier ne sont pas comptés. Bernard Arnault est l'unique propriétaire de Challenges depuis fin 2025.
+periode: classement 2026, publié le 8 juillet 2026
+source.titre: FashionUnited — Bernard Arnault redevient la 1ère fortune professionnelle de France, selon Challenges
+source.url: https://fashionunited.fr/actualite/people/bernard-arnault-redevient-la-1ere-fortune-professionnelle-de-france-selon-challenges/2026070842308
+source.nature: presse
+verifie: 2026-11-15

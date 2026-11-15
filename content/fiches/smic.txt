@@ -1,0 +1,10 @@
+titre: Le Smic, au centime près
+theme: richesses
+texte: En novembre 2026, le Smic est de 12,31 € brut de l'heure, soit 1 867,02 € brut par mois pour 35 heures par semaine, et 1 477,93 € net par mois.
+portee: Cas général, montants affichés par service-public.gouv.fr (fiche vérifiée le 1er juin 2026, arrêté du 22 mai 2026). Le montant net est donné à titre indicatif. Le gouvernement a annoncé le 9 novembre 2026 une hausse de 1,6 % au 1er décembre 2026 (AFP), non comptée ici.
+periode: novembre 2026
+valeur: 1477.93
+source.titre: Service-Public.gouv.fr — Smic (salaire minimum interprofessionnel de croissance)
+source.url: https://www.service-public.gouv.fr/particuliers/vosdroits/F2300
+source.nature: officielle
+verifie: 2026-11-15

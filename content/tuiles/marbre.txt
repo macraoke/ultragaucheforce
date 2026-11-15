@@ -1,0 +1,21 @@
+nom: Marbre de la Citadelle
+symbole: M
+pv: 4
+auteur: UltraGauche Force
+--- image
+wwwwwwwwwwwwwwwW
+wwwwwwwGwwwwwwwW
+wwwwwwGwwwwwwwwW
+wwwwwGwwwwwwwwwW
+wwwwGwwwwwwWwwwW
+wwwwwwwwwwWwwwwW
+wwwwwwwwwWwwwwwW
+wGwwwwwwwwwwwwwW
+wwGwwwwwwwwwwwwW
+wwwGwwwwwwwwwGwW
+wwwwwwwwwwwwGwwW
+wwwwwwwWwwwGwwwW
+wwwwwwWwwwwwwwwW
+wwwwwWwwwwwwwwwW
+wwwwwwwwwwwwwwwW
+WWWWWWWWWWWWWWWW

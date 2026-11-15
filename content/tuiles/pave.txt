@@ -1,0 +1,21 @@
+nom: Pavé parisien
+symbole: G
+pv: 3
+auteur: UltraGauche Force
+--- image
+ggggggggGggggggg
+gKKKKKKgKgKKKKKK
+gKKKKKKgKgKKKKKK
+gKKgKKKgKgKKKgKK
+gKKKKKKgKgKKKKKK
+gKKKKKKgKgKKKKKK
+KKKKKKKKKKKKKKKK
+ggggGgggggggGggg
+KKKgKgKKKKKgKgKK
+KKKgKgKKKKKgKgKK
+gKKgKgKKgKKgKgKK
+KKKgKgKKKKKgKgKK
+KKKgKgKKKKKgKgKK
+KKKKKKKKKKKKKKKK
+ggggggggGggggggg
+gKKKKKKgKgKKKKKK

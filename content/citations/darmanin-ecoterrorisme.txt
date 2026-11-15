@@ -1,0 +1,12 @@
+texte: Des modes opératoires qui relèvent de l'éco-terrorisme.
+auteur: Gérald Darmanin
+fonction: ministre de l'Intérieur et des Outre-mer
+date: 2022-10-30
+contexte: Déclaration au soir de la manifestation contre la méga-bassine de Sainte-Soline (Deux-Sèvres), à propos d'une quarantaine de manifestants fichés S.
+categorie: diabolisation
+mot: ÉCOTERRORISME
+note: Phrase complète rapportée par franceinfo : « Une quarantaine de personnes fichées S à l'ultra-gauche ont été repérées dans cette manifestation, avec des modes opératoires qui relèvent de l'éco-terrorisme, que nous devons absolument combattre ». Graphie « écoterrorisme » chez Reporterre et dans la plupart des reprises.
+source.titre: franceinfo — Bassines de Sainte-Soline : Gérald Darmanin durcit le ton
+source.url: https://www.franceinfo.fr/politique/gerald-darmanin/bassines-de-sainte-soline-gerald-darmanin-durcit-le-ton_5450107.html
+source.nature: presse
+verifie: 2026-11-15

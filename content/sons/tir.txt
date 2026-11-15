@@ -1,0 +1,4 @@
+nom: Tract lancé
+zzfx: .6,.1,950,,.01,.04,4,1,-18,,,,,,,,,.6,.01
+auteur: UltraGauche Force
+licence: CC0-1.0

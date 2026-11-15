@@ -1,0 +1,49 @@
+# Niveau 1 de la campagne. Le tutoriel EST le « camp d'entraînement ».
+# On parodie une rhétorique (voir la citation « lisnard-camp-entrainement »), jamais une enquête en cours.
+titre: Le camp d'entraînement de Millevaches
+auteur: UltraGauche Force
+accroche: Fromage, assemblée générale et lancer de tract : bienvenue au stage.
+intro: DES INDIVIDUS S'ENTRAÎNERAIENT À FABRIQUER DU FROMAGE SANS AUTORISATION DES MARCHÉS
+fond: campagne
+heros: tyrannogauchiste
+camarades: melenchotron | zuc-man | ecoterroriste
+fiche: tarnac-relaxe
+
+# Manchettes parodiques de PANIQUE TV, affichées quand la panique monte.
+manchette: UNE VACHE AURAIT REGARDÉ UN DRONE « D'UN AIR RADICALISÉ »
+manchette: MILLEVACHES : UNE ASSEMBLÉE GÉNÉRALE SE TIENDRAIT SANS ORDRE DU JOUR VALIDÉ PAR LE CAC 40
+manchette: EXCLUSIF : LE TRACT RETROUVÉ ÉTAIT IMPRIMÉ RECTO VERSO
+manchette: LE FROMAGE SAISI ÉTAIT « AU LAIT CRU », PRÉCISE UNE SOURCE PROCHE DE LA PANIQUE
+
+panneau.1: CAMP D'ENTRAÎNEMENT DE L'ULTRAGAUCHE. Au programme : fromage, AG, lancer de tract.
+panneau.2: Flèches ou Q D pour avancer, ESPACE pour sauter. Sur mobile : les boutons.
+panneau.3: J ou X : lance des tracts. Les planches cèdent.
+panneau.4: Le Bouclier pare de face. Saute par-dessus, ou attends : ses grenades le gazent très bien tout seul.
+panneau.5: GARDE À VUE. Touche la cellule pour libérer ton camarade : +1 vie, et un nouveau héros.
+panneau.6: K ou C : attaque spéciale. Elle est rare, elle est belle.
+panneau.7: LISIER (fictif). Un tonneau en fait sauter un autre : tire de loin.
+panneau.8: Contre un mur, saute encore et encore : tu grimpes.
+panneau.9: LE CAMION-SONO. Monte, on rentre : une AG a été tenue sans autorisation du marché.
+
+# Lettres minuscules de la carte.
+b: bouclier
+e: editorialiste
+d: drone
+v: vache
+--- carte
+......................................................................................................................................................................
+......................................................................................................................................................................
+................................................................................................................................................d.....................
+............................................................................................................................................FF........................
+....................................d...............................................................K.........................K....Q.....e..FF..b.....................
+............................................................................................BBBBBBBBBBBBBBBBBBBB............RRRRRRRRRRTTTTTTTTTTTTTT..................
+...........................................................................RRRRRRR..........B..................B............RRRRRRRRRRTTTTTTTTTTTTTTTT................
+................................................PPPPPPP....................R.....R..........B..................B............RRRRRRRRRRTTTTTTTTTTTTTTTTT...............
+..............................P.................P.....P....................R.....R..........B.........e........B............RRRRRRRRRRTTTTTTTTTTTTTTTTTT.....d........
+...............F..............P.................P.....P....................R.....R..........B.......PPPPP......B............RRRRRRRRRRTTTTTTTTTTTTTTTTTTT.............
+..............FF..............P.................P.....P.....RR.............P.....R..........P................XXB............RRRRRRRRRRTTTTTTTTTTTTTTTTTTTT............
+..D..1....v..FFF...2.....3....P....v.........4..P..b..P..b..RR......Q..5...P..K..R...6...7..P....X.X.X.X.X.X.XXB...v....8...RRRRRRRRRRTTTTTTTTTTTTTTTTTTTTT..e..9.S...
+TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
+OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO

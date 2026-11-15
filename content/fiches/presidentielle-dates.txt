@@ -1,0 +1,9 @@
+titre: Présidentielle : les dates
+theme: democratie
+texte: Le premier tour de l'élection présidentielle aura lieu le 18 avril 2027 et le second tour le 2 mai 2027.
+portee: En Guadeloupe, Guyane, Martinique, Polynésie française, à Saint-Barthélemy, Saint-Martin et Saint-Pierre-et-Miquelon, le vote a lieu la veille, les samedis 17 avril et 1er mai 2027. Les électeurs sont convoqués au moins dix semaines avant le premier tour. Fiche vérifiée le 9 novembre 2026.
+periode: avril et mai 2027
+source.titre: Service-Public.gouv.fr — Quelles sont les dates des prochaines élections ?
+source.url: https://www.service-public.gouv.fr/particuliers/vosdroits/F1939
+source.nature: officielle
+verifie: 2026-11-15

@@ -1,0 +1,4 @@
+nom: Piquet de grève allumé
+zzfx: 1,0,330,.01,.08,.22,,1,,,165,.06
+auteur: UltraGauche Force
+licence: CC0-1.0

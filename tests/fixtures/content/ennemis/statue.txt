@@ -1,0 +1,8 @@
+nom: Statue à bouclier
+pv: 3
+deplacement: fixe
+reaction: rien
+bouclier: oui
+--- repos
+gg
+gg

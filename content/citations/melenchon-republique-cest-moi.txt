@@ -1,0 +1,12 @@
+texte: La République, c'est moi !
+auteur: Jean-Luc Mélenchon
+fonction: député des Bouches-du-Rhône, président du groupe La France insoumise à l'Assemblée nationale
+date: 2018-10-16
+contexte: Pendant la perquisition filmée du siège de La France insoumise, dont l'entrée lui était interdite.
+categorie: gauche
+mot:
+note: Ponctuation variable selon les médias (Public Sénat écrit « La République c'est moi »). Autre formule du même jour : « ma personne est sacrée ». Le lendemain, il s'est justifié : « l'Assemblée est là où sont les députés, je suis à ma manière, un bout de la représentation nationale de tout le pays ».
+source.titre: Public Sénat — Perquisitions: « Je ne regrette rien », dit Mélenchon après sa vive réaction
+source.url: https://www.publicsenat.fr/actualites/politique/perquisitions-je-ne-regrette-rien-dit-melenchon-apres-sa-vive-reaction-134479
+source.nature: presse
+verifie: 2026-11-15

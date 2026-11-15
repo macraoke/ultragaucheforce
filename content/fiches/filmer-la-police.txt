@@ -1,0 +1,9 @@
+titre: Filmer la police
+theme: droits
+texte: Un policier ou un gendarme en fonction, hors lieu privé, ne peut pas s'opposer à l'enregistrement d'images ou de sons, rappelle la Défenseure des droits dans son avis du 3 novembre 2020.
+portee: Avis n° 20-05, qui cite la circulaire du ministre de l'Intérieur du 23 décembre 2008 : la liberté d'information, pour un journaliste comme pour un particulier, prime sur le droit à l'image tant qu'elle ne porte pas atteinte à la dignité de la personne. Exception prévue par la loi : l'anonymat des agents de certaines unités (RAID, GIGN, antiterrorisme, contre-espionnage). En octobre 2026, Amnesty France indique toujours qu'il est possible de filmer les forces de l'ordre en manifestation et que la diffusion des images est encadrée.
+periode: avis du 3 novembre 2020
+source.titre: Défenseur des droits — Avis n° 20-05 du 3 novembre 2020 sur la proposition de loi relative à la sécurité globale (texte reproduit par Dalloz Actualité)
+source.url: https://www.dalloz-actualite.fr/document/avis-de-defenseure-des-droits
+source.nature: officielle
+verifie: 2026-11-15

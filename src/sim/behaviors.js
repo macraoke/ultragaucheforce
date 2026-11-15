@@ -1,0 +1,185 @@
+// Registre des comportements : tout ce qu'une fiche de contenu peut invoquer par son nom.
+//
+// Chaque comportement DÉCLARE ses réglages : `params` = { nom: [min, max, défaut] },
+// `texts` = réglages en texte libre, `lists` = listes séparées par « | ».
+// La validation du contenu lit ces déclarations : une fiche ne peut pas sortir des bornes.
+//
+// Ajouter une mécanique = ajouter une entrée ici (déclaration + fonction). Rien d'autre.
+
+import { TILE } from './world.js';
+import { spawnProjectile } from './projectile.js';
+
+/** Armes principales (héros et ennemis). `fire(game, tireur, réglages, camp)`. */
+export const WEAPONS = {
+  tir: {
+    doc: 'Lance un ou plusieurs projectiles devant soi.',
+    params: {
+      cadence: [0.2, 20, 5], // tirs par seconde
+      vitesse: [30, 420, 240], // pixels par seconde
+      gravite: [0, 900, 0], // 0 = tout droit ; plus = en cloche
+      elan: [0, 400, 0], // impulsion vers le haut au départ (tir en cloche)
+      dispersion: [0, 80, 0], // écart vertical aléatoire, pixels par seconde
+      nombre: [1, 8, 1], // projectiles par tir
+      portee: [16, 640, 220], // pixels parcourus avant de disparaître
+      degats: [0, 10, 1], // dégâts aux adversaires
+      terrain: [0, 10, 1], // dégâts aux tuiles touchées
+      rebonds: [0, 5, 0],
+      explosion: [0, 64, 0], // rayon de l'explosion à l'impact, pixels
+      perce: [0, 1, 0], // 1 = traverse les adversaires
+      blindage: [0, 1, 0], // 1 = passe à travers les boucliers
+      fratricide: [0, 1, 0], // 1 = touche aussi son propre camp
+      gaz: [0, 6, 0], // secondes de nuage laissé à l'impact
+      taille: [2, 24, 4], // côté de la boîte de collision, pixels
+      recul: [0, 200, 0], // pousse le tireur en arrière
+    },
+    texts: ['image', 'son'], // image = nom d'une section de sprite ; son = identifiant de bruitage
+    lists: ['mots'], // si présent : le projectile est un mot écrit, tiré au hasard
+    fire(game, shooter, w, team) {
+      const dir = shooter.facing;
+      const y = shooter.y + shooter.h * 0.35 - w.taille / 2;
+      for (let i = 0; i < w.nombre; i++) {
+        const word = w.mots?.length ? game.rng.pick(w.mots) : null;
+        const width = word ? Math.max(w.taille, word.length * 5) : w.taille;
+        // Plusieurs projectiles : éventail régulier ; un seul : petit écart au hasard.
+        const spread = w.nombre > 1 ? (i / (w.nombre - 1) - 0.5) * 2 * w.dispersion : game.rng.range(-w.dispersion, w.dispersion);
+        spawnProjectile(game, {
+          x: dir > 0 ? shooter.x + shooter.w : shooter.x - width, y, w: width, h: w.taille,
+          vx: dir * w.vitesse, vy: spread - w.elan, team, word, def: shooter.def, image: w.image || 'projectile',
+          gravity: w.gravite, range: w.portee, damage: w.degats, terrain: w.terrain, bounces: w.rebonds,
+          explosion: w.explosion, pierce: w.perce > 0, armor: w.blindage > 0, friendly: w.fratricide > 0,
+          gas: w.gaz, owner: shooter,
+        });
+      }
+      shooter.vx -= dir * w.recul;
+      game.sfx(w.son || 'tir', shooter.x);
+    },
+  },
+};
+
+/** Attaques spéciales des héros (charges limitées). `use(game, héros, réglages)` → vrai si la charge est consommée. */
+export const SPECIALS = {
+  onde: {
+    doc: 'Onde circulaire qui repousse, étourdit et fissure le décor.',
+    params: { rayon: [16, 160, 72], degats: [0, 10, 2], terrain: [0, 10, 2], recul: [0, 400, 220], etourdit: [0, 6, 2] },
+    texts: ['son'],
+    use(game, hero, s) {
+      game.explode(hero.x + hero.w / 2, hero.y + hero.h / 2, s.rayon, {
+        team: 'luttes', damage: s.degats, terrain: s.terrain, push: s.recul, stun: s.etourdit, quiet: true,
+      });
+      return true;
+    },
+  },
+  sol: {
+    doc: 'Onde qui court le long du sol, des deux côtés.',
+    params: { vitesse: [60, 420, 240], portee: [32, 480, 220], degats: [0, 10, 3], terrain: [0, 10, 3] },
+    texts: ['son'],
+    use(game, hero, s) {
+      for (const dir of [-1, 1]) {
+        spawnProjectile(game, {
+          x: hero.x + hero.w / 2 - 5 + dir * 4, y: hero.y + hero.h - 8, w: 10, h: 8, vx: dir * s.vitesse,
+          def: hero.def, image: 'onde', gravity: 700, range: s.portee, damage: s.degats, terrain: s.terrain,
+          pierce: true, armor: true, hug: true, owner: hero,
+        });
+      }
+      game.emit('shake', { force: 5 });
+      return true;
+    },
+  },
+  clones: {
+    doc: 'Des doubles apparaissent et tirent en même temps que le héros.',
+    params: { nombre: [1, 4, 2], duree: [1, 12, 6] },
+    texts: ['son'],
+    use(game, hero, s) {
+      hero.clones = Array.from({ length: s.nombre }, (_, i) => ({
+        x: hero.x, y: hero.y, w: hero.w, h: hero.h, vx: 0, facing: hero.facing, def: hero.def, t: s.duree, lag: (i + 1) * 7,
+      }));
+      return true;
+    },
+  },
+  mur: {
+    doc: 'Fait pousser une colonne de tuiles devant soi.',
+    params: { hauteur: [1, 5, 3], distance: [1, 3, 1] },
+    texts: ['tuile', 'son'],
+    use(game, hero, s) {
+      const { world } = game;
+      const index = world.indexOf(s.tuile);
+      if (index < 1) return false;
+      const tx = Math.floor((hero.x + hero.w / 2) / TILE) + hero.facing * s.distance;
+      let ty = Math.floor((hero.y + hero.h - 1) / TILE);
+      for (let k = 0; k < 4 && ty + 1 < world.h && !world.solid(tx, ty + 1); k++) ty++; // descend jusqu'au sol
+      let grown = 0;
+      for (let k = 0; k < s.hauteur; k++) {
+        const cell = { x: tx * TILE, y: (ty - k) * TILE, w: TILE, h: TILE };
+        // Jamais dans une case occupée : ni tuile, ni personnage.
+        if (!world.inside(tx, ty - k) || world.at(tx, ty - k) || game.actorsIn(cell)) break;
+        world.set(tx, ty - k, index);
+        game.emit('debris', { x: cell.x + TILE / 2, y: cell.y + TILE / 2, color: 'v', n: 4 });
+        grown++;
+      }
+      return grown > 0;
+    },
+  },
+};
+
+/** Déplacements et réactions des ennemis (mis en œuvre dans enemy.js). */
+export const MOVES = ['marche', 'vol', 'fixe'];
+export const REACTIONS = ['tire', 'fonce', 'cadre', 'rien'];
+export const ENDINGS = ['greve', 'panne'];
+
+/** Attaques de boss, enchaînées par phases. `run(game, boss, réglages)`. */
+export const BOSS_ATTACKS = {
+  salve: {
+    doc: 'Rafale de projectiles visant le héros.',
+    params: { nombre: [1, 12, 3], vitesse: [40, 300, 140], degats: [0, 3, 1], ecart: [0, 1, 0.25] },
+    run(game, boss, a) {
+      const { hero } = game;
+      const ox = boss.x + boss.w / 2;
+      const oy = boss.y + boss.h * 0.4;
+      const aim = Math.atan2(hero.y + hero.h / 2 - oy, hero.x + hero.w / 2 - ox);
+      for (let i = 0; i < a.nombre; i++) {
+        const angle = aim + (i - (a.nombre - 1) / 2) * a.ecart;
+        spawnProjectile(game, {
+          x: ox - 3, y: oy - 3, w: 6, h: 6, vx: Math.cos(angle) * a.vitesse, vy: Math.sin(angle) * a.vitesse,
+          team: 'ordre', def: boss.def, damage: a.degats, terrain: 1, range: 420, owner: boss,
+        });
+      }
+      game.sfx('tir', ox);
+    },
+  },
+  charge: {
+    doc: 'Fonce à travers l’arène.',
+    params: { vitesse: [60, 400, 200], degats: [0, 3, 1] },
+    run(game, boss, a) {
+      boss.state = 'charge';
+      boss.charge = { dir: boss.facing, speed: a.vitesse, damage: a.degats, t: 1.4 };
+      game.sfx('boss', boss.x);
+    },
+  },
+  invocation: {
+    doc: 'Appelle des renforts.',
+    params: { nombre: [1, 4, 2] },
+    texts: ['ennemi'],
+    run(game, boss, a) {
+      const alive = game.enemies.filter((e) => e.summoned && e.state !== 'done').length;
+      for (let i = 0; i < a.nombre && alive + i < 4; i++) {
+        const cx = boss.x + boss.w / 2 + boss.facing * (boss.w / 2 + 14 + i * 18);
+        game.spawnEnemy(a.ennemi, cx, boss.y + boss.h, { state: 'alert', summoned: true });
+      }
+      game.sfx('palier', boss.x);
+    },
+  },
+  pluie: {
+    doc: 'Fait tomber des projectiles du ciel.',
+    params: { nombre: [1, 12, 5], vitesse: [40, 300, 120], degats: [0, 3, 1] },
+    run(game, boss, a) {
+      const { hero } = game;
+      for (let i = 0; i < a.nombre; i++) {
+        spawnProjectile(game, {
+          x: hero.x + hero.w / 2 + game.rng.range(-90, 90), y: hero.y - 150 - i * 10, w: 6, h: 6, vy: a.vitesse,
+          team: 'ordre', def: boss.def, damage: a.degats, terrain: 1, range: 320, owner: boss,
+        });
+      }
+      game.sfx('tir', boss.x);
+    },
+  },
+};

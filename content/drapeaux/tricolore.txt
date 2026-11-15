@@ -1,0 +1,16 @@
+nom: Drapeau tricolore
+description: Bleu, blanc, rouge : né de la Révolution de 1789.
+auteur: UltraGauche Force
+--- image
+BBBBBBwwwwwwRRRRRR
+BBBBBBwwwwwwRRRRRR
+BBBBBBwwwwwwRRRRRR
+BBBBBBwwwwwwRRRRRR
+BBBBBBwwwwwwRRRRRR
+BBBBBBwwwwwwRRRRRR
+BBBBBBwwwwwwRRRRRR
+BBBBBBwwwwwwRRRRRR
+BBBBBBwwwwwwRRRRRR
+BBBBBBwwwwwwRRRRRR
+BBBBBBwwwwwwRRRRRR
+BBBBBBwwwwwwRRRRRR

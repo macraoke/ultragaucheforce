@@ -1,0 +1,22 @@
+# pv: 0 veut dire indestructible.
+nom: Acier
+symbole: A
+pv: 0
+auteur: UltraGauche Force
+--- image
+KKKKKKKKKKKKKKKK
+KGhhhhhhhhhhhhGK
+KhwhhhhhhhhhhwhK
+KhhhhhhhhhhhhhhK
+KhhhhGGhhhhhhhhK
+KhhhhhhGGhhhhhhK
+KhhhhhhhhGGhhhhK
+KhhhhhhhhhhhhhhK
+KhhhhhhhhhhhhhhK
+KhhhGGhhhhhhhhhK
+KhhhhhGGhhhhhhhK
+KhhhhhhhGGhhhhhK
+KhhhhhhhhhhhhhhK
+KhwhhhhhhhhhhwhK
+KHhhhhhhhhhhhhHK
+KKKKKKKKKKKKKKKK

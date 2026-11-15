@@ -1,0 +1,4 @@
+nom: Camarade libéré
+zzfx: 1,0,440,.02,.12,.3,1,1,,,220,.08,,,,,,.8,.03
+auteur: UltraGauche Force
+licence: CC0-1.0

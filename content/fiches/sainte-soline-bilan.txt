@@ -1,0 +1,9 @@
+titre: Sainte-Soline, deux bilans
+theme: ordre
+texte: Sainte-Soline, 25 mars 2023 : la gendarmerie compte 47 gendarmes blessés et « au moins 17 » opposants blessés. Les observatoires des libertés publiques recensent plus de 200 manifestants blessés, dont au moins 40 graves.
+portee: Les deux bilans sont cités par la Défenseure des droits (décision n° 2026-158 du 7 juillet 2026). Le premier vient du rapport du directeur général de la gendarmerie du 27 mars 2023 (six gendarmes évacués, nature des blessures non précisée) ; le second du rapport des observatoires des libertés publiques et des pratiques policières, publié par la LDH. Trois journalistes ont aussi été blessés.
+periode: 25 mars 2023
+source.titre: Défenseur des droits — Décision n° 2026-158 du 7 juillet 2026 (manifestation de Sainte-Soline)
+source.url: https://juridique.defenseurdesdroits.fr/doc_num.php?explnum_id=23301
+source.nature: officielle
+verifie: 2026-11-15

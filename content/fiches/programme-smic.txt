@@ -1,0 +1,9 @@
+titre: Le Smic à 1 700 euros
+theme: programme
+texte: Le programme L'Avenir en commun propose de porter immédiatement le Smic mensuel à 1 700 euros net et d'indexer les salaires sur l'inflation, dans le privé comme dans la fonction publique.
+portee: Édition 2027 du programme de La France insoumise, chapitre « Partager les richesses ». Il s'agit d'une proposition d'un mouvement politique, pas d'une mesure en vigueur. Pour comparaison, le Smic net indicatif affiché par service-public.gouv.fr en novembre 2026 est de 1 477,93 euros.
+periode: édition 2027, présentée en novembre 2026
+source.titre: Mélenchon 2027 — L'Avenir en commun, chapitre « Partager les richesses »
+source.url: https://melenchon2027.fr/programme/livre/une-economie-au-service-des-besoins/chapitre2
+source.nature: militante
+verifie: 2026-11-15

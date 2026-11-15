@@ -1,0 +1,37 @@
+# Cellule de garde à vue. « image » = fermée, « image2 » = ouverte.
+nom: Garde à vue
+auteur: UltraGauche Force
+--- image
+HHHHHHHHHHHHHHHH
+HhhhhhhhhhhhhhhH
+HHHHHHHHHHHHHHHH
+h..h..h..h..h..h
+h..h..hssh..h..h
+h..h..hssh..h..h
+h..h.RhRRhR.h..h
+h..hRRhRRhRRh..h
+h..hs.hRRh.sh..h
+h..h..hRRh..h..h
+h..h..hnnh..h..h
+h..h..hnnh..h..h
+h..h..hnnh..h..h
+HHHHHHHHHHHHHHHH
+HhhhhhhhhhhhhhhH
+HHHHHHHHHHHHHHHH
+--- image2
+HHHHHHHHHHHHHHHH
+HhhhhhhhhhhhhhhH
+HHHHHHHHHHHHHHHH
+h..h........h..h
+h..h........h..h
+h..............h
+h..............h
+h..............h
+h..............h
+h..h...........h
+h..h........h..h
+h..h..h.....h..h
+h..h..h..h..h..h
+HHHHHHHHHHHHHHHH
+HhhhhhhhhhhhhhhH
+HHHHHHHHHHHHHHHH

@@ -1,0 +1,19 @@
+# Héros ajouté par ce seul fichier : aucune ligne du moteur ne le connaît.
+nom: Héros de test
+statut: test
+pv: 3
+vitesse: 100
+saut: 2.5
+arme.type: tir
+arme.cadence: 2
+arme.nombre: 3
+arme.dispersion: 60
+arme.rebonds: 2
+arme.vitesse: 200
+arme.portee: 400
+speciale.type: clones
+speciale.nombre: 2
+speciale.duree: 4
+--- repos
+yy
+yy

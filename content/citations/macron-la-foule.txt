@@ -1,0 +1,12 @@
+texte: La foule, quelle qu'elle soit, n'a pas de légitimité face au peuple qui s'exprime, souverain, à travers ses élus.
+auteur: Emmanuel Macron
+fonction: président de la République
+date: 2023-03-21
+contexte: Devant les parlementaires de la majorité réunis à l'Élysée, au lendemain de l'adoption de la réforme des retraites par le 49.3, alors que les manifestations spontanées se succèdent.
+categorie: diabolisation
+mot: LA FOULE
+note: Propos tenus à huis clos, d'abord rapportés par l'AFP sous une forme résumée, puis confirmés par un enregistrement audio obtenu par TF1/LCI, dont Public Sénat reprend la transcription. Début de la phrase : « l'émeute ne l'emporte pas sur les représentants du peuple, et la foule... ».
+source.titre: Public Sénat — Retraites : « Il n'y a pas à avoir honte du 49.3 », affirme Emmanuel Macron devant les parlementaires de la majorité
+source.url: https://www.publicsenat.fr/actualites/politique/retraites-il-n-y-a-pas-a-avoir-honte-du-493-affirme-emmanuel-macron-devant-les
+source.nature: presse
+verifie: 2026-11-15
