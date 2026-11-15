@@ -1,0 +1,11 @@
+nom: Fonceur
+pv: 1
+vitesse: 50
+deplacement: marche
+reaction: fonce
+vue: 140
+contact: 1
+fin: panne
+--- repos
+rr
+rr

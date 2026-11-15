@@ -1,0 +1,12 @@
+texte: On met un pognon de dingue dans des minima sociaux.
+auteur: Emmanuel Macron
+fonction: président de la République
+date: 2018-06-12
+contexte: Vidéo de préparation de son discours au congrès de la Mutualité française, diffusée sur Twitter par sa conseillère en communication Sibeth Ndiaye.
+categorie: puissants
+mot:
+note: Suite de la phrase selon franceinfo : « et les gens sont quand même pauvres. On n'en sort pas. » Variante « dans les minima sociaux » chez Public Sénat et d'autres médias. Propos tenus le 12 juin 2018, vidéo mise en ligne dans la nuit du 12 au 13.
+source.titre: franceinfo — Emmanuel Macron : "On met un pognon de dingue dans des minima sociaux"
+source.url: https://www.franceinfo.fr/politique/emmanuel-macron/emmanuel-macron-on-met-un-pognon-de-dingue-dans-des-minima-sociaux_2799473.html
+source.nature: presse
+verifie: 2026-11-15

@@ -1,0 +1,35 @@
+# Palette commune à tous les dessins du jeu.
+# Un caractère = une couleur. Dans un dessin, « . » veut dire transparent.
+# Pour proposer une couleur : une ligne « caractère: #rrggbb  nom ».
+
+k: #1a1c2c  noir
+K: #333c57  anthracite
+g: #566c86  gris
+G: #94b0c2  gris clair
+w: #f4f4f4  blanc
+W: #cfd8e3  blanc ombré
+r: #a22633  rouge sombre
+R: #e43b44  rouge vif
+o: #ef7d57  orange
+y: #ffe08a  jaune pâle
+Y: #f6c21c  or
+j: #c98f1e  or sombre
+l: #a7f070  vert clair
+v: #38b764  vert
+V: #1f6b4a  vert sombre
+c: #9be7f5  cyan pâle
+b: #41a6f6  bleu clair
+B: #3b5dc9  bleu
+n: #29366f  bleu nuit
+P: #f5a9b8  rose
+p: #c9558c  rose foncé
+m: #8e4fc2  violet
+M: #5d275d  prune
+s: #f2c6a0  peau claire
+S: #d49a6a  peau hâlée
+t: #a05a3c  brun
+T: #6b3a2a  brun foncé
+e: #efe6cf  papier
+E: #b8a67a  beige
+h: #8a8f98  acier
+H: #5b6068  acier sombre

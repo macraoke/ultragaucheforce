@@ -1,0 +1,25 @@
+nom: Drapeau de la Palestine
+description: Solidarité avec le peuple palestinien.
+auteur: UltraGauche Force
+ressource.1.titre: Histoire de la question de Palestine — Nations unies
+ressource.1.url: https://www.un.org/unispal/fr/histoire-de-la-question-de-palestine/
+ressource.1.nature: officielle
+ressource.2.titre: Les Palestiniens : quel État ? — Le Dessous des cartes, ARTE (vidéo, 12 min)
+ressource.2.url: https://www.youtube.com/watch?v=ZmPmJt5uq7I
+ressource.2.nature: presse
+ressource.3.titre: Israël et Territoires palestiniens occupés : rapport 2025/2026 — Amnesty International France
+ressource.3.url: https://www.amnesty.fr/pays/israel-et-territoires-occupes/
+ressource.3.nature: associative
+--- image
+Rkkkkkkkkkkkkkkkkk
+RRkkkkkkkkkkkkkkkk
+RRRkkkkkkkkkkkkkkk
+RRRRkkkkkkkkkkkkkk
+RRRRRwwwwwwwwwwwww
+RRRRRRwwwwwwwwwwww
+RRRRRRwwwwwwwwwwww
+RRRRRwwwwwwwwwwwww
+RRRRvvvvvvvvvvvvvv
+RRRvvvvvvvvvvvvvvv
+RRvvvvvvvvvvvvvvvv
+Rvvvvvvvvvvvvvvvvv

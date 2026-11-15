@@ -1,0 +1,28 @@
+name: Un niveau
+description: Une idée de niveau, ou un niveau fait dans l'Atelier.
+title: "Niveau : "
+labels: ["niveau"]
+body:
+  - type: input
+    id: titre
+    attributes:
+      label: Le titre
+    validations:
+      required: true
+  - type: textarea
+    id: idee
+    attributes:
+      label: L'idée
+      description: Le lieu, le gag d'ouverture, ce qu'on y casse, ce qu'en dit PANIQUE TV.
+    validations:
+      required: true
+  - type: textarea
+    id: reference
+    attributes:
+      label: La référence réelle, s'il y en a une, avec sa source
+  - type: textarea
+    id: fichier
+    attributes:
+      label: Le niveau, si vous l'avez dessiné
+      description: Collez le texte de l'Atelier.
+      render: text

@@ -1,0 +1,12 @@
+texte: Je traverse la rue, je vous en trouve.
+auteur: Emmanuel Macron
+fonction: président de la République
+date: 2018-09-15
+contexte: Réponse à un jeune horticulteur au chômage, à l'Élysée, lors des Journées du patrimoine.
+categorie: puissants
+mot:
+note: Phrase complète rapportée : « Hôtels, cafés, restaurants, je traverse la rue, je vous en trouve ! »
+source.titre: Public Sénat — Macron conseille à un chômeur de se réorienter: dans la restauration, du travail « je vous en trouve »
+source.url: https://www.publicsenat.fr/actualites/politique/macron-conseille-a-un-chomeur-de-se-reorienter-dans-la-restauration-du-travail-je
+source.nature: presse
+verifie: 2026-11-15

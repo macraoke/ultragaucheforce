@@ -1,0 +1,25 @@
+nom: Convergence des luttes
+description: Tous les drapeaux dans le même cortège.
+auteur: UltraGauche Force
+ressource.1.titre: C'est quoi la « convergence des luttes » ? — Brut (vidéo, 2 min)
+ressource.1.url: https://www.youtube.com/watch?v=YF1XLdNhZbI
+ressource.1.nature: presse
+ressource.2.titre: Mai 68 : la convergence des luttes — INA (vidéo, 3 min)
+ressource.2.url: https://www.ina.fr/ina-eclaire-actu/video/s721641_001/mai-68-la-convergence-des-luttes
+ressource.2.nature: officielle
+ressource.3.titre: Vers un nouveau Mai 68 ? — France Culture (vidéo, 38 min)
+ressource.3.url: https://www.youtube.com/watch?v=lzkUIY2bKBo
+ressource.3.nature: presse
+--- image
+RRRmmmvvvYYYbbbPPP
+RRRmmmvvvYYYbbbPPP
+RRRmmmvvvYYYbbbPPP
+RRRmmmvvvYYYbbbPPP
+RRRmmmvvvYYYbbbPPP
+RRRmmmvvvYYYbbbPPP
+RRRmmmvvvYYYbbbPPP
+RRRmmmvvvYYYbbbPPP
+RRRmmmvvvYYYbbbPPP
+RRRmmmvvvYYYbbbPPP
+RRRmmmvvvYYYbbbPPP
+RRRmmmvvvYYYbbbPPP

@@ -1,0 +1,8 @@
+# Palette d'essai
+k: #000000
+w: #ffffff
+r: #ff0000
+g: #888888
+v: #00aa00
+t: #885522
+y: #ffcc00

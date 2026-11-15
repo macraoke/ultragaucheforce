@@ -1,0 +1,25 @@
+nom: Drapeau rouge
+description: Le drapeau du mouvement ouvrier.
+auteur: UltraGauche Force
+ressource.1.titre: Le drapeau rouge — Karambolage, ARTE (vidéo, 4 min)
+ressource.1.url: https://www.youtube.com/watch?v=K8QjpbDViRI
+ressource.1.nature: presse
+ressource.2.titre: Vieilles querelles en étendard — Mathilde Larrère, Politis
+ressource.2.url: https://www.politis.fr/articles/2022/01/vieilles-querelles-en-etendard-43990/
+ressource.2.nature: presse
+ressource.3.titre: Le 1er mai : histoire d'une journée de lutte — INA
+ressource.3.url: https://www.ina.fr/ina-eclaire-actu/1er-mai-fete-du-travail-jour-ferie-histoire-jour-chome-defile-syndicat
+ressource.3.nature: officielle
+--- image
+RRRRRrRRRRRrRRRRRR
+RRRRRrRRRRRrRRRRRR
+RRRRRrRRRRRrRRRRRR
+RRRRRrRRRRRrRRRRRR
+RRRRRrRRRRRrRRRRRR
+RRRRRrRRRRRrRRRRRR
+RRRRRrRRRRRrRRRRRR
+RRRRRrRRRRRrRRRRRR
+RRRRRrRRRRRrRRRRRR
+RRRRRrRRRRRrRRRRRR
+RRRRRrRRRRRrRRRRRR
+RRRRRrRRRRRrRRRRRR

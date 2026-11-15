@@ -1,0 +1,5 @@
+nom: Coup de cymbale
+fichier: cymbale.mp3
+auteur: folktelemetry
+licence: CC0-1.0
+source: https://freesound.org/s/60990/

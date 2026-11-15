@@ -1,0 +1,26 @@
+# Le robot de relecture : il vérifie chaque proposition (pull request).
+# Aucune dépendance à installer : tout tourne avec Node seul.
+name: Vérifications
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verifier:
+    name: Contenu, tests et build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # Les erreurs de contenu sont annotées sur la ligne fautive de la proposition, en français.
+      - name: Vérifier le contenu
+        run: node tools/validate.mjs
+      - name: Lancer les tests
+        run: npm test
+      - name: Construire le jeu
+        run: node tools/build.mjs

@@ -1,0 +1,393 @@
+/* UltraGauche Force — une seule feuille de style pour le jeu, les menus et la Galerie. */
+
+:root {
+  --nuit: #1a1c2c;
+  --encre: #333c57;
+  --papier: #efe6cf;
+  --rouge: #e43b44;
+  --rouge-sombre: #a22633;
+  --or: #f6c21c;
+  --bleu: #3b5dc9;
+  --blanc: #f4f4f4;
+  --titre: Impact, Haettenschweiler, 'Arial Narrow Bold', 'HelveticaNeue-CondensedBlack', 'Roboto Condensed', 'Arial Narrow', sans-serif;
+  --texte: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--nuit);
+  color: var(--papier);
+  font-family: var(--texte);
+  -webkit-text-size-adjust: 100%;
+}
+
+.pixel { image-rendering: pixelated; image-rendering: crisp-edges; }
+
+a { color: var(--or); }
+
+button, .bouton {
+  font: 900 1rem/1 var(--titre);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--nuit);
+  background: var(--or);
+  border: 3px solid var(--nuit);
+  box-shadow: 4px 4px 0 var(--rouge);
+  padding: .7em 1.1em;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  touch-action: manipulation;
+}
+button:hover, .bouton:hover { background: var(--blanc); }
+button:active, .bouton:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--rouge); }
+button.discret { background: transparent; color: var(--papier); border-color: var(--papier); box-shadow: none; }
+
+/* ------------------------------------------------------------------ carton de héros */
+
+.carton {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  background: var(--nuit);
+  font-family: var(--titre);
+  text-transform: uppercase;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.carton.sort { opacity: 0; transition: opacity .18s; }
+
+.carton .bandes { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(3, 1fr); }
+.carton .bandes i { transform: translateY(-101%); animation: bande .28s cubic-bezier(.2, .9, .3, 1) forwards; }
+.carton .bandes i:nth-child(1) { background: var(--bleu); }
+.carton .bandes i:nth-child(2) { background: var(--blanc); animation-delay: .07s; }
+.carton .bandes i:nth-child(3) { background: var(--rouge); animation-delay: .14s; }
+
+.carton .rayons {
+  position: absolute;
+  inset: -60%;
+  background: repeating-conic-gradient(from 0deg, rgb(26 28 44 / .0) 0 9deg, rgb(26 28 44 / .22) 9deg 18deg);
+  animation: tourne 14s linear infinite;
+}
+
+.carton .drapeaux {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  gap: 2vw;
+  padding: 0 2vw;
+}
+.carton .drapeaux.haut { top: 2vh; }
+.carton .drapeaux.bas { bottom: 2vh; }
+.carton .drapeaux canvas {
+  width: clamp(40px, 8vw, 110px) !important;
+  height: auto !important;
+  aspect-ratio: 3 / 2;
+  border: 2px solid var(--nuit);
+  transform-origin: left center;
+  animation: flotte .55s ease-in-out infinite alternate;
+}
+.carton .drapeaux canvas:nth-child(odd) { animation-delay: -.28s; }
+
+.carton .scene {
+  position: relative;
+  width: min(96vw, 1100px);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: clamp(8px, 3vw, 40px);
+  animation: secousse .5s .62s both;
+}
+.carton .portrait { animation: ecrase .5s cubic-bezier(.2, 1.9, .4, 1) .2s both; }
+.carton .portrait canvas { display: block; border: 6px solid var(--nuit); background: var(--or); box-shadow: 10px 10px 0 var(--nuit); }
+
+.carton .mots { min-width: 0; }
+.carton .tampon {
+  display: inline-block;
+  font-size: clamp(.9rem, 3.2vw, 2rem);
+  color: var(--rouge);
+  background: var(--blanc);
+  border: 4px solid var(--rouge);
+  padding: .1em .5em;
+  transform: rotate(-6deg);
+  animation: tamponne .25s 1s both;
+}
+.carton .nom {
+  margin: .1em 0 0;
+  font-size: clamp(2rem, 10.5vw, 7.5rem);
+  line-height: .88;
+  color: var(--blanc);
+  -webkit-text-stroke: clamp(2px, .5vw, 5px) var(--nuit);
+  paint-order: stroke fill;
+  text-shadow: clamp(3px, .7vw, 8px) clamp(3px, .7vw, 8px) 0 var(--nuit);
+  transform: rotate(-3deg);
+  animation: claque .32s cubic-bezier(.2, 1.4, .4, 1) .5s both;
+}
+.carton .cri {
+  margin: .5em 0 0;
+  font-size: clamp(1rem, 4.2vw, 2.8rem);
+  color: var(--or);
+  -webkit-text-stroke: 2px var(--nuit);
+  paint-order: stroke fill;
+  animation: claque .3s .85s both;
+}
+.carton .source, .carton .bonus {
+  margin: .5em 0 0;
+  font: 700 clamp(.65rem, 1.7vw, 1rem)/1.25 var(--texte);
+  text-transform: none;
+  color: var(--blanc);
+  background: var(--nuit);
+  display: inline-block;
+  padding: .3em .6em;
+  animation: claque .3s 1.05s both;
+}
+.carton .bonus { background: var(--rouge); text-transform: uppercase; font-family: var(--titre); letter-spacing: .04em; }
+
+.carton .confettis i {
+  position: absolute;
+  top: -4vh;
+  width: 1.2vmin;
+  height: 2vmin;
+  animation: tombe linear infinite;
+}
+
+.carton.sobre .rayons, .carton.sobre .drapeaux canvas, .carton.sobre .scene { animation: none; }
+.carton.sobre .confettis { display: none; }
+
+@keyframes bande { to { transform: translateY(0); } }
+@keyframes tourne { to { transform: rotate(360deg); } }
+@keyframes flotte { from { transform: skewY(-7deg) scaleX(1); } to { transform: skewY(7deg) scaleX(.94); } }
+@keyframes ecrase { from { transform: scale(7) rotate(14deg); opacity: 0; } to { transform: scale(1) rotate(-2deg); opacity: 1; } }
+@keyframes claque { from { transform: translateX(-130%) rotate(-3deg); opacity: 0; } to { opacity: 1; } }
+@keyframes tamponne { from { transform: scale(4) rotate(-20deg); opacity: 0; } to { transform: scale(1) rotate(-6deg); opacity: 1; } }
+@keyframes secousse {
+  0%, 100% { transform: translate(0, 0); }
+  15% { transform: translate(-14px, 9px); }
+  30% { transform: translate(12px, -8px); }
+  45% { transform: translate(-9px, -6px); }
+  60% { transform: translate(7px, 5px); }
+  80% { transform: translate(-3px, 2px); }
+}
+@keyframes tombe { to { transform: translateY(112vh) rotate(720deg); } }
+
+@media (orientation: portrait) {
+  .carton .scene { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+}
+
+/* ------------------------------------------------------------------ Galerie */
+
+.galerie { max-width: 1100px; margin: 0 auto; padding: 16px 16px 80px; }
+.galerie h1 { font: 900 clamp(2rem, 7vw, 4rem)/.9 var(--titre); text-transform: uppercase; color: var(--blanc); margin: .4em 0 .2em; }
+.galerie h1 b { color: var(--rouge); }
+.galerie h2 {
+  font: 900 1.6rem/1 var(--titre);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin: 2em 0 .6em;
+  padding: .3em .5em;
+  background: var(--rouge);
+  color: var(--blanc);
+  display: inline-block;
+  transform: rotate(-1deg);
+}
+.galerie p.intro { max-width: 60ch; line-height: 1.5; }
+.galerie .grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; }
+.galerie .grille.serree { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+.galerie article {
+  background: var(--encre);
+  border: 3px solid var(--nuit);
+  box-shadow: 5px 5px 0 #0008;
+  padding: 12px;
+  min-width: 0;
+}
+.galerie article h3 { font: 900 1.25rem/1 var(--titre); text-transform: uppercase; margin: 0 0 .3em; color: var(--or); }
+.galerie article p { margin: .35em 0; font-size: .85rem; line-height: 1.35; overflow-wrap: anywhere; }
+.galerie article small { opacity: .75; }
+.galerie .dessins { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px; padding: 10px; margin-bottom: 8px; background: #6b7f99; }
+.galerie .dessins.sombre { background: #2a2f45; }
+.galerie .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.galerie .actions button { font-size: .8rem; }
+.galerie ul.textes { padding-left: 1.1em; columns: 2 320px; font-size: .85rem; line-height: 1.4; }
+.galerie ul.textes li { break-inside: avoid; margin-bottom: .4em; }
+.galerie .erreurs { background: var(--rouge-sombre); border: 3px solid var(--rouge); padding: 12px; white-space: pre-wrap; font: .8rem/1.4 ui-monospace, monospace; }
+.galerie .nature { font: 700 .65rem/1 var(--texte); text-transform: uppercase; background: var(--nuit); padding: .2em .4em; border-radius: 3px; margin-left: .3em; }
+
+/* ------------------------------------------------------------------ le jeu */
+
+body.jeu { overflow: hidden; overscroll-behavior: none; }
+
+#app {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: #000;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+#scene { position: relative; flex: 1; min-height: 0; overflow: hidden; }
+#scene canvas { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+#textes { pointer-events: none; }
+
+/* HUD : lisible, discret, jamais au milieu de l'action */
+#hud { position: absolute; inset: 0; pointer-events: none; font: 900 clamp(.75rem, 2.2vmin, 1.1rem)/1 var(--titre); letter-spacing: .03em; text-transform: uppercase; color: var(--blanc); text-shadow: 0 2px 0 var(--nuit), 2px 0 0 var(--nuit), -2px 0 0 var(--nuit), 0 -2px 0 var(--nuit); z-index: 6; }
+#hud .bloc { position: absolute; top: 8px; display: flex; flex-wrap: wrap; align-items: center; gap: .3em .8em; max-width: 48%; }
+#hud .gauche { left: 10px; }
+#hud .droite { right: 10px; justify-content: flex-end; }
+#hud-coeurs { color: var(--rouge); font-size: 1.3em; letter-spacing: .08em; }
+#hud-charges { color: var(--or); font-size: 1.2em; }
+#hud-panique { position: relative; width: 9em; height: 1.35em; background: var(--nuit); border: 2px solid var(--blanc); overflow: hidden; text-shadow: none; }
+#hud-panique i { position: absolute; inset: 0 auto 0 0; background: #38b764; transition: width .3s; }
+#hud-panique[data-niveau='1'] i { background: var(--or); }
+#hud-panique[data-niveau='2'] i { background: var(--rouge); animation: clignote .5s steps(2) infinite; }
+#hud-panique b { position: relative; display: block; text-align: center; line-height: 1.25em; color: var(--blanc); text-shadow: 0 1px 0 var(--nuit); font-weight: 900; }
+#hud-annonce { color: var(--or); }
+#pause { pointer-events: auto; font-size: 1em; padding: .35em .6em; box-shadow: 2px 2px 0 var(--rouge); text-shadow: none; }
+#hud-boss { position: absolute; left: 50%; top: 3.2em; transform: translateX(-50%); width: min(60%, 420px); text-align: center; }
+#hud-boss span { display: block; height: .8em; margin-top: .25em; background: var(--nuit); border: 2px solid var(--blanc); }
+#hud-boss i { display: block; height: 100%; background: var(--or); transition: width .15s; }
+body.sobre #hud-panique i { animation: none; }
+@keyframes clignote { 50% { opacity: .55; } }
+
+/* Bandeau PANIQUE TV */
+#bandeau { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; display: flex; align-items: stretch; font: 900 clamp(.75rem, 2.6vmin, 1.25rem)/1 var(--titre); text-transform: uppercase; letter-spacing: .03em; pointer-events: none; overflow: hidden; }
+#bandeau strong { background: var(--rouge); color: var(--blanc); padding: .5em .7em; white-space: nowrap; }
+#bandeau em { background: var(--or); color: var(--nuit); padding: .5em .6em; font-style: normal; white-space: nowrap; }
+#bandeau span { flex: 1; min-width: 0; background: var(--blanc); color: var(--nuit); padding: .5em .8em; white-space: nowrap; overflow: hidden; }
+#bandeau span i { display: inline-block; font-style: normal; animation: defile 4.5s linear .8s both; }
+@keyframes defile { to { transform: translateX(var(--decalage, 0)); } }
+#bandeau[hidden], #hud[hidden], #hud-boss[hidden] { display: none; }
+#bandeau.entre { animation: bandeau-entre .3s cubic-bezier(.2, 1.3, .4, 1); }
+@keyframes bandeau-entre { from { transform: translateY(100%); } }
+@media (orientation: landscape) { body.tactile #bandeau { bottom: auto; top: 3.4em; } }
+
+#toasts { position: absolute; left: 10px; top: 4.6em; z-index: 6; display: grid; gap: 6px; pointer-events: none; }
+#toasts p { margin: 0; padding: .45em .7em; background: var(--nuit); border-left: 5px solid var(--or); font: 700 .8rem/1.2 var(--texte); animation: bandeau-entre .25s; }
+
+/* Commandes tactiles : une seule surface, les boutons ne sont que des repères visuels */
+#tactile { display: none; }
+body.tactile #tactile { display: block; position: absolute; inset: 0; z-index: 5; }
+body.tactile:not(.en-jeu) #tactile { display: none; }
+#tactile .groupe { position: absolute; bottom: calc(14px + env(safe-area-inset-bottom)); display: flex; align-items: flex-end; gap: 14px; }
+#tactile .gauche { left: calc(18px + env(safe-area-inset-left)); }
+#tactile .droite { right: calc(18px + env(safe-area-inset-right)); }
+#tactile b { width: 68px; height: 68px; border-radius: 50%; display: grid; place-items: center; font: 900 .85rem/1 var(--titre); letter-spacing: .04em; color: var(--blanc); background: rgb(26 28 44 / .45); border: 3px solid rgb(244 244 244 / .65); }
+#tactile b.petit { width: 54px; height: 54px; font-size: .75rem; }
+#tactile b.appuye { background: rgb(246 194 28 / .75); color: var(--nuit); border-color: var(--nuit); }
+
+@media (orientation: portrait) {
+  body.tactile #scene { flex: 0 0 auto; height: min(62vw, 46vh); }
+  body.tactile #tactile { position: relative; flex: 1; inset: auto; background: var(--nuit); border-top: 4px solid var(--rouge); }
+  body.tactile #tactile .groupe { bottom: 50%; transform: translateY(50%); }
+  #tactile .groupe { gap: 10px; }
+  #tactile .gauche { left: calc(12px + env(safe-area-inset-left)); }
+  #tactile .droite { right: calc(12px + env(safe-area-inset-right)); }
+  #tactile b { width: min(21vw, 84px); height: min(21vw, 84px); font-size: 1rem; background: var(--encre); }
+  #tactile b.petit { position: absolute; right: min(11vw, 44px); bottom: calc(min(21vw, 84px) + 14px); width: min(17vw, 66px); height: min(17vw, 66px); }
+  #hud { font-size: .68rem; }
+  #hud .bloc { top: 5px; gap: .2em .6em; }
+  #hud .gauche { left: 6px; }
+  #hud .droite { right: 6px; }
+}
+
+/* ------------------------------------------------------------------ écrans */
+
+#ecran { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; background: rgb(26 28 44 / .72); overflow: auto; padding: max(10px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left)); }
+#ecran[hidden] { display: none; }
+.panneau { width: min(100%, 880px); max-height: 100%; overflow: auto; background: var(--nuit); border: 4px solid var(--blanc); box-shadow: 8px 8px 0 var(--rouge); padding: clamp(14px, 3vmin, 28px); line-height: 1.45; }
+.panneau.etroit { width: min(100%, 380px); display: grid; gap: 12px; }
+.panneau h2 { font: 900 clamp(1.6rem, 5vmin, 2.6rem)/.95 var(--titre); text-transform: uppercase; color: var(--blanc); margin: 0 0 .5em; }
+.panneau h3 { font: 900 1.15rem/1.1 var(--titre); text-transform: uppercase; letter-spacing: .03em; color: var(--or); margin: 1.2em 0 .4em; }
+.panneau p { margin: .5em 0; }
+.panneau ul { padding-left: 1.1em; }
+.panneau li { margin-bottom: .7em; }
+.panneau li.vu::marker { content: '✔ '; color: #38b764; }
+.panneau em { opacity: .8; }
+.panneau small.source { display: block; opacity: .85; margin-top: .2em; }
+.panneau .nature, .panneau small .nature { font: 700 .62rem/1 var(--texte); text-transform: uppercase; background: var(--encre); padding: .2em .4em; border-radius: 3px; margin: 0 .4em; }
+.panneau .pied { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 1.2em; align-items: center; }
+.panneau button.gros, .panneau .bouton.gros { font-size: 1.4rem; }
+.panneau .cartes { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+.panneau article { background: var(--encre); border: 3px solid #0006; padding: 12px; }
+.panneau article h3 { margin-top: 0; }
+.panneau table { border-collapse: collapse; font-size: .85rem; }
+.panneau td, .panneau th { padding: .25em .6em; border-bottom: 1px solid var(--encre); text-align: left; }
+.panneau .case { display: block; padding: .4em 0; cursor: pointer; }
+.panneau .case input { width: 1.2em; height: 1.2em; vertical-align: -.2em; accent-color: var(--rouge); }
+.panneau .onglets { display: flex; flex-wrap: wrap; gap: 8px; margin: .8em 0; }
+.panneau .contenu { font-size: .9rem; }
+
+/* menu : le jeu tourne derrière */
+.panneau.menu { background: transparent; border: 0; box-shadow: none; text-align: center; width: min(100%, 760px); }
+.menu .logo { font: 900 clamp(2.6rem, 13vmin, 7rem)/.82 var(--titre); text-transform: uppercase; color: var(--blanc); -webkit-text-stroke: clamp(3px, .8vmin, 7px) var(--nuit); paint-order: stroke fill; text-shadow: clamp(4px, 1vmin, 9px) clamp(4px, 1vmin, 9px) 0 var(--rouge); transform: rotate(-3deg); margin-bottom: .1em; }
+.menu .logo span { display: block; }
+.menu .logo span:last-child { color: var(--or); letter-spacing: .12em; }
+.menu .devise { font: 900 clamp(1rem, 3.4vmin, 1.7rem)/1 var(--titre); text-transform: uppercase; letter-spacing: .06em; background: var(--rouge); color: var(--blanc); display: inline-block; padding: .35em .7em; transform: rotate(1.5deg); }
+.menu .troupe { display: flex; justify-content: center; align-items: flex-end; gap: 14px; margin: 12px 0; }
+.menu nav { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; margin: 8px 0 14px; }
+.menu nav > * { display: inline-flex; align-items: center; min-height: 46px; }
+.menu .mention { font-size: .72rem; line-height: 1.35; max-width: 62ch; margin: 0 auto; background: rgb(26 28 44 / .8); padding: .5em .8em; }
+
+/* carton d'ouverture, fin de niveau, vote */
+.panneau.intro { text-align: center; width: min(100%, 640px); }
+.intro .tv { display: inline-flex; font: 900 1.1rem/1 var(--titre); letter-spacing: .04em; margin-bottom: 12px; }
+.intro .tv strong { background: var(--rouge); color: var(--blanc); padding: .45em .7em; }
+.intro .tv em { background: var(--or); color: var(--nuit); padding: .45em .7em; font-style: normal; }
+.intro .manchette { font: 900 clamp(1.2rem, 4.4vmin, 2rem)/1.05 var(--titre); text-transform: uppercase; background: var(--blanc); color: var(--nuit); padding: .5em .7em; transform: rotate(-1deg); }
+.fin .temps { font-weight: 700; }
+.fin .bilans { display: grid; grid-template-columns: minmax(150px, 1fr) 2fr; gap: 12px; }
+.fin .annonce { background: var(--rouge); text-align: center; text-transform: uppercase; font-family: var(--titre); }
+.fin .annonce h3 { color: var(--blanc); }
+.fin .chiffre { font-size: clamp(2.4rem, 9vmin, 4.5rem); line-height: 1; margin: 0; }
+.fin .fiche { margin-top: 12px; border-left: 6px solid var(--or); }
+.vote .dates { font-size: 1.2rem; }
+.vote .appel { font: 900 clamp(3rem, 14vmin, 7rem)/.9 var(--titre); text-transform: uppercase; color: var(--or); margin: .1em 0 .3em; transform: rotate(-2deg); }
+.vote .mention, .panneau .mention { font-size: .8rem; opacity: .9; }
+@media (max-width: 560px) { .fin .bilans { grid-template-columns: 1fr; } }
+
+/* scène de taxation */
+.panneau.taxe { text-align: center; width: min(100%, 760px); }
+.taxe canvas { display: block; margin: 10px auto; }
+.taxe canvas.fortune { width: min(100%, 60vh, 520px); height: auto; border: 3px solid var(--blanc); background: #111; }
+.taxe canvas.vie { width: auto; height: min(46vh, 387px); }
+.taxe .gros { font: 900 clamp(1.1rem, 3.6vmin, 1.7rem)/1.15 var(--titre); text-transform: uppercase; color: var(--blanc); }
+.taxe .vrai { text-align: left; font-size: .85rem; background: var(--encre); border-left: 6px solid var(--or); padding: .6em .8em; }
+.taxe .pied { justify-content: center; }
+.taxe .services { display: flex; justify-content: center; gap: 24px; font-size: clamp(2.4rem, 9vmin, 4rem); filter: grayscale(1) brightness(.45); transition: filter .8s .3s; }
+.taxe .services.allumes { filter: none; }
+
+/* atelier */
+.panneau.atelier { width: min(100%, 1100px); }
+.atelier .etabli { display: grid; grid-template-columns: minmax(0, 2fr) minmax(200px, 1fr); gap: 14px; }
+.atelier textarea { width: 100%; height: min(52vh, 460px); background: #10111c; color: #a7f070; border: 3px solid var(--encre); padding: 10px; font: 13px/1.15 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: pre; overflow: auto; resize: vertical; user-select: text; -webkit-user-select: text; }
+.atelier aside { font-size: .8rem; max-height: min(60vh, 520px); overflow: auto; }
+.atelier aside h3:first-child { margin-top: 0; }
+.atelier code { background: var(--encre); padding: .1em .4em; }
+.atelier .etat { font-weight: 700; }
+.atelier .rapport p { margin: .3em 0; padding: .4em .6em; background: var(--rouge-sombre); font-size: .82rem; }
+.atelier button:disabled { opacity: .4; cursor: not-allowed; }
+@media (max-width: 720px) { .atelier .etabli { grid-template-columns: 1fr; } }
+
+/* Radio Manif */
+#radio { position: fixed; right: max(10px, env(safe-area-inset-right)); bottom: max(10px, env(safe-area-inset-bottom)); z-index: 30; width: min(320px, calc(100vw - 20px)); background: var(--nuit); border: 3px solid var(--blanc); box-shadow: 4px 4px 0 var(--rouge); padding: 6px 8px; font-size: .72rem; }
+#radio[hidden] { display: none; }
+/* Le lecteur n'est visible que sur le menu principal ; ailleurs il continue de jouer, hors de l'écran. */
+#radio.cache, body:not([data-ecran='menu']) #radio { left: -9999px; right: auto; }
+#radio strong { font: 900 .85rem/1 var(--titre); text-transform: uppercase; letter-spacing: .05em; color: var(--or); }
+#radio iframe { display: block; width: 100%; height: 76px; border: 0; margin: 4px 0; }
+#radio p { margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.fin .pancarte { margin-top: 12px; padding: .6em .8em; background: var(--papier); color: var(--nuit); transform: rotate(-1deg); font-family: var(--titre); text-transform: uppercase; }
+.fin .pancarte small { font: 400 .75rem var(--texte); text-transform: none; }

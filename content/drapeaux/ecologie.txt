@@ -1,0 +1,25 @@
+nom: Drapeau de l’écologie
+description: Le tournesol des marches pour le climat.
+auteur: UltraGauche Force
+ressource.1.titre: A69 : les conclusions du rapporteur spécial de l'ONU
+ressource.1.url: https://unric.org/fr/ecureuils-mobilises-contre-la69-conclusions-du-rapporteur-special-de-lonu/
+ressource.1.nature: officielle
+ressource.2.titre: Justice climatique : la lutte entre dans les tribunaux — ARTE (vidéo, 17 min)
+ressource.2.url: https://www.youtube.com/watch?v=09EVhIYQR2A
+ressource.2.nature: presse
+ressource.3.titre: Lexique de la justice climatique — Notre Affaire à Tous
+ressource.3.url: https://notreaffaireatous.org/lexique-de-la-justice-climatique-2/
+ressource.3.nature: associative
+--- image
+vvvvvvvvvvvvvvvvvv
+vvvvvvvvYYvvvvvvvv
+vvvvvYvvYYvvYvvvvv
+vvvvvvYYYYYYvvvvvv
+vvvvvvYYTTYYvvvvvv
+vvvvYYYTTTTYYYvvvv
+vvvvYYYTTTTYYYvvvv
+vvvvvvYYTTYYvvvvvv
+vvvvvvYYYYYYvvvvvv
+vvvvvYvvYYvvYvvvvv
+vvvvvvvvYYvvvvvvvv
+vvvvvvvvvvvvvvvvvv

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <title>UltraGauche Force</title>
+  <meta name="description" content="Run-and-gun satirique, libre et collaboratif. Taxez les riches, abattez la Citadelle.">
+  <meta name="theme-color" content="#1a1c2c">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icone-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="jeu">
+  <div id="app">
+    <div id="scene">
+      <canvas id="monde" class="pixel"></canvas>
+      <canvas id="textes"></canvas>
+
+      <div id="hud" hidden>
+        <div class="bloc gauche">
+          <span id="hud-heros"></span>
+          <span id="hud-coeurs" aria-label="Points de vie"></span>
+          <span id="hud-vies"></span>
+          <span id="hud-charges" aria-label="Charges de spéciale"></span>
+        </div>
+        <div class="bloc droite">
+          <span id="hud-panique"><i></i><b></b></span>
+          <span id="hud-annonce"></span>
+          <button id="pause" type="button" aria-label="Pause">II</button>
+        </div>
+        <div id="hud-boss" hidden><b></b><span><i></i></span></div>
+      </div>
+
+      <div id="bandeau" hidden>
+        <strong>PANIQUE TV</strong><em>ALERTE INFO</em><span></span>
+      </div>
+      <div id="toasts"></div>
+    </div>
+
+    <div id="tactile" aria-hidden="true">
+      <div class="groupe gauche">
+        <b data-action="left">◀</b>
+        <b data-action="right">▶</b>
+      </div>
+      <div class="groupe droite">
+        <b data-action="special" class="petit">SPÉ</b>
+        <b data-action="fire">TIR</b>
+        <b data-action="jump">SAUT</b>
+      </div>
+    </div>
+  </div>
+
+  <div id="ecran"></div>
+  <div id="radio" hidden></div>
+
+  <noscript>UltraGauche Force a besoin de JavaScript pour fonctionner.</noscript>
+  <script type="module" src="src/client/main.js"></script>
+</body>
+</html>

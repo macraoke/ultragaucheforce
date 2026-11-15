@@ -1,0 +1,7 @@
+titre: Tes droits en garde à vue
+theme: droits
+texte: Fiche d'essai, sans valeur d'information.
+source.titre: Source d'essai
+source.url: https://example.org/
+source.nature: officielle
+verifie: 2026-11-15

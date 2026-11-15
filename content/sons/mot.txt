@@ -1,0 +1,4 @@
+nom: Mot lancé par un éditorialiste
+zzfx: .7,.05,190,.01,.05,.12,5,.4,3,,,,.03,,,,,.7,.02
+auteur: UltraGauche Force
+licence: CC0-1.0

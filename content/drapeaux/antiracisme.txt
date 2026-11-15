@@ -1,0 +1,25 @@
+nom: Le poing levé
+description: Les luttes antiracistes.
+auteur: UltraGauche Force
+ressource.1.titre: 1983, la Marche pour l'égalité et contre le racisme — Musée national de l'histoire de l'immigration
+ressource.1.url: https://www.histoire-immigration.fr/integration-et-xenophobie/1983-la-marche-pour-l-egalite-des-droits-et-contre-le-racisme
+ressource.1.nature: officielle
+ressource.2.titre: La Marche pour l'égalité, 3 décembre 1983 — archive INA (vidéo, 4 min)
+ressource.2.url: https://www.youtube.com/watch?v=wnu-8FXyREA
+ressource.2.nature: officielle
+ressource.3.titre: Racisme et esclavage, une histoire liée — Fondation pour la mémoire de l'esclavage
+ressource.3.url: https://memoire-esclavage.org/note-fme-racisme-et-esclavage-une-histoire-liee
+ressource.3.nature: associative
+--- image
+YYYYYYYYYYYYYYYYYY
+YYYYYYYkkYkkYYYYYY
+YYYYYYkkkkkkkYYYYY
+YYYYYYkkkkkkkYYYYY
+YYYYYkkkkkkkkYYYYY
+YYYYYkkkkkkkkYYYYY
+YYYYYYkkkkkkYYYYYY
+YYYYYYYkkkkYYYYYYY
+YYYYYYYkkkkYYYYYYY
+YYYYYYYkkkkYYYYYYY
+YYYYYYYkkkkYYYYYYY
+YYYYYYYYYYYYYYYYYY

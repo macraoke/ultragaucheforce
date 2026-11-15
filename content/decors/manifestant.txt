@@ -1,0 +1,37 @@
+# Membre du cortège. Le bras levé porte une pancarte ou un drapeau.
+nom: Manifestante
+auteur: UltraGauche Force
+--- image
+...TTTT...
+..TTTTTT.s
+..ssssss.m
+..skssks.m
+..ssssss.m
+...ssss.mm
+..mmmmmmm.
+.mmmmmmmm.
+.mmmmmmm..
+.mmmmmmm..
+..mmmmm...
+..nnnnn...
+..nn.nn...
+..nn.nn...
+..nn.nn...
+.kkk.kkk..
+--- image2
+...TTTT...
+..TTTTTT.s
+..ssssss.m
+..skssks.m
+..ssssss.m
+...ssss.mm
+..mmmmmmm.
+.mmmmmmmm.
+.mmmmmmm..
+.mmmmmmm..
+..mmmmm...
+..nnnnn...
+..nn..nn..
+.nn...nn..
+.nn....nn.
+kkk....kkk

@@ -1,0 +1,12 @@
+texte: On ne peut accepter ni les factieux ni les factions.
+auteur: Emmanuel Macron
+fonction: président de la République
+date: 2023-03-22
+contexte: Entretien en direct sur TF1 et France 2, à la veille de la neuvième journée de mobilisation contre la réforme des retraites adoptée par le 49.3.
+categorie: diabolisation
+mot: FACTIEUX
+note:
+source.titre: Public Sénat — Ce qu'il faut retenir de l'interview d'Emmanuel Macron en cinq déclarations
+source.url: https://www.publicsenat.fr/article/politique/ce-qu-il-faut-retenir-de-l-interview-d-emmanuel-macron-en-cinq-declarations-241160
+source.nature: presse
+verifie: 2026-11-15

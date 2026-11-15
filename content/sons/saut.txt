@@ -1,0 +1,4 @@
+nom: Saut
+zzfx: 1,.05,280,.01,.03,.09,1,1.4,11,,,,,,,,,.7,.02
+auteur: UltraGauche Force
+licence: CC0-1.0

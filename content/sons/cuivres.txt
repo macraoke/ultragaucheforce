@@ -1,0 +1,5 @@
+nom: Éclat de cuivres
+fichier: cuivres.mp3
+auteur: plasterbrain
+licence: CC0-1.0
+source: https://freesound.org/s/397355/

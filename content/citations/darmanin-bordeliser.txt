@@ -1,0 +1,12 @@
+texte: La Nupes ne cherche qu'à bordéliser le pays.
+auteur: Gérald Darmanin
+fonction: ministre de l'Intérieur et des Outre-mer
+date: 2023-01-28
+contexte: Entretien au Parisien, en réponse à une question sur les amendements de la gauche contre la réforme des retraites, à quelques jours d'une journée de mobilisation.
+categorie: diabolisation
+mot: BORDÉLISER
+note: Entretien mis en ligne le samedi 28 janvier 2023 (franceinfo), daté du dimanche 29 par la dépêche Reuters. Même entretien : « Monsieur Mélenchon et ses amis défendent une idée gauchiste, bobo, celle d'une société sans travail, sans effort ».
+source.titre: Boursorama (dépêche Reuters) — Retraites: Darmanin accuse la Nupes de vouloir "bordéliser" le pays
+source.url: https://www.boursorama.com/actualite-economique/actualites/retraites-darmanin-accuse-la-nupes-de-vouloir-bordeliser-le-pays-4ce1918b09940aae05cf94a13eb8ebc5
+source.nature: presse
+verifie: 2026-11-15

@@ -1,0 +1,12 @@
+texte: Ne parlez pas de répression ou de violences policières, ces mots sont inacceptables dans un État de droit.
+auteur: Emmanuel Macron
+fonction: président de la République
+date: 2019-03-07
+contexte: Réunion du grand débat national à Gréoux-les-Bains (Alpes-de-Haute-Provence), interrogé sur les blessures graves causées par des tirs de LBD pendant le mouvement des gilets jaunes.
+categorie: puissants
+mot:
+note: Citation rappelée par Public Sénat en janvier 2020. Le même jour, selon la dépêche reprise par Public Sénat : « Je n'aime pas le terme de répression car il ne représente pas la réalité ».
+source.titre: Public Sénat — Violences policières : vers une prise de conscience de l'exécutif ?
+source.url: https://www.publicsenat.fr/actualites/politique/violences-policieres-vers-une-prise-de-conscience-de-l-executif-149152
+source.nature: presse
+verifie: 2026-11-15

@@ -1,0 +1,4 @@
+nom: Automate en grève
+zzfx: .8,0,392,.01,.06,.16,1,1,,,131,.07
+auteur: UltraGauche Force
+licence: CC0-1.0

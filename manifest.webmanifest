@@ -1,0 +1,20 @@
+{
+  "name": "UltraGauche Force",
+  "short_name": "UltraGauche",
+  "description": "Run-and-gun satirique, libre et collaboratif. Taxez les riches, abattez la Citadelle.",
+  "lang": "fr",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone"],
+  "orientation": "any",
+  "background_color": "#1a1c2c",
+  "theme_color": "#1a1c2c",
+  "categories": ["games"],
+  "icons": [
+    { "src": "icons/icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icone-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

@@ -1,0 +1,11 @@
+nom: Drone
+pv: 1
+vitesse: 60
+deplacement: vol
+reaction: cadre
+vue: 200
+panique: 6
+fin: panne
+--- repos
+kk
+kk

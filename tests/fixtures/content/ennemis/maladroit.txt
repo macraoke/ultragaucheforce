@@ -1,0 +1,18 @@
+# Lance sa grenade à ses propres pieds : il se met en panne tout seul.
+nom: Maladroit
+pv: 2
+deplacement: fixe
+reaction: tire
+vue: 200
+fin: panne
+arme.type: tir
+arme.cadence: 1
+arme.vitesse: 30
+arme.gravite: 900
+arme.explosion: 40
+arme.fratricide: 1
+arme.degats: 5
+arme.portee: 200
+--- repos
+gg
+gg

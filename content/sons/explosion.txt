@@ -1,0 +1,5 @@
+nom: Explosion de dessin animé
+fichier: explosion.mp3
+auteur: modusmogulus
+licence: CC0-1.0
+source: https://freesound.org/s/784205/

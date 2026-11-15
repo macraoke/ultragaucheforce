@@ -1,0 +1,23 @@
+# explose: rayon de l'explosion en pixels. Un tonneau en fait sauter un autre : réaction en chaîne.
+nom: Tonneau de lisier
+symbole: X
+pv: 1
+explose: 40
+auteur: UltraGauche Force
+--- image
+................
+..VVVVVVVVVVVV..
+.VvvvvvvvvvvvvV.
+.VlllllllllllvV.
+.VVVVVVVVVVVVVV.
+.VvvvvvvvvvvvvV.
+.VvvvYYYYYYvvvV.
+.VvvvYYkkYYvvvV.
+.VvvvYYkkYYvvvV.
+.VvvvYYkkYYvvvV.
+.VvvvYYYYYYvvvV.
+.VvvvYYkkYYvvvV.
+.VVVVVVVVVVVVVV.
+.VvvvvvvvvvvvvV.
+.VvvvvvvvvvvvvV.
+..VVVVVVVVVVVV..

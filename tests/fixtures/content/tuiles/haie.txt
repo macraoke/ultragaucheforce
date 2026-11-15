@@ -1,0 +1,20 @@
+nom: Haie
+symbole: H
+pv: 2
+--- image
+vvvvvvvvvvvvvvvv
+vvvvvvvvvvvvvvvv
+vvvvvvvvvvvvvvvv
+vvvvvvvvvvvvvvvv
+vvvvvvvvvvvvvvvv
+vvvvvvvvvvvvvvvv
+vvvvvvvvvvvvvvvv
+vvvvvvvvvvvvvvvv
+vvvvvvvvvvvvvvvv
+vvvvvvvvvvvvvvvv
+vvvvvvvvvvvvvvvv
+vvvvvvvvvvvvvvvv
+vvvvvvvvvvvvvvvv
+vvvvvvvvvvvvvvvv
+vvvvvvvvvvvvvvvv
+vvvvvvvvvvvvvvvv

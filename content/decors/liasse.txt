@@ -1,0 +1,12 @@
+# Une liasse = un SMIC mensuel. L'unité de mesure de la scène de taxation.
+nom: Liasse (un SMIC)
+auteur: UltraGauche Force
+--- image
+.vvvvvvvvvvv.
+vVVVVVVVVVVVv
+vVllVVYVVllVv
+vVVVVYYYVVVVv
+vVllVVYVVllVv
+vVVVVVVVVVVVv
+vwwwwwwwwwwwv
+.VVVVVVVVVVV.

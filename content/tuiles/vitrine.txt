@@ -1,0 +1,21 @@
+nom: Vitrine de luxe
+symbole: V
+pv: 1
+auteur: UltraGauche Force
+--- image
+YYYYYYYYYYYYYYYY
+YccccccccccccccY
+YcwccccccccccccY
+YwcccccccccccccY
+YccccccccccccccY
+YccccccccccwcccY
+YcccccccccwccccY
+YccccccccwcccccY
+YccccccccccccccY
+YccccccccccccccY
+YcccccwccccccccY
+YccccwcccccccccY
+YccccccccccccccY
+YcccccccccccccwY
+YccccccccccccccY
+YYYYYYYYYYYYYYYY

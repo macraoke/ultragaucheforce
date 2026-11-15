@@ -1,0 +1,12 @@
+texte: Totalement immigrationniste.
+auteur: Emmanuel Macron
+fonction: président de la République
+date: 2024-06-18
+contexte: Sur l'île de Sein (Finistère), en marge des commémorations de l'appel du 18 Juin, à propos du programme du Nouveau Front populaire pour les législatives anticipées.
+categorie: diabolisation
+mot: IMMIGRATIONNISTE
+note: Fragment cité par Public Sénat, qui l'écrit « immigrationiste ». Dans le même échange, il dénonce une mesure « totalement ubuesque » qui consiste « à aller changer de sexe à la mairie ».
+source.titre: Public Sénat — Législatives : « Emmanuel Macron participe à installer les thématiques d'extrême droite »
+source.url: https://www.publicsenat.fr/actualites/politique/legislatives-emmanuel-macron-participe-a-installer-les-thematiques-dextreme-droite
+source.nature: presse
+verifie: 2026-11-15

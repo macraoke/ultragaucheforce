@@ -1,0 +1,5 @@
+nom: Roulement de tambour
+fichier: tambour.mp3
+auteur: bigjoedrummer
+licence: CC0-1.0
+source: https://freesound.org/s/77305/

@@ -1,0 +1,28 @@
+name: Une blague
+description: Une manchette de PANIQUE TV ou une pancarte. Une ligne suffit.
+title: "Blague : "
+labels: ["blague"]
+body:
+  - type: dropdown
+    id: genre
+    attributes:
+      label: C'est…
+      options:
+        - une manchette de PANIQUE TV
+        - une pancarte inventée
+        - une pancarte vraiment vue en manif
+    validations:
+      required: true
+  - type: textarea
+    id: texte
+    attributes:
+      label: Le texte
+      description: En majuscules, court. Une par ligne.
+      placeholder: UN GOÛTER PARTAGÉ SÈME LE TROUBLE DANS LES MARCHÉS
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Pancarte vue en manif — où, quand, et le lien
+      placeholder: "vue à Paris, mars 2023 — https://…"

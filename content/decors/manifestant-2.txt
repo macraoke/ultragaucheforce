@@ -1,0 +1,37 @@
+# Membre du cortège, variante.
+nom: Manifestant
+auteur: UltraGauche Force
+--- image
+...kkkk...
+..kkkkkk.S
+..SSSSSS.o
+..SkSSkS.o
+..SSSSSS.o
+...SSSS.oo
+..ooooooo.
+.oooooooo.
+.oYooooo..
+.ooooooo..
+..ooooo...
+..KKKKK...
+..KK.KK...
+..KK.KK...
+..KK.KK...
+.www.www..
+--- image2
+...kkkk...
+..kkkkkk.S
+..SSSSSS.o
+..SkSSkS.o
+..SSSSSS.o
+...SSSS.oo
+..ooooooo.
+.oooooooo.
+.oYooooo..
+.ooooooo..
+..ooooo...
+..KKKKK...
+..KK..KK..
+.KK...KK..
+.KK....KK.
+www....www

@@ -1,0 +1,28 @@
+name: Une source à corriger
+description: Citation inexacte, chiffre périmé, lien mort, contenu qui pose problème. Traité en priorité.
+title: "Source : "
+labels: ["source"]
+body:
+  - type: input
+    id: ou
+    attributes:
+      label: Le contenu concerné
+      placeholder: content/fiches/smic.txt
+    validations:
+      required: true
+  - type: textarea
+    id: probleme
+    attributes:
+      label: Ce qui ne va pas
+    validations:
+      required: true
+  - type: textarea
+    id: correction
+    attributes:
+      label: La bonne information, et sa source
+  - type: checkboxes
+    id: concerne
+    attributes:
+      label: Votre situation
+      options:
+        - label: Je suis la personne concernée par ce contenu, ou je la représente.

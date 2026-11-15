@@ -1,0 +1,20 @@
+nom: Planche
+symbole: P
+pv: 1
+--- image
+yyyyyyyyyyyyyyyy
+yyyyyyyyyyyyyyyy
+yyyyyyyyyyyyyyyy
+yyyyyyyyyyyyyyyy
+yyyyyyyyyyyyyyyy
+yyyyyyyyyyyyyyyy
+yyyyyyyyyyyyyyyy
+yyyyyyyyyyyyyyyy
+yyyyyyyyyyyyyyyy
+yyyyyyyyyyyyyyyy
+yyyyyyyyyyyyyyyy
+yyyyyyyyyyyyyyyy
+yyyyyyyyyyyyyyyy
+yyyyyyyyyyyyyyyy
+yyyyyyyyyyyyyyyy
+yyyyyyyyyyyyyyyy

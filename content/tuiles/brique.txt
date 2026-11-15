@@ -1,0 +1,21 @@
+nom: Brique
+symbole: B
+pv: 3
+auteur: UltraGauche Force
+--- image
+RRRRRRReRRRRRRRe
+RRRRRRreRRRRRRre
+RrrrrrreRrrrrrre
+eeeeeeeeeeeeeeee
+RRReRRRRRRReRRRR
+RRreRRRRRRreRRRR
+rrreRrrrrrreRrrr
+eeeeeeeeeeeeeeee
+RRRRRRReRRRRRRRe
+RRRRRRreRRRRRRre
+RrrrrrreRrrrrrre
+eeeeeeeeeeeeeeee
+RRReRRRRRRReRRRR
+RRreRRRRRRreRRRR
+rrreRrrrrrreRrrr
+eeeeeeeeeeeeeeee

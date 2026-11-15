@@ -1,0 +1,25 @@
+nom: Drapeau féministe
+description: Le violet des luttes féministes.
+auteur: UltraGauche Force
+ressource.1.titre: Droits des femmes : chronologie 1945-2026 — Vie publique
+ressource.1.url: https://www.vie-publique.fr/eclairage/19590-histoire-des-droits-des-femmes-chronologie-1945-2026
+ressource.1.nature: officielle
+ressource.2.titre: De la Révolution à MeToo — France tv slash, avec Manon Bril (vidéo, 10 min)
+ressource.2.url: https://www.youtube.com/watch?v=wr8GOAMGJkE
+ressource.2.nature: presse
+ressource.3.titre: Le MLF, histoire d'un combat féministe — INA
+ressource.3.url: https://www.ina.fr/ina-eclaire-actu/le-mlf-histoire-d-un-combat-feministe
+ressource.3.nature: officielle
+--- image
+mmmmmmmmmmmmmmmmmm
+mmmmmmmwwwwmmmmmmm
+mmmmmmwmmmmwmmmmmm
+mmmmmmwmmmmwmmmmmm
+mmmmmmwmmmmwmmmmmm
+mmmmmmmwwwwmmmmmmm
+mmmmmmmmwwmmmmmmmm
+mmmmmmmmwwmmmmmmmm
+mmmmmmwwwwwwmmmmmm
+mmmmmmmmwwmmmmmmmm
+mmmmmmmmwwmmmmmmmm
+mmmmmmmmmmmmmmmmmm

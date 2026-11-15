@@ -1,0 +1,20 @@
+nom: Bêta
+pv: 2
+vitesse: 120
+saut: 3
+arme.type: tir
+arme.cadence: 1.5
+arme.vitesse: 150
+arme.gravite: 500
+arme.elan: 180
+arme.explosion: 28
+arme.degats: 3
+arme.terrain: 3
+arme.blindage: 1
+speciale.type: mur
+speciale.tuile: haie
+speciale.hauteur: 3
+speciale.charges: 2
+--- repos
+vv
+vv

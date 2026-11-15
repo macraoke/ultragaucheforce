@@ -1,0 +1,9 @@
+titre: Voté, puis rejeté
+theme: richesses
+texte: L'impôt plancher de 2 % sur les patrimoines de plus de 100 millions d'euros a été voté par l'Assemblée nationale le 20 février 2025, puis rejeté par le Sénat le 12 juin 2025, par 188 voix contre 129.
+portee: Proposition de loi examinée en première lecture. Depuis, des amendements reprenant la mesure ont été rejetés à l'Assemblée nationale lors des débats budgétaires : le 31 octobre 2025, par 228 voix contre 172 (selon LCP), et le 16 octobre 2026 (selon MoneyVox). La mesure n'est pas en vigueur.
+periode: février 2025 à octobre 2026
+source.titre: Public Sénat — Taxe « Zucman » : le Sénat rejette la création d'un nouvel impôt sur les ultra-riches (12 juin 2025)
+source.url: https://www.publicsenat.fr/actualites/economie/taxe-zucman-le-senat-rejette-la-creation-dun-nouvel-impot-sur-les-ultra-riches
+source.nature: presse
+verifie: 2026-11-15

@@ -1,0 +1,21 @@
+nom: Terre
+symbole: T
+pv: 3
+auteur: UltraGauche Force
+--- image
+tttTtttttTtttttt
+ttttttEttttttTtt
+Tttttttttttttttt
+tttttTttttTttttE
+ttEttttttttttttt
+ttttttttTttttTtt
+tTttttTttttttttt
+ttttttttttEttttT
+tttTtttttttttttt
+tttttEtttTttttTt
+Tttttttttttttttt
+ttTtttTttttTtttt
+tttttttttttttEtt
+tEtttTtttttttttt
+ttttttttTtttttTt
+ttTttttttttttttt

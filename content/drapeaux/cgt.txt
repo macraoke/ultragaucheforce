@@ -1,0 +1,25 @@
+nom: Drapeau de la CGT (stylisé)
+description: Le syndicat, tel qu’on le croise dans tous les cortèges.
+auteur: UltraGauche Force
+ressource.1.titre: Les grandes dates de l'histoire de la CGT — Institut CGT d'histoire sociale
+ressource.1.url: https://www.ihs.cgt.fr/les-grandes-dates-de-lhistoire-de-la-cgt/
+ressource.1.nature: militante
+ressource.2.titre: La Sécurité sociale : aux origines de 1945 — Vie publique (vidéo, 13 min)
+ressource.2.url: https://www.youtube.com/watch?v=laH6euqPUfg
+ressource.2.nature: officielle
+ressource.3.titre: 1936 : le Front populaire — INA
+ressource.3.url: https://www.ina.fr/ina-eclaire-actu/front-populaire-politique-gauche-1936-fascisme-misere
+ressource.3.nature: officielle
+--- image
+RRRRRRRRRRRRRRRRRR
+RRRRRRRRRRRRRRRRRR
+RRRRRRRRRRRRRRRRRR
+RRRwwwRRwwwRRwwwRR
+RRRwRRRRwRRRRRwRRR
+RRRwRRRRwRwRRRwRRR
+RRRwRRRRwRwRRRwRRR
+RRRwwwRRwwwRRRwRRR
+RRRRRRRRRRRRRRRRRR
+RRRRRRRRRRRRRRRRRR
+RRRRRRRRRRRRRRRRRR
+RRRRRRRRRRRRRRRRRR

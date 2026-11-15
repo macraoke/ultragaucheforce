@@ -1,0 +1,12 @@
+texte: L'islamo-gauchisme gangrène la société dans son ensemble et l'université n'est pas imperméable.
+auteur: Frédérique Vidal
+fonction: ministre de l'Enseignement supérieur, de la Recherche et de l'Innovation
+date: 2021-02-14
+contexte: Interrogée par Jean-Pierre Elkabbach sur CNews, elle annonce vouloir charger le CNRS d'une enquête sur les courants de recherche à l'université.
+categorie: diabolisation
+mot: ISLAMO-GAUCHISME
+note: Réponse du CNRS le 17 février 2021 : « L'islamogauchisme », slogan politique utilisé dans le débat public, ne correspond à aucune réalité scientifique (communiqué : https://www.cnrs.fr/fr/presse/l-islamogauchisme-nest-pas-une-realite-scientifique).
+source.titre: Public Sénat — « Islamo-gauchisme » : quand Frédérique Vidal n'avait « aucun doute sur le respect des valeurs de la République dans les universités »
+source.url: https://www.publicsenat.fr/actualites/societe/islamo-gauchisme-quand-frederique-vidal-ne-voulait-pas-faire-de-cas-particuliers-une
+source.nature: presse
+verifie: 2026-11-15
