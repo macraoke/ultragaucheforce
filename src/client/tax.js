@@ -1,23 +1,25 @@
-// La scène de taxation, après le boss : il est assis sur sa fortune, on en prend 2 %.
-// Tous les nombres viennent des fiches sourcées de `content/fiches/`.
+// La scène de taxation, après le boss. Il est assis sur sa fortune ; on avance d'un bouton à l'autre :
+// l'échelle (face à quelqu'un de très bien payé), ce que la fortune rapporte, les 2 %, qui paie combien,
+// ce que ça finance. Tous les nombres viennent des fiches sourcées de `content/fiches/` ; un temps dont
+// la fiche manque est sauté.
 
-import { h, frenchNumber, sourceLine } from './dom.js';
+import { h, link, frenchNumber } from './dom.js';
 import { sprite } from './sprites.js';
 import { taxFiches } from './collection.js';
 
 const RATE = 0.02; // l'impôt plancher discuté : 2 % par an
-const YEARS_PER_STACK = 10000; // une liasse dessinée = dix mille ans de Smic
+const YEARS_PER_STACK = 1000; // une liasse dessinée = mille ans du revenu de référence
 const W = 400;
 const H = 190;
 const CELL = { w: 7, h: 4 };
+const GROUND = H - 14;
 
 /** Les liasses du tas, de bas en haut : un trapèze assez large au sommet pour s'y asseoir. */
 function heap(count) {
   const stacks = [];
-  const ground = H - 14;
   for (let row = 0, width = 52; stacks.length < count && width >= 8; row++, width -= 2) {
     for (let i = 0; i < width && stacks.length < count; i++) {
-      stacks.push({ x: W / 2 - (width * CELL.w) / 2 + i * CELL.w, y: ground - (row + 1) * CELL.h, row });
+      stacks.push({ x: W / 2 - (width * CELL.w) / 2 + i * CELL.w, y: GROUND - (row + 1) * CELL.h });
     }
   }
   return stacks;
@@ -32,93 +34,159 @@ function drawStack(ctx, x, y) {
   ctx.fillRect(x + 2, y + 1, 2, 1);
 }
 
+const billions = (euros) => frenchNumber(euros / 1e9, 1);
+const thousands = (n) => frenchNumber(Math.floor(n / 1000) * 1000);
+const sourceOf = (fact) => h('p', { className: 'source' }, 'Source : ', link(fact.source.url, fact.source.titre.split(' — ')[0]));
+
 /**
  * @returns {Promise<string[]>} les fiches à noter comme découvertes
  */
 export function showTaxScene(root, bundle, boss, { audio = null, hero = null } = {}) {
   return new Promise((resolve) => {
-    const smic = bundle.fiches.smic?.valeur;
-    const fortune = boss.fortune.montant * 1e9;
-    if (!smic || !fortune) return resolve([]);
-    const stacks = heap(Math.round(fortune / (smic * 12 * YEARS_PER_STACK)));
-    const taken = Math.max(1, Math.round(stacks.length * RATE));
-    const top = Math.min(...stacks.map((s) => s.y));
     const fiche = (id) => bundle.fiches[id];
-    const real = (id) => fiche(id) && h('p', { className: 'vrai' }, fiche(id).texte, ' ', sourceLine(fiche(id)));
+    const fortune = boss.fortune.montant * 1e9;
+    const wage = fiche('revenu-chirurgien'); // quelqu'un de très bien payé : le repère de l'échelle
+    if (!fortune || !wage?.valeur) return resolve([]);
+    const unit = wage.valeur * YEARS_PER_STACK;
+    const rent = fiche(boss.fortune.rente);
+    const yearly = (rent?.valeur || 0) * 1e9; // ce que la fortune rapporte en un an
+    const tax = fortune * RATE;
+    const base = Math.round(fortune / unit);
+    const gained = Math.round(yearly / unit);
+    const taken = Math.max(1, Math.round(tax / unit));
+    const stacks = heap(base + gained);
+    const top = Math.min(...stacks.slice(0, base).map((s) => s.y));
     const player = hero || Object.values(bundle.heros)[0];
 
     const scene = h('canvas', { className: 'pixel tas', width: W, height: H });
     const ctx = scene.getContext('2d');
-    /** progress : 0 = avant l'impôt, 1 = les 2 % sont partis vers le bien commun. */
-    const draw = (progress) => {
+    const state = { rain: 0, fly: 0 }; // 0 → 1 : les dividendes tombent sur le tas, puis les 2 % s'en vont
+    const draw = () => {
       ctx.clearRect(0, 0, W, H);
       ctx.fillStyle = '#333c57';
-      ctx.fillRect(0, H - 14, W, 14);
+      ctx.fillRect(0, GROUND, W, 14);
       stacks.forEach((s, i) => {
-        const flying = i >= stacks.length - taken;
-        if (!flying) return drawStack(ctx, s.x, s.y);
-        if (progress >= 1) return;
-        // les liasses prélevées s'envolent en cloche vers la caisse commune, à droite
-        const t = Math.min(1, Math.max(0, progress * 1.6 - ((stacks.length - i) / taken) * 0.6));
-        drawStack(ctx, s.x + (W - 30 - s.x) * t, s.y + (H - 40 - s.y) * t - Math.sin(t * Math.PI) * 50);
+        const fresh = i >= base; // une liasse de dividendes : elle tombe du ciel
+        const leaving = i >= stacks.length - taken;
+        let { x, y } = s;
+        if (fresh) {
+          const t = Math.min(1, Math.max(0, state.rain * 1.5 - ((i - base) / Math.max(1, gained)) * 0.5));
+          if (t <= 0) return;
+          y = -CELL.h + (s.y + CELL.h) * t * t;
+        }
+        if (leaving && state.fly > 0) {
+          if (state.fly >= 1) return;
+          // les liasses prélevées s'envolent en cloche vers la caisse commune, à droite
+          const t = Math.min(1, Math.max(0, state.fly * 1.6 - ((stacks.length - i) / taken) * 0.6));
+          x += (W - 30 - x) * t;
+          y += (H - 40 - y) * t - Math.sin(t * Math.PI) * 50;
+        }
+        drawStack(ctx, x, y);
       });
       const throne = sprite(boss.sprites.repos, bundle.palette, true);
       ctx.drawImage(throne, Math.round(W / 2 - throne.width / 2), top - throne.height + 8);
       const you = sprite(player.sprites.repos, bundle.palette);
-      ctx.drawImage(you, 14, H - 14 - you.height);
+      ctx.drawImage(you, 14, GROUND - you.height);
       ctx.fillStyle = '#e43b44';
-      ctx.fillRect(14 + you.width + 4, H - 16, 1, 1);
-      if (progress > 0) {
+      ctx.fillRect(14 + you.width + 4, GROUND - 2, 1, 1);
+      if (state.fly > 0) {
         ctx.fillStyle = '#f6c21c';
         ctx.fillRect(W - 44, H - 26, 30, 12);
         ctx.fillStyle = '#1a1c2c';
         ctx.fillRect(W - 42, H - 24, 26, 2);
       }
     };
-
-    const billions = frenchNumber(boss.fortune.montant, 1);
-    const result = h('div', { hidden: true },
-      h('p', { className: 'montant petit' }, `${frenchNumber((fortune * RATE) / 1e9, 1)} milliards par an.`),
-      h('p', { className: 'gros' }, 'Il lui reste 98 %.'),
-      h('div', { className: 'services' }, ['🏫', '🏥', '🚆'].map((icon) => h('span', {}, icon))),
-      real('impot-plancher'));
-    const button = h('button', { type: 'button', className: 'gros' }, 'Taxer 2 %');
-    let done = false;
-    button.onclick = () => {
-      audio?.play('clic');
-      if (done) {
-        root.replaceChildren();
-        root.hidden = true;
-        return resolve(taxFiches(bundle, boss));
-      }
-      done = true;
-      audio?.play('tampon');
-      audio?.play('sauvetage');
-      button.textContent = 'Continuer';
-      result.hidden = false;
-      result.querySelector('.services').classList.add('allumes');
+    /** Fait passer `key` de 0 à 1 ; arrive à l'image finale même si l'onglet est en arrière-plan. */
+    const animate = (key, ms) => {
       const start = performance.now();
-      const animate = (now) => {
-        const progress = Math.min(1, (now - start) / 1400);
-        draw(progress);
-        if (progress < 1) requestAnimationFrame(animate);
+      const frame = (now) => {
+        state[key] = Math.min(1, (now - start) / ms);
+        draw();
+        if (state[key] < 1) requestAnimationFrame(frame);
       };
-      requestAnimationFrame(animate);
-      setTimeout(() => draw(1), 1600); // onglet en arrière-plan : on arrive quand même à l'image finale
+      requestAnimationFrame(frame);
+      setTimeout(() => {
+        state[key] = 1;
+        draw();
+      }, ms + 200);
     };
 
-    root.replaceChildren(h('section', { className: 'panneau taxe' },
-      h('p', { className: 'montant' }, `${billions} milliards d’euros`),
-      h('p', {}, `La fortune de ${boss.inspiration ? `la famille de ${boss.inspiration}` : boss.nom}. `, fiche(boss.fortune.fiche) && sourceLine(fiche(boss.fortune.fiche))),
-      scene,
-      h('p', { className: 'legende' },
-        h('i', { className: 'liasse' }), ` une liasse : ${frenchNumber(YEARS_PER_STACK)} ans de Smic`,
-        h('i', { className: 'point' }), ' le point rouge : une vie de travail'),
-      result,
-      h('div', { className: 'pied' }, button)));
+    const legend = h('p', { className: 'legende' },
+      h('i', { className: 'liasse' }), ` une liasse : ${frenchNumber(YEARS_PER_STACK)} ans de revenus d’un chirurgien`,
+      h('i', { className: 'point' }), ' le point rouge : toute sa carrière');
+    const bar = (label, fact) => h('div', {},
+      h('p', {}, label), h('span', {}, h('i', { style: `--part: ${fact.valeur}` }), h('b', {}, `${frenchNumber(fact.valeur)} %`)));
+    const most = fiche('prelevements-52');
+    const few = fiche('prelevements-27');
+    const teacher = fiche('enseignants-cout');
+    const rule = fiche('impot-plancher');
+    const owner = boss.inspiration ? `la famille de ${boss.inspiration}` : boss.nom;
+
+    // Chaque temps : un grand nombre, une phrase, sa source, et le bouton qui y mène.
+    const beats = [
+      {
+        title: `${billions(fortune)} milliards d’euros`,
+        line: `Un chirurgien gagne ${frenchNumber(wage.valeur)} € par an. Il lui faudrait ${thousands(fortune / wage.valeur)} ans.`,
+        source: wage, more: [h('p', { className: 'qui' }, `La fortune de ${owner}.`), legend],
+      },
+      yearly && {
+        title: `+ ${billions(yearly)} milliards par an`,
+        line: 'Ce que cette fortune rapporte, rien qu’en dividendes.',
+        source: rent, more: legend, button: 'Et chaque année ?', enter: () => animate('rain', 1200),
+      },
+      {
+        title: `− ${billions(tax)} milliards par an`,
+        line: yearly > tax ? '2 % de la fortune : moins que ses dividendes.' : `2 % de la fortune. Il reste ${billions(fortune - tax)} milliards.`,
+        source: rule, more: legend, button: 'Taxer 2 %', enter: () => {
+          audio?.play('tampon');
+          audio?.play('sauvetage');
+          animate('fly', 1400);
+        },
+      },
+      most?.valeur && few?.valeur && {
+        title: 'Qui paie combien ?',
+        line: 'La part des revenus qui part en impôts et cotisations.',
+        source: most, button: 'Et nous ?', hideHeap: true,
+        more: h('div', { className: 'barres' }, bar('Presque tout le monde, chirurgien compris', most), bar('Les milliardaires', few)),
+      },
+      teacher?.valeur && {
+        title: `${thousands(tax / teacher.valeur)} enseignants`,
+        line: `Ce que paient ${billions(tax)} milliards, chaque année.`,
+        source: teacher, button: 'Ça paie quoi ?', hideHeap: true,
+        more: [h('div', { className: 'services allumes' }, ['🏫', '🏥', '🚆'].map((icon) => h('span', {}, icon))),
+          rule && h('p', { className: 'vrai' }, rule.texte)],
+      },
+    ].filter(Boolean);
+
+    const title = h('p', { className: 'montant' });
+    const line = h('p', { className: 'gros' });
+    const more = h('div', { className: 'detail' });
+    const source = h('div', {});
+    const button = h('button', { type: 'button', className: 'gros' });
+    let at = 0;
+    const show = () => {
+      const beat = beats[at];
+      title.textContent = beat.title;
+      line.textContent = beat.line;
+      scene.hidden = Boolean(beat.hideHeap);
+      more.replaceChildren(...[beat.more].flat().filter(Boolean));
+      source.replaceChildren(beat.source ? sourceOf(beat.source) : '');
+      button.textContent = beats[at + 1]?.button || 'Continuer';
+      beat.enter?.();
+    };
+    button.onclick = () => {
+      audio?.play('clic');
+      if (++at < beats.length) return show();
+      root.replaceChildren();
+      root.hidden = true;
+      resolve(taxFiches(bundle, boss));
+    };
+
+    root.replaceChildren(h('section', { className: 'panneau taxe' }, title, line, scene, more, source, h('div', { className: 'pied' }, button)));
     document.body.dataset.ecran = 'taxe';
     root.hidden = false;
-    draw(0);
+    draw();
+    show();
     button.focus({ preventScroll: true });
   });
 }

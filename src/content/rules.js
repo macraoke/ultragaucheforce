@@ -236,6 +236,8 @@ function buildBoss(f, ctx, report) {
     nom: req(), inspiration: str(), traitement: str(), pv: num(5, 400, 60), largeur: num(16, 96, 40),
     hauteur: num(16, 96, 48), vitesse: num(0, 200, 40), citation: str(), replique: list(),
     'fortune.montant': num(0, 1000, 0), 'fortune.fiche': str(),
+    // `fortune.rente` : la fiche qui dit ce que la fortune rapporte en un an (sa `valeur` est en milliards d'euros).
+    'fortune.rente': str(),
     // `assis` : il reste sur son tas, sans bouger ni charger, tant que sa vie n'est pas passée sous `leve`.
     assis: bool(), leve: num(0, 1, 0.7), ...CARD, ...CREDITS,
   };
@@ -570,7 +572,7 @@ export function buildContent(files) {
   refs('ennemis', 'citations', (e) => e.citation);
   for (const dir of ['heros', 'ennemis', 'boss', 'recrues']) refs(dir, 'fiches', (item) => item.fiche);
   refs('ennemis', 'ennemis', (e) => e.renfort.ennemi);
-  refs('boss', 'fiches', (b) => b.fortune.fiche);
+  refs('boss', 'fiches', (b) => [b.fortune.fiche, b.fortune.rente]);
   refs('niveaux', 'fiches', (n) => n.fiche);
   refs('niveaux', 'citations', (n) => n.citation);
   refs('niveaux', 'musiques', (n) => n.musique);

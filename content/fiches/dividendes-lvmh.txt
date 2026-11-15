@@ -1,0 +1,10 @@
+titre: 3,2 milliards de dividendes
+theme: richesses
+texte: Au titre de 2025, LVMH verse 13 euros de dividende par action. Le groupe familial Arnault a déclaré en détenir 248 874 567 : environ 3,2 milliards d'euros en un an.
+portee: Calcul à partir de deux chiffres publics : le dividende approuvé par l'assemblée générale du 23 avril 2026 et la déclaration du groupe familial à l'Autorité des marchés financiers (situation au 19 février 2026). Ces dividendes vont à des sociétés holdings, pas directement à des personnes. La fortune, elle, suit le cours de l'action : elle a baissé de 74 milliards entre les classements 2024 et 2025.
+periode: dividende de l'exercice 2025
+valeur: 3.2
+source.titre: Autorité des marchés financiers — Avis 226C0219, déclaration de franchissement de seuil (LVMH)
+source.url: https://echanges.dila.gouv.fr/OPENDATA/AMF/307/8888/01/FC307616509_20260302.pdf
+source.nature: officielle
+verifie: 2026-11-16

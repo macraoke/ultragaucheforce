@@ -1,0 +1,10 @@
+titre: 27 % pour les milliardaires
+theme: richesses
+texte: Tous impôts compris, les milliardaires français paient 27 % de leurs revenus, estime l'économiste Gabriel Zucman : presque uniquement de l'impôt sur les sociétés.
+portee: Même rapport et même méthode que pour les 52 % du reste de la population : tous les prélèvements rapportés au revenu avant impôt, bénéfices des sociétés contrôlées compris. L'Institut des politiques publiques trouve 26 % sur des données de 2016. Estimation discutée.
+periode: rapport de juin 2024
+valeur: 27
+source.titre: Gabriel Zucman — Rapport au G20 sur un impôt minimum pour les très grandes fortunes (juin 2024)
+source.url: https://gabriel-zucman.eu/files/report-g20.pdf
+source.nature: associative
+verifie: 2026-11-16

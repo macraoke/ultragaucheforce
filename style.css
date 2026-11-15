@@ -383,6 +383,14 @@ html.pivote body.tactile #hud .droite { right: max(10px, env(safe-area-inset-bot
 .taxe .gros { font: 900 clamp(1.2rem, 4.4vmin, 2rem)/1.1 var(--titre); text-transform: uppercase; color: var(--blanc); margin: .2em 0; }
 .taxe .vrai { text-align: left; font-size: .82rem; background: var(--encre); border-left: 6px solid var(--or); padding: .6em .8em; }
 .taxe .pied { justify-content: center; }
+.taxe canvas[hidden] { display: none; }
+.taxe .qui { margin: .2em 0; font-weight: 700; }
+.taxe .source { font-size: .75rem; margin: .4em 0 0; }
+.taxe .barres { display: grid; gap: .7em; max-width: 600px; margin: .8em auto; text-align: left; }
+.taxe .barres p { margin: 0 0 .2em; font-weight: 700; }
+.taxe .barres span { display: flex; align-items: center; gap: .6em; }
+.taxe .barres i { display: block; height: 1.7em; width: calc(var(--part) * 1%); background: var(--or); border: 3px solid var(--nuit); box-shadow: 3px 3px 0 var(--rouge); }
+.taxe .barres b { font: 900 1.6rem/1 var(--titre); color: var(--or); }
 .taxe .services { display: flex; justify-content: center; gap: 24px; font-size: clamp(2rem, 8vmin, 3.4rem); filter: grayscale(1) brightness(.45); transition: filter .8s .6s; }
 .taxe .services.allumes { filter: none; }
 
