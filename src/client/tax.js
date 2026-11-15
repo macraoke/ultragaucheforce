@@ -17,7 +17,7 @@ const GROUND = H - 14;
 /** Les liasses du tas, de bas en haut : un trapèze assez large au sommet pour s'y asseoir. */
 function heap(count) {
   const stacks = [];
-  for (let row = 0, width = 52; stacks.length < count && width >= 8; row++, width -= 2) {
+  for (let row = 0, width = 54; stacks.length < count && width >= 8; row++, width -= 2) {
     for (let i = 0; i < width && stacks.length < count; i++) {
       stacks.push({ x: W / 2 - (width * CELL.w) / 2 + i * CELL.w, y: GROUND - (row + 1) * CELL.h });
     }
@@ -36,7 +36,9 @@ function drawStack(ctx, x, y) {
 
 const billions = (euros) => frenchNumber(euros / 1e9, 1);
 const thousands = (n) => frenchNumber(Math.floor(n / 1000) * 1000);
-const sourceOf = (fact) => h('p', { className: 'source' }, 'Source : ', link(fact.source.url, fact.source.titre.split(' — ')[0]));
+/** La ligne des sources d'un temps : chaque nombre affiché renvoie à la page où il se lit. */
+const sourcesOf = (facts) => h('p', { className: 'source' }, facts.length > 1 ? 'Sources : ' : 'Source : ',
+  facts.map((fact, i) => [i > 0 && ' · ', link(fact.source.url, fact.source.titre.split(' — ')[0])]));
 
 /**
  * @returns {Promise<string[]>} les fiches à noter comme découvertes
@@ -48,8 +50,10 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null } =
     const wage = fiche('revenu-chirurgien'); // quelqu'un de très bien payé : le repère de l'échelle
     if (!fortune || !wage?.valeur) return resolve([]);
     const unit = wage.valeur * YEARS_PER_STACK;
-    const rent = fiche(boss.fortune.rente);
-    const yearly = (rent?.valeur || 0) * 1e9; // ce que la fortune rapporte en un an
+    const estimate = fiche(boss.fortune.fiche); // d'où vient le montant de la fortune
+    // Ce que la fortune rapporte en un an : un dividende par action multiplié par un nombre d'actions, chacun avec sa source.
+    const rent = boss.fortune.rente.map(fiche);
+    const yearly = rent.length && rent.every((f) => f?.valeur) ? rent.reduce((total, f) => total * f.valeur, 1) : 0;
     const tax = fortune * RATE;
     const base = Math.round(fortune / unit);
     const gained = Math.round(yearly / unit);
@@ -127,7 +131,7 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null } =
       {
         title: `${billions(fortune)} milliards d’euros`,
         line: `Un chirurgien gagne ${frenchNumber(wage.valeur)} € par an. Il lui faudrait ${thousands(fortune / wage.valeur)} ans.`,
-        source: wage, more: [h('p', { className: 'qui' }, `La fortune de ${owner}.`), legend],
+        source: [estimate, wage], more: [h('p', { className: 'qui' }, `La fortune de ${owner}.`), legend],
       },
       yearly && {
         title: `+ ${billions(yearly)} milliards par an`,
@@ -170,7 +174,8 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null } =
       line.textContent = beat.line;
       scene.hidden = Boolean(beat.hideHeap);
       more.replaceChildren(...[beat.more].flat().filter(Boolean));
-      source.replaceChildren(beat.source ? sourceOf(beat.source) : '');
+      const facts = [beat.source].flat().filter(Boolean);
+      source.replaceChildren(facts.length ? sourcesOf(facts) : '');
       button.textContent = beats[at + 1]?.button || 'Continuer';
       beat.enter?.();
     };

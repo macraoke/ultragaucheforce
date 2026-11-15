@@ -56,7 +56,7 @@ Déposé dans `content/niveaux/`, il apparaît dans « Niveaux de la communauté
 | `manif` | combien de manifestants au départ (10 avec un cortège, sauf indication ; 5000 au plus) |
 | `panneau.1` à `panneau.9` | le texte du panneau placé par le chiffre correspondant sur la carte |
 | un signe de légende | `b: bac` place une unité, une recrue ou un décor à chaque `b` de la carte |
-| `heros` | le héros de départ (sinon le premier disponible) |
+| `heros` | le héros de départ (sinon le premier disponible) ; dans la campagne, le joueur peut en choisir un autre sur le carton d'ouverture |
 | `camarades` | l'ordre des héros libérés, séparés par une barre verticale : `melenchotron \| zuc-man` (sinon au hasard) |
 | `boss` | l'identifiant d'un boss de `content/boss/` ; il faut alors un `Y` sur la carte |
 | `nasse.ennemi` | l'unité qui forme la nasse ; obligatoire s'il y a un `N` sur la carte |

@@ -101,8 +101,8 @@ export class Screens {
     const { bundle, save } = this;
     const all = collectionCount(bundle, save);
     const fresh = new Set(allCards(bundle).filter((c) => isFound(save, c.kind, c.item.id ?? c.item.texte) && isFresh(save, c)).map((c) => c.shelf));
-    // Un héros déjà rencontré se joue depuis sa carte.
-    const actionsFor = (card) => (card.kind === 'heros' ? [this.button('Jouer avec', () => this.playAs(card.item.id), 'gros')] : []);
+    // Un héros déjà rencontré se joue depuis sa carte ; pas en pleine partie, où ce serait l'abandonner.
+    const actionsFor = (card) => (card.kind === 'heros' && !this.go.playing() ? [this.button('Jouer avec', () => this.playAs(card.item.id), 'gros')] : []);
     this.show('biblio',
       h('h2', {}, 'La Collection ', h('small', {}, `${all.found} / ${all.total}`)),
       progress(all.found, all.total),
@@ -249,7 +249,7 @@ export class Screens {
     const minutes = `${Math.floor(time / 60)} min ${String(Math.floor(time % 60)).padStart(2, '0')} s`;
     const n = (x) => x.toLocaleString('fr-FR');
     const line = (count, one, many) => (count ? h('li', {}, h('b', {}, n(count)), ` ${count > 1 ? many : one}`) : null);
-    const hurt = stats.breakdownsBySelf + stats.breakdownsByPlayer + stats.overrun;
+    const hurt = stats.breakdownsBySelf + stats.breakdownsByPlayer + stats.overrunOrder;
     this.show('fin',
       h('h2', {}, 'Niveau terminé'),
       h('p', { className: 'temps' }, `${level.titre} — ${minutes}`),
@@ -269,7 +269,7 @@ export class Screens {
           h('ul', {},
             line(stats.breakdownsBySelf, 'gazé par ses propres grenades', 'gazés par leurs propres grenades'),
             line(stats.breakdownsByPlayer, 'atteint par un tract', 'atteints par un tract'),
-            line(stats.overrun, 'débordé par le nombre', 'débordés par le nombre')))),
+            line(stats.overrunOrder, 'débordé par le nombre', 'débordés par le nombre')))),
       fact && h('article', { className: 'fiche' }, h('h3', {}, `Et en vrai ? ${fact.titre}`), h('p', {}, fact.texte), sourceLine(fact)),
       won.length ? [h('h3', {}, 'Cartes gagnées'), wonCards(this.bundle, won)] : null,
       h('div', { className: 'pied' },

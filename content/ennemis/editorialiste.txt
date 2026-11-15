@@ -6,6 +6,7 @@ deplacement: marche
 reaction: tire
 vue: 180
 fin: panne
+camp: medias
 largeur: 12
 hauteur: 16
 replique: RETRAITES : RÉVOLTÉS OU RÉSIGNÉS ?

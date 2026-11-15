@@ -86,8 +86,8 @@ button.discret { background: transparent; color: var(--papier); border-color: va
   gap: 2vw;
   padding: 0 2vw;
 }
-.carton .drapeaux.haut { top: 2vh; }
-.carton .drapeaux.bas { bottom: 2vh; }
+.carton .drapeaux.haut { top: calc(var(--vh, 1vh) * 2); }
+.carton .drapeaux.bas { bottom: calc(var(--vh, 1vh) * 2); }
 .carton .drapeaux canvas {
   width: clamp(40px, 8vw, 110px) !important;
   height: auto !important;
@@ -154,7 +154,7 @@ button.discret { background: transparent; color: var(--papier); border-color: va
 
 .carton .confettis i {
   position: absolute;
-  top: -4vh;
+  top: calc(var(--vh, 1vh) * -4);
   width: 1.2vmin;
   height: 2vmin;
   animation: tombe linear infinite;
@@ -177,7 +177,7 @@ button.discret { background: transparent; color: var(--papier); border-color: va
   60% { transform: translate(7px, 5px); }
   80% { transform: translate(-3px, 2px); }
 }
-@keyframes tombe { to { transform: translateY(112vh) rotate(720deg); } }
+@keyframes tombe { to { transform: translateY(calc(var(--vh, 1vh) * 112)) rotate(720deg); } }
 
 @media (orientation: portrait) {
   .carton .scene { grid-template-columns: 1fr; justify-items: center; text-align: center; }
@@ -375,22 +375,22 @@ html.pivote body.tactile #hud .droite { right: max(10px, env(safe-area-inset-bot
 .panneau.taxe { text-align: center; width: min(100%, 860px); }
 .taxe .montant { font: 900 clamp(2rem, 9vmin, 4.6rem)/.9 var(--titre); text-transform: uppercase; color: var(--or); margin: 0 0 .1em; }
 .taxe .montant.petit { font-size: clamp(1.5rem, 6vmin, 3rem); color: #38b764; }
-.taxe canvas.tas { display: block; width: auto; max-width: 100%; height: auto; max-height: 46vh; margin: 8px auto; background: #10111c; border: 3px solid var(--blanc); }
+.taxe canvas.tas { display: block; width: auto; max-width: 100%; height: auto; max-height: calc(var(--vh, 1vh) * 46); margin: 8px auto; background: #10111c; border: 3px solid var(--blanc); }
 .taxe .legende { display: flex; flex-wrap: wrap; justify-content: center; gap: .3em 1.4em; font-size: .85rem; }
 .taxe .legende i { display: inline-block; vertical-align: middle; margin-right: .4em; }
 .taxe .legende .liasse { width: 14px; height: 8px; background: #38b764; border: 2px solid #1f6b4a; }
 .taxe .legende .point { width: 5px; height: 5px; background: var(--rouge); }
-.taxe .gros { font: 900 clamp(1rem, 3.4vmin, 1.5rem)/1.15 var(--titre); text-transform: uppercase; color: var(--blanc); margin: .2em 0; }
+.taxe p.gros { font: 900 clamp(1rem, 3.4vmin, 1.5rem)/1.15 var(--titre); text-transform: uppercase; color: var(--blanc); margin: .2em 0; }
 .taxe .vrai { text-align: left; font-size: .82rem; background: var(--encre); border-left: 6px solid var(--or); padding: .6em .8em; }
 .taxe .pied { justify-content: center; }
 .taxe canvas[hidden] { display: none; }
 .taxe .qui { margin: .2em 0; font-weight: 700; }
 /* Téléphone en paysage : tout tient sans défiler, le bouton reste sous le pouce. */
-@media (max-height: 480px) {
-  .taxe canvas.tas { max-height: 36vh; }
-  .taxe .legende { display: none; }
-  .taxe .montant { font-size: clamp(1.6rem, 9vmin, 2.4rem); }
-}
+html.bas .taxe canvas.tas { max-height: calc(var(--vh, 1vh) * 30); }
+html.bas .taxe .legende { display: none; }
+html.bas .taxe .montant { font-size: clamp(1.6rem, 9vmin, 2.4rem); }
+html.bas .taxe .qui, html.bas .taxe p.gros { margin: .1em 0; }
+html.bas .panneau.taxe { padding-block: 10px; }
 .taxe .source { font-size: .75rem; margin: .4em 0 0; }
 .taxe .barres { display: grid; gap: .7em; max-width: 600px; margin: .8em auto; text-align: left; }
 .taxe .barres p { margin: 0 0 .2em; font-weight: 700; }
@@ -403,8 +403,8 @@ html.pivote body.tactile #hud .droite { right: max(10px, env(safe-area-inset-bot
 /* atelier */
 .panneau.atelier { width: min(100%, 1100px); }
 .atelier .etabli { display: grid; grid-template-columns: minmax(0, 2fr) minmax(200px, 1fr); gap: 14px; }
-.atelier textarea { width: 100%; height: min(52vh, 460px); background: #10111c; color: #a7f070; border: 3px solid var(--encre); padding: 10px; font: 13px/1.15 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: pre; overflow: auto; resize: vertical; user-select: text; -webkit-user-select: text; }
-.atelier aside { font-size: .8rem; max-height: min(60vh, 520px); overflow: auto; }
+.atelier textarea { width: 100%; height: min(calc(var(--vh, 1vh) * 52), 460px); background: #10111c; color: #a7f070; border: 3px solid var(--encre); padding: 10px; font: 13px/1.15 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: pre; overflow: auto; resize: vertical; user-select: text; -webkit-user-select: text; }
+.atelier aside { font-size: .8rem; max-height: min(calc(var(--vh, 1vh) * 60), 520px); overflow: auto; }
 .atelier aside h3:first-child { margin-top: 0; }
 .atelier code { background: var(--encre); padding: .1em .4em; }
 .atelier .etat { font-weight: 700; }
@@ -499,7 +499,7 @@ button.carte-mini:hover { background: var(--blanc); }
 /* une carte ouverte en grand, par-dessus l'écran */
 .carte-ouverte { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; padding: 12px; overflow: auto; background: rgb(26 28 44 / .86); }
 .carte-ouverte .cadre { width: min(100%, 360px); perspective: 900px; }
-.carte-ouverte article.carte { max-height: calc(100vh - 110px); max-height: calc(100dvh - 110px); overflow: auto; font-size: .85rem; animation: retourne .35s ease-out both; }
+.carte-ouverte article.carte { max-height: calc(var(--vh, 1vh) * 100 - 110px); overflow: auto; font-size: .85rem; animation: retourne .35s ease-out both; }
 .carte-ouverte .pied { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 12px; }
 @keyframes retourne { from { transform: rotateY(90deg) scale(.8); } to { transform: none; } }
 
@@ -509,13 +509,11 @@ button.carte-mini:hover { background: var(--blanc); }
 body.sobre .cartes-gagnees .carte-mini, body.sobre .carte-ouverte article.carte { animation: none; }
 @media (prefers-reduced-motion: reduce) { .cartes-gagnees .carte-mini, .carte-ouverte article.carte { animation: none; } }
 .carte-ouverte article.carte > * { flex-shrink: 0; } /* trop haute pour l'écran : elle défile, elle ne s'écrase pas */
-@media (max-height: 430px) {
-  .carte-ouverte .cadre { width: min(100%, 560px); }
-  .carte-ouverte article.carte .vignette { height: 72px; }
-  .biblio h2 { margin-bottom: .3em; }
-  .biblio .onglets { gap: 6px; margin: .4em 0 .6em; }
-  .biblio .onglets button { font-size: .78rem; padding: .5em .7em .9em; }
-}
+html.bas .carte-ouverte .cadre { width: min(100%, 560px); }
+html.bas .carte-ouverte article.carte .vignette { height: 72px; }
+html.bas .biblio h2 { margin-bottom: .3em; }
+html.bas .biblio .onglets { gap: 6px; margin: .4em 0 .6em; }
+html.bas .biblio .onglets button { font-size: .78rem; padding: .5em .7em .9em; }
 
 /* ------------------------------------------------------------------ choix du héros, +1, pile de vies */
 
@@ -526,7 +524,9 @@ body.sobre .cartes-gagnees .carte-mini, body.sobre .carte-ouverte article.carte 
 .choix-heros button.discret { border-color: #fff8; }
 .choix-heros .inconnu { border: 3px dashed #fff4; color: #fff6; }
 .choix-heros .inconnu canvas { filter: brightness(0) opacity(.55); }
-@media (max-height: 430px) { .choix-heros { margin: 6px 0 8px; } .choix-heros > * { width: 76px; padding: 4px 2px; } .choix-heros > * span { display: none; } }
+html.bas .choix-heros { margin: 6px 0 8px; }
+html.bas .choix-heros > * { width: 76px; padding: 4px 2px; }
+html.bas .choix-heros > * span { display: none; }
 
 .carton .portrait { position: relative; }
 .carton .plus-un { position: absolute; top: -.35em; right: -.3em; font: 900 clamp(2.6rem, 13vmin, 6.5rem)/1 var(--titre); color: var(--or); -webkit-text-stroke: clamp(3px, .8vmin, 6px) var(--nuit); paint-order: stroke fill; text-shadow: 5px 5px 0 var(--rouge); transform: rotate(9deg); animation: plus-un .5s cubic-bezier(.2, 1.9, .4, 1) .7s both; }

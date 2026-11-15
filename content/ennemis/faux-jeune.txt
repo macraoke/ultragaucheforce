@@ -6,6 +6,7 @@ reaction: fonce
 vue: 140
 contact: 1
 fin: panne
+camp: pouvoir
 largeur: 10
 hauteur: 16
 fiche: bismillah-meme

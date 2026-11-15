@@ -75,7 +75,7 @@ export const VOTE_FICHES = ['presidentielle-dates', 'inscription-listes', 'procu
 
 /** Les fiches que la scène de taxe apprend au joueur. */
 export const taxFiches = (bundle, boss) =>
-  [boss.fortune.fiche, boss.fortune.rente, 'revenu-chirurgien', 'prelevements-52', 'prelevements-27', 'enseignants-cout', 'smic',
+  [boss.fortune.fiche, ...boss.fortune.rente, 'revenu-chirurgien', 'prelevements-52', 'prelevements-27', 'enseignants-cout', 'smic',
     'impot-plancher', 'impot-plancher-rendement', 'impot-plancher-parcours', 'patrimoine-moitie', 'patrimoine-top10']
     .filter((id) => bundle.fiches[id]);
 

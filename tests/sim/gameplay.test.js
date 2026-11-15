@@ -169,6 +169,21 @@ test('spéciale « mur » : fait pousser des tuiles, jamais sur un personnage', 
 
 // ---------------------------------------------------------------- automates
 
+test('bilan : seules les unités de l’ordre comptent parmi les « blessés », pas un duplex ni un ministre', () => {
+  const base = fixtureBundle();
+  const camera = { ...base.ennemis.statue, id: 'camera', camp: 'medias', bouclier: false };
+  const guard = { ...base.ennemis.statue, id: 'planton', bouclier: false };
+  const shoot = (id) => {
+    const bundle = { ...base, ennemis: { ...base.ennemis, camera, planton: guard } };
+    const game = settle(play(flat({ legende: { s: enemy(id) }, draw: (put, ground) => put(ground, 8, 's') }), { bundle }));
+    run(game, 120, { fire: true });
+    assert.equal(game.enemies[0].state, 'done');
+    return game.stats.breakdownsByPlayer;
+  };
+  assert.equal(shoot('planton'), 1);
+  assert.equal(shoot('camera'), 0);
+});
+
 test('bouclier : arrête les tirs de face, pas ceux de dos ni les projectiles « blindage »', () => {
   const statue = (start, bundle = fixtureBundle()) => settle(play(flat({
     legende: { s: enemy('statue') },

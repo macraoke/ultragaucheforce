@@ -188,7 +188,11 @@ export function updateKettle(game, dt) {
   else if ((k.closed.left && !left.length) || (k.closed.right && !right.length)) reason = 'broken';
   else if (!hero.dead && (cx < outerLeft || cx > outerRight)) reason = 'out';
   if (!reason) return;
-  for (const e of k.units) if (e.state !== 'done') standDown(e); // la nasse est levée : les lignes se rangent
+  for (const e of k.units) {
+    if (e.state === 'done') continue;
+    standDown(e); // la nasse est levée : les lignes se rangent…
+    e.dismissed = true; // …et quittent les lieux quand la suivante se forme
+  }
   game.kettle = null;
   game.emit('kettle', { state: 'end', reason });
 }
@@ -198,6 +202,7 @@ function startKettle(game, mark) {
   const { level, bundle, world } = game;
   const def = bundle.ennemis?.[level.nasse?.ennemi];
   if (!def) return;
+  game.enemies = game.enemies.filter((e) => !e.dismissed); // les lignes de la nasse précédente sont reparties
   const units = [];
   for (const side of [-1, 1]) {
     for (let rank = 0; rank < level.nasse.nombre; rank++) {

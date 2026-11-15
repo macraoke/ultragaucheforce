@@ -72,7 +72,7 @@ export class Game {
     this.sign = null;
     this.stats = {
       breakdownsByPlayer: 0, breakdownsBySelf: 0, gassed: 0, tiles: 0, rescues: 0, tracts: 0, deaths: 0,
-      recruits: 0, dispersed: 0, overrun: 0,
+      recruits: 0, dispersed: 0, overrun: 0, overrunOrder: 0,
     };
 
     this.enemies = [];
@@ -275,7 +275,8 @@ export class Game {
     e.kick = 0;
     e.framing = false;
     e.bubble = { text: strike ? 'EN GRÈVE !' : 'EN PANNE', t: 2.5 };
-    this.stats[team === 'ordre' ? 'breakdownsBySelf' : 'breakdownsByPlayer']++;
+    // Le bilan des « blessés » ne compte que les unités de l'ordre : ni un duplex, ni un ministre.
+    if (e.def.camp === 'ordre') this.stats[team === 'ordre' ? 'breakdownsBySelf' : 'breakdownsByPlayer']++;
     this.sfx(strike ? 'greve' : 'panne', e.x);
     this.emit('debris', { x: e.x + e.w / 2, y: e.y + e.h / 2, color: 'h', n: 5 });
   }

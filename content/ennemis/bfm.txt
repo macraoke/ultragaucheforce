@@ -7,6 +7,7 @@ reaction: cadre
 vue: 170
 panique: 3
 fin: panne
+camp: medias
 largeur: 18
 hauteur: 17
 fiche: bandeau-fallait-il-l-interdire

@@ -1,0 +1,10 @@
+titre: 13 euros par action
+theme: richesses
+texte: Au titre de 2025, LVMH verse 13 euros de dividende par action.
+portee: Dividende approuvé par l'assemblée générale du 23 avril 2026 : 5,50 euros versés le 4 décembre 2025, 7,50 euros le 30 avril 2026. Multiplié par les actions du groupe familial Arnault, cela fait environ 3,2 milliards d'euros en un an, versés à des sociétés holdings, pas directement à des personnes.
+periode: dividende de l'exercice 2025
+valeur: 13
+source.titre: LVMH — 2025 Dividend (communiqué du 23 avril 2026)
+source.url: https://www.lvmh.com/en/publications/2025-dividend
+source.nature: officielle
+verifie: 2026-11-16

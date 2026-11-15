@@ -101,6 +101,7 @@ export function updateEnemy(game, e, dt) {
   if (def.debordement > 0 && game.crowd >= def.debordement && Math.abs(dx) < OVERRUN_RANGE && Math.abs(dy) < LINE_REACH) {
     standDown(e);
     game.stats.overrun++;
+    if (def.camp === 'ordre') game.stats.overrunOrder++;
     game.emit('overrun', { x: e.x + e.w / 2, y: e.y });
     game.sfx('debordement', e.x);
     game.discover('ennemi', def.id);

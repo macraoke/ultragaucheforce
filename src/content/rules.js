@@ -22,6 +22,7 @@ export const MARKERS = {
 export const THEMES = ['richesses', 'droits', 'ordre', 'democratie', 'programme', 'luttes'];
 export const NATURES = ['officielle', 'presse', 'associative', 'militante', 'createur'];
 export const BACKDROPS = ['campagne', 'ville', 'citadelle'];
+export const CAMPS = ['ordre', 'medias', 'pouvoir']; // à qui appartient une unité : seules celles de l'ordre comptent dans le bilan des blessés
 
 // ---------------------------------------------------------------- lecteurs typés
 
@@ -201,7 +202,7 @@ function buildHero(f, ctx, report) {
 function buildEnemy(f, ctx, report) {
   const spec = {
     nom: req(), pv: num(1, 20, 2), vitesse: num(0, 200, 40), deplacement: pick(MOVES), reaction: pick(REACTIONS),
-    vue: num(32, 400, 150), bouclier: bool(), contact: num(0, 3, 0), panique: num(0, 30, 0), fin: pick(ENDINGS),
+    vue: num(32, 400, 150), bouclier: bool(), contact: num(0, 3, 0), panique: num(0, 30, 0), fin: pick(ENDINGS), camp: pick(CAMPS),
     replique: list(), largeur: num(6, 32, 12), hauteur: num(6, 32, 16),
     // `debordement` : la ligne tient (insensible, infranchissable) tant que la manif compte moins de monde.
     debordement: num(0, 5000, 0), sommation: list(), citation: str(),
@@ -236,8 +237,9 @@ function buildBoss(f, ctx, report) {
     nom: req(), inspiration: str(), traitement: str(), pv: num(5, 400, 60), largeur: num(16, 96, 40),
     hauteur: num(16, 96, 48), vitesse: num(0, 200, 40), citation: str(), replique: list(),
     'fortune.montant': num(0, 1000, 0), 'fortune.fiche': str(),
-    // `fortune.rente` : la fiche qui dit ce que la fortune rapporte en un an (sa `valeur` est en milliards d'euros).
-    'fortune.rente': str(),
+    // `fortune.rente` : les fiches dont les `valeur`, multipliées, donnent ce que la fortune rapporte en un an, en euros
+    // (un dividende par action, un nombre d'actions). Chaque nombre garde ainsi sa propre source.
+    'fortune.rente': list(),
     // `assis` : il reste sur son tas, sans bouger ni charger, tant que sa vie n'est pas passée sous `leve`.
     assis: bool(), leve: num(0, 1, 0.7), ...CARD, ...CREDITS,
   };
@@ -572,7 +574,7 @@ export function buildContent(files) {
   refs('ennemis', 'citations', (e) => e.citation);
   for (const dir of ['heros', 'ennemis', 'boss', 'recrues']) refs(dir, 'fiches', (item) => item.fiche);
   refs('ennemis', 'ennemis', (e) => e.renfort.ennemi);
-  refs('boss', 'fiches', (b) => [b.fortune.fiche, b.fortune.rente]);
+  refs('boss', 'fiches', (b) => [b.fortune.fiche, ...b.fortune.rente]);
   refs('niveaux', 'fiches', (n) => n.fiche);
   refs('niveaux', 'citations', (n) => n.citation);
   refs('niveaux', 'musiques', (n) => n.musique);

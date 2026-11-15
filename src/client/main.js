@@ -66,6 +66,7 @@ const screens = new Screens(screenRoot, {
     options: () => applyOptions(),
     learn: (ids) => ids.forEach((id) => collect('fiches', id, true)),
     back: () => (mode === 'paused' ? screens.pause() : screens.menu()),
+    playing: () => mode === 'paused',
   },
 });
 
@@ -141,11 +142,13 @@ function readSigns() {
 
 function start(id, level = null) {
   custom = level;
+  const again = current?.id === (id ?? 'atelier'); // « Recommencer » : les cartes déjà gagnées dans ce niveau restent
   current = { id: id ?? 'atelier', level: level ?? bundle.niveaux[id] };
-  game = new Game(bundle, id, { seed: Math.floor(Math.random() * 1e9), level, hero: save.heros });
+  // Dans l'Atelier, on essaie le niveau avec le héros que dit sa fiche, pas celui de la sauvegarde.
+  game = new Game(bundle, id, { seed: Math.floor(Math.random() * 1e9), level, hero: level ? '' : save.heros });
   renderer.snap(game);
   hud.reset();
-  if (!begin) won = []; // un changement de héros sur le carton d'ouverture garde les cartes déjà gagnées
+  if (!begin && !again) won = []; // un changement de héros sur le carton d'ouverture garde les cartes déjà gagnées
   if (id) collect('niveaux', id, true);
   collect('citations', current.level.citation, true);
   collect('heros', game.hero.def.id, true);
@@ -196,6 +199,7 @@ async function win() {
     next: index >= 0 ? bundle.campagne[index + 1] : null,
     last: index === bundle.campagne.length - 1,
   });
+  won = []; // rejouer ce niveau repart d'une rangée vide
 }
 
 /** Réagit aux événements émis par la simulation pendant un pas. */
@@ -271,10 +275,19 @@ input.onPause = togglePause;
 input.onAny = () => audio.unlock();
 document.getElementById('pause').onclick = togglePause;
 addEventListener('pointerdown', () => audio.unlock(), true);
+const PHONE = 950; // plus grand côté d'un téléphone, en pixels : au-delà (tablette, ordinateur tactile), on ne pivote pas
+
 function layout() {
+  const root = document.documentElement;
   const thumbs = document.body.classList.contains('tactile');
-  // Au pouce, le jeu se joue en paysage : téléphone tenu debout, tout pivote d'un quart de tour.
-  document.documentElement.classList.toggle('pivote', thumbs && innerHeight > innerWidth);
+  // Au pouce, sur téléphone, le jeu se joue en paysage : tenu debout, tout pivote d'un quart de tour.
+  // Pas en pleine saisie : le clavier virtuel rétrécit la fenêtre et ferait basculer l'écran.
+  const typing = ['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName);
+  if (!typing) root.classList.toggle('pivote', thumbs && innerHeight > innerWidth && innerHeight < PHONE);
+  // La hauteur visible de l'écran de jeu : les styles s'en servent à la place de `vh`, qui ignore le pivot.
+  const height = root.classList.contains('pivote') ? innerWidth : innerHeight;
+  root.style.setProperty('--vh', `${height / 100}px`);
+  root.classList.toggle('bas', height <= 480);
   renderer.resize();
   renderer.anchor = thumbs ? 0.76 : 0.8; // les pouces occupent les coins du bas : on remonte un peu l'action
   input.refreshTouch();
