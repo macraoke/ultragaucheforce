@@ -140,6 +140,7 @@ auteur: ton pseudo
 | `nom` | obligatoire | |
 | `apport` | combien de personnes rejoignent la manif | 1 à 500 |
 | `multiplie` | à la place d'`apport` : la manif est multipliée (une assemblée générale) | 1,5 à 5 |
+| `soin` | points de vie rendus au héros quand elle le rejoint (une street medic) | 0 à 3 |
 | `slogan` | ce qu'elle lance en rejoignant : un slogan réellement scandé ou une pancarte vue ; répétable | |
 | `fiche`, `origine` | sa carte | |
 

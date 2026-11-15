@@ -4,7 +4,7 @@
 
 Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les plateaux télé la racontent : surarmée de tracts et de tomates. On part à dix place de la République, on arrive à des centaines devant la Citadelle, et on taxe la fortune qui s'y est assise. Ça se joue dans le navigateur, au clavier ou au pouce.
 
-- **Faire grossir la manif.** Une soignante, un cheminot, une intersyndicale : chaque recrue compte, une assemblée générale double tout. Le compteur donne le chiffre des syndicats, et celui de la préfecture.
+- **Faire grossir la manif.** Une soignante, un cheminot, une intersyndicale : chaque recrue compte, une assemblée générale double tout. Des street medics soignent, la presse indépendante filme.
 - **Déborder.** Un barrage ne se casse pas : il cède devant le nombre.
 - **En face, du vrai.** CRS et leurs sommations, BAC et LBD, BRAV-M, canon à eau, hélicoptère, blindé, nasse. Un ministre, un éditorialiste.
 - **Tout est une référence.** Les pancartes ont été vues en manif, les bandeaux à la télé, les répliques ont été dites. PANIQUE TV les fait défiler, signées et datées.
@@ -53,11 +53,13 @@ Le jeu est sur http://localhost:8080, la Galerie (tout le contenu, à voir et à
 
 | | Clavier | Manette | Tactile |
 |---|---|---|---|
-| Avancer | ← → ou Q D | croix ou stick | ◀ ▶ |
-| Sauter, grimper | Espace, ↑ ou Z | A | SAUT |
+| Avancer | ← → ou Q D | croix ou stick | moitié gauche : glisser le pouce |
+| Sauter, grimper | Espace, ↑ ou Z | A | SAUT, ou pousser le pouce gauche vers le haut |
 | Tirer (maintenir) | J, X ou Entrée | X ou gâchette droite | TIR |
 | Spéciale | K, C ou Maj | B ou gâchette gauche | SPÉ |
 | Pause | Échap ou P | Start | II |
+
+Sur téléphone, l'image remplit l'écran et tout l'écran répond : pas de bouton à viser. Le jeu se joue en paysage ; téléphone tenu debout, il pivote tout seul.
 
 Contre un mur, sautez plusieurs fois : ça grimpe.
 

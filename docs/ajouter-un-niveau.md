@@ -62,6 +62,7 @@ Déposé dans `content/niveaux/`, il apparaît dans « Niveaux de la communauté
 | `nasse.ennemi` | l'unité qui forme la nasse ; obligatoire s'il y a un `N` sur la carte |
 | `nasse.nombre` | unités de chaque côté (1 à 6, défaut 3) |
 | `nasse.vitesse` | vitesse à laquelle les lignes se referment, en pixels par seconde (4 à 80, défaut 18) |
+| `nasse.rythme` | la nasse revient d'elle-même autour du héros, toutes les tant de secondes (0 à 600 ; 0, par défaut : seulement aux repères `N`) |
 | `manchette` | une alerte de PANIQUE TV propre au niveau ; répétable |
 | `intro` | le texte du carton d'ouverture, quand il n'y a pas de `citation` |
 | `musique` | une piste de `content/musiques/` |
@@ -113,7 +114,6 @@ Le but du joueur : arriver toujours plus nombreux.
 - Une **recrue** rejoint quand le héros la touche ou lui tend un tract. Son gain s'affiche au-dessus d'elle : `+ 20`, `× 2`.
 - Plus on est nombreux, plus les tracts font de dégâts.
 - Une charge, un nuage de gaz ou une chute du héros dispersent une part de la manif.
-- Le compteur affiche deux chiffres : celui des syndicats, et celui de la préfecture.
 
 ## Les lignes
 

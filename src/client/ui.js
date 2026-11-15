@@ -145,7 +145,7 @@ export class Screens {
       h('h3', {}, 'Commandes'),
       h('table', {},
         h('tr', {}, h('th', {}, ''), h('th', {}, 'Clavier'), h('th', {}, 'Manette'), h('th', {}, 'Tactile')),
-        [['Avancer', '← → ou Q D', 'croix / stick', '◀ ▶'], ['Sauter, grimper', 'Espace, ↑ ou Z', 'A', 'SAUT'],
+        [['Avancer', '← → ou Q D', 'croix / stick', 'pouce gauche'], ['Sauter, grimper', 'Espace, ↑ ou Z', 'A', 'SAUT'],
           ['Tirer (maintenir)', 'J, X ou Entrée', 'X / gâchette droite', 'TIR'], ['Spéciale', 'K, C ou Maj', 'B / gâchette gauche', 'SPÉ'],
           ['Pause', 'Échap ou P', 'Start', 'II']].map((row) => h('tr', {}, row.map((c) => h('td', {}, c))))),
       h('p', {}, h('small', {}, 'Contre un mur, saute plusieurs fois pour l’escalader.')),
