@@ -252,6 +252,7 @@ Le modèle : [`content/boss/arnault-armure.txt`](../content/boss/arnault-armure.
 | `leve` | il se lève quand ses points de vie passent sous cette fraction | 0 à 1 (défaut 0,7) |
 | `fortune.montant` | en milliards d'euros | |
 | `fortune.fiche` | la fiche de `content/fiches/` qui source ce montant ; sans elle, pas de scène de taxation | |
+| `fortune.rente` | la fiche qui dit ce que cette fortune rapporte en un an (sa `valeur` est en milliards d'euros) ; la scène de taxation la compare aux 2 % | |
 | `phase.1.jusqua` | la phase dure tant que les points de vie dépassent cette fraction | 0 à 1 |
 | `phase.1.rythme` | secondes entre deux attaques | 0,4 à 8 |
 | `phase.1.attaques` | les attaques de la phase, séparées par une barre verticale : `salve \| charge` | |
