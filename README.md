@@ -14,16 +14,18 @@ Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les platea
 | | |
 |---|---|
 | ![Place de la République : la manif part à dix](docs/captures/manif-republique.jpg) | ![Le barrage cède à 200](docs/captures/barrage.jpg) |
-| ![Le lycée bloqué : BAC, lycéennes, assemblée générale](docs/captures/lycee-bloque.jpg) | ![La nasse](docs/captures/nasse.jpg) |
+| ![Le lycée bloqué : BAC, lycéennes, assemblée générale](docs/captures/lycee-bloque.jpg) | ![La nasse se referme](docs/captures/nasse.jpg) |
 | ![Canon à eau et BRAV-M](docs/captures/canon-a-eau.jpg) | ![L'hélicoptère et son projecteur](docs/captures/millevaches-helicoptere.jpg) |
 | ![La grille de la Citadelle](docs/captures/grille.jpg) | ![Le boss, assis sur sa fortune](docs/captures/boss-assis.jpg) |
 
-![Taxer 2 % : il lui reste 98 %](docs/captures/taxe-apres.jpg)
+![Sur téléphone : l'image remplit l'écran, tout l'écran répond](docs/captures/mobile-paysage.jpg)
 
 | | |
 |---|---|
-| ![La Collection : en face](docs/captures/collection-en-face.jpg) | ![La Collection : camarades](docs/captures/collection-camarades.jpg) |
-| ![La Collection : pancartes vues en manif](docs/captures/collection-pancartes.jpg) | ![Un niveau s'ouvre sur une vraie déclaration](docs/captures/ouverture.jpg) |
+| ![Une fortune, face à un chirurgien](docs/captures/taxe-echelle.jpg) | ![2 % : moins que ses dividendes](docs/captures/taxe-2-pour-cent.jpg) |
+| ![Qui paie combien ?](docs/captures/taxe-qui-paie.jpg) | ![Ce que ça finance](docs/captures/taxe-enseignants.jpg) |
+| ![La Collection](docs/captures/collection-grille.jpg) | ![Une carte : ses faits, ses sources](docs/captures/collection-carte.jpg) |
+| ![On choisit son héros ; le niveau s'ouvre sur une vraie déclaration](docs/captures/ouverture.jpg) | ![Fin de niveau : la manif, et le bilan détaillé](docs/captures/fin-de-niveau.jpg) |
 
 <details>
 <summary>Plus de captures</summary>
@@ -32,8 +34,9 @@ Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les platea
 |---|---|
 | ![Le menu](docs/captures/menu.jpg) | ![Carton de héros](docs/captures/carton-heros.jpg) |
 | ![Millevaches : le rond-point](docs/captures/millevaches-rond-point.jpg) | ![Millevaches : la grange](docs/captures/millevaches-grange.jpg) |
-| ![Millevaches : la méga-bassine](docs/captures/millevaches-bassine.jpg) | ![Fin de niveau : les deux comptages](docs/captures/fin-de-niveau.jpg) |
-| ![Avant l'impôt](docs/captures/taxe-avant.jpg) | ![L'appel au vote](docs/captures/appel-au-vote.jpg) |
+| ![Millevaches : la méga-bassine](docs/captures/millevaches-bassine.jpg) | ![Le duplex de BFM-TV cadre le héros](docs/captures/duplex-bfm.jpg) |
+| ![La panique est celle de la chaîne](docs/captures/panique-bandeau.jpg) | ![Ce que la fortune rapporte](docs/captures/taxe-dividendes.jpg) |
+| ![Téléphone tenu debout : le jeu pivote](docs/captures/mobile-tenu-debout.jpg) | ![L'appel au vote](docs/captures/appel-au-vote.jpg) |
 
 ![L'Atelier : un niveau est un texte](docs/captures/atelier.jpg)
 
