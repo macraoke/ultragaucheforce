@@ -447,3 +447,78 @@ article.carte .indice { margin-top: auto; font-size: .92em; opacity: .75; }
 article.carte.cachee { background: #cfc8b4; }
 article.carte.cachee .vignette canvas { filter: brightness(0) opacity(.75); }
 article.carte.cachee h3 { letter-spacing: .2em; }
+
+/* l'album : barres de progression, cartes compactes toutes de la même taille */
+.jauge { display: block; height: 6px; background: #0006; border-radius: 3px; overflow: hidden; }
+.jauge i { display: block; height: 100%; background: var(--or); }
+.biblio > .jauge { height: 10px; margin: -.3em 0 .9em; }
+.biblio .onglets button { position: relative; padding-bottom: 1em; }
+.biblio .onglets button small { font-size: .8em; opacity: .8; }
+.biblio .onglets button .jauge { position: absolute; left: 6px; right: 6px; bottom: 4px; height: 4px; }
+.biblio .onglets button:not(.discret) .jauge { background: #0003; }
+.biblio .onglets button:not(.discret) .jauge i { background: var(--rouge); }
+.pastille { display: inline-block; width: .6em; height: .6em; margin-left: .35em; border-radius: 50%; background: var(--rouge); vertical-align: .1em; }
+
+.grille-album { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
+button.carte-mini { position: relative; display: grid; grid-template-rows: auto 60px 2.3em; gap: 4px; height: 128px; min-width: 0; padding: 6px 6px 5px; overflow: hidden; background: var(--papier); color: var(--nuit); border: 3px solid var(--nuit); border-radius: 8px; box-shadow: 3px 3px 0 var(--rouge); font: 700 .68rem/1.15 var(--texte); letter-spacing: 0; text-transform: none; text-align: center; }
+button.carte-mini:hover { background: var(--blanc); }
+.carte-mini .numero { font: 900 .6rem/1 var(--titre); letter-spacing: .06em; text-align: left; opacity: .7; }
+.carte-mini .vignette { display: grid; place-items: center; min-width: 0; overflow: hidden; border-radius: 5px; background: linear-gradient(#f6c21c, #ef7d57); }
+.carte-mini .vignette canvas { max-width: 100%; max-height: 100%; }
+.carte-mini.ennemis .vignette { background: linear-gradient(#94b0c2, #566c86); }
+.carte-mini.boss .vignette { background: linear-gradient(#f6c21c, #c98f1e); }
+.carte-mini.niveaux .vignette { background: var(--nuit); padding: 3px; }
+.carte-mini.drapeaux .vignette { background: linear-gradient(#f4f4f4, #cfd8e3); }
+.carte-mini.citations .vignette { background: var(--nuit); color: var(--or); }
+.carte-mini.pancartes .vignette { background: var(--blanc); border: 2px solid var(--nuit); transform: rotate(-2deg); }
+.carte-mini.manchettes .vignette { background: var(--rouge); color: var(--blanc); }
+.carte-mini.fiches .vignette { background: #257953; color: var(--blanc); }
+.carte-mini .mot, .carte-mini .ecrit { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; padding: 2px 4px; font: 900 .62rem/1.05 var(--titre); text-transform: uppercase; overflow-wrap: anywhere; }
+.carte-mini .signe { font: 900 2rem/1 var(--titre); }
+.carte-mini .nom { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; align-self: center; overflow-wrap: anywhere; }
+.carte-mini .nouveau { position: absolute; top: 6px; right: -24px; transform: rotate(35deg); padding: 3px 26px; background: var(--rouge); color: var(--blanc); font: 900 .5rem/1 var(--titre); letter-spacing: .08em; text-transform: uppercase; }
+.carte-mini.cachee { background: #cfc8b4; box-shadow: 3px 3px 0 #0005; }
+.carte-mini.cachee .vignette { background: #0002; color: #0006; border: 0; transform: none; }
+.carte-mini.cachee .vignette canvas { filter: brightness(0) opacity(.7); }
+.carte-mini.cachee .nom { letter-spacing: .2em; }
+
+/* une carte ouverte en grand, par-dessus l'écran */
+.carte-ouverte { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; padding: 12px; overflow: auto; background: rgb(26 28 44 / .86); }
+.carte-ouverte .cadre { width: min(100%, 360px); perspective: 900px; }
+.carte-ouverte article.carte { max-height: calc(100vh - 110px); max-height: calc(100dvh - 110px); overflow: auto; font-size: .85rem; animation: retourne .35s ease-out both; }
+.carte-ouverte .pied { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 12px; }
+@keyframes retourne { from { transform: rotateY(90deg) scale(.8); } to { transform: none; } }
+
+/* les cartes gagnées pendant un niveau : une rangée, retournées une à une */
+.cartes-gagnees { display: flex; gap: 8px; overflow-x: auto; padding: 4px 4px 10px; perspective: 900px; }
+.cartes-gagnees .carte-mini { flex: 0 0 96px; animation: retourne .4s ease-out both; }
+body.sobre .cartes-gagnees .carte-mini, body.sobre .carte-ouverte article.carte { animation: none; }
+@media (prefers-reduced-motion: reduce) { .cartes-gagnees .carte-mini, .carte-ouverte article.carte { animation: none; } }
+.carte-ouverte article.carte > * { flex-shrink: 0; } /* trop haute pour l'écran : elle défile, elle ne s'écrase pas */
+@media (max-height: 430px) {
+  .carte-ouverte .cadre { width: min(100%, 560px); }
+  .carte-ouverte article.carte .vignette { height: 72px; }
+  .biblio h2 { margin-bottom: .3em; }
+  .biblio .onglets { gap: 6px; margin: .4em 0 .6em; }
+  .biblio .onglets button { font-size: .78rem; padding: .5em .7em .9em; }
+}
+
+/* ------------------------------------------------------------------ choix du héros, +1, pile de vies */
+
+.choix-heros { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 10px 0 14px; }
+.choix-heros > * { display: grid; justify-items: center; align-content: start; gap: 4px; width: 88px; padding: 6px 4px; font: 900 .62rem/1.05 var(--titre); letter-spacing: .03em; text-transform: uppercase; }
+.choix-heros canvas { display: block; }
+.choix-heros button.choisi { background: var(--or); color: var(--nuit); }
+.choix-heros button.discret { border-color: #fff8; }
+.choix-heros .inconnu { border: 3px dashed #fff4; color: #fff6; }
+.choix-heros .inconnu canvas { filter: brightness(0) opacity(.55); }
+@media (max-height: 430px) { .choix-heros { margin: 6px 0 8px; } .choix-heros > * { width: 76px; padding: 4px 2px; } .choix-heros > * span { display: none; } }
+
+.carton .portrait { position: relative; }
+.carton .plus-un { position: absolute; top: -.35em; right: -.3em; font: 900 clamp(2.6rem, 13vmin, 6.5rem)/1 var(--titre); color: var(--or); -webkit-text-stroke: clamp(3px, .8vmin, 6px) var(--nuit); paint-order: stroke fill; text-shadow: 5px 5px 0 var(--rouge); transform: rotate(9deg); animation: plus-un .5s cubic-bezier(.2, 1.9, .4, 1) .7s both; }
+.carton.sobre .plus-un { animation: none; }
+@keyframes plus-un { from { transform: rotate(9deg) scale(0); } to { transform: rotate(9deg) scale(1); } }
+
+.pile { display: inline-flex; align-items: center; vertical-align: middle; padding-left: 6px; }
+#hud .pile canvas { position: static; transform: none; margin-left: -8px; border: 2px solid var(--nuit); border-radius: 50%; background: var(--or); } /* `#scene canvas` centre les calques du jeu : pas ceux-ci */
+.pile b { margin-left: 4px; }

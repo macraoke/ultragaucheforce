@@ -47,6 +47,7 @@ export function showHeroCard(bundle, hero, { audio = null, reduced = false, resc
     const art = hero.sprites.portrait || hero.sprites.repos;
     const scale = Math.max(3, Math.floor(Math.min(innerHeight * 0.44, innerWidth * 0.36) / art.length));
     portrait.append(spriteElement(art, bundle.palette, scale));
+    if (rescued) portrait.append(el('b', 'plus-un', '+1')); // une vie de plus
 
     const words = el('div', 'mots');
     words.append(el('div', 'tampon', rescued ? 'Camarade libéré·e !' : 'Entre en scène'));

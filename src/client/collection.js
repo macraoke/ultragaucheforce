@@ -1,6 +1,9 @@
 // La Collection : chaque personnage, chaque lieu, chaque parole, chaque fait rencontrés en
 // jouant devient une carte, avec la référence exacte qui l'explique. Ce qu'on n'a pas encore
 // croisé reste en silhouette : jouer, c'est compléter l'album.
+//
+// Dans l'album, les cartes sont compactes et toutes de la même taille (`miniCard`) ; on en
+// touche une, elle s'ouvre en grand avec ses références (`openCard`, `collectionCard`).
 
 import { h, link, frenchDate } from './dom.js';
 import { sprite, spriteElement } from './sprites.js';
@@ -40,6 +43,28 @@ export const cardName = (item) => item.nom || item.titre || item.auteur || item.
 
 /** L'identifiant d'une carte : celui de sa fiche ; une pancarte n'a que son texte. */
 export const cardId = (item) => item.id ?? item.texte;
+
+/** La clé d'une carte dans la sauvegarde : « rayon:identifiant ». */
+export const cardKey = (card) => `${card.kind}:${cardId(card.item)}`;
+
+/** Les cartes qui correspondent à des clés de sauvegarde, dans l'ordre de l'album. */
+export function cardsByKeys(bundle, keys) {
+  const wanted = new Set(keys);
+  return allCards(bundle).filter((c) => wanted.has(cardKey(c)));
+}
+
+/**
+ * Trouvée depuis la dernière visite de son rayon ?
+ * `save.vues[rayon]` = nombre de découvertes au moment de cette visite.
+ */
+export function isFresh(save, card) {
+  return save.decouvertes.indexOf(cardKey(card)) >= (save.vues?.[card.shelf] ?? 0);
+}
+
+/** Le rayon vient d'être regardé : ses cartes ne sont plus nouvelles. */
+export function markSeen(save, shelf) {
+  save.vues = { ...save.vues, [shelf]: save.decouvertes.length };
+}
 
 /** Au-delà, une pancarte est trop longue pour le cortège : on la gagne à un piquet de grève. */
 export const LONG_SIGN = 26;
@@ -133,14 +158,26 @@ function levelThumb(bundle, level) {
 const hearts = (n) => h('span', { className: 'coeurs' }, '♥'.repeat(n));
 const bar = (value, max) => '▮'.repeat(Math.max(1, Math.round((value / max) * 5))).padEnd(5, '▯');
 
-/** L'image d'une carte ; les paroles et les faits n'en ont pas. */
-function artOf(bundle, kind, item) {
+/** L'image d'une carte, dans un carré de `size` pixels ; les paroles et les faits n'en ont pas. */
+function artOf(bundle, kind, item, size = 120) {
   if (kind === 'niveaux') return levelThumb(bundle, item);
   if (!item.sprites) return null;
   const rows = item.sprites.portrait || item.sprites.repos || item.sprites.image;
-  const scale = Math.max(2, Math.floor(120 / Math.max(rows.length, rows[0].length)));
+  const scale = Math.max(size < 120 ? 1 : 2, Math.floor(size / Math.max(rows.length, rows[0].length)));
   return spriteElement(rows, bundle.palette, scale);
 }
+
+const SIGNS = { richesses: '€', droits: '§', ordre: '!', democratie: '✓', programme: '★', luttes: '✊' };
+
+/** Sur une carte compacte sans dessin : le mot d'une parole, la pancarte, le bandeau, ou le signe d'un thème. */
+function emblem(kind, item) {
+  if (kind === 'citations') return h('span', { className: 'mot' }, item.mot || '« »');
+  if (kind === 'pancartes' || kind === 'manchettes') return h('span', { className: 'ecrit' }, item.texte);
+  return h('span', { className: 'signe' }, SIGNS[item.theme] || '?');
+}
+
+/** Sous une carte compacte : son nom ; pour une pancarte ou un bandeau, où et quand on l'a vu. */
+const shortName = (kind, item) => (kind === 'pancartes' || kind === 'manchettes' ? item.credit.split(' — ')[0] : cardName(item));
 
 /** Sur une carte, la source tient en une ligne : le média, cliquable. */
 const shortSource = (item) => h('p', { className: 'source' }, 'Source : ', link(item.source.url, item.source.titre.split(' — ')[0]));
@@ -218,6 +255,72 @@ export function collectionCard(bundle, card, found = true) {
     art ? references(bundle, item) : textBody(kind, item),
     facts(kind, item).filter(Boolean).map((line) => h('p', { className: 'stats' }, line)),
     where.length && ['heros', 'recrues', 'ennemis', 'boss'].includes(kind) ? h('p', { className: 'indice' }, `Vu dans : ${where.join(', ')}`) : null);
+}
+
+/**
+ * Une carte compacte : numéro, image ou pictogramme, nom. Toutes de la même taille.
+ * @param {{found?: boolean, fresh?: boolean, onOpen?: Function}} options  `fresh` : badge « Nouveau »
+ */
+export function miniCard(bundle, card, { found = true, fresh = false, onOpen = null } = {}) {
+  const { kind, item, number } = card;
+  const art = artOf(bundle, kind, item, 56);
+  return h('button', { type: 'button', className: `carte-mini ${kind}${found ? '' : ' cachee'}`, onclick: onOpen },
+    h('span', { className: 'numero' }, `N° ${String(number).padStart(3, '0')}`),
+    fresh && h('span', { className: 'nouveau' }, 'Nouveau'),
+    h('span', { className: 'vignette' }, art || (found ? emblem(kind, item) : h('span', { className: 'signe' }, '?'))),
+    h('span', { className: 'nom' }, found ? shortName(kind, item) : '???'));
+}
+
+/**
+ * Ouvre une carte en grand, par-dessus l'écran, avec ses références.
+ * Se ferme d'un toucher à côté, avec Échap ou avec « Fermer ». `actions` : boutons ajoutés au pied.
+ */
+export function openCard(bundle, card, { found = true, actions = [] } = {}) {
+  const close = () => overlay.remove();
+  const overlay = h('div', {
+    className: 'carte-ouverte',
+    onclick: (e) => e.target === overlay && close(),
+    onkeydown: (e) => {
+      if (e.key !== 'Escape') return;
+      e.stopPropagation(); // Échap ferme la carte, pas l'écran
+      close();
+    },
+  }, h('div', { className: 'cadre' },
+    collectionCard(bundle, card, found),
+    h('div', { className: 'pied' }, actions, h('button', { type: 'button', className: 'discret fermer', onclick: close }, 'Fermer'))));
+  (document.getElementById('ecran') || document.body).append(overlay);
+  overlay.querySelector('.fermer').focus({ preventScroll: true });
+  return overlay;
+}
+
+/** Une barre de progression : trouvées sur total. */
+export const progress = (found, total) =>
+  h('span', { className: 'jauge', title: `${found} / ${total}` }, h('i', { style: `width: ${total ? Math.round((found / total) * 100) : 0}%` }));
+
+/**
+ * La grille d'un rayon : des cartes compactes ; on en touche une, elle s'ouvre.
+ * `actionsFor(carte)` : les boutons à montrer au pied d'une carte trouvée (« Jouer avec »).
+ */
+export function shelfGrid(bundle, shelf, save = null, actionsFor = () => []) {
+  return h('div', { className: 'grille-album' }, allCards(bundle).filter((c) => c.shelf === shelf).map((c) => {
+    const found = !save || isFound(save, c.kind, cardId(c.item));
+    return miniCard(bundle, c, {
+      found, fresh: Boolean(save) && found && isFresh(save, c),
+      onOpen: () => openCard(bundle, c, { found, actions: found ? actionsFor(c) : [] }),
+    });
+  }));
+}
+
+/**
+ * Les cartes gagnées pendant un niveau, en rangée : elles se retournent une à une.
+ * @param {string[]} keys  clés de sauvegarde, « rayon:identifiant »
+ */
+export function wonCards(bundle, keys) {
+  return h('div', { className: 'cartes-gagnees' }, cardsByKeys(bundle, keys).map((c, i) => {
+    const mini = miniCard(bundle, c, { onOpen: () => openCard(bundle, c) });
+    mini.style.animationDelay = `${Math.min(i, 30) * 70}ms`;
+    return mini;
+  }));
 }
 
 /** Combien de cartes trouvées, sur combien ? `save` nul : tout compte comme trouvé (Galerie). */

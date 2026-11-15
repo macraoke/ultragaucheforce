@@ -48,8 +48,9 @@ export class Game {
   /**
    * @param {object} bundle   contenu assemblé par `buildContent`
    * @param {string} levelId  identifiant dans `bundle.niveaux`
-   * @param {{seed?: number, invincible?: boolean, level?: object}} opts
-   *        `level` remplace `bundle.niveaux[levelId]` (Atelier, tests)
+   * @param {{seed?: number, invincible?: boolean, level?: object, hero?: string}} opts
+   *        `level` remplace `bundle.niveaux[levelId]` (Atelier, tests) ;
+   *        `hero` : le héros de départ choisi par le joueur (sinon celui du niveau)
    */
   constructor(bundle, levelId, opts = {}) {
     const level = opts.level ?? bundle.niveaux?.[levelId];
@@ -59,6 +60,8 @@ export class Game {
     this.levelId = level.id ?? levelId;
     this.rng = makeRng(opts.seed ?? 1);
     this.invincible = Boolean(opts.invincible);
+    this.choice = opts.hero ?? ''; // lu par loadLevel
+    this.freed = []; // identifiants des camarades libérés pendant le niveau, dans l'ordre
 
     this.events = [];
     this.status = 'playing';
@@ -96,6 +99,7 @@ export class Game {
     this.signOffset = this.rng.int(1000);
 
     loadLevel(this); // world, hero, checkpoint, enemies, props, decors, boss
+    this.starter = this.hero.def.id; // le héros avec lequel on est parti : la base de la pile de vies
     this.recordTrail();
     this.addCrowd(level.manif ?? (level.cortege ? 10 : 0));
     this.discover('heros', this.hero.def.id);
@@ -334,7 +338,8 @@ export class Game {
     hero.invuln = Math.max(hero.invuln, 1);
 
     this.sfx('sauvetage', cage.x);
-    this.emit('heroCard', { hero: next.id });
+    this.freed.push(next.id);
+    this.emit('heroCard', { hero: next.id, x: cage.x + cage.w / 2, y: cage.y });
     this.discover('heros', next.id);
     const card = Object.values(bundle.fiches || {}).find((f) => f.theme === 'droits' && !this.unlocked.includes(f.id));
     if (card) {

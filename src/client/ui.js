@@ -4,8 +4,9 @@
 import { h, link, frenchDate, sourceLine } from './dom.js';
 import { spriteElement } from './sprites.js';
 import { REPO, VERSION, REFERENCES } from './config.js';
-import { storeSave } from './save.js';
-import { SHELVES, VOTE_FICHES, collectionCount, collectionShelf } from './collection.js';
+import { storeSave, isFound } from './save.js';
+import { SHELVES, VOTE_FICHES, allCards, collectionCount, isFresh, markSeen, progress, shelfGrid, wonCards } from './collection.js';
+import { livesStack } from './lives.js';
 
 const MENTION = 'Satire citoyenne, libre et collaborative.';
 
@@ -92,17 +93,36 @@ export class Screens {
 
   // ------------------------------------------------------------------ Collection
 
-  /** L'album : un rayon par onglet ; ce qui n'a pas encore été croisé en jouant reste en silhouette. */
+  /**
+   * L'album : un rayon par onglet, des cartes compactes qu'on ouvre d'un toucher.
+   * Ce qui n'a pas encore été croisé en jouant reste en silhouette.
+   */
   collection(tab = SHELVES[0].id) {
-    const all = collectionCount(this.bundle, this.save);
+    const { bundle, save } = this;
+    const all = collectionCount(bundle, save);
+    const fresh = new Set(allCards(bundle).filter((c) => isFound(save, c.kind, c.item.id ?? c.item.texte) && isFresh(save, c)).map((c) => c.shelf));
+    // Un héros déjà rencontré se joue depuis sa carte.
+    const actionsFor = (card) => (card.kind === 'heros' ? [this.button('Jouer avec', () => this.playAs(card.item.id), 'gros')] : []);
     this.show('biblio',
       h('h2', {}, 'La Collection ', h('small', {}, `${all.found} / ${all.total}`)),
+      progress(all.found, all.total),
       h('div', { className: 'onglets' }, SHELVES.map((shelf) => {
-        const { found, total } = collectionCount(this.bundle, this.save, shelf.id);
-        return total ? this.button(`${shelf.titre} ${found}/${total}`, () => this.collection(shelf.id), shelf.id === tab ? '' : 'discret') : null;
+        const { found, total } = collectionCount(bundle, save, shelf.id);
+        if (!total) return null;
+        const label = [shelf.titre, ' ', h('small', {}, `${found}/${total}`), fresh.has(shelf.id) && shelf.id !== tab && h('i', { className: 'pastille' }), progress(found, total)];
+        return this.button(label, () => this.collection(shelf.id), shelf.id === tab ? '' : 'discret');
       })),
-      h('div', { className: 'contenu album' }, collectionShelf(this.bundle, tab, this.save)),
+      h('div', { className: 'contenu album' }, shelfGrid(bundle, tab, save, actionsFor)),
       h('div', { className: 'pied' }, this.back(() => this.go.back())));
+    markSeen(save, tab); // affichées avec leur badge « Nouveau » cette fois-ci, plus la prochaine
+    storeSave(save);
+  }
+
+  /** Lance le prochain niveau avec ce héros au départ. */
+  playAs(hero) {
+    this.save.heros = hero;
+    storeSave(this.save);
+    this.go.play(this.nextLevel());
   }
 
   // ------------------------------------------------------------------ options, à propos
@@ -133,6 +153,8 @@ export class Screens {
         this.button('Effacer ma progression', () => {
           this.save.termines = {};
           this.save.decouvertes = [];
+          this.save.vues = {};
+          this.save.heros = '';
           storeSave(this.save);
           this.options();
         }, 'discret')));
@@ -168,16 +190,46 @@ export class Screens {
       this.button('Quitter', () => this.go.quit(), 'discret'));
   }
 
-  /** Carton d'ouverture : PANIQUE TV ouvre sur une vraie déclaration, signée, datée et sourcée. */
-  intro(level, done) {
+  /**
+   * Carton d'ouverture : PANIQUE TV ouvre sur une vraie déclaration, signée, datée et sourcée.
+   * On y choisit aussi son héros de départ, parmi ceux déjà rencontrés.
+   * @param {string} hero  identifiant du héros avec lequel la partie démarre
+   */
+  intro(level, done, hero = '') {
     const quote = this.bundle.citations[level.citation];
+    const go = this.button('C’est parti', done, 'gros');
+    const heroes = Object.values(this.bundle.heros).filter((x) => x.statut !== 'test');
+    const mine = heroes.filter((x) => x.id === hero || isFound(this.save, 'heros', x.id)).map((x) => x.id);
+    const pick = (id) => {
+      if (id === hero) return;
+      this.audio.play('clic');
+      this.save.heros = id;
+      storeSave(this.save);
+      this.go.restart(); // la partie repart avec ce héros, et ce carton se réaffiche
+    };
     this.show('intro',
       h('div', { className: 'tv' }, h('strong', {}, 'PANIQUE TV'), h('em', {}, quote ? 'ILS L’ONT DIT' : 'ÉDITION SPÉCIALE')),
       quote ? h('p', { className: 'manchette' }, `« ${quote.texte} »`) : level.intro && h('p', { className: 'manchette' }, level.intro),
       quote && h('p', { className: 'signature' }, `${quote.auteur}, ${frenchDate(quote.date)} · `, link(quote.source.url, 'source')),
       h('h2', {}, level.titre),
       level.accroche && h('p', {}, level.accroche),
-      this.button('C’est parti', done, 'gros'));
+      heroes.length > 1 && this.heroRow(heroes, mine, hero, pick),
+      go);
+    go.focus({ preventScroll: true }); // Entrée lance le niveau…
+    this.root.firstChild.onkeydown = (e) => { // … ← et → changent de héros
+      const turn = { ArrowLeft: -1, ArrowRight: 1 }[e.key];
+      if (!turn || mine.length < 2) return;
+      e.preventDefault();
+      pick(mine[(mine.indexOf(hero) + turn + mine.length) % mine.length]);
+    };
+  }
+
+  /** La rangée des héros : ceux de la Collection se choisissent, les autres restent en silhouette. */
+  heroRow(heroes, mine, current, pick) {
+    const face = (x) => spriteElement(x.sprites.portrait || x.sprites.repos, this.bundle.palette, 2);
+    return h('div', { className: 'choix-heros' }, heroes.map((x) => (mine.includes(x.id)
+      ? h('button', { type: 'button', className: x.id === current ? 'choisi' : 'discret', onclick: () => pick(x.id) }, face(x), h('span', {}, x.nom))
+      : h('span', { className: 'inconnu' }, face(x), h('span', {}, '???')))));
   }
 
   lost() {
@@ -219,6 +271,7 @@ export class Screens {
             line(stats.breakdownsByPlayer, 'atteint par un tract', 'atteints par un tract'),
             line(stats.overrun, 'débordé par le nombre', 'débordés par le nombre')))),
       fact && h('article', { className: 'fiche' }, h('h3', {}, `Et en vrai ? ${fact.titre}`), h('p', {}, fact.texte), sourceLine(fact)),
+      won.length ? [h('h3', {}, 'Cartes gagnées'), wonCards(this.bundle, won)] : null,
       h('div', { className: 'pied' },
         next && this.button('Niveau suivant', () => this.go.play(next), 'gros'),
         last && this.button('La suite', () => this.final(), 'gros'),
@@ -297,7 +350,7 @@ export class Hud {
     this.last = state;
     this.q('hud-heros').textContent = hero.def.nom;
     this.q('hud-coeurs').textContent = '♥'.repeat(Math.max(0, hero.hp)) + '♡'.repeat(Math.max(0, hero.def.pv - hero.hp));
-    this.q('hud-vies').textContent = `× ${game.lives}`;
+    this.q('hud-vies').replaceChildren(livesStack(this.bundle, game));
     this.q('hud-charges').textContent = hero.def.speciale ? '★'.repeat(hero.charges) + '☆'.repeat(Math.max(0, hero.def.speciale.charges - hero.charges)) : '';
     // La manif : combien on est. Le compteur sursaute quand elle grossit.
     const march = this.q('hud-manif');

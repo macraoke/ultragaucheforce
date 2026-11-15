@@ -32,6 +32,7 @@ let custom = null; // niveau de l'Atelier en cours de test
 let begin = null; // le carton d'ouverture attend : fonction qui lance vraiment le niveau
 let bot = {};
 let written = []; // banderoles et tags du niveau que le héros n'a pas encore lus
+let won = []; // clés des cartes gagnées depuis le début du niveau : la rangée de l'écran de fin
 let acc = 0;
 let last = performance.now();
 
@@ -44,6 +45,7 @@ radio.onAsk = () => {
 function applyOptions() {
   audio.enabled = save.options.son;
   renderer.reduced = save.options.sobre;
+  document.body.classList.toggle('sobre', save.options.sobre); // la feuille de style coupe ses animations
   radio.setEnabled(save.options.musique);
   if (save.options.musique) radio.play(mode === 'playing' && current ? current.level.musique || current.id : 'menu');
 }
@@ -106,6 +108,7 @@ function collect(kind, id, quiet = false) {
   const lines = kind === 'pancartes' || kind === 'manchettes'; // sans fiche : identifiées par leur texte
   const item = lines ? bundle[kind].find((p) => p.credit && p.texte === id) : bundle[kind]?.[id];
   if (!item || !discover(save, kind, id)) return;
+  won.push(`${kind}:${id}`);
   if (!quiet) hud.toast(`Nouvelle carte : ${cardName(item)}`);
   collect('citations', item.citation, true);
   for (const fiche of [item.fiche].flat()) collect('fiches', fiche, true);
@@ -139,9 +142,10 @@ function readSigns() {
 function start(id, level = null) {
   custom = level;
   current = { id: id ?? 'atelier', level: level ?? bundle.niveaux[id] };
-  game = new Game(bundle, id, { seed: Math.floor(Math.random() * 1e9), level });
+  game = new Game(bundle, id, { seed: Math.floor(Math.random() * 1e9), level, hero: save.heros });
   renderer.snap(game);
   hud.reset();
+  if (!begin) won = []; // un changement de héros sur le carton d'ouverture garde les cartes déjà gagnées
   if (id) collect('niveaux', id, true);
   collect('citations', current.level.citation, true);
   collect('heros', game.hero.def.id, true);
@@ -153,7 +157,7 @@ function start(id, level = null) {
     setMode('playing');
     radio.play(current.level.musique || current.id);
   };
-  screens.intro(current.level, () => begin?.());
+  screens.intro(current.level, () => begin?.(), game.hero.def.id);
 }
 
 function openAtelier() {
@@ -188,7 +192,7 @@ async function win() {
     storeSave(save);
   }
   screens.end({
-    level, stats: game.stats, time: game.time, crowd: game.crowd,
+    level, stats: game.stats, time: game.time, crowd: game.crowd, won,
     next: index >= 0 ? bundle.campagne[index + 1] : null,
     last: index === bundle.campagne.length - 1,
   });

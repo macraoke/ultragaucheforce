@@ -40,9 +40,10 @@ export function loadLevel(game) {
     }
   });
 
-  // Héros de départ : celui que le niveau demande, sinon le premier héros jouable.
+  // Héros de départ : celui que le joueur a choisi, sinon celui que le niveau demande, sinon le premier héros jouable.
+  const chosen = Object.hasOwn(bundle.heros || {}, game.choice) ? bundle.heros[game.choice] : null;
   const wanted = toList(level.heros).map((id) => bundle.heros?.[id]).find(Boolean);
-  const def = wanted || playable(bundle)[0] || Object.values(bundle.heros || {})[0];
+  const def = (chosen?.statut !== 'test' && chosen) || wanted || playable(bundle)[0] || Object.values(bundle.heros || {})[0];
   if (!def) throw new Error('Aucun héros dans le contenu : ajoute une fiche dans content/heros/.');
   game.hero = createHero(def, start.x, start.y);
   game.checkpoint = start;

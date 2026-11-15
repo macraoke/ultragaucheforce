@@ -26,7 +26,7 @@ test('sauvetage : exactement une vie de plus, un autre héros, une seule fois', 
   assert.notEqual(game.hero.def.id, before, 'le héros a changé');
   assert.equal(game.hero.hp, game.hero.def.pv, 'vie pleine');
   assert.equal(game.hero.charges, game.hero.def.speciale.charges, 'charges pleines');
-  assert.deepEqual(events.filter((e) => e.type === 'heroCard'), [{ type: 'heroCard', hero: game.hero.def.id }]);
+  assert.deepEqual(events.filter((e) => e.type === 'heroCard').map((e) => e.hero), [game.hero.def.id]);
   assert.deepEqual(events.filter((e) => e.type === 'card'), [{ type: 'card', id: 'garde-a-vue' }], 'une fiche « droits » débloquée');
   assert.ok(events.some((e) => e.type === 'sfx' && e.id === 'sauvetage'));
 

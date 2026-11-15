@@ -92,6 +92,10 @@ export class Renderer {
         this.floaters.push({ x: e.x, y: e.y - 14, text: `+ ${e.n.toLocaleString('fr-FR')}`, t: 1.8, color: '#f6c21c', size: 11 });
         this.burst(e.x, e.y, '#f6c21c', 10, 80);
         this.burst(e.x, e.y, '#e43b44', 8, 60);
+      } else if (e.type === 'heroCard' && e.x !== undefined) {
+        // Un camarade libéré : une vie de plus, comme dans Broforce.
+        this.floaters.push({ x: e.x, y: e.y - 10, text: '+1', t: 2.4, color: '#f6c21c', size: 20 });
+        this.burst(e.x, e.y, '#f6c21c', 14, 90);
       } else if (e.type === 'overrun') {
         this.floaters.push({ x: e.x, y: e.y - 12, text: 'ON EST LÀ !', t: 1.8, color: '#f6c21c', size: 10 }); // « On est là, même si Macron le veut pas »
         this.burst(e.x, e.y, '#94b0c2', 10, 70);
