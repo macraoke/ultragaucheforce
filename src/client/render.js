@@ -29,6 +29,7 @@ const FADE = 0.25; // secondes pour qu'un texte flottant évincé s'efface
 const MIN_TEXT = 11; // taille d'un texte du monde à l'écran, en pixels CSS, au moins : lisible sur téléphone
 const SIGN_UP = 1; // une pancarte levée le reste au moins une seconde…
 const SIGN_DOWN = 0.5; // … et une pancarte baissée attend une demi-seconde avant de se relever
+const SIGN_GAP = 18; // pixels du jeu libres de chaque côté, au moins, entre une pancarte qui se lève et ses voisines levées
 const NEAR_HERO = 14; // un manifestant plus près que cela du héros passe en transparence
 const REC = '● REC'; // le cadre de la caméra l'affiche déjà : pas de bulle en double
 const SIGN_TURN = 6; // secondes d'un tour : les porteurs lèvent leur pancarte à tour de rôle…
@@ -51,6 +52,10 @@ const covers = (box, art) => Math.min(box.x1 - 1, art.x1) - Math.max(box.x0 + 1,
   && Math.min(box.y1 - 2, art.y1) - Math.max(box.y0 + 1, art.y0) > 2;
 const GROUP = { x: 40, y: 24 }; // des unités identiques aussi proches font un groupe : un seul « ! », un seul « KOF ! »
 const SAFE_TOP = 100; // pixels CSS en haut de l'écran laissés au HUD, au moins (bandeau au pouce, barre de vie du boss) ; plus s'il descend plus bas
+const FOLLOW = { x: 9 / 60, y: 7 / 60 }; // part du chemin vers le héros que la caméra fait à chaque pas de simulation
+// Valentin, 16 novembre 2026 : « Le gain d'abord : les gains, « +1 », « ON REPART D'ICI » et les noms de spéciale passent
+// toujours : la pancarte qu'ils touchent se baisse un instant. Les slogans, eux, laissent la pancarte levée. »
+const leads = (f) => Boolean(f.gain || f.lead);
 
 export class Renderer {
   constructor(canvas, textCanvas, bundle) {
@@ -62,6 +67,8 @@ export class Renderer {
     this.palette = bundle.palette;
     this.bySymbol = Object.fromEntries(Object.values(bundle.tuiles).map((t) => [t.symbole, t]));
     this.cam = { x: 0, y: 0 };
+    this.camX = 0; // la caméra de l'image en cours, secousse comprise, au sous-pixel près (`cx`, `cy` : arrondie)
+    this.camY = 0;
     this.viewW = 384;
     this.viewH = 216;
     this.scale = 2;
@@ -131,13 +138,17 @@ export class Renderer {
     this.cam.y = t.y;
   }
 
+  /**
+   * Où la caméra veut aller. Ses décalages sont des pixels entiers : posée sur un héros au sol, elle tombe sur un pixel
+   * entier, jamais sur une moitié (225 × 0,58 = 130,5), où ce qu'elle suit et le décor s'arrondiraient chacun de leur côté.
+   */
   target(game) {
     const { hero, world } = game;
     const maxX = Math.max(0, world.w * TILE - this.viewW);
     const maxY = world.h * TILE - this.viewH;
-    const x = hero.x + hero.w / 2 - this.viewW / 2 + hero.facing * 28;
+    const x = hero.x + Math.round(hero.w / 2 - this.viewW / 2) + hero.facing * 28;
     // Quand le héros vise en haut ou en bas, la vue se décale du même côté : on voit où l'on creuse.
-    const y = hero.y + hero.h - this.viewH * this.anchor + (hero.aim || 0) * this.viewH * 0.22;
+    const y = hero.y + hero.h - Math.round(this.viewH * this.anchor) + Math.round((hero.aim || 0) * this.viewH * 0.22);
     return { x: Math.min(maxX, Math.max(0, x)), y: maxY < 0 ? maxY : Math.min(maxY, Math.max(0, y)) };
   }
 
@@ -162,7 +173,8 @@ export class Renderer {
         const slogan = prev?.type === 'recruit' && prev.x === e.x;
         if (!slogan || this.clock - this.lastSlogan >= SLOGAN_GAP) {
           if (slogan) this.lastSlogan = this.clock;
-          this.float({ x: e.x, y: e.y, text: e.text, t: 1.6, color: e.color || '#f4f4f4' });
+          // Ce qui n'est pas le slogan d'une recrue est le nom d'une spéciale : il passe avant les pancartes.
+          this.float({ x: e.x, y: e.y, text: e.text, t: 1.6, color: e.color || '#f4f4f4', lead: !slogan });
         }
       }
       else if (e.type === 'recruit') {
@@ -187,7 +199,7 @@ export class Renderer {
       } else if (e.type === 'checkpoint') {
         // Le piquet de grève rejoint la manif, et c'est d'ici qu'on repartira.
         this.float({ x: e.x + TILE / 2, y: e.y - 14, text: '+ 10', t: 1.8, color: '#f6c21c', size: 11, gain: true });
-        this.float({ x: e.x + TILE / 2, y: e.y - 28, text: 'ON REPART D’ICI', t: 2.2, color: '#f4f4f4', size: 8 });
+        this.float({ x: e.x + TILE / 2, y: e.y - 28, text: 'ON REPART D’ICI', t: 2.2, color: '#f4f4f4', size: 8, lead: true });
         this.burst(e.x + TILE / 2, e.y, '#f6c21c', 10, 70);
       } else if (e.type === 'respawn') {
         this.hurt = null;
@@ -229,9 +241,10 @@ export class Renderer {
 
   /**
    * Un texte flottant naît : deux gains au même endroit font un seul nombre, un texte déjà là ne se répète pas
-   * (il dure un peu plus), et il n'en reste jamais plus de MAX_FLOATERS à la fois : le plus ancien s'efface.
+   * (il dure un peu plus), et au-delà de MAX_FLOATERS à la fois, le plus ancien slogan s'efface.
    * Un texte `keep` (ce que dit un coup, une ligne qui cède) n'est jamais évincé, et garde la place qu'on lui a donnée.
-   * La place des autres se règle au dessin (`placeFloaters`).
+   * Un gain (`gain`), « ON REPART D'ICI » ou le nom d'une spéciale (`lead`) passent toujours : jamais évincés, ils
+   * passent aussi avant les pancartes du cortège. La place de chacun se règle au dessin (`placeTexts`).
    */
   float(f) {
     f.size ??= 7;
@@ -254,8 +267,8 @@ export class Renderer {
     this.floaters.push(f);
     const alive = this.floaters.filter((g) => g.t > FADE);
     const loose = alive.filter((g) => !g.keep);
-    // Un gain (« + 20 », « +1 », « SOIGNÉ ») passe après un slogan ou un nom de spéciale : on le lit en premier.
-    const out = loose.find((g) => !g.gain) ?? loose[0];
+    // Seul un slogan s'efface pour faire de la place : un gain (« + 20 », « +1 », « SOIGNÉ ») ou un nom de spéciale se lit jusqu'au bout.
+    const out = loose.find((g) => !leads(g));
     if (alive.length > MAX_FLOATERS && out) out.t = FADE;
   }
 
@@ -295,14 +308,25 @@ export class Renderer {
 
   // ---------------------------------------------------------------- dessin
 
+  /**
+   * La caméra suit le héros d'un pas de simulation : appelée après chaque pas de la partie, jamais au dessin.
+   * Elle avance ainsi au même rythme que le monde, quelle que soit la cadence de l'écran (120 Hz, une image
+   * qui joue deux pas ou aucun) : le héros et le cortège qu'elle suit ne tremblent pas à l'écran.
+   */
+  follow(game) {
+    const goal = this.target(game);
+    this.cam.x += (goal.x - this.cam.x) * FOLLOW.x;
+    this.cam.y += (goal.y - this.cam.y) * FOLLOW.y;
+  }
+
   draw(game, dt = 1 / 60) {
     const { ctx, tctx } = this;
-    const goal = this.target(game);
-    this.cam.x += (goal.x - this.cam.x) * Math.min(1, dt * 9);
-    this.cam.y += (goal.y - this.cam.y) * Math.min(1, dt * 7);
     const jolt = this.reduced ? 0 : this.shake;
-    const cx = Math.round(this.cam.x + (Math.random() - 0.5) * jolt);
-    const cy = Math.round(this.cam.y + (Math.random() - 0.5) * jolt);
+    // La caméra de cette image, secousse comprise : au sous-pixel près pour ce qu'elle suit (`camX`), entière pour le décor.
+    this.camX = this.cam.x + (Math.random() - 0.5) * jolt;
+    this.camY = this.cam.y + (Math.random() - 0.5) * jolt;
+    const cx = Math.round(this.camX);
+    const cy = Math.round(this.camY);
     this.cx = cx;
     this.cy = cy;
 
@@ -341,9 +365,12 @@ export class Renderer {
     if (board) fixed.push(board.box); // et autour du panneau lu
     // Le héros se lit au premier coup d'œil : aucune pancarte ne se lève devant lui ni juste au-dessus de sa tête.
     const { hero } = game;
-    if (!hero.dead) this.boxes.push({ x0: hero.x - 3 - cx, x1: hero.x + hero.w + 3 - cx, y0: hero.y - 8 - cy, y1: hero.y + hero.h - cy });
-    this.placeFloaters(fixed);
-    this.raiseSigns(game.cortege);
+    // Sa place se compte comme il est dessiné : par rapport à la caméra qui le suit (`camX`, `camY`).
+    if (!hero.dead) {
+      const { camX, camY } = this;
+      this.boxes.push({ x0: hero.x - 3 - camX, x1: hero.x + hero.w + 3 - camX, y0: hero.y - 8 - camY, y1: hero.y + hero.h - camY });
+    }
+    this.placeTexts(fixed, game.cortege);
     game.cortege.forEach((m, i) => this.marcher(m, i));
     // La manif autour de lui : le repère au-dessus du héros apparaît, puis s'efface quand il en sort.
     const crowd = !hero.dead && game.cortege.some((m) => Math.abs(m.x - (hero.x + hero.w / 2)) < 3 * NEAR_HERO && Math.abs(m.y - (hero.y + hero.h)) < 24);
@@ -363,6 +390,7 @@ export class Renderer {
 
     for (const f of this.floaters) {
       this.label(f.text, f.x - cx, f.y - cy, { size: f.size || 7, color: f.color, bg: f.bg, alpha: Math.min(1, f.t * 2), width: 150 });
+      f.seen = true; // déjà montré : s'il perd sa place, il s'effacera en fondu
     }
     if (board) this.board(board.text, this.viewW / 2, board.y, { alpha: Math.min(1, this.sign.t * 2) });
   }
@@ -522,12 +550,13 @@ export class Renderer {
   /**
    * Dessine un sprite posé au sol, centré sur la boîte de collision de son acteur. `dim` : assombri (vrai), ou apaisé
    * (`'calm'`). Rend le coin haut gauche du dessin à l'écran, ou null s'il est hors de l'image.
+   * `followed` : ce que la caméra suit (le héros, ses doubles), arrondi par rapport à elle : il ne tremble pas à l'écran.
    */
-  actor(a, rows, { flip = a.facing < 0, flash = false, alpha = 1, dx = 0, dy = 0, dim = false } = {}) {
+  actor(a, rows, { flip = a.facing < 0, flash = false, alpha = 1, dx = 0, dy = 0, dim = false, followed = false } = {}) {
     if (!rows) return null;
     const img = sprite(rows, this.palette, flip, flash, flash ? false : dim);
-    const x = Math.round(a.x + a.w / 2 - img.width / 2 - this.cx + dx);
-    const y = Math.round(a.y + a.h - img.height - this.cy + dy);
+    const x = Math.round(a.x + a.w / 2 - img.width / 2 - (followed ? this.camX : this.cx) + dx);
+    const y = Math.round(a.y + a.h - img.height - (followed ? this.camY : this.cy) + dy);
     if (x > this.viewW || y > this.viewH || x + img.width < 0 || y + img.height < 0) return null;
     if (alpha !== 1) this.ctx.globalAlpha = alpha;
     this.ctx.drawImage(img, x, y);
@@ -544,7 +573,7 @@ export class Renderer {
     if (h.dead) return;
     const s = h.def.sprites;
     const rows = h.anim === 'saut' ? s.saut || s.marche1 || s.repos : this.frames(s, h.anim === 'marche', h.animTime);
-    for (const c of h.clones || []) this.actor(c, rows, { flip: c.facing < 0, alpha: 0.55 });
+    for (const c of h.clones || []) this.actor(c, rows, { flip: c.facing < 0, alpha: 0.55, followed: true });
     // Touché : blanc un instant, puis il pâlit et revient, lentement, tant qu'il ne craint rien. Il ne disparaît jamais.
     // Effets réduits : il reste pâle, sans clignoter, et ne sursaute pas.
     const safe = h.flash <= 0 && h.invuln > 0;
@@ -553,7 +582,7 @@ export class Renderer {
     const jolt = this.hurt && !this.reduced ? Math.max(0, this.hurt.t - 0.95) / 0.25 : 0;
     const dx = Math.round((this.hurt?.dir || 0) * 4 * jolt);
     const dy = -Math.round(3 * Math.sin(jolt * Math.PI));
-    this.actor(h, rows, { flash: h.flash > 0, alpha: pale ? (this.reduced ? 0.6 : 0.4) : 1, dx, dy });
+    this.actor(h, rows, { flash: h.flash > 0, alpha: pale ? (this.reduced ? 0.6 : 0.4) : 1, dx, dy, followed: true });
     if (this.hurt) this.pips(h, rows.length);
     else if (this.crowded > 0 && !this.demo) this.marker(h, rows.length);
   }
@@ -561,8 +590,8 @@ export class Renderer {
   /** Au milieu de la manif, une petite flèche d'or au-dessus de la tête du héros : c'est lui. */
   marker(h, height) {
     const { ctx } = this;
-    const x = Math.round(h.x + h.w / 2 - this.cx);
-    const y = Math.round(h.y + h.h - height - 6 - this.cy);
+    const x = Math.round(h.x + h.w / 2 - this.camX);
+    const y = Math.round(h.y + h.h - height - 6 - this.camY);
     ctx.globalAlpha = this.crowded;
     ctx.fillStyle = '#1a1c2c';
     ctx.fillRect(x - 3, y - 1, 7, 3);
@@ -581,8 +610,8 @@ export class Renderer {
     const { hp, max } = this.hurt;
     const size = 3;
     const width = max * (size + 1) - 1;
-    const x0 = Math.round(h.x + h.w / 2 - width / 2 - this.cx);
-    const y0 = Math.round(h.y + h.h - height - 6 - this.cy);
+    const x0 = Math.round(h.x + h.w / 2 - width / 2 - this.camX);
+    const y0 = Math.round(h.y + h.h - height - 6 - this.camY);
     ctx.fillStyle = '#1a1c2c';
     ctx.fillRect(x0 - 1, y0 - 1, width + 2, size + 2);
     for (let i = 0; i < max; i++) {
@@ -1141,15 +1170,18 @@ export class Renderer {
     return this.signs.length ? this.signs[Math.floor(d.x / 16 + d.y * 7) % this.signs.length].texte : '';
   }
 
-  /** Où se tient un membre du cortège à l'écran, et où serait sa pancarte levée. */
+  /**
+   * Où se tient un membre du cortège à l'écran, et où serait sa pancarte levée. Le cortège marche avec le héros :
+   * comme lui, il est arrondi par rapport à la caméra, et ses pancartes ne tremblent pas quand on avance.
+   */
   spot(m, i) {
     const d = this.bundle.decors;
     const body = m.kind === 'fanfare' ? d.fanfare : i % 2 ? d['manifestant-2'] : d.manifestant;
     if (!body) return null;
     const step = Math.floor(m.animTime * 8) % 2 && body.sprites.image2;
     const img = sprite(step ? body.sprites.image2 : body.sprites.image, this.palette, m.facing < 0);
-    const x = Math.round(m.x - img.width / 2 - this.cx);
-    const y = Math.round(m.y - img.height - this.cy + (m.gassed > 0 ? 3 : 0));
+    const x = Math.round(m.x - img.width / 2 - this.camX);
+    const y = Math.round(m.y - img.height - this.camY + (m.gassed > 0 ? 3 : 0));
     const hand = m.facing < 0 ? x : x + img.width - 1;
     const top = y - 12 - (i % 2) * 14;
     const width = m.label?.length > 45 ? 84 : m.label?.length > 26 ? 64 : 44; // une longue pancarte est plus large, pas plus haute
@@ -1158,10 +1190,13 @@ export class Renderer {
 
   /**
    * Quelles pancartes du cortège sont levées à cette image. Aucune n'en recouvre une autre ni ce qui est déjà
-   * réservé (le héros, la voix, les textes flottants, les gains des recrues), et aucune ne clignote :
+   * réservé (le héros, la voix, les coups, les gains des recrues), et aucune ne clignote :
    * levée, elle le reste SIGN_UP secondes, sauf devant un de ces textes prioritaires ; baissée, elle attend SIGN_DOWN.
+   * `drifting` : les textes flottants qui dérivent à l'écran. Ils ne font pas baisser une pancarte levée (ils passent
+   * au-dessus d'elle, voir `placeLoose`), mais une pancarte baissée ne se relève pas sous l'un d'eux.
+   * Rend les boîtes des pancartes levées.
    */
-  raiseSigns(cortege) {
+  raiseSigns(cortege, drifting = []) {
     const now = this.clock;
     const priority = this.boxes.length;
     const signs = [];
@@ -1186,23 +1221,28 @@ export class Renderer {
     const clear = (box, upTo = this.boxes.length) => !this.boxes.slice(0, upTo).some((b) => box.x0 < b.x1 && box.x1 > b.x0 && box.y0 < b.y1 && box.y1 > b.y0);
     // Pour se relever, une pancarte veut de l'air autour des textes prioritaires, surtout en dessous
     // (le héros bouge, les textes flottants montent) : sinon elle retomberait aussitôt.
-    const roomy = (box) => clear({ x0: box.x0 - 12, x1: box.x1 + 12, y0: box.y0 - 6, y1: box.y1 + 18 }, priority) && clear(box);
+    const free = (box) => !drifting.some((b) => box.x0 < b.x1 && box.x1 > b.x0 && box.y0 < b.y1 && box.y1 > b.y0);
+    // Et de l'air sur les côtés des pancartes déjà levées (SIGN_GAP) : quand le cortège piétine, elles ne se touchent pas.
+    const roomy = (box) => clear({ x0: box.x0 - 12, x1: box.x1 + 12, y0: box.y0 - 6, y1: box.y1 + 18 }, priority)
+      && !this.boxes.slice(priority).some((b) => box.x0 - SIGN_GAP < b.x1 && box.x1 + SIGN_GAP > b.x0 && box.y0 < b.y1 && box.y1 > b.y0) && free(box);
+    const up = [];
     const keep = (sign, ok) => {
       if (ok) {
         sign.held.first ??= now; // sa première levée : son tour de nouvelle venue commence
         if (!sign.held.up) Object.assign(sign.held, { up: true, since: now });
         this.boxes.push(sign.box);
+        up.push(sign.box);
       } else if (sign.held.up) Object.assign(sign.held, { up: false, since: now });
     };
-    // Celles levées depuis peu ne cèdent qu'aux textes prioritaires ; les plus anciennes ensuite ;
-    // les baissées depuis assez longtemps se relèvent là où il reste de la place.
-    const young = signs.filter((s) => s.held.up && now - s.held.since < SIGN_UP);
-    const old = signs.filter((s) => s.held.up && now - s.held.since >= SIGN_UP).sort((a, b) => a.held.since - b.held.since);
+    // Les levées, de la plus ancienne à la plus récente : chacune reste levée si rien de déjà placé ne la recouvre
+    // (deux pancartes qui se croisent : la dernière levée se baisse) ; celles levées depuis peu, même hors de leur tour.
+    // Puis les baissées depuis assez longtemps se relèvent là où il reste de la place.
+    const raised = signs.filter((s) => s.held.up).sort((a, b) => a.held.since - b.held.since);
     const down = signs.filter((s) => !s.held.up && now - s.held.since >= SIGN_DOWN);
-    for (const s of young) keep(s, clear(s.box, priority));
-    for (const s of old) keep(s, s.turn && clear(s.box));
+    for (const s of raised) keep(s, (s.turn || now - s.held.since < SIGN_UP) && clear(s.box));
     for (const s of down) keep(s, s.turn && roomy(s.box));
     this.raised = new Set(signs.filter((s) => s.held.up).map((s) => s.m));
+    return up;
   }
 
   /** Un membre du cortège, avec sa pancarte, son drapeau ou sa trompette. Tout près du héros, il s'efface à demi. */
@@ -1321,20 +1361,38 @@ export class Renderer {
   }
 
   /**
-   * Les textes flottants ne s'empilent pas : chacun monte juste au-dessus de ceux déjà là et des textes fixes
-   * (la voix d'en face, les gains des recrues). Une fois écartés, ils montent ensemble, à la même vitesse.
-   * Leurs boîtes sont réservées : les pancartes du cortège s'effacent devant eux.
+   * Les textes flottants et les pancartes du cortège, dans l'ordre où ils se cèdent la place. Les textes flottants
+   * ne s'empilent pas : chacun monte juste au-dessus de ceux déjà là et des textes fixes (`fixed` : la voix d'en face,
+   * les gains des recrues). Une fois écartés, ils montent ensemble, à la même vitesse.
+   * 1. Ceux qui ont leur place (un coup, une ligne qui cède) ; 2. les gains, « ON REPART D'ICI », les noms de spéciale :
+   * une pancarte qu'ils touchent se baisse, et se relève quand ils sont passés ; 3. les pancartes levées ;
+   * 4. les slogans, qui passent autour d'elles sans les faire baisser.
    */
-  placeFloaters(fixed) {
+  placeTexts(fixed, cortege = []) {
     const placed = [...fixed];
+    this.placeKept(placed);
+    this.placeLoose(placed, [], this.floaters.filter((f) => !f.keep && leads(f)));
+    const slogans = this.floaters.filter((f) => !f.keep && !leads(f));
+    const drifting = slogans.filter((f) => f.t > FADE).map((f) => this.textBox(f.text, f.x - this.cx, f.y - this.cy, f.size, 150));
+    const signs = this.raiseSigns(cortege, drifting);
+    this.placeLoose([...placed, ...signs], signs, slogans);
+  }
+
+  /** Un texte flottant déplacé de `dy`, avec sa boîte. */
+  shiftFloater(f, box, dy) {
+    f.y += dy;
+    box.y0 += dy;
+    box.y1 += dy;
+  }
+
+  /**
+   * Ceux qui ont leur place (`keep` : au pied d'une ligne, au bord de l'écran) ne bougent pas, et sont réservés :
+   * les pancartes du cortège s'effacent devant eux. Seule exception : un texte `keep` qui monte (« TOUCHÉ ») passe
+   * au-dessus d'une sommation plutôt que de la cacher. Leurs boîtes s'ajoutent à `placed`.
+   */
+  placeKept(placed) {
     const ceiling = this.ceiling(); // jamais sous la bande du HUD : un texte qui y arriverait s'arrête au plafond
-    const shift = (f, box, dy) => {
-      f.y += dy;
-      box.y0 += dy;
-      box.y1 += dy;
-    };
-    // Ceux qui ont leur place (`keep` : au pied d'une ligne, au bord de l'écran) ne bougent pas ; les autres passent autour.
-    // Seule exception : un texte `keep` qui monte (« TOUCHÉ ») passe au-dessus d'une sommation plutôt que de la cacher.
+    const shift = (f, box, dy) => this.shiftFloater(f, box, dy);
     const kept = [];
     for (const f of this.floaters.filter((g) => g.keep)) {
       const box = this.textBox(f.text, f.x - this.cx, f.y - this.cy, f.size, 150);
@@ -1352,18 +1410,44 @@ export class Renderer {
       placed.push(box);
       this.boxes.push(box);
     }
-    for (const f of this.floaters.filter((g) => !g.keep)) {
+  }
+
+  /**
+   * Les textes `list` passent autour de ce qui est déjà placé (`placed`) : au-dessus, sinon, au plafond, en dessous.
+   * Les gains et noms de spéciale (`leads`) sont réservés tant qu'ils sont là : aucune pancarte ne se lève sous eux.
+   * Un slogan qui n'a pas de place au-dessus des pancartes levées (`signs`) ne se pose pas sur elles : jamais montré, il
+   * ne s'affiche pas ; déjà montré, il s'efface en fondu, en passant dessous le temps de disparaître.
+   */
+  placeLoose(placed, signs, list) {
+    const ceiling = this.ceiling();
+    const shift = (f, box, dy) => this.shiftFloater(f, box, dy);
+    const over = (box, b) => box.x0 < b.x1 && box.x1 > b.x0 && box.y0 < b.y1 && box.y1 > b.y0;
+    const unseen = [];
+    for (const f of list) {
       const box = this.textBox(f.text, f.x - this.cx, f.y - this.cy, f.size, 150);
-      const hit = () => placed.find((b) => box.x0 < b.x1 && box.x1 > b.x0 && box.y0 < b.y1 && box.y1 > b.y0);
+      const hit = () => placed.find((b) => over(box, b));
       for (let k = 0, other; k < 8 && (other = hit()); k++) shift(f, box, other.y0 - 1 - box.y1);
-      // Trop haut : il s'arrête au plafond, et passe sous ce qui le gêne encore.
+      // Trop haut : il s'arrête au plafond, et passe sous ce qui le gêne encore (une pancarte levée : il n'a pas de place).
       if (box.y0 < ceiling) {
         shift(f, box, ceiling - box.y0);
+        for (let k = 0, other; k < 8 && (other = hit()) && !signs.includes(other); k++) shift(f, box, other.y1 + 1 - box.y0);
+      }
+      if (signs.some((b) => over(box, b))) {
+        if (!f.seen) {
+          unseen.push(f);
+          continue;
+        }
+        f.t = Math.min(f.t, FADE);
         for (let k = 0, other; k < 8 && (other = hit()); k++) shift(f, box, other.y1 + 1 - box.y0);
+        if (signs.some((b) => over(box, b))) {
+          unseen.push(f); // coincé entre deux pancartes : à demi effacé déjà, il part
+          continue;
+        }
       }
       placed.push(box);
-      if (f.t > FADE) this.boxes.push(box);
+      if (f.t > FADE || leads(f)) this.boxes.push(box);
     }
+    if (unseen.length) this.floaters = this.floaters.filter((f) => !unseen.includes(f));
   }
 
   /** Texte centré en (x, y) : contour sombre, ou fond plein si `bg` est donné. */

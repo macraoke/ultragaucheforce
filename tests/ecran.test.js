@@ -6,6 +6,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { loadContent } from '../tools/content.mjs';
 import { queueNote, readTime } from '../src/client/ui.js';
+import { Game, DT } from '../src/sim/game.js';
 
 // ---------------------------------------------------------------- un faux canevas
 
@@ -47,6 +48,11 @@ function renderer(ratio = 3) {
   return r;
 }
 const overlap = (a, b) => a.x0 < b.x1 && a.x1 > b.x0 && a.y0 < b.y1 && a.y1 > b.y0;
+/**
+ * Les textes flottants et les pancartes placés comme au dessin, dans l'ordre réel (`placeTexts`). Une version qui ne
+ * l'a pas les place dans son ancien ordre : un test y échoue sur ce qu'il vérifie, pas sur une erreur.
+ */
+const place = (r, fixed = [], cortege = []) => (r.placeTexts ? r.placeTexts(fixed, cortege) : (r.placeFloaters(fixed), r.raiseSigns(cortege)));
 
 // ---------------------------------------------------------------- notes de déblocage
 
@@ -76,10 +82,10 @@ test('une note reste le temps d’être lue', () => {
 test('les textes flottants nés au même endroit se décalent, quatre au plus', () => {
   const r = renderer();
   const slogans = ['DE L’ARGENT POUR L’HÔPITAL', 'LA RETRAITE AVANT L’ARTHRITE', 'ON EST LÀ', 'TOUS ENSEMBLE', 'GRÈVE GÉNÉRALE'];
-  r.absorb(slogans.map((text) => ({ type: 'bubble', x: 200, y: 120, text })));
+  for (const text of slogans) r.float({ x: 200, y: 120, text, t: 1.6 }); // des slogans de recrues
   const alive = r.floaters.filter((f) => f.t > 0.25);
   assert.equal(alive.length, 4, 'le plus ancien s’efface');
-  r.placeFloaters([]);
+  place(r, []);
   const boxes = alive.map((f) => r.textBox(f.text, f.x, f.y, f.size, 150));
   for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) assert.ok(!overlap(boxes[i], boxes[j]), `${alive[i].text} / ${alive[j].text}`);
 });
@@ -90,10 +96,10 @@ test('un texte qui a sa place (une ligne qui cède, un coup) n’est ni évincé
   const cry = { x: 200, y: 194, rise: 0, text: 'ON EST LÀ !', t: 2.2, size: 12, keep: true };
   r.float(line);
   r.float(cry);
-  r.absorb(['UN', 'DEUX', 'TROIS', 'QUATRE', 'CINQ'].map((text) => ({ type: 'bubble', x: 200, y: 190, text })));
+  for (const text of ['UN', 'DEUX', 'TROIS', 'QUATRE', 'CINQ']) r.float({ x: 200, y: 190, text, t: 1.6 }); // des slogans
   assert.ok(line.t > 0.25 && cry.t > 0.25, 'jamais évincés');
   assert.ok(r.floaters.filter((f) => f.t > 0.25).length <= 4, 'les autres cèdent la place');
-  r.placeFloaters([]);
+  place(r, []);
   assert.equal(line.y, 180);
   assert.equal(cry.y, 194);
   const fixed = [line, cry].map((f) => r.textBox(f.text, f.x, f.y, f.size, 150));
@@ -110,7 +116,7 @@ test('« TOUCHÉ » monte au-dessus d’une sommation ; le compteur au pied d’
   r.float(hurt);
   r.float(line);
   r.voice = r.textBox('Obéissance à la loi. Dispersez-vous.', 200, 96, 5.5, 80);
-  r.placeFloaters([r.voice]);
+  place(r, [r.voice]);
   assert.ok(!overlap(r.textBox(hurt.text, hurt.x, hurt.y, hurt.size, 150), r.voice), 'la sommation reste lisible');
   assert.equal(line.y, 100, 'au pied de la ligne, il garde sa place');
 });
@@ -125,7 +131,7 @@ test('un texte flottant ne passe jamais sur la voix d’en face (une sommation)'
   const r = renderer();
   r.absorb([{ type: 'bubble', x: 200, y: 100, text: 'DÉSOBÉISSONS !' }]);
   const voice = r.textBox('Obéissance à la loi. Dispersez-vous.', 200, 96, 5.5, 80);
-  r.placeFloaters([voice]);
+  place(r, [voice]);
   const [f] = r.floaters;
   assert.ok(!overlap(r.textBox(f.text, f.x, f.y, f.size, 150), voice));
 });
@@ -169,6 +175,34 @@ test('une pancarte levée le reste une seconde ; baissée, elle attend une demi-
   }
   assert.ok(changes <= 10, `${changes} changements en dix secondes`);
   assert.ok([...history].some(([m, seen]) => m.kind === 'pancarte' && seen.at(-1)), 'des pancartes restent levées');
+});
+
+test('deux pancartes levées ne se recouvrent jamais, même dans leur première seconde : quand elles se croisent, la dernière levée se baisse', () => {
+  const r = renderer();
+  r.viewW = 600;
+  const cortege = crowd(7); // porteurs 0, 3 et 6 ; 0 et 6 sur la même rangée
+  const [first, , , , , , last] = cortege;
+  cortege[3].x = 2000; // hors de l'image
+  const raisedBoxes = () => cortege.filter((m) => r.raised.has(m)).map((m) => {
+    const s = r.spot(m, cortege.indexOf(m));
+    return r.textBox(m.label, s.hand, s.top, 4.6, s.width);
+  });
+  last.x = 2000;
+  r.clock = 0;
+  r.boxes = [];
+  r.raiseSigns(cortege);
+  assert.ok(r.raised.has(first));
+  // L'autre arrive de loin, se lève, puis traverse la première, dans sa première seconde comme dans la sienne.
+  for (let frame = 1; frame < 60; frame++) {
+    r.clock = frame / 60;
+    last.x = 400 - frame * 6;
+    r.boxes = [];
+    r.raiseSigns(cortege);
+    if (frame === 1) assert.ok(r.raised.has(last), 'elle se lève');
+    const boxes = raisedBoxes();
+    assert.ok(boxes.every((a, k) => boxes.slice(k + 1).every((b) => !overlap(a, b))), `image ${frame} : deux pancartes l’une sur l’autre`);
+    assert.ok(r.raised.has(first), `image ${frame} : la première levée reste levée`);
+  }
 });
 
 test('devant le héros, une pancarte se baisse tout de suite', () => {
@@ -512,7 +546,7 @@ test('la bulle du boss ne se pose pas sur un texte déjà là ; textes flottants
   assert.ok(!overlap(say.box, free.box), 'elle prend une autre place');
   r.boxes.push(say.box);
   r.float({ x: say.x, y: say.y + 2, text: 'ON REPART D’ICI', t: 2.2, size: 8 });
-  r.placeFloaters([say.box]);
+  place(r, [say.box]);
   const [f] = r.floaters;
   assert.ok(!overlap(r.textBox(f.text, f.x, f.y, f.size, 150), say.box), 'le texte flottant passe autour');
 });
@@ -521,7 +555,7 @@ test('un texte flottant ne monte jamais sous la bande du HUD', () => {
   const r = renderer();
   r.float({ x: 200, y: 20, text: 'DÉCONSTRUCTION !', t: 1.6, size: 7 });
   r.float({ x: 200, y: 24, text: 'DÉSOBÉISSONS !', t: 1.6, size: 7 });
-  r.placeFloaters([]);
+  place(r, []);
   for (const f of r.floaters) assert.ok(r.textBox(f.text, f.x, f.y, f.size, 150).y0 >= 100 / r.ratio - 1e-9, f.text);
   const [a, b] = r.floaters.map((f) => r.textBox(f.text, f.x, f.y, f.size, 150));
   assert.ok(!overlap(a, b), 'au plafond, le second passe dessous');
@@ -533,7 +567,7 @@ test('quand le HUD descend plus bas (puce passée à la ligne), le plafond desce
   const below = (box) => box.y0 >= (118 + 4) / r.ratio - 1e-9;
   r.float({ x: 40, y: 30, text: '+1', t: 2.4, size: 20, gain: true });
   r.float({ x: 60, y: 10, text: 'ON EST LÀ !', rise: 0, t: 2.2, size: 12, keep: true });
-  r.placeFloaters([]);
+  place(r, []);
   for (const f of r.floaters) assert.ok(below(r.textBox(f.text, f.x, f.y, f.size, 150)), f.text);
   const def = Object.values(bundle.boss)[0];
   r.heroBox = { x: 100, w: 12, h: 18, y: 150 };
@@ -542,6 +576,20 @@ test('quand le HUD descend plus bas (puce passée à la ligne), le plafond desce
   assert.ok(below(say.box), 'la bulle du boss aussi');
   r.hudBottom = 0;
   assert.equal(r.ceiling(), 100 / r.ratio, 'sinon, SAFE_TOP au moins');
+});
+
+test('un gain, « +1 », « ON REPART D’ICI » ou un nom de spéciale n’est jamais évincé, même à plus de quatre : seul le slogan cède', () => {
+  const r = renderer();
+  r.float({ x: 40, y: 100, text: 'TOUS ENSEMBLE', t: 1.6 }); // un slogan
+  r.absorb([
+    { type: 'recruit', x: 100, y: 150, n: 20 },
+    { type: 'heroCard', x: 200, y: 150 },
+    { type: 'checkpoint', x: 300, y: 150 },
+    { type: 'bubble', x: 360, y: 120, text: 'DÉCONSTRUCTION !' },
+  ]);
+  const by = (text) => r.floaters.find((f) => f.text === text);
+  for (const text of ['+ 20', '+1', '+ 10', 'ON REPART D’ICI', 'DÉCONSTRUCTION !']) assert.ok(by(text)?.t > 0.25, `${text} reste`);
+  assert.ok(by('TOUS ENSEMBLE').t <= 0.25, 'le slogan s’efface');
 });
 
 test('un gain (« + 20 », « +1 », « SOIGNÉ ») n’est jamais évincé avant un slogan', () => {
@@ -571,4 +619,180 @@ test('un texte hors de la vue n’est ni mesuré ni écrit', () => {
   assert.equal(measured, 0);
   r.label('SORTIE ▶', 200, 100, { size: 6 });
   assert.ok(measured > 0);
+});
+
+// ---------------------------------------------------------------- en mouvement
+
+/** Une longue rue plate, une manif de 250 personnes et ses pancartes derrière le héros. */
+function march(height = 12, depth = 0) {
+  const width = 200;
+  const rows = Array.from({ length: height + depth }, (_, y) => (y >= height - 1 ? 'T'.repeat(width) : y === height - 2 ? `..D${'.'.repeat(width - 3)}` : '.'.repeat(width)));
+  const level = { titre: 'rue', manchette: [], panneaux: {}, legende: {}, boss: '', heros: 'zucman', cortege: true, manif: 10, fond: 'ville', carte: rows };
+  const game = new Game(bundle, 'rue', { level, seed: 3, invincible: true });
+  for (let k = 0; k < 12; k++) game.addCrowd(20); // des recrues une à une : la plupart apportent une pancarte
+  const r = renderer();
+  r.snap(game);
+  return { game, r };
+}
+
+/**
+ * La boucle de main.js : des pas fixes de DT, la caméra qui suit à chaque pas, un dessin par image de l'écran.
+ * `frames` : la durée de chaque image. Rend, image par image, où le héros, chaque manifestant et chaque pancarte
+ * levée sont dessinés à l'écran.
+ */
+function play(r, game, frames) {
+  const seen = [];
+  let acc = DT / 4;
+  const actor = r.actor.bind(r);
+  const marcher = r.marcher.bind(r);
+  const board = r.board.bind(r);
+  let shot = null;
+  r.actor = (a, rows, opts) => {
+    const at = actor(a, rows, opts);
+    if (a === game.hero && at) shot.set('héros', at.x);
+    return at;
+  };
+  r.marcher = (m, i) => {
+    shot.set(`manifestant ${i}`, r.spot(m, i)?.x);
+    return marcher(m, i);
+  };
+  let signs = null;
+  r.board = (text, x, y, opts) => {
+    if (opts?.size === 4.6) {
+      shot.set(`« ${text} »`, x);
+      signs.push({ text, box: r.textBox(text, x, y, 4.6, opts.width) });
+    }
+    return board(text, x, y, opts);
+  };
+  for (const dt of frames) {
+    acc += dt;
+    while (acc >= DT) {
+      acc -= DT;
+      game.step({ right: true });
+      game.events.length = 0;
+      r.follow?.(game); // sans `follow` (avant), la caméra avance au dessin : le test échoue sur le tremblement, pas sur une erreur
+    }
+    shot = new Map();
+    signs = [];
+    r.tick(dt);
+    r.draw(game, dt);
+    // Les textes flottants tels qu'ils sont écrits à cette image (visibles tant qu'il leur reste du temps).
+    const texts = r.floaters.filter((f) => f.t > 0).map((f) => ({ text: f.text, box: r.textBox(f.text, f.x - r.cx, f.y - r.cy, f.size, 150) }));
+    seen.push({ cx: r.cx, at: shot, signs, texts });
+  }
+  Object.assign(r, { actor, marcher, board });
+  return seen;
+}
+
+test('en marche, le héros, sa manif et ses pancartes ne tremblent pas à l’écran : à 60 Hz, à 120 Hz, ou quand une image joue deux pas ou aucun', () => {
+  const { game, r } = march();
+  play(r, game, Array(240).fill(DT)); // quatre secondes : toute la manif marche au pas derrière le héros
+  const jolts = [1, 0.4, 1.6, 0.9, 1.1, 0.5, 1.5, 1, 0.3, 1.7]; // des images plus ou moins longues : zéro, un ou deux pas
+  for (const [cadence, frames] of [
+    ['60 Hz', Array(60).fill(DT)],
+    ['120 Hz', Array(120).fill(DT / 2)],
+    ['à-coups', Array.from({ length: 60 }, (_, k) => jolts[k % jolts.length] * DT)],
+  ]) {
+    const seen = play(r, game, frames);
+    assert.ok(seen.at(-1).cx - seen[0].cx > 80, `${cadence} : la rue défile`);
+    const where = new Map();
+    for (const { at } of seen) for (const [who, x] of at) where.set(who, (where.get(who) ?? new Set()).add(x));
+    assert.ok(where.has('héros') && [...where.keys()].some((k) => k.startsWith('«')), `${cadence} : le héros et des pancartes levées`);
+    for (const [who, xs] of where) assert.equal(xs.size, 1, `${cadence} : ${who} dessiné à ${[...xs].join(', ')}`);
+  }
+});
+
+test('caméra posée sur le héros : ses pieds et ceux du cortège sur le sol, même quand la vue tombe à un demi-pixel (225 × 0,58)', () => {
+  const { game, r } = march(20, 12); // une rue, du ciel au-dessus et de la terre en dessous : la caméra n'est pas au bord de la carte
+  for (let k = 0; k < 30; k++) game.step({});
+  game.events.length = 0;
+  assert.ok(game.hero.onGround);
+  Object.assign(r, { viewH: 225, anchor: 0.58 }); // 812×375 à dpr 3, au pouce : 225 × 0,58 = 130,5
+  r.snap(game);
+  const ground = 19 * 16; // le haut de la rangée du sol, dans le monde
+  assert.ok(r.cam.y > 0 && r.cam.y < 32 * 16 - 225, 'la caméra suit le héros, sans buter au bord');
+  let feet = null;
+  const actor = r.actor.bind(r);
+  r.actor = (a, rows, opts) => {
+    const at = actor(a, rows, opts);
+    if (a === game.hero && at) feet = at.y + rows.length;
+    return at;
+  };
+  r.draw(game, DT);
+  r.actor = actor;
+  assert.equal(feet, ground - r.cy, 'le héros, sur le sol');
+  game.cortege.forEach((m, i) => {
+    const s = r.spot(m, i);
+    assert.equal(s.y + s.img.height, ground - r.cy, `manifestant ${i}, sur le sol`);
+  });
+});
+
+test('en marche, un slogan ne fait baisser aucune pancarte levée : il passe au-dessus d’elle', () => {
+  // Deux fois la même marche ; dans la seconde, le slogan d'une recrue posé dans la rue, juste devant une pancarte levée.
+  const [alone, crossed] = [false, true].map((withText) => {
+    const { game, r } = march();
+    const warm = play(r, game, Array(240).fill(DT));
+    const [first] = warm.at(-1).signs;
+    assert.ok(first, 'une pancarte levée');
+    if (withText) r.float({ x: first.box.x1 + r.cx + 30, y: (first.box.y0 + first.box.y1) / 2 + r.cy, text: 'TOUS ENSEMBLE', t: 1.6 });
+    return play(r, game, Array(90).fill(DT));
+  });
+  const up = (shot) => new Set(shot.signs.map((s) => s.text));
+  let met = 0;
+  crossed.forEach((shot, k) => {
+    for (const t of shot.texts) {
+      for (const s of shot.signs) {
+        assert.ok(!overlap(t.box, s.box), `image ${k} : « ${t.text} » sur « ${s.text} »`);
+        if (t.box.x0 < s.box.x1 && t.box.x1 > s.box.x0) met++; // à l'aplomb d'une pancarte levée : il la croise
+      }
+    }
+    if (!k) return;
+    // Levée à l'image d'avant, encore levée sans le texte : elle l'est aussi avec lui.
+    for (const text of up(crossed[k - 1])) if (up(alone[k]).has(text)) assert.ok(up(shot).has(text), `image ${k} : « ${text} » baissée par le texte`);
+  });
+  assert.ok(met > 20, `le texte croise les pancartes (${met} fois)`);
+  assert.ok(crossed.at(-1).texts.some((t) => t.text === 'TOUS ENSEMBLE'), 'et reste écrit');
+});
+
+test('sans place au-dessus d’une pancarte levée, un slogan la laisse levée et s’efface en fondu ; un gain passe, elle se baisse un instant', () => {
+  // Valentin : « Le gain d'abord : les gains, « +1 », « ON REPART D'ICI » et les noms de spéciale passent toujours :
+  // la pancarte qu'ils touchent se baisse un instant. Les slogans, eux, laissent la pancarte levée. »
+  const r = renderer();
+  const cortege = crowd(1);
+  const [m] = cortege;
+  const frame = (clock) => {
+    r.clock = clock;
+    r.boxes = [];
+    place(r, [], cortege);
+  };
+  frame(0);
+  assert.ok(r.raised.has(m), 'une pancarte levée');
+  const s = r.spot(m, 0);
+  const sign = r.textBox(m.label, s.hand, s.top, 4.6, s.width);
+  r.hudBottom = (sign.y0 - 4) * r.ratio - 4; // le HUD descend jusqu'au-dessus d'elle : aucune place plus haut
+  const at = { x: (sign.x0 + sign.x1) / 2, y: sign.y0 + 4 };
+  const onSign = (f) => overlap(r.textBox(f.text, f.x, f.y, f.size, 150), sign);
+  // Un slogan qui naît là, jamais montré : il ne s'affiche pas, la pancarte reste levée.
+  r.float({ ...at, text: 'DE L’ARGENT POUR L’HÔPITAL', t: 1.6 });
+  frame(0.1);
+  assert.ok(r.raised.has(m), 'le slogan laisse la pancarte levée');
+  assert.ok(!r.floaters.some((f) => f.text === 'DE L’ARGENT POUR L’HÔPITAL'), 'jamais montré : il ne s’affiche pas');
+  // Un slogan déjà montré qui n'a plus de place : il s'efface en fondu, sans se poser sur elle.
+  r.float({ ...at, text: 'TOUS ENSEMBLE', t: 1.6 });
+  const slogan = r.floaters.at(-1);
+  slogan.seen = true;
+  frame(0.2);
+  assert.ok(r.raised.has(m), 'toujours levée');
+  assert.ok(slogan.t > 0 && slogan.t <= 0.25, `en fondu (${slogan.t})`);
+  assert.ok(!onSign(slogan), 'pas sur la pancarte');
+  r.floaters = [];
+  // Un gain au même endroit : il passe, la pancarte se baisse ; il s'en va, elle se relève.
+  r.float({ ...at, text: '+ 20', n: 20, t: 1.8, size: 11, gain: true });
+  const gain = r.floaters.at(-1);
+  frame(0.3);
+  assert.ok(!r.raised.has(m), 'la pancarte se baisse devant le gain');
+  assert.equal(gain.t, 1.8, 'le gain reste entier');
+  r.floaters = [];
+  frame(1);
+  assert.ok(r.raised.has(m), 'le gain passé, elle se relève');
 });
