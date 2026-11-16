@@ -681,3 +681,18 @@ test('en marche, un texte flottant ne fait baisser aucune pancarte levée : il p
   assert.ok(met > 20, `le texte croise les pancartes (${met} fois)`);
   assert.ok(crossed.at(-1).texts.some((t) => t.text === '+ 30'), 'et reste écrit');
 });
+
+test('un texte flottant sans place au-dessus d’une pancarte levée s’efface : il ne passe pas sur le cortège, dessous', () => {
+  const r = renderer();
+  const ceiling = r.ceiling();
+  const sign = { x0: 150, x1: 250, y0: ceiling + 4, y1: ceiling + 18 }; // une pancarte levée tout juste sous le HUD
+  r.float({ x: 200, y: ceiling + 8, text: 'DE L’ARGENT POUR L’HÔPITAL', t: 1.6 });
+  r.placeLoose([sign], [sign]);
+  assert.equal(r.floaters[0].t, 0, 'effacé');
+  // De la place au-dessus : il y monte, toujours écrit.
+  const low = { x0: 150, x1: 250, y0: ceiling + 60, y1: ceiling + 74 };
+  r.float({ x: 200, y: ceiling + 64, text: 'TOUS ENSEMBLE', t: 1.6 });
+  r.placeLoose([low], [low]);
+  const f = r.floaters.find((g) => g.text === 'TOUS ENSEMBLE');
+  assert.ok(f.t > 0 && !overlap(r.textBox(f.text, f.x, f.y, f.size, 150), low), 'au-dessus d’elle');
+});

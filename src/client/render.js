@@ -1398,8 +1398,8 @@ export class Renderer {
 
   /**
    * Les autres passent autour de ce qui est déjà placé (`placed`), pancartes levées comprises : au-dessus, sinon,
-   * au plafond, en dessous. Une pancarte levée reste lisible : un texte qui n'a pas trouvé de place hors de l'une
-   * d'elles (`signs`) s'efface.
+   * au plafond, en dessous. Une pancarte levée reste lisible, et le cortège sous elle aussi : un texte qui n'a pas
+   * de place au-dessus de l'une d'elles (`signs`) s'efface, au lieu de passer dessous.
    */
   placeLoose(placed, signs = []) {
     const ceiling = this.ceiling();
@@ -1409,10 +1409,10 @@ export class Renderer {
       const box = this.textBox(f.text, f.x - this.cx, f.y - this.cy, f.size, 150);
       const hit = () => placed.find((b) => over(box, b));
       for (let k = 0, other; k < 8 && (other = hit()); k++) shift(f, box, other.y0 - 1 - box.y1);
-      // Trop haut : il s'arrête au plafond, et passe sous ce qui le gêne encore.
+      // Trop haut : il s'arrête au plafond, et passe sous ce qui le gêne encore (une pancarte levée : il s'efface).
       if (box.y0 < ceiling) {
         shift(f, box, ceiling - box.y0);
-        for (let k = 0, other; k < 8 && (other = hit()); k++) shift(f, box, other.y1 + 1 - box.y0);
+        for (let k = 0, other; k < 8 && (other = hit()) && !signs.includes(other); k++) shift(f, box, other.y1 + 1 - box.y0);
       }
       if (signs.some((b) => over(box, b))) {
         f.t = 0;
