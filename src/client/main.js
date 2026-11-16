@@ -342,7 +342,7 @@ function frame(now) {
     while (acc >= DT && steps < 6 && (mode === 'playing' || mode === 'menu')) {
       acc -= DT;
       steps++;
-      game.step(demo ? botActions(game, bot) : input.actions());
+      game.step(demo ? botActions(game, bot) : input.actions(game));
       const events = game.events.splice(0);
       if (demo) renderer.absorb(events);
       else handle(events);

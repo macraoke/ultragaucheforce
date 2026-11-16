@@ -1,6 +1,9 @@
 // Entrées : clavier, tactile et manette, fondus en un seul état d'actions
 // { left, right, up, down, jump, fire, special } que la simulation lit à chaque pas.
 
+import { hitsSolid } from '../sim/physics.js';
+import { TILE } from '../sim/world.js';
+
 /** Touches par POSITION sur le clavier (identiques en AZERTY et QWERTY). */
 const KEYS = {
   ArrowLeft: 'left', KeyA: 'left',
@@ -25,9 +28,9 @@ export const KEY_NAMES = {
 /** Le tableau complet des commandes (écran Commandes, README) : toutes les touches qui marchent. */
 export const CONTROLS = [
   ['Avancer', '← → ou Q D', 'croix ou stick', 'moitié gauche : glisser le pouce'],
-  ['Sauter, grimper', 'Espace, ↑ ou Z', 'A', 'SAUT, ou pouce gauche vers le haut'],
+  ['Sauter, grimper', 'Espace, ↑ ou Z', 'A', 'SAUT, ou pouce gauche vers le haut ; penché vers un mur, tenu, on grimpe'],
   ['Tirer (maintenir)', 'J, X ou Entrée', 'X ou gâchette droite', 'TIR'],
-  ['Creuser, viser en haut', '↓ ou ↑ sans avancer, puis tirer', 'bas ou haut, puis tirer', 'pouce gauche vers le bas ou le haut, puis TIR'],
+  ['Creuser, viser en haut', '↓ ou ↑ sans avancer, puis tirer', 'bas ou haut, puis tirer', 'pouce gauche vers le bas ou le haut, puis TIR ; ou TIR glissé vers le haut'],
   ['Spéciale', 'K, C ou Maj', 'B ou gâchette gauche', 'SPÉ'],
   ['Pause', 'Échap ou P', 'Start', 'II'],
 ];
@@ -75,15 +78,21 @@ export const padInUse = (pad) => PAD_BUTTONS.some((i) => pad.buttons[i]?.pressed
 
 /**
  * Les zones tactiles, en fractions de l'écran tenu en paysage. Pas de boutons à viser : tout l'écran répond.
- * Moitié gauche : un manche flottant, là où le pouce se pose. Moitié droite : trois cibles, la plus proche gagne.
+ * Moitié gauche : un manche flottant, là où le pouce se pose. Moitié droite : TIR et SAUT, le plus proche gagne ;
+ * au-dessus de TIR, le tir vise en haut. SPÉ ne répond qu'à un doigt posé sur elle.
  */
 export const ZONES = {
   split: 0.5, // frontière entre le manche et les actions
   dead: 10, // course morte du manche, en pixels
   reach: 44, // course utile : au-delà, le manche suit le pouce
-  lift: 0.17, // pousser le manche vers le haut de cette fraction de l'écran : saut
+  lift: 26, // pousser le manche vers le haut d'autant de pixels : saut (avant le bout de sa course, diagonale comprise)
+  drop: 16, // … et le saut ne se relâche que redescendu sous autant de pixels : un pouce qui tremble ne sautille pas
+  cone: 30, // poussé vers le haut à moins de 30° de la verticale : on ne marche pas, le tir vise en haut
+  slack: 12, // … et on n'en sort qu'au-delà de 30 + 12° : un pouce qui tremble de 3 px ne fait pas clignoter la marche
   pull: 26, // tirer le manche vers le bas d'autant de pixels : le tir vise en bas (on creuse)
   both: 26, // à peu près à égale distance de TIR et de SAUT (écart en pixels) : les deux
+  aim: 0.11, // un doigt de TIR monté au-dessus du bouton (en fraction du petit côté de l'écran) : le tir vise en haut
+  press: 0.1, // SPÉ : un doigt posé à moins de cette distance de son centre (fraction du petit côté), jamais glissé
   stick: { x: 0.14, y: 0.72 }, // où le manche se repose quand personne n'y touche
   targets: [
     { action: 'fire', x: 0.87, y: 0.72 },
@@ -91,6 +100,11 @@ export const ZONES = {
     { action: 'special', x: 0.9, y: 0.34 },
   ],
 };
+
+/** Le manche est-il poussé vers le haut ? Une fois en haut, il y reste tant qu'il ne redescend pas franchement. */
+const lifted = (rise, was) => rise > (was ? ZONES.drop : ZONES.lift);
+/** Poussé à moins de 30° de la verticale (42° pour en sortir, une fois dedans) ? */
+const upright = (dx, rise, was) => rise > 0 && Math.abs(dx) <= rise * Math.tan(((ZONES.cone + (was ? ZONES.slack : 0)) * Math.PI) / 180);
 
 /**
  * Quelles actions sont enfoncées, étant donné les doigts posés ? Fonction pure, testée dans Node.
@@ -101,28 +115,44 @@ export const ZONES = {
  */
 export function touchActions(points, view) {
   const pressed = {};
+  const unit = Math.min(view.w, view.h); // l'unité des boutons à l'écran (`vmin`)
+  const spot = (action) => {
+    const t = ZONES.targets.find((z) => z.action === action);
+    return { action, x: t.x * view.w, y: t.y * view.h };
+  };
+  const [fire, jump, special] = [spot('fire'), spot('jump'), spot('special')];
   for (const p of points) {
     if (p.stick ?? p.ox < view.w * ZONES.split) {
       const dx = p.x - p.ox;
       const down = p.y - (p.ay ?? p.oy);
+      const rise = p.oy - p.y;
       if (down > ZONES.pull && down > Math.abs(dx)) {
         pressed.down = true; // tiré vers le bas : on vise sous ses pieds, sans avancer
         continue;
       }
+      // Suivi pas à pas (`trackPoint`), le doigt garde ce qu'il a déjà dit ; sinon on le lit sur sa seule position.
+      if (p.lifted ?? lifted(rise, false)) {
+        pressed.jump = true;
+        if (p.upright ?? upright(dx, rise, false)) {
+          pressed.up = true; // poussé vers le haut, de biais ou non : on ne marche pas, le tir suit vers le haut
+          continue;
+        }
+      }
       if (dx < -ZONES.dead) pressed.left = true;
       else if (dx > ZONES.dead) pressed.right = true;
-      if (p.oy - p.y > view.h * ZONES.lift) {
-        pressed.jump = true;
-        if (Math.abs(dx) <= ZONES.dead) pressed.up = true; // poussé droit vers le haut : le tir suit
-      }
       continue;
     }
-    const [first, second] = ZONES.targets
-      .map((t) => ({ action: t.action, d: Math.hypot(p.x - t.x * view.w, p.y - t.y * view.h) }))
+    // SPÉ part d'un doigt posé sur elle, jamais d'un pouce qui glisse depuis TIR ou SAUT ; posé dessus, il reste SPÉ.
+    if (Math.hypot(p.ox - special.x, p.oy - special.y) <= ZONES.press * unit) {
+      pressed.special = true;
+      continue;
+    }
+    const [first, second] = [fire, jump]
+      .map((t) => ({ action: t.action, d: Math.hypot(p.x - t.x, p.y - t.y) }))
       .sort((m, n) => m.d - n.d);
     pressed[first.action] = true;
-    const pair = [first.action, second.action].sort().join('+');
-    if (pair === 'fire+jump' && second.d - first.d < ZONES.both) pressed[second.action] = true; // le pouce à cheval
+    if (second.d - first.d < ZONES.both) pressed[second.action] = true; // le pouce à cheval
+    else if (first.action === 'fire' && fire.y - p.y > ZONES.aim * unit) pressed.up = true; // monté au-dessus de TIR
   }
   return pressed;
 }
@@ -137,12 +167,81 @@ export function touchActions(points, view) {
 export function trackPoint(p, at, view) {
   const next = { ...(p || { ox: at.x, oy: at.y, ay: at.y, stick: at.x < view.w * ZONES.split }), ...at };
   if (!next.stick) return next;
-  // Le manche suit le pouce : on change de direction tout de suite, et on saute d'une poussée vers le haut.
-  if (Math.abs(next.x - next.ox) > ZONES.reach) next.ox = next.x - Math.sign(next.x - next.ox) * ZONES.reach;
+  // Le manche suit le pouce : sorti de l'anneau, l'anneau glisse avec lui, dans la direction du pouce. On change de
+  // direction tout de suite, et un pouce parti loin en haut à gauche dit toujours « en haut à gauche ».
+  const dx = next.x - next.ox;
+  const rise = Math.max(0, next.oy - next.y);
+  const reach = Math.hypot(dx, rise);
+  if (reach > ZONES.reach) {
+    next.ox = next.x - (dx * ZONES.reach) / reach;
+    if (rise > 0) next.oy = next.y + (rise * ZONES.reach) / reach;
+  }
   if (next.y - next.oy > ZONES.dead) next.oy = next.y - ZONES.dead;
   // Pour viser en bas, on mesure la descente depuis le point le plus haut atteint, sur la course du manche.
   next.ay = Math.max(Math.min(next.ay, next.y), next.y - ZONES.reach);
+  // Ce que le manche dit déjà ne bascule pas au moindre tremblement : un seuil pour entrer, un plus large pour sortir.
+  next.lifted = lifted(next.oy - next.y, p?.lifted);
+  next.upright = next.lifted && upright(next.x - next.ox, next.oy - next.y, p?.upright);
   return next;
+}
+
+/** Un rebond n'en appelle un autre que s'il a fait monter le héros d'au moins autant de pixels… */
+const CLIMB_GAIN = 24;
+/** … et au plus trois rebonds d'eux-mêmes par seconde (en pas de 1/60 s) : le rythme d'un pouce, pas une vibration. */
+const CLIMB_EVERY = 20;
+
+/** Du solide dans ce rectangle, sans compter les bords de la carte : ce ne sont pas des murs où grimper. */
+function wallIn(world, x, y, w, h) {
+  const x0 = Math.max(0, Math.floor(x / TILE));
+  const x1 = Math.min((world.w ?? Infinity) - 1, Math.floor((x + w - 0.001) / TILE));
+  for (let tx = x0; tx <= x1; tx++) if (hitsSolid(world, tx * TILE, y, TILE, h)) return true;
+  return false;
+}
+
+/**
+ * Grimper au pouce, d'un geste tenu. Le pouce penche vers un mur (en diagonale, pas tout droit en haut), le saut est
+ * tenu (manche ou SAUT), le héros est en l'air contre ce mur : il y rebondit chaque fois qu'il redescend, et grimpe.
+ * Pouce tout droit en haut, rien ne change : il saute et tire en haut, sans être tiré de côté. Au clavier et à la
+ * manette, rien ne change non plus : on y grimpe en tapant le saut.
+ * Lit la partie, ne la modifie pas : seul le saut tenu se relâche un instant, pour repartir du mur.
+ * @param {object} touch  les actions des doigts (`touchActions`)
+ * @param {{x: number, y: number, w: number, h: number, vy: number, onGround: boolean, dead?: boolean}} hero
+ * @param {{solid(tx: number, ty: number): boolean, w?: number}} world
+ * @param {{let?: boolean, from?: number, top?: number, since?: number, button?: boolean}} memo  d'un pas à l'autre : le
+ *        saut relâché au pas d'avant, d'où part le dernier rebond, le plus haut atteint et les pas passés depuis, et
+ *        SAUT enfoncé
+ * @param {boolean} [button]  le pouce droit appuie sur SAUT : chaque nouvel appui contre le mur est un rebond, comme
+ *        au clavier, même quand le manche tient déjà le saut
+ */
+export function climbAssist(touch, hero, world, memo, button = false) {
+  const side = touch.left ? -1 : touch.right ? 1 : 0;
+  const press = button && !memo.button;
+  memo.button = button;
+  if (!touch.jump || !side || !hero || hero.onGround || hero.dead) {
+    memo.let = false;
+    memo.from = undefined;
+    memo.top = undefined;
+    memo.since = undefined;
+    return touch;
+  }
+  memo.top = Math.min(memo.top ?? hero.y, hero.y);
+  memo.since = (memo.since ?? 0) + 1; // le saut qui l’a décollé du sol compte aussi
+  // Un rebond par appui : quand il redescend contre le mur, le saut se relâche un pas, puis repart. Jamais contre le
+  // bord de la carte, jamais sous un plafond, pas de nouveau rebond si le précédent ne l'a pas fait monter, et pas
+  // plus de trois par seconde. Un appui du joueur sur SAUT, lui, rebondit toujours.
+  const touching = wallIn(world, side > 0 ? hero.x + hero.w : hero.x - 1, hero.y, 1, hero.h);
+  const ceiling = wallIn(world, hero.x, hero.y - TILE, hero.w, TILE);
+  const gained = memo.from === undefined || memo.from - memo.top >= CLIMB_GAIN;
+  const ready = hero.vy >= 0 && !ceiling && gained && memo.since >= CLIMB_EVERY;
+  if (touching && !memo.let && (press || ready)) {
+    memo.let = true;
+    memo.from = hero.y;
+    memo.top = hero.y;
+    memo.since = 0;
+    return { ...touch, jump: false };
+  }
+  memo.let = false;
+  return touch;
 }
 
 export class Input {
@@ -158,6 +257,7 @@ export class Input {
     this.onAny = () => {}; // premier geste : sert à débloquer le son
     this.onDevice = () => {}; // le joueur a changé d'appareil : les écrans ouverts redisent les touches
     this.held = new Set(); // boutons de manette tenus en quittant un menu : ils ne comptent en jeu qu'une fois relâchés
+    this.climb = {}; // au pouce, le mur que le héros grimpe (voir `climbAssist`)
     // L'appareil dont on montre les touches : le dernier qui a servi.
     this.device = document.body.classList.contains('tactile') ? 'pouce' : 'clavier';
 
@@ -233,16 +333,22 @@ export class Input {
     const { view } = this;
     const points = [...this.pointers.values()];
     this.touch = touchActions(points, view);
+    this.button = Boolean(touchActions(points.filter((p) => !p.stick), view).jump); // SAUT, sous le pouce droit
     for (const mark of this.marks) mark.classList.toggle('appuye', Boolean(this.touch[mark.dataset.action]));
+    // La flèche de TIR s'allume quand le tir part vraiment en haut : sans avancer (la règle de la simulation, partout).
+    const { fire, up, left, right, down } = this.touch;
+    this.marks.find((m) => m.dataset.action === 'fire')?.classList.toggle('haut', Boolean(fire && up && !left && !right && !down));
     const thumb = points.find((p) => p.stick);
     const at = thumb ? { x: thumb.ox, y: thumb.oy } : { x: ZONES.stick.x * view.w, y: ZONES.stick.y * view.h };
     this.stick.style.left = `${at.x}px`;
     this.stick.style.top = `${at.y}px`;
     this.stick.classList.toggle('appuye', Boolean(thumb));
-    const clamp = (v) => Math.max(-ZONES.reach, Math.min(ZONES.reach, v));
-    this.stick.style.setProperty('--dx', `${thumb ? clamp(thumb.x - thumb.ox) : 0}px`);
-    const drop = !thumb ? 0 : thumb.y < thumb.oy ? thumb.y - thumb.oy : thumb.y - thumb.ay; // poussé en haut, ou tiré en bas
-    this.stick.style.setProperty('--dy', `${clamp(drop)}px`);
+    // La boule reste dans l'anneau, dans la direction du pouce, même quand il en sort.
+    const dx = thumb ? thumb.x - thumb.ox : 0;
+    const dy = !thumb ? 0 : thumb.y < thumb.oy ? thumb.y - thumb.oy : thumb.y - thumb.ay; // poussé en haut, ou tiré en bas
+    const k = Math.min(1, ZONES.reach / (Math.hypot(dx, dy) || 1));
+    this.stick.style.setProperty('--dx', `${dx * k}px`);
+    this.stick.style.setProperty('--dy', `${dy * k}px`);
   }
 
   release() {
@@ -338,13 +444,17 @@ export class Input {
     else if (pressed('prev')) items[(at - 1 + items.length) % items.length].focus();
   }
 
-  /** L'état lu par la simulation. */
-  actions() {
+  /**
+   * L'état lu par la simulation.
+   * @param {{hero: object, world: object}} [game]  la partie en cours : au pouce, le héros grimpe d'un geste tenu
+   */
+  actions(game) {
     const held = {};
     for (const actions of Object.values(this.keys)) for (const action of actions.split(' ')) held[action] = true;
     const pad = this.gamepad();
+    const touch = game ? climbAssist(this.touch, game.hero, game.world, this.climb, this.button) : this.touch;
     const out = {};
-    for (const a of ACTIONS) out[a] = Boolean(held[a] || this.touch[a] || pad[a]);
+    for (const a of ACTIONS) out[a] = Boolean(held[a] || touch[a] || pad[a]);
     return out;
   }
 }

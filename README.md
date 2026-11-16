@@ -63,9 +63,9 @@ Le jeu est sur http://localhost:8080.
 | | Clavier | Manette | Tactile |
 |---|---|---|---|
 | Avancer | ← → ou Q D | croix ou stick | moitié gauche : glisser le pouce |
-| Sauter, grimper | Espace, ↑ ou Z | A | SAUT, ou pouce gauche vers le haut |
+| Sauter, grimper | Espace, ↑ ou Z | A | SAUT, ou pouce gauche vers le haut ; penché vers un mur, tenu, on grimpe |
 | Tirer (maintenir) | J, X ou Entrée | X ou gâchette droite | TIR |
-| Creuser, viser en haut | ↓ ou ↑ sans avancer, puis tirer | bas ou haut, puis tirer | pouce gauche vers le bas ou le haut, puis TIR |
+| Creuser, viser en haut | ↓ ou ↑ sans avancer, puis tirer | bas ou haut, puis tirer | pouce gauche vers le bas ou le haut, puis TIR ; ou TIR glissé vers le haut |
 | Spéciale | K, C ou Maj | B ou gâchette gauche | SPÉ |
 | Pause | Échap ou P | Start | II |
 

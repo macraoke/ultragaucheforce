@@ -119,6 +119,19 @@ L'écran de fin donne le nombre de blessés que la partie annonce côté forces 
 - **Des écrans courts** : un écran, une idée ; ce qui précise se déplie. Une citation est simplement signée, et sa signature mène à la source.
 - **L'Atelier se dessine** : une palette d'images, on peint, on essaie.
 
+## Les commandes au pouce
+
+Valentin, le 16 novembre 2026, après avoir joué sur son téléphone : « also on mobile some cntrols are hard to use. like going up whilst shooting , and sometimes i trigger the special attack without wanting it ».
+
+- **Le manche se lit par secteurs** : poussé vers le haut à 30° près de la verticale, on saute et le tir vise en haut, sans marcher ; en diagonale, on avance et on saute. Le saut part dans l'anneau du manche, avant le bout de sa course.
+- **Un pouce qui tremble ne bascule pas** : le saut part à 26 pixels et ne se relâche que sous 16 ; on entre dans le secteur du haut à 30° de la verticale et on n'en sort qu'au-delà de 42°.
+- **L'anneau suit le pouce** : sorti du cercle, le pouce garde sa direction et son appui ; la boule reste dans l'anneau.
+- **Grimper d'un geste tenu, le pouce penché vers le mur.** Valentin, le 16 novembre 2026 : « Si le pouce penche : l'aide ne joue que si le pouce est en diagonale vers le mur ; pouce tout droit en haut, le héros saute et tire en haut, sans être tiré de côté. » En l'air contre le mur, saut tenu (manche ou SAUT), le héros rebondit chaque fois qu'il redescend. Jamais sous un plafond, jamais contre le bord de la carte, et pas de nouveau rebond si le précédent ne l'a pas fait monter. Un appui sur SAUT contre le mur reste un rebond, comme au clavier. Au clavier et à la manette, rien ne change : la simulation ne change pas, seuls les doigts sont lus autrement.
+- **TIR glissé vers le haut vise en haut**, sans sauter : le pouce qui tire n'a pas à lâcher son bouton. Une flèche au-dessus de TIR le montre.
+- **SPÉ ne part que d'un appui posé dessus**, jamais d'un pouce qui glisse depuis TIR ou SAUT. Le reste du haut de l'écran, à droite, tire en haut. Le glissement entre SAUT et TIR reste.
+- On vise en haut sans avancer, comme au clavier et à la manette : la règle est celle de la simulation, la même partout.
+- **Le héros se repère dans la manif** : une petite flèche d'or au-dessus de sa tête, seulement quand le cortège l'entoure.
+
 ## Une sauvegarde qui survit aux mises à jour
 
 Tout est sur l'appareil du joueur ; une mise à jour ne lui fait rien perdre.
