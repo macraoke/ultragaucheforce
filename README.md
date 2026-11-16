@@ -38,7 +38,7 @@ Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les platea
 | ![Le duplex de BFM-TV](docs/captures/duplex-bfm.jpg) | ![La fortune, à l'échelle](docs/captures/taxe-fortune.jpg) |
 | ![Le menu](docs/captures/menu.jpg) | ![L'ouverture d'un niveau](docs/captures/ouverture.jpg) |
 | ![Un camarade libéré](docs/captures/carton-heros.jpg) | ![Fin de niveau](docs/captures/fin-de-niveau.jpg) |
-| ![Ce que 2 % paieraient, et un fait](docs/captures/taxe-ce-que-ca-paie.jpg) | ![Le plan de campagne](docs/captures/plan-de-campagne.jpg) |
+| ![Taxée à 2 % : ce que ça paierait, et ce que chacun paie déjà](docs/captures/taxe-ce-que-ca-paie.jpg) | ![Le plan de campagne](docs/captures/plan-de-campagne.jpg) |
 | ![La Collection : les pancartes débloquées et leur rareté](docs/captures/collection-grille.jpg) | ![L'image à partager en fin de niveau](docs/captures/partage.jpg) |
 | ![Une pancarte débloquée](docs/captures/collection-carte.jpg) | ![L'appel au vote](docs/captures/appel-au-vote.jpg) |
 | ![L'Atelier : on dessine son niveau](docs/captures/atelier.jpg) | ![Sur téléphone](docs/captures/mobile-paysage.jpg) |

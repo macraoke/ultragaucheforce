@@ -5,7 +5,7 @@
 // Dans l'album, les cartes sont compactes et toutes de la même taille (`miniCard`) ; on en
 // touche une, elle s'ouvre en grand avec ses références (`openCard`, `collectionCard`).
 
-import { h, link, frenchDate, signature, sourceName } from './dom.js';
+import { h, link, frenchDate, signature, sourceName, billions } from './dom.js';
 import { RARITIES } from '../content/rules.js';
 import { sprite, spriteElement } from './sprites.js';
 import { isFound } from './save.js';
@@ -83,18 +83,22 @@ export function levelOrder(bundle) {
 /** Les trois démarches que rappelle l'appel au vote. */
 export const VOTE_FICHES = ['presidentielle-dates', 'inscription-listes', 'procuration'];
 
-/** Les fiches que la scène de taxe apprend au joueur. */
-/** Le dictionnaire de la scène de taxe : à qui comparer une fortune, ce que la taxe paierait, les faits chocs. */
+/**
+ * Le dictionnaire de la scène de taxe : à qui comparer une fortune, ce que la taxe paierait. Les faits chocs, eux,
+ * passent à l'écran de fin d'un niveau où l'on a taxé, dans « Et en vrai ? ».
+ */
 export const taxScales = (bundle) => Object.values(bundle.fiches).filter((f) => f.compare && f.valeur > 0);
 export const taxUses = (bundle) => Object.values(bundle.fiches).filter((f) => f.finance && f.valeur > 0);
 export const taxShocks = (bundle) => Object.values(bundle.fiches).filter((f) => f.choc);
+/** Ce que chacun paie déjà, tous impôts compris : les deux taux, toujours montrés ensemble (jamais 27 % sans 52 %). */
+export const TAX_RATES = ['prelevements-52', 'prelevements-27'];
 
 /**
  * Les fiches que la scène de taxe débloque : celles qu'elle a montrées. `shown` : ce qu'elle a tiré cette fois-ci
- * (sans lui : tout le dictionnaire, pour savoir où une fiche se débloque).
+ * (sans lui : tout le dictionnaire, faits chocs compris, pour savoir où une fiche se débloque).
  */
 export const taxFiches = (bundle, boss, shown = [...taxScales(bundle), ...taxUses(bundle), ...taxShocks(bundle)]) =>
-  [boss.fortune.fiche, ...boss.fortune.rente, 'impot-plancher', ...shown.map((f) => f.id)].filter((id) => bundle.fiches[id]);
+  [boss.fortune.fiche, ...boss.fortune.rente, 'impot-plancher', ...TAX_RATES, ...shown.map((f) => f.id)].filter((id) => bundle.fiches[id]);
 
 /** La citation dont vient un mot crié en jeu (« ÉCOTERRORISME ! ») : son mot-clé, sinon ses propres mots. */
 export function citationOfWord(bundle, word) {
@@ -231,7 +235,7 @@ function facts(kind, item) {
       item.debordement > 0 && `cède devant ${item.debordement} manifestants`].filter(Boolean);
     return [[hearts(Math.min(item.pv, 10)), item.pv > 10 ? ` ×${item.pv}` : ''], traits.join(' · ')];
   }
-  if (kind === 'boss') return [`Fortune : ${String(item.fortune.montant).replace('.', ',')} milliards d’euros`];
+  if (kind === 'boss') return [`Fortune : ${billions(item.fortune.montant)} d’euros`];
   if (kind === 'recrues') return [item.multiplie > 1 ? `Manif × ${item.multiplie}` : `+ ${item.apport} dans la manif`];
   if (kind === 'niveaux') return [item.accroche];
   if (kind === 'drapeaux') return [item.description];

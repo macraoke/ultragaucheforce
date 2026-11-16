@@ -180,7 +180,7 @@ test('légende : un signe peut remplacer une lettre, vers un ennemi, une recrue 
 
 test('carte de collection : « fiche » se répète, et chaque référence doit exister', () => {
   const { bundle } = loadContent();
-  assert.deepEqual(bundle.ennemis.crs.fiche, ['sommations-mots-exacts', 'code-562']);
+  assert.deepEqual(bundle.ennemis.crs.fiche, ['sommations-mots-exacts', 'code-562', 'crs-blesses-octobre-2026']);
   const text = textOf('content/ennemis/crs.txt').replace('fiche: code-562', 'fiche: fiche-fantome');
   expectError(errorsOf('content/ennemis/crs.txt', text), { message: /« fiche-fantome » n'existe pas dans content\/fiches\// });
   const opening = level([SKY, 'D..........S', GROUND], 'citation: citation-fantome\n');

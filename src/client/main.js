@@ -9,12 +9,13 @@ import { Audio } from './audio.js';
 import { Radio } from './music.js';
 import { Screens, Hud } from './ui.js';
 import { showHeroCard } from './herocard.js';
-import { showTaxScene } from './tax.js';
+import { showTaxScene, draw } from './tax.js';
+import { CRS_OCTOBRE_2026 } from './blesses.js';
 import { shareImage, openShare } from './share.js';
 import { measure } from './mesure.js';
 import { showAtelier } from './atelier.js';
 import { loadSave, storeSave, discover, isFound } from './save.js';
-import { cardName, citationOfWord, levelOrder, rarityName } from './collection.js';
+import { cardName, citationOfWord, levelOrder, rarityName, taxShocks } from './collection.js';
 import { registerServiceWorker } from './sw-register.js';
 
 const bundle = await (await fetch('content.json')).json();
@@ -183,13 +184,18 @@ async function win() {
   const { level, id } = current;
   const boss = game.boss?.def; // celui qu'on vient d'affronter : il est tiré au hasard
   let said = null; // ce que l'écran de taxe a dit des 2 % : l'image à partager le reprend
+  let shock = null; // après la taxe, un fait sur les inégalités : l'écran de fin le donne dans « Et en vrai ? »
   if (boss?.fortune.montant) {
     const tax = await showTaxScene(screenRoot, bundle, boss, { audio, hero: game.hero.def });
     tax.learned.forEach((f) => collect('fiches', f, true));
     collect('boss', boss.id, true);
     said = tax.said;
+    shock = draw('choc', taxShocks(bundle)) ?? null;
   }
-  for (const fiche of [level.fiche].flat()) collect('fiches', fiche, true);
+  // « Et en vrai ? » : le fait du niveau, d'où vient la répartition des blessés, le fait tiré après la taxe.
+  const hurt = game.stats.breakdownsBySelf + game.stats.breakdownsByPlayer + game.stats.overrunOrder;
+  const facts = [[level.fiche].flat()[0], hurt > 0 && CRS_OCTOBRE_2026.fiche, shock?.id].filter((id) => id && bundle.fiches[id]);
+  for (const fiche of [...[level.fiche].flat(), ...facts]) collect('fiches', fiche, true);
   const order = levelOrder(bundle);
   const index = order.indexOf(id);
   // Le score d'un niveau, c'est la taille de la manif à l'arrivée ; on garde le record.
@@ -213,7 +219,7 @@ async function win() {
     });
   };
   screens.end({
-    level, stats: game.stats, time: game.time, crowd, won, best: custom ? null : best, share,
+    level, hurt, facts, time: game.time, crowd, won, best: custom ? null : best, share,
     next: index >= 0 ? order[index + 1] : null,
     last: index === order.length - 1,
   });

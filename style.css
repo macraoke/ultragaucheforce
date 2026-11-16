@@ -411,27 +411,35 @@ html.pivote body.tactile #hud .droite { right: max(10px, env(safe-area-inset-bot
 .intro .tv em { background: var(--or); color: var(--nuit); padding: .45em .7em; font-style: normal; }
 .intro .manchette { font: 900 clamp(1.2rem, 4.4vmin, 2rem)/1.05 var(--titre); text-transform: uppercase; background: var(--blanc); color: var(--nuit); padding: .5em .7em; transform: rotate(-1deg); }
 .fin h2 small { font: 700 .5em/1.2 var(--texte); text-transform: none; letter-spacing: 0; opacity: .85; white-space: nowrap; }
-.fin .bilans { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.fin .bilans { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 12px; }
 .fin .bilans article { padding: .6em .8em; }
 .fin .bilans p { margin: 0; font-weight: 700; }
 .fin .bilans .dont { font: 400 .82rem/1.3 var(--texte); margin-top: .3em; }
 .fin .annonce { background: var(--rouge); }
 .fin .chiffre { font: 900 clamp(2rem, 8vmin, 4rem)/1 var(--titre); }
-.fin button.vrai { display: block; width: 100%; margin-top: 10px; text-align: left; background: var(--encre); color: var(--blanc); border: 0; border-left: 6px solid var(--or); box-shadow: none; font: 400 .9rem/1.3 var(--texte); letter-spacing: 0; text-transform: none; padding: .6em .8em; }
-.fin button.vrai b { text-decoration: underline; }
+.fin .vrai { display: flex; flex-wrap: wrap; align-items: baseline; gap: .2em .9em; margin-top: 10px; padding: .45em .8em; background: var(--encre); border-left: 6px solid var(--or); font: 700 .9rem/1.3 var(--texte); }
+.fin .vrai button { padding: 0; background: none; color: var(--blanc); border: 0; box-shadow: none; font: 400 .88rem/1.3 var(--texte); letter-spacing: 0; text-transform: none; text-align: left; text-decoration: underline; }
+.fin .vrai button:hover { background: none; color: var(--or); }
 .fin .debloquees { margin-top: 10px; }
 html.bas .panneau.fin { padding: 10px 14px; }
 html.bas .fin h2 { font-size: 1.25rem; margin: 0 0 6px; }
-html.bas .fin .bilans { gap: 8px; }
+html.bas .fin .bilans { grid-template-columns: minmax(0, 1fr) minmax(0, 3fr); gap: 8px; }
+/* Sur un écran bas, le nombre de blessés et son libellé sur une seule ligne. */
+html.bas .fin .annonce { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline; column-gap: .45em; }
+html.bas .fin .annonce .dont { grid-column: 1 / -1; }
 html.bas .fin .bilans article { padding: .35em .6em; }
 html.bas .fin .bilans p { font-size: .8rem; }
 html.bas .fin .bilans p.chiffre { font-size: 1.9rem; }
 html.bas .fin .bilans .dont { font-size: .72rem; margin-top: .1em; }
-html.bas .fin button.vrai { margin-top: 6px; padding: .35em .6em; font-size: .8rem; }
+html.bas .fin .vrai { margin-top: 6px; padding: .3em .6em; gap: .1em .7em; font-size: .76rem; }
+html.bas .fin .vrai button { font-size: .74rem; }
 html.bas .fin .debloquees { margin-top: 6px; padding-bottom: 4px; }
-html.bas .fin .debloquees .carte-mini { flex-basis: 64px; height: 76px; grid-template-rows: auto 40px; padding: 3px; }
+html.bas .fin .debloquees { padding-top: 2px; }
+html.bas .fin .debloquees .carte-mini { flex-basis: 58px; height: 64px; grid-template-rows: auto 34px; gap: 3px; padding: 3px; }
 html.bas .fin .debloquees .carte-mini .nom { display: none; }
 html.bas .fin .pied { margin-top: 6px; }
+html.bas .fin .pied button { padding: .45em .8em; }
+html.bas .fin .pied button.gros { font-size: 1.15rem; }
 .vote { text-align: center; }
 .vote .appel { font: 900 clamp(3rem, 16vmin, 8rem)/.9 var(--titre); text-transform: uppercase; color: var(--or); margin: .1em 0 .2em; transform: rotate(-2deg); }
 .vote .dates { font: 900 clamp(1.1rem, 4vmin, 2rem)/1.1 var(--titre); text-transform: uppercase; letter-spacing: .04em; margin: 0 0 .8em; }
@@ -471,45 +479,58 @@ html.bas .commandes h2 { font-size: 1.3rem; margin: 0 0 .3em; }
 html.bas .commandes table { font-size: .7rem; line-height: 1.25; }
 html.bas .commandes .pied { margin-top: .6em; }
 
-/* scène de taxation */
-.panneau.taxe { text-align: center; width: min(100%, 860px); }
-.taxe .montant { font: 900 clamp(2rem, 9vmin, 4.6rem)/.9 var(--titre); text-transform: uppercase; color: var(--or); margin: 0 0 .1em; }
-.taxe .montant.petit { font-size: clamp(1.5rem, 6vmin, 3rem); color: #38b764; }
-.taxe canvas.tas { display: block; width: auto; max-width: 100%; height: auto; max-height: calc(var(--vh, 1vh) * 46); margin: 8px auto; background: #10111c; border: 3px solid var(--blanc); }
-.taxe .legende { display: flex; flex-wrap: wrap; justify-content: center; gap: .3em 1.4em; font-size: .85rem; }
-.taxe .legende i { display: inline-block; vertical-align: middle; margin-right: .4em; }
-.taxe .legende .liasse { width: 14px; height: 8px; background: #38b764; border: 2px solid #1f6b4a; }
-.taxe .legende .point { width: 5px; height: 5px; background: var(--rouge); }
-.taxe p.gros { font: 900 clamp(1rem, 3.4vmin, 1.5rem)/1.15 var(--titre); text-transform: uppercase; color: var(--blanc); margin: .2em 0; }
-.taxe .vrai { text-align: left; font-size: .82rem; background: var(--encre); border-left: 6px solid var(--or); padding: .6em .8em; }
-.taxe .pied { justify-content: center; }
-.taxe canvas[hidden] { display: none; }
-.taxe.faite canvas.tas { max-height: calc(var(--vh, 1vh) * 18); }
-.taxe.faite .montant { font-size: clamp(1.2rem, 4.5vmin, 2rem); color: var(--blanc); }
-.taxe.faite p.gros { font-size: .8rem; opacity: .85; }
-.taxe .resultat { font: 900 clamp(2rem, 9vmin, 4.4rem)/.9 var(--titre); text-transform: uppercase; color: var(--or); margin: .1em 0; }
-.taxe .detail[hidden] { display: none; }
-html.bas .taxe.faite canvas.tas, html.bas .taxe.faite p.gros { display: none; }
-html.bas .taxe .resultat { font-size: clamp(1.6rem, 9vmin, 2.4rem); }
-.taxe .choc { max-width: 620px; margin: .6em auto; text-align: left; background: var(--encre); border-left: 6px solid var(--or); padding: .5em .8em; }
-.taxe .choc b { display: block; font: 900 clamp(1rem, 3.2vmin, 1.4rem)/1.1 var(--titre); text-transform: uppercase; color: var(--or); }
-.taxe .choc p { margin: .2em 0 0; font-size: .88rem; line-height: 1.3; }
-html.bas .taxe .choc p { font-size: .78rem; }
-.taxe .qui { margin: .2em 0; font-weight: 700; }
-/* Téléphone en paysage : tout tient sans défiler, le bouton reste sous le pouce. */
-html.bas .taxe canvas.tas { max-height: calc(var(--vh, 1vh) * 30); }
-html.bas .taxe .legende { display: none; }
-html.bas .taxe .montant { font-size: clamp(1.6rem, 9vmin, 2.4rem); }
-html.bas .taxe .qui, html.bas .taxe p.gros { margin: .1em 0; }
-html.bas .panneau.taxe { padding-block: 10px; }
-.taxe .source { font-size: .75rem; margin: .4em 0 0; }
-.taxe .barres { display: grid; gap: .7em; max-width: 600px; margin: .8em auto; text-align: left; }
-.taxe .barres p { margin: 0 0 .2em; font-weight: 700; }
-.taxe .barres span { display: flex; align-items: center; gap: .6em; }
-.taxe .barres i { display: block; height: 1.7em; width: calc(var(--part) * 1%); background: var(--or); border: 3px solid var(--nuit); box-shadow: 3px 3px 0 var(--rouge); }
-.taxe .barres b { font: 900 1.6rem/1 var(--titre); color: var(--or); }
-.taxe .services { display: flex; justify-content: center; gap: 24px; font-size: clamp(2rem, 8vmin, 3.4rem); filter: grayscale(1) brightness(.45); transition: filter .8s .6s; }
-.taxe .services.allumes { filter: none; }
+/* scène de taxation : le tas à gauche, le récit à droite, à lire dans l'ordre */
+.panneau.taxe { width: min(100%, 1000px); display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); grid-template-areas: 'tas recit' 'tas pied'; gap: .9em clamp(12px, 2.6vmin, 26px); align-items: center; line-height: 1.3; }
+.taxe figure.tas { grid-area: tas; margin: 0; border: 3px solid var(--blanc); background: #10111c; }
+.taxe figure.tas canvas { display: block; width: 100%; height: auto; max-height: calc(var(--vh, 1vh) * 62); object-fit: contain; }
+.taxe .legende { display: flex; flex-wrap: wrap; gap: .2em 1.1em; padding: .4em .6em; background: var(--encre); font: 700 .82rem/1.25 var(--texte); }
+.taxe .legende .cle { display: inline-flex; align-items: center; gap: .45em; }
+.taxe .legende .cle[hidden] { display: none; }
+.taxe .legende .liasse { flex: none; width: 16px; height: 10px; background: #38b764; border: 2px solid #1f6b4a; }
+.taxe .legende .liasse.or { background: var(--or); border-color: var(--or-sombre); }
+.taxe .recit { grid-area: recit; align-self: end; min-width: 0; }
+.taxe .etapes { list-style: none; margin: 0; padding: 0; display: grid; gap: .75em; }
+.taxe .etapes li { margin: 0; padding-left: .7em; border-left: 4px solid var(--encre); }
+.taxe .etapes li[hidden] { display: none; }
+.taxe .etiquette { margin: 0; font: 900 .8rem/1.1 var(--titre); letter-spacing: .06em; text-transform: uppercase; opacity: .8; }
+.taxe .montant { margin: .06em 0; font: 900 clamp(1.7rem, 6.4vmin, 3.1rem)/.95 var(--titre); text-transform: uppercase; color: var(--or); }
+.taxe .nombre { margin: .06em 0; font: 900 clamp(1.15rem, 4vmin, 1.9rem)/1 var(--titre); text-transform: uppercase; color: var(--blanc); }
+.taxe .nombre b { font-size: 1.45em; color: var(--or); }
+.taxe .phrase { margin: .2em 0 0; font-size: .88rem; }
+.taxe .phrase .source { display: inline; margin: 0 0 0 .2em; font-size: .72rem; opacity: .85; }
+/* Les deux taux sur une même grille : les barres partent du même bord, leurs longueurs se comparent. */
+.taxe .barres { display: grid; grid-template-columns: max-content minmax(0, 1fr) max-content; align-items: center; gap: .3em .6em; margin: .25em 0 .1em; font-size: .88rem; font-weight: 700; }
+.taxe .barre { display: contents; }
+.taxe .barre i { display: block; height: 1.15em; width: calc(var(--part) / 55 * 100%); background: var(--or); box-shadow: 3px 3px 0 var(--rouge); }
+.taxe .barre b { font: 900 1.35rem/1 var(--titre); color: var(--or); text-align: right; white-space: nowrap; }
+.taxe .pied { grid-area: pied; align-self: start; margin: 0; }
+.taxe .pied button.gros { max-width: 100%; line-height: 1.05; text-align: left; }
+/* « Taxer les riches » : la suite du récit arrive étape par étape */
+.taxe.faite .etapes li:not(.fortune) { animation: etape .35s ease-out both; animation-delay: calc(var(--rang, 0) * .35s + .25s); }
+@keyframes etape { from { opacity: 0; transform: translateY(8px); } }
+body.sobre .taxe .etapes li { animation: none !important; }
+@media (prefers-reduced-motion: reduce) { .taxe .etapes li { animation: none !important; } }
+/* Une fenêtre étroite et debout (pas un téléphone, qui pivote en paysage) : le tas au-dessus du récit. */
+@media (max-width: 640px) and (orientation: portrait) { html:not(.pivote) .panneau.taxe { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'tas' 'recit' 'pied'; } }
+/* Téléphone en paysage : tout tient sans défiler ; le bouton passe sous le tas, sous le pouce, et le récit a toute la hauteur. */
+html.bas .panneau.taxe { grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); grid-template-areas: 'tas recit' 'pied recit'; padding: 10px 12px; gap: 8px 12px; }
+html.bas .taxe figure.tas { align-self: end; }
+html.bas .taxe .recit { align-self: center; }
+html.bas .taxe figure.tas canvas { max-height: calc(var(--vh, 1vh) * 68); }
+html.bas .taxe .legende { padding: .25em .45em; font-size: 11px; }
+html.bas .taxe .legende .liasse { width: 12px; height: 8px; }
+html.bas .taxe .etapes { gap: .3em; }
+html.bas .taxe .etapes li { padding-left: .5em; border-left-width: 3px; }
+html.bas .taxe .etiquette { font-size: 11px; }
+html.bas .taxe .montant { font-size: 1.55rem; }
+html.bas .taxe .nombre { font-size: 1rem; }
+html.bas .taxe .phrase { margin-top: .1em; font-size: 11px; line-height: 1.2; }
+html.bas .taxe .phrase .source { font-size: 11px; }
+html.bas .taxe .barres { gap: .15em .5em; margin: .1em 0 0; font-size: 11px; }
+html.bas .taxe :is(.impot, .paie) :is(.etiquette, .nombre) { display: inline; margin-right: .4em; }
+html.bas .taxe .barre i { height: .85em; box-shadow: 2px 2px 0 var(--rouge); }
+html.bas .taxe .barre b { font-size: .95rem; }
+html.bas .taxe .pied button.gros { font-size: 1rem; padding: .5em .8em; }
 
 /* atelier : tout l'écran, la carte au centre, la palette à gauche */
 #ecran:has(> .atelier) { place-items: stretch; background: var(--nuit); padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
