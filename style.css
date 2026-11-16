@@ -48,6 +48,8 @@ button, .bouton {
 button:hover, .bouton:hover { background: var(--blanc); }
 button:active, .bouton:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--rouge); }
 button.discret { background: transparent; color: var(--papier); border-color: var(--papier); box-shadow: none; }
+/* « bêta » : sur le bouton qui ouvre l'Atelier, et dans l'Atelier */
+.beta { display: inline-block; margin-left: .4em; padding: .2em .4em; background: var(--rouge); color: var(--blanc); font: 900 .62em/1 var(--titre); letter-spacing: .05em; text-transform: uppercase; vertical-align: .15em; }
 
 /* ------------------------------------------------------------------ carton de héros */
 
@@ -651,6 +653,7 @@ html.bas .taxe .pied button.gros { font-size: 1rem; padding: .5em .8em; }
 .atelier .niveaux .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
 .atelier .niveaux .actions span { font-weight: 700; margin-right: 4px; }
 .atelier.accueil .barre .edition, .atelier.accueil .etat .outil, .atelier.accueil .etat .sauve { display: none; }
+.atelier .barre .beta { flex: none; margin: 0; padding: .45em .55em; font-size: .72rem; }
 /* les autres contributions : à droite, sous « GitHub », au-dessus de « Mes niveaux » */
 .atelier .liens { left: auto; right: 0; z-index: 5; width: min(270px, 100%); align-content: start; gap: 5px; }
 .atelier .liens a.bouton { display: block; padding: .55em .7em; font-size: .8rem; background: transparent; color: var(--papier); border: 2px solid var(--papier); box-shadow: none; }

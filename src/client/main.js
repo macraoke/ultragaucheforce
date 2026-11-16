@@ -175,11 +175,12 @@ let atelier = null; // le module de l'Atelier, chargé à sa première ouverture
  */
 async function openAtelier(button = null, resume = false) {
   if (!atelier) {
-    const label = button?.textContent;
+    const label = button?.innerHTML; // le libellé et son étiquette « bêta »
     const slow = button && setTimeout(() => (button.textContent = 'Chargement…'), 150);
     atelier = await import('./atelier.js').catch(() => null);
     clearTimeout(slow);
-    if (button) button.textContent = atelier ? label : 'Atelier : pas de réseau';
+    if (button && atelier) button.innerHTML = label;
+    else if (button) button.textContent = 'Atelier : pas de réseau';
     if (!atelier || (button && !button.isConnected)) return; // pas de réseau, ou le joueur est passé à un autre écran
   }
   setMode('menu');

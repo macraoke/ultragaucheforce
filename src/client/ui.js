@@ -88,6 +88,13 @@ export class Screens {
     return this.go.testing?.() ? this.button('← Retour à l’édition', () => this.go.edit(), className) : null;
   }
 
+  /** L'Atelier est en bêta : le bouton qui l'ouvre le dit. */
+  /** Le bouton qui ouvre l'Atelier, avec son étiquette « bêta » ; il dit, sur lui, que l'Atelier se charge. */
+  atelierButton(label) {
+    const button = this.button([label, ' ', h('small', { className: 'beta' }, 'bêta')], () => this.go.atelier(button));
+    return button;
+  }
+
   /** L'appareil dont on montre les touches : clavier, manette ou pouce. */
   get device() {
     return this.go.device?.() || 'clavier';
@@ -108,7 +115,6 @@ export class Screens {
 
   menu() {
     const heroes = Object.values(this.bundle.heros).filter((x) => x.statut === 'jouable');
-    const atelier = this.button('Atelier', () => this.go.atelier(atelier)); // il dit, sur lui, que l'Atelier se charge
     this.show('menu',
       h('div', { className: 'logo' }, h('span', {}, 'UltraGauche'), h('span', {}, 'Force')),
       h('p', { className: 'devise' }, 'Taxez les riches. Abattez la Citadelle.'),
@@ -117,7 +123,7 @@ export class Screens {
         this.button('Jouer', () => this.go.play(this.nextLevel()), 'gros'),
         this.button('Campagne', () => this.levels()),
         this.button(`Collection ${collectionCount(this.bundle, this.save).found}/${collectionCount(this.bundle).total}`, () => this.collection()),
-        atelier,
+        this.atelierButton('Atelier'),
         this.button('Commandes', () => this.controls()),
         this.button('Options', () => this.options()),
         this.button('À propos', () => this.about()),
@@ -153,11 +159,10 @@ export class Screens {
         best ? h('div', { className: 'record' }, h('small', {}, 'Record'), h('b', {}, `✊ ${best.toLocaleString('fr-FR')}`)) : null,
         play);
     };
-    const draw = this.button('Dessiner une étape', () => this.go.atelier(draw));
     this.show('liste plan',
       h('h2', {}, 'Plan de campagne'),
       h('ol', { className: 'etapes' }, levelOrder(this.bundle).map(stop)),
-      h('div', { className: 'pied' }, this.back(), draw));
+      h('div', { className: 'pied' }, this.back(), this.atelierButton('Dessiner une étape')));
     this.escape = () => this.menu();
     ahead?.focus({ preventScroll: true });
     ahead?.closest('li').scrollIntoView({ block: 'center' }); // un écran bas défile jusqu'à elle

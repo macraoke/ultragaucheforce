@@ -874,6 +874,7 @@ export function showAtelier(root, { bundle, save, test, back, resume = false }) 
   const panel = h('section', { className: 'panneau atelier' },
     h('div', { className: 'barre' },
       h('button', { type: 'button', className: 'discret', onclick: () => leave(back) }, '← Retour'),
+      h('span', { className: 'beta' }, 'Atelier bêta'),
       settingsButton, shelfButton, h('span', { className: 'pousse' }), undoButton, redoButton, textButton, testButton, proposeButton,
       linksButton),
     h('div', { className: 'etabli' },
