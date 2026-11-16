@@ -652,7 +652,8 @@ html.bas .taxe .pied button.gros { font-size: 1rem; padding: .5em .8em; }
 .atelier .niveaux li > input { flex: 1 1 14em; }
 .atelier .niveaux .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
 .atelier .niveaux .actions span { font-weight: 700; margin-right: 4px; }
-.atelier.accueil .barre .edition, .atelier.accueil .etat .outil, .atelier.accueil .etat .sauve { display: none; }
+/* sous la liste, l'éditeur sort du jeu : ni le clavier ni la manette ne s'y perdent */
+.atelier.accueil .barre .edition, .atelier.accueil .etat .outil, .atelier.accueil .etat .sauve, .atelier.accueil .palette, .atelier.accueil .plan { display: none; }
 .atelier .barre .beta { flex: none; margin: 0; padding: .45em .55em; font-size: .72rem; }
 /* les autres contributions : à droite, sous « GitHub », au-dessus de « Mes niveaux » */
 .atelier .liens { left: auto; right: 0; z-index: 5; width: min(270px, 100%); align-content: start; gap: 5px; }

@@ -318,15 +318,16 @@ export function showAtelier(root, { bundle, save, test, back, resume = false }) 
       flush();
     }
     stored();
-    renderShelf();
+    renderShelf([id, 'Renommer']);
   };
   const duplicate = (id) => {
     if (id === current) flush();
     const copy = drafts.duplicate(id);
-    stored();
+    stored(); // la liste se redessine, le clavier reste sur « Dupliquer »
     if (copy) say(WARNINGS[drafts.status] || `Dupliqué : « ${nameOf(copy.texte)} ».`);
   };
   const remove = (id) => {
+    const order = drafts.list().map((d) => d.id);
     removing = '';
     drafts.remove(id);
     if (id === current) {
@@ -336,40 +337,56 @@ export function showAtelier(root, { bundle, save, test, back, resume = false }) 
       showList(true);
     }
     stored();
+    // Le clavier passe à la ligne qui prend sa place, ou à « Nouveau niveau ».
+    const left = drafts.list();
+    const neighbour = left.find((d) => d.id === order[order.indexOf(id) + 1]) || left.at(-1);
+    renderShelf(neighbour ? [neighbour.id, 'Ouvrir'] : ['', 'Nouveau niveau']);
     say(WARNINGS[drafts.status] || 'Brouillon supprimé.');
   };
 
   const small = (text, onclick, className = 'discret') => h('button', { type: 'button', className, onclick }, text);
   const row = (draft) => {
+    const li = h('li', { className: !entry && draft.id === current ? 'ouvert' : '' });
+    li.dataset.id = draft.id;
     if (draft.id === renaming) {
       const input = h('input', {
         type: 'text', value: draft.nom, enterKeyHint: 'done', ariaLabel: 'Nouveau nom',
         onkeydown: (e) => {
-          if (e.key === 'Enter') rename(draft.id, input.value); // sans rien renvoyer : `false` annulerait la frappe
+          if (e.key !== 'Enter') return; // sans rien renvoyer : `false` annulerait la frappe
+          e.preventDefault(); // le clavier passe à « Renommer » : la même Entrée ne doit pas l'appuyer
+          rename(draft.id, input.value);
         },
       });
-      return h('li', {}, input, h('div', { className: 'actions' },
+      li.append(input, h('div', { className: 'actions' },
         small('OK', () => rename(draft.id, input.value), ''),
         small('Annuler', () => {
           renaming = '';
-          renderShelf();
+          renderShelf([draft.id, 'Renommer']);
         })));
+      return li;
     }
     const mine = !entry && draft.id === current; // celui qui attend dans l'éditeur
     const ask = (which) => () => {
       renaming = which === 'nom' ? draft.id : '';
       removing = which === 'suppression' ? draft.id : '';
-      renderShelf();
+      renderShelf([draft.id, 'Supprimer']); // la confirmation, ou, en la refermant, le bouton qui l'a ouverte
     };
     const actions = draft.id === removing
       ? [h('span', {}, 'Le supprimer pour de bon ?'), small('Supprimer', () => remove(draft.id), 'danger'), small('Garder', ask(''))]
       : [small('Ouvrir', () => openDraft(draft.id), ''), small('Tester', () => testDraft(draft.id), ''),
         small('Renommer', ask('nom')), small('Dupliquer', () => duplicate(draft.id)), small('Supprimer', ask('suppression'))];
-    return h('li', { className: mine ? 'ouvert' : '' },
+    li.append(
       h('div', { className: 'nom' }, h('b', {}, draft.nom), h('small', {}, [mine && 'ouvert', when(draft.modifie)].filter(Boolean).join(' · '))),
       h('div', { className: 'actions' }, actions));
+    return li;
   };
-  function renderShelf() {
+  /**
+   * Redessine « Mes niveaux ». Le clavier ne s'y perd pas : `focus` ([brouillon, texte du bouton]) dit où il va ;
+   * sans lui, il reste sur le même bouton de la même ligne. Un nom en cours d'écriture prend la main.
+   */
+  function renderShelf(focus = null) {
+    const had = shelf.contains(document.activeElement) ? document.activeElement : null;
+    const want = focus || (had && [had.closest('li')?.dataset.id || '', had.textContent]);
     const list = drafts.list();
     const warning = WARNINGS[drafts.status];
     shelf.replaceChildren(...[
@@ -379,8 +396,17 @@ export function showAtelier(root, { bundle, save, test, back, resume = false }) 
       list.length ? h('ul', {}, list.map(row)) : h('p', {}, 'Rien encore : dessine, ça s’enregistre tout seul.'),
     ].filter(Boolean));
     const input = shelf.querySelector('input');
-    input?.focus();
-    input?.select();
+    if (input) {
+      input.focus();
+      input.select();
+      return;
+    }
+    if (!want) return;
+    const [id, label] = want;
+    const line = id ? [...shelf.querySelectorAll('li')].find((x) => x.dataset.id === id) : null;
+    const target = [...(line || shelf).querySelectorAll('button')].find((b) => b.textContent === label)
+      || line?.querySelector('button') || shelf.querySelector('button');
+    target?.focus();
   }
 
   // ---------------------------------------------------------------- les autres contributions, sur GitHub
@@ -406,17 +432,22 @@ export function showAtelier(root, { bundle, save, test, back, resume = false }) 
     panels[name].hidden = !opening;
     refresh();
   }
-  /** « Mes niveaux » couvre l'établi ; le refermer ramène à l'édition du brouillon ouvert. */
-  function showList(on) {
+  /**
+   * « Mes niveaux » couvre l'établi ; le refermer ramène à l'édition du brouillon ouvert.
+   * @param {[string, string] | null} focus  à l'ouverture : le bouton qui prend le clavier
+   */
+  function showList(on, focus = null) {
     if (on && !closeText()) return;
     if (on) flush();
     else entry = false;
     renaming = removing = '';
     closePanels();
+    const lost = !on && (shelf.contains(document.activeElement) || document.activeElement === document.body);
     shelf.hidden = !on;
     panel.classList.toggle('accueil', on);
-    if (on) renderShelf();
+    if (on) renderShelf(focus);
     refresh();
+    if (lost) shelfButton.focus(); // le clavier ne tombe pas dans le vide : il revient au bouton « Mes niveaux »
   }
 
   // ---------------------------------------------------------------- la fiche, pour qui veut la copier
@@ -935,20 +966,27 @@ export function showAtelier(root, { bundle, save, test, back, resume = false }) 
   // Des brouillons enregistrés : on arrive sur « Mes niveaux ». Sinon, on dessine tout de suite.
   if (!resume && drafts.list().length) {
     entry = true;
-    showList(true);
+    showList(true, [drafts.list()[0].id, 'Ouvrir']); // Entrée, ou A, rouvre le dernier
   }
 
   // Échap referme d'abord ce qui est ouvert par-dessus la carte (le texte d'un panneau, un nom en cours,
   // un panneau, la fiche, « Mes niveaux » ouvert depuis l'édition), puis ramène à l'écran d'avant.
+  // Ce qui se referme rend le clavier au bouton qui l'avait ouvert.
   return () => {
     if (!panel.isConnected) return;
     if (sign) closeSign();
     else if (renaming || removing) {
+      const where = renaming ? [renaming, 'Renommer'] : [removing, 'Supprimer'];
       renaming = removing = '';
-      renderShelf();
-    } else if (closePanels()) refresh();
-    else if (!sheet.hidden) closeText();
-    else if (!shelf.hidden && !entry) showList(false);
+      renderShelf(where);
+    } else if (!settings.hidden || !links.hidden) {
+      const opener = settings.hidden ? linksButton : settingsButton;
+      closePanels();
+      refresh();
+      opener.focus();
+    } else if (!sheet.hidden) {
+      if (closeText()) textButton.focus();
+    } else if (!shelf.hidden && !entry) showList(false);
     else leave(back);
   };
 }

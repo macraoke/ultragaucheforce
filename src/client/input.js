@@ -62,6 +62,11 @@ export const mentions = (text, action) => [...(text || '').matchAll(TOKEN)].some
 const PAD_BUTTONS = [0, 1, 2, 4, 5, 6, 7, 9, 12, 13, 14, 15];
 const PAD_AXES = [0, 1];
 
+/** Un élément à l'écran : ni `hidden`, ni `display: none`, ni `visibility: hidden`, lui ou un parent. */
+export const shown = (el) => (el.checkVisibility
+  ? el.checkVisibility({ visibilityProperty: true, checkVisibilityCSS: true })
+  : el.getClientRects().length > 0);
+
 /**
  * Le joueur se sert-il de cette manette ? Seuls comptent les boutons et les axes que le jeu lit : une manette
  * générique posée sur la table, dont un axe inutilisé ne revient jamais à zéro, ne prend pas la main au clavier.
@@ -323,7 +328,9 @@ export class Input {
       else this.onBack();
       return;
     }
-    const items = [...(layer || document).querySelectorAll(layer ? 'button:not(:disabled), a.bouton' : '#ecran button:not(:disabled), #ecran a.bouton')];
+    // Seulement ce qu'on voit : un panneau replié ou un bouton caché n'arrête pas la croix.
+    const items = [...(layer || document).querySelectorAll(layer ? 'button:not(:disabled), a.bouton' : '#ecran button:not(:disabled), #ecran a.bouton')]
+      .filter(shown);
     if (!items.length) return;
     const at = items.indexOf(document.activeElement);
     if (pressed('ok')) (items[at] || items[0]).click();
