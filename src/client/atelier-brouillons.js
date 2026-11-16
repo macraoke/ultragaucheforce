@@ -103,7 +103,22 @@ export class Drafts {
     this.status = storage ? 'ok' : 'refus';
     this.data = empty();
     this.exists = false; // des brouillons ont déjà été enregistrés (ou, en mémoire, commencés)
+    /** Brouillon → le texte que cet onglet en a lu ou écrit en dernier : ce qui a changé ailleurs ne s'écrase pas. */
+    this.seen = new Map();
     this.read();
+  }
+
+  /** Cet onglet ouvre ce brouillon : son texte d'aujourd'hui est la base de ses prochains enregistrements. */
+  track(id) {
+    const draft = this.get(id);
+    if (draft) this.seen.set(id, draft.texte);
+    return draft;
+  }
+
+  /** Le texte enregistré de ce brouillon a-t-il changé ailleurs depuis que cet onglet l'a lu ou écrit ? */
+  changedElsewhere(id) {
+    const draft = this.get(id);
+    return Boolean(draft) && this.seen.has(id) && draft.texte !== this.seen.get(id);
   }
 
   /** Relit le stockage. Refusé, plein (en retard sur la mémoire) ou en lecture seule : la mémoire fait foi. */
@@ -189,22 +204,36 @@ export class Drafts {
       data.brouillons.push(draft);
       data.ouvert = draft.id;
     });
+    this.seen.set(draft.id, text);
     return draft;
   }
 
   /**
    * L'enregistrement d'un brouillon. Supprimé entre-temps dans un autre onglet : il revient.
-   * @returns vrai si le stockage a ce texte
+   * Changé entre-temps dans un autre onglet : on ne l'écrase pas, ce texte-ci part dans une copie, qui s'ouvre.
+   * @returns {{saved: boolean, id: string, copy: object | null}}  `saved` : le stockage a ce texte ;
+   *          `id` : le brouillon qui le porte (la copie, s'il y en a une)
    */
   save(id, text) {
-    return this.change((data) => {
+    let copy = null;
+    const saved = this.change((data) => {
       const draft = data.brouillons.find((d) => d.id === id);
       if (draft?.texte === text) return false;
       const at = this.now();
+      if (draft && this.seen.has(id) && draft.texte !== this.seen.get(id)) {
+        const name = freeName(`${nameOf(text)} (copie)`, data.brouillons.map((d) => nameOf(d.texte)));
+        copy = { id: newId(at), texte: retitle(text, name), cree: at, modifie: at };
+        data.brouillons.push(copy);
+        data.ouvert = copy.id;
+        return true;
+      }
       if (draft) Object.assign(draft, { texte: text, modifie: at });
       else data.brouillons.push({ id, texte: text, cree: at, modifie: at });
       return true;
     });
+    if (copy) this.seen.set(copy.id, copy.texte);
+    else this.seen.set(id, text);
+    return { saved, id: copy?.id ?? id, copy };
   }
 
   rename(id, name) {
@@ -212,6 +241,7 @@ export class Drafts {
       const draft = data.brouillons.find((d) => d.id === id);
       if (!draft) return false;
       Object.assign(draft, { texte: retitle(draft.texte, name), modifie: this.now() });
+      if (this.seen.has(id)) this.seen.set(id, draft.texte);
       return true;
     });
   }
@@ -238,6 +268,7 @@ export class Drafts {
       if (data.ouvert === id) data.ouvert = '';
       return found;
     });
+    this.seen.delete(id);
     return found;
   }
 

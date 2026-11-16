@@ -59,7 +59,7 @@ test('brouillons : un niveau commencé se retrouve après la fermeture de l’on
   const draft = tab.create(TEMPLATE);
   const { model } = paint(readLevel(TEMPLATE), [{ x: 5, y: 3 }], { type: 'tuile', char: 'B' });
   now.add(60_000);
-  assert.equal(tab.save(draft.id, writeLevel(model)), true);
+  assert.equal(tab.save(draft.id, writeLevel(model)).saved, true);
   assert.equal(tab.status, 'ok');
 
   const reopened = new Drafts({ storage: disk, now }); // l'onglet fermé, puis rouvert
@@ -81,7 +81,7 @@ test('brouillons : la liste donne le nom et la date, le plus récent d’abord',
   drafts.save(a.id, titled('La place du marché, au matin'));
   assert.deepEqual(drafts.list().map((d) => [d.id, d.nom]), [[a.id, 'La place du marché, au matin'], [b.id, 'Le rond-point']]);
   assert.equal(drafts.open, b.id, 'le dernier créé est ouvert');
-  assert.equal(drafts.save(b.id, drafts.get(b.id).texte), true, 'rien à changer : rien n’est réécrit');
+  assert.equal(drafts.save(b.id, drafts.get(b.id).texte).saved, true, 'rien à changer : rien n’est réécrit');
   assert.equal(drafts.list()[0].id, a.id, 'et sa date ne bouge pas');
 });
 
@@ -147,12 +147,47 @@ test('brouillons : deux onglets ne s’effacent pas l’un l’autre', () => {
   assert.ok(new Drafts({ storage: disk }).get(b.id));
 });
 
+test('brouillons : deux onglets sur le même brouillon, aucun n’efface ce que l’autre a fait', () => {
+  const disk = storage();
+  const now = clock();
+  const draw = (text, y) => writeLevel(paint(readLevel(text), [{ x: 5, y }, { x: 6, y }], { type: 'tuile', char: 'B' }).model);
+  const one = new Drafts({ storage: disk, now });
+  const id = one.create(titled('Commun')).id;
+  const a = draw(titled('Commun'), 2); // l'onglet 1 trace A
+  assert.equal(one.save(id, a).id, id);
+  const two = new Drafts({ storage: disk, now });
+  assert.equal(two.track(id).texte, a, 'l’onglet 2 ouvre le même brouillon');
+  const ab = draw(a, 4); // l'onglet 2 trace B
+  assert.deepEqual(two.save(id, ab), { saved: true, id, copy: null });
+  assert.equal(one.changedElsewhere(id), true, 'l’onglet 1 voit que le brouillon a changé ailleurs');
+  assert.equal(two.changedElsewhere(id), false);
+
+  const ac = draw(a, 6); // l'onglet 1, qui n'a pas rechargé, trace C
+  const result = one.save(id, ac);
+  assert.equal(result.saved, true);
+  assert.notEqual(result.id, id, 'pas d’écrasement : une copie');
+  const disk1 = new Drafts({ storage: disk });
+  assert.equal(disk1.get(id).texte, ab, 'B est toujours là');
+  assert.equal(nameOf(disk1.get(result.id).texte), 'Commun (copie)');
+  assert.deepEqual(readLevel(disk1.get(result.id).texte).rows, readLevel(ac).rows, 'C aussi, dans la copie');
+  assert.equal(disk1.open, result.id, 'la copie est ouverte dans l’onglet 1');
+
+  // Rechargé (ce que fait l'Atelier sur l'événement `storage`), un onglet repart du texte d'aujourd'hui.
+  const three = new Drafts({ storage: disk, now });
+  three.track(id);
+  two.save(id, draw(ab, 8));
+  three.track(id);
+  const abd = draw(three.get(id).texte, 10);
+  assert.deepEqual(three.save(id, abd), { saved: true, id, copy: null }, 'rechargé : il écrit par-dessus, sans copie');
+  assert.equal(new Drafts({ storage: disk }).list().length, 2, 'le commun et une seule copie');
+});
+
 test('brouillons : un navigateur qui refuse le stockage garde les brouillons en mémoire', () => {
   for (const disk of [storage({ refuse: true }), null]) {
     const drafts = new Drafts({ storage: disk, now: clock() });
     assert.equal(drafts.status, 'refus');
     const draft = drafts.create(titled('En mémoire'));
-    assert.equal(drafts.save(draft.id, titled('En mémoire, retouché')), false, 'rien n’est écrit');
+    assert.equal(drafts.save(draft.id, titled('En mémoire, retouché')).saved, false, 'rien n’est écrit');
     assert.deepEqual(drafts.list().map((d) => d.nom), ['En mémoire, retouché']);
     assert.equal(drafts.duplicate(draft.id).texte, titled('En mémoire, retouché (copie)'));
     assert.equal(drafts.remove(draft.id), true);

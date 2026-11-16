@@ -11,7 +11,7 @@ import {
   TEMPLATE, History, readLevel, writeLevel, getField, setField, legendOf, paint, line, box, resize, cellOfError, plain, proposal,
   contributions,
 } from './atelier-modele.js';
-import { Drafts, freeName, nameOf, when } from './atelier-brouillons.js';
+import { Drafts, KEY, freeName, nameOf, when } from './atelier-brouillons.js';
 
 /** Les brouillons, partagés par chaque ouverture de l'Atelier : refusés par le navigateur, ils tiennent en mémoire. */
 let shared = null;
@@ -71,7 +71,7 @@ export function showAtelier(root, { bundle, save, test, back, resume = false }) 
   // Le brouillon ouvert la dernière fois, sinon le plus récent ; aucun : un niveau neuf, brouillon au premier geste.
   let current = [drafts.open, drafts.list()[0]?.id].find((id) => id && readLevel(drafts.get(id)?.texte)) || '';
   if (current) drafts.select(current);
-  let model = readLevel(current ? drafts.get(current).texte : TEMPLATE);
+  let model = readLevel(current ? drafts.track(current).texte : TEMPLATE);
   let history = new History();
   let unsaved = false; // un changement attend d'être enregistré
   let saveTimer = 0;
@@ -219,10 +219,36 @@ export function showAtelier(root, { bundle, save, test, back, resume = false }) 
     clearTimeout(saveTimer);
     if (!unsaved) return;
     unsaved = false;
-    const text = writeLevel(model);
-    if (current) drafts.save(current, text);
-    else current = drafts.create(text).id;
+    // La fiche ouverte (bouton Texte), si elle est lisible : c'est elle qu'on est en train d'écrire.
+    const typed = !sheet.hidden && readLevel(area.value);
+    const text = writeLevel(typed || model);
+    if (!current) current = drafts.create(text).id;
+    else {
+      const result = drafts.save(current, text);
+      if (result.copy) {
+        // Changé dans un autre onglet entre-temps : les deux versions restent, celle-ci sous un autre nom.
+        current = result.id;
+        model = readLevel(result.copy.texte);
+        if (typed) area.value = result.copy.texte;
+        changed(false);
+        say(`Ce niveau a changé dans un autre onglet : ta version est gardée à part, « ${nameOf(result.copy.texte)} ».`);
+      }
+    }
     stored();
+  };
+  /**
+   * Un autre onglet a écrit : le niveau ouvert, s'il y a changé et que rien n'attend ici, se recharge.
+   * Si quelque chose attend, l'enregistrement le gardera à part (voir `flush`).
+   */
+  const reloadFromElsewhere = () => {
+    if (!current || !drafts.changedElsewhere(current)) return;
+    if (unsaved || gesture || sign || !sheet.hidden) return void flush();
+    const next = readLevel(drafts.track(current).texte);
+    if (!next) return;
+    history.record(model); // on peut revenir à ce qu'on avait
+    model = next;
+    changed(false);
+    say('Mis à jour depuis un autre onglet.');
   };
   /** Un enregistrement discret, peu après le dernier geste. */
   const schedule = () => {
@@ -255,6 +281,7 @@ export function showAtelier(root, { bundle, save, test, back, resume = false }) 
     unsaved = false;
     current = id;
     drafts.select(id);
+    drafts.track(id);
     model = next;
     history = new History();
     typing = null;
@@ -394,7 +421,7 @@ export function showAtelier(root, { bundle, save, test, back, resume = false }) 
 
   // ---------------------------------------------------------------- la fiche, pour qui veut la copier
 
-  const area = h('textarea', { spellcheck: false, autocapitalize: 'off' });
+  const area = h('textarea', { spellcheck: false, autocapitalize: 'off', oninput: () => schedule() }); // s'enregistre aussi
   const sheetNote = h('span', {});
   const sheet = h('div', { className: 'fiche', hidden: true }, area, h('div', { className: 'bas' },
     h('button', { type: 'button', onclick: () => closeText() }, 'Fermer'),
@@ -862,6 +889,12 @@ export function showAtelier(root, { bundle, save, test, back, resume = false }) 
   }, { signal: live.signal });
   // Onglet caché, fermé ou rechargé : ce qui attend s'enregistre tout de suite.
   window.addEventListener('pagehide', flush, { signal: live.signal });
+  // Un autre onglet a écrit les brouillons : le niveau ouvert et la liste se mettent à jour.
+  window.addEventListener('storage', (e) => {
+    if (!panel.isConnected || (e.key !== null && e.key !== KEY)) return;
+    reloadFromElsewhere();
+    if (!shelf.hidden && !renaming && !removing) renderShelf();
+  }, { signal: live.signal });
   document.addEventListener('visibilitychange', () => document.hidden && flush(), { signal: live.signal });
 
   // ---------------------------------------------------------------- l'écran
