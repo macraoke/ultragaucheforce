@@ -6,9 +6,13 @@ pv: 70
 largeur: 30
 hauteur: 40
 vitesse: 30
-citation: saade-seul-a-payer
+citation: saade-vrai-boss-de-marseille
 fiche: impots-cma-cgm-2024
-# Assis sur sa fortune tant que sa vie n'est pas passée sous la moitié.
+# D'où vient le nom : la une de Libération du 28 février 2023, lue dans sa reprise par Daily Mercato le jour même,
+# https://www.dailymercato.com/news/vente-om-rodolphe-saade-finira-par-racheter-lolympique-de-marseille
+# (l'article de Libération n'a pas pu être ouvert ; France 3 Régions cite aussi la formule le 26 mars 2024).
+origine: Le nom reprend une une de Libération, le 28 février 2023, connue ici par sa reprise dans Daily Mercato.
+# Assis sur sa fortune tant que sa vie n'est pas passée sous les quatre dixièmes.
 assis: oui
 leve: 0.4
 # Ses répliques sont ses propres mots (voir content/citations/saade-*.txt).
@@ -40,7 +44,6 @@ salve.vitesse: 140
 salve.ecart: 0.4
 invocation.ennemi: crs
 invocation.nombre: 2
-charge.vitesse: 190
 pluie.nombre: 8
 pluie.vitesse: 100
 
