@@ -732,6 +732,10 @@ html.bas.pivote .menu .question-radio { right: max(10px, env(safe-area-inset-bot
 .suivante[hidden] { display: none; }
 html.bas #radio .suivante { font-size: .7rem; padding: .2em .45em; border-width: 2px; box-shadow: 2px 2px 0 var(--rouge); }
 body.tactile #radio .suivante { min-width: 36px; min-height: 26px; }
+/* Au doigt, ⏭ se touche sur 44×44 px au moins sans grandir à l'écran : une zone transparente qui part juste sous
+   le lecteur (3 px au-dessus du bouton) et descend vers le bord de l'écran ; en pause, vers la ligne des touches. */
+body.tactile .suivante { position: relative; }
+body.tactile .suivante::after { content: ''; position: absolute; top: -5px; left: 50%; width: max(100% + 6px, 44px); height: max(100% + 10px, 44px); transform: translateX(-50%); }
 .pause > .entete { display: flex; align-items: center; gap: 12px; min-width: 0; }
 .pause > .entete h2 { flex: none; margin: 0; }
 .radio-pause { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: flex-end; gap: 8px; font-size: .8rem; }
