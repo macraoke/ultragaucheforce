@@ -3,6 +3,7 @@ theme: richesses
 texte: L'impôt plancher de 2 % rapporterait entre 15 et 25 milliards d'euros par an selon l'économiste Gabriel Zucman. Le rapport du Sénat avance 2 à 3 milliards si l'impôt sur les sociétés était pris en compte.
 portee: Deux estimations qui ne mesurent pas la même chose. Zucman retient environ 20 milliards, avec une marge d'erreur de 5 milliards, pour le dispositif tel qu'il est écrit. Le chiffre de 2 à 3 milliards, tiré des calculs de l'économiste Antoine Levy cités par le rapporteur, correspond à une variante qui déduirait l'impôt sur les sociétés, ce que le texte ne prévoit pas. Le rapporteur évoque aussi un risque d'exil fiscal.
 periode: estimations de 2025
+choc: oui
 source.titre: Sénat — Rapport n° 689 (2024-2025) sur la proposition de loi instaurant un impôt plancher de 2 % sur le patrimoine des ultrariches
 source.url: https://www.senat.fr/rap/l24-689/l24-689_mono.html
 source.nature: officielle

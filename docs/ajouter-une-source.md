@@ -71,15 +71,16 @@ verifie: 2026-11-15
 | `portee` | la population, la définition, et ce que le chiffre ne dit pas |
 | `periode` | la période couverte |
 | `valeur` | facultatif : le nombre brut, quand une scène du jeu calcule avec |
-| `compare` | facultatif : la fiche sert d'échelle dans la scène de taxe. `compare: un chirurgien` donne « 673 000 ans de revenus d'un chirurgien » ; `valeur` est son revenu, en euros |
+| `compare` | facultatif : la fiche sert d'échelle dans la scène de taxe. `compare: un chirurgien` donne « 670 000 ans de revenus d'un chirurgien » ; `valeur` est son revenu, en euros |
 | `par` | avec `compare` : `an` (par défaut) ou `mois`, selon ce que dit la source |
 | `finance` | facultatif : la fiche dit ce que la taxe paierait. `finance: enseignants` donne « 64 000 enseignants » ; `valeur` est le coût d'un seul, en euros |
 | `ponctuel` | avec `finance` : `oui` si le coût se paie une fois (une construction), et non chaque année |
+| `choc` | facultatif : `oui` pour un fait frappant sur les inégalités. La scène de taxe en affiche un, tiré au hasard |
 | `source.…`, `verifie` | comme pour une citation |
 
 ## Une comparaison pour la scène de taxe
 
-À chaque partie, la scène de taxe tire au hasard à qui comparer la fortune, et ce que 2 % paieraient. Ajouter une fiche avec `compare` ou `finance`, c'est ajouter une comparaison : rien d'autre à toucher.
+À chaque partie, la scène de taxe tire au hasard à qui comparer la fortune, ce que 2 % paieraient, et un fait frappant. Ajouter une fiche avec `compare`, `finance` ou `choc`, c'est en ajouter un au tirage : rien d'autre à toucher.
 
 ## Pièges
 

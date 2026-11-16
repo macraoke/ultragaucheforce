@@ -1,0 +1,12 @@
+titre: Un logement social : 169 200 euros
+theme: richesses
+texte: Le prix de revient moyen d'un logement social atteint 169 200 euros en 2023, selon la Banque des Territoires.
+portee: Tout ce que coûte la construction d'un logement social familial : terrain, travaux, autres charges. C'est le prix de revient, pas la part d'argent public qui y entre. En hausse de 11 % en quatre ans.
+periode: 2023
+valeur: 169200
+finance: logements sociaux
+ponctuel: oui
+source.titre: Banque des Territoires — Éclairages n° 33 : le prix de revient des logements sociaux (décembre 2024)
+source.url: https://www.banquedesterritoires.fr/sites/default/files/2025-01/Exe%20brochure%20Eclairages%2033%20A4%202024%20vdef.pdf
+source.nature: officielle
+verifie: 2026-11-16

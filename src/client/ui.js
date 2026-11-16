@@ -5,7 +5,7 @@ import { h, link, signature } from './dom.js';
 import { spriteElement } from './sprites.js';
 import { REPO, VERSION, REFERENCES } from './config.js';
 import { storeSave, isFound } from './save.js';
-import { SHELVES, VOTE_FICHES, allCards, collectionCount, isFresh, markSeen, openCard, progress, shelfGrid, wonCards } from './collection.js';
+import { SHELVES, VOTE_FICHES, allCards, collectionCount, isFresh, levelOrder, markSeen, openCard, progress, shelfGrid, wonCards } from './collection.js';
 import { livesStack } from './lives.js';
 
 const MENTION = 'Satire citoyenne, libre et collaborative.';
@@ -56,7 +56,7 @@ export class Screens {
       h('div', { className: 'troupe' }, heroes.map((x) => spriteElement(x.sprites.repos, this.bundle.palette, 4))),
       h('nav', {},
         this.button('Jouer', () => this.go.play(this.nextLevel()), 'gros'),
-        this.button('Niveaux', () => this.levels()),
+        this.button('Campagne', () => this.levels()),
         this.button(`Collection ${collectionCount(this.bundle, this.save).found}/${collectionCount(this.bundle).total}`, () => this.collection()),
         this.button('Atelier', () => this.go.atelier()),
         h('a', { className: 'bouton', href: 'galerie.html' }, 'Galerie'),
@@ -67,30 +67,27 @@ export class Screens {
   }
 
   nextLevel() {
-    const { campagne } = this.bundle;
-    return campagne.find((id) => !this.save.termines[id]) || campagne[0];
+    const order = levelOrder(this.bundle);
+    return order.find((id) => !this.save.termines[id]) || order[0];
   }
 
+  /** Le plan de campagne : toutes les étapes, l'une après l'autre. */
   levels() {
-    const { niveaux, campagne } = this.bundle;
-    const card = (id, n) => {
+    const { niveaux } = this.bundle;
+    const stop = (id, i) => {
       const lv = niveaux[id];
-      return h('article', {},
-        h('h3', {}, n ? `${n}. ` : '', lv.titre, this.save.termines[id] ? ' ✔' : ''),
-        h('p', {}, lv.accroche),
-        this.save.records[id] ? h('p', {}, h('b', {}, `✊ ${this.save.records[id].toLocaleString('fr-FR')}`), ' : ta plus grande manif') : null,
-        h('p', {}, h('small', {}, `par ${lv.auteur}`)),
+      const best = this.save.records[id];
+      return h('li', { className: this.save.termines[id] ? 'faite' : '' },
+        h('span', { className: 'numero' }, String(i + 1)),
+        h('div', {},
+          h('h3', {}, lv.titre, this.save.termines[id] ? ' ✔' : ''),
+          h('p', {}, [lv.accroche, best ? `✊ ${best.toLocaleString('fr-FR')}` : ''].filter(Boolean).join(' · ') || `par ${lv.auteur}`)),
         this.button('Jouer', () => this.go.play(id)));
     };
-    const community = Object.keys(niveaux).filter((id) => !campagne.includes(id));
-    this.show('liste',
-      h('h2', {}, 'Campagne'),
-      h('div', { className: 'cartes' }, campagne.map((id, i) => card(id, i + 1))),
-      h('h2', {}, 'Niveaux de la communauté'),
-      community.length
-        ? h('div', { className: 'cartes' }, community.map((id) => card(id)))
-        : h('p', {}, 'Aucun pour l’instant. Le tien ? Ouvre l’Atelier : un niveau est un simple fichier texte.'),
-      h('div', { className: 'pied' }, this.back(), this.button('Ouvrir l’Atelier', () => this.go.atelier())));
+    this.show('liste plan',
+      h('h2', {}, 'Plan de campagne'),
+      h('ol', { className: 'etapes' }, levelOrder(this.bundle).map(stop)),
+      h('div', { className: 'pied' }, this.back(), this.button('Dessiner une étape', () => this.go.atelier())));
   }
 
   // ------------------------------------------------------------------ Collection

@@ -70,24 +70,31 @@ export function markSeen(save, shelf) {
 /** Une pancarte ou un bandeau a une rareté ; les autres cartes n'en ont pas. */
 export const rarityName = (item) => (item.rarete === undefined ? '' : RARITIES[item.rarete]);
 
+/**
+ * Le plan de campagne : tous les niveaux, dans l'ordre des étapes. `content/campagne.txt` fixe les premières ;
+ * les autres suivent, par ordre de titre. Une seule catégorie : un niveau déposé est une étape comme une autre.
+ */
+export function levelOrder(bundle) {
+  const rest = Object.keys(bundle.niveaux).filter((id) => !bundle.campagne.includes(id))
+    .sort((a, b) => bundle.niveaux[a].titre.localeCompare(bundle.niveaux[b].titre, 'fr'));
+  return [...bundle.campagne, ...rest];
+}
+
 /** Les trois démarches que rappelle l'appel au vote. */
 export const VOTE_FICHES = ['presidentielle-dates', 'inscription-listes', 'procuration'];
 
 /** Les fiches que la scène de taxe apprend au joueur. */
-/** Les fiches que la scène de taxe apprend à chaque fois, en plus des comparaisons qu'elle tire au hasard. */
-const TAX_ALWAYS = ['prelevements-52', 'prelevements-27', 'impot-plancher', 'impot-plancher-rendement', 'impot-plancher-parcours',
-  'patrimoine-moitie', 'patrimoine-top10'];
-
-/** Le dictionnaire de la scène de taxe : à qui comparer une fortune, et ce que la taxe paierait. */
+/** Le dictionnaire de la scène de taxe : à qui comparer une fortune, ce que la taxe paierait, les faits chocs. */
 export const taxScales = (bundle) => Object.values(bundle.fiches).filter((f) => f.compare && f.valeur > 0);
 export const taxUses = (bundle) => Object.values(bundle.fiches).filter((f) => f.finance && f.valeur > 0);
+export const taxShocks = (bundle) => Object.values(bundle.fiches).filter((f) => f.choc);
 
 /**
- * Les fiches que la scène de taxe peut apprendre au joueur. `shown` : les comparaisons tirées cette fois-ci
- * (sans lui : toutes, pour savoir où une carte se débloque).
+ * Les fiches que la scène de taxe débloque : celles qu'elle a montrées. `shown` : ce qu'elle a tiré cette fois-ci
+ * (sans lui : tout le dictionnaire, pour savoir où une fiche se débloque).
  */
-export const taxFiches = (bundle, boss, shown = [...taxScales(bundle), ...taxUses(bundle)]) =>
-  [boss.fortune.fiche, ...boss.fortune.rente, ...shown.map((f) => f.id), ...TAX_ALWAYS].filter((id) => bundle.fiches[id]);
+export const taxFiches = (bundle, boss, shown = [...taxScales(bundle), ...taxUses(bundle), ...taxShocks(bundle)]) =>
+  [boss.fortune.fiche, ...boss.fortune.rente, 'impot-plancher', ...shown.map((f) => f.id)].filter((id) => bundle.fiches[id]);
 
 /** La citation dont vient un mot crié en jeu (« ÉCOTERRORISME ! ») : son mot-clé, sinon ses propres mots. */
 export function citationOfWord(bundle, word) {

@@ -1,11 +1,12 @@
-// La scène de taxation, après le boss. Il est assis sur sa fortune ; on avance d'un bouton à l'autre.
-// D'abord l'échelle, face à quelqu'un de très bien payé. Puis les 2 %, en trois idées : pour lui ce n'est rien
-// (moins que ses dividendes de l'année), c'est juste (les autres paient déjà bien plus), et ça finance beaucoup.
-// Tous les nombres viennent des fiches sourcées de `content/fiches/` ; un temps dont la fiche manque est sauté.
+// La scène de taxation, après le boss. Il est assis sur sa fortune. Deux écrans :
+// 1. la fortune, à l'échelle de quelqu'un, et ce qu'elle rapporte en un an ;
+// 2. ce que 2 % paieraient, et un fait frappant sur les inégalités.
+// L'échelle, l'exemple et le fait se tirent au hasard dans les fiches sourcées de `content/fiches/` (clés `compare`,
+// `finance`, `choc`) : d'une partie à l'autre, ce ne sont pas les mêmes.
 
 import { h, link, frenchNumber } from './dom.js';
 import { sprite } from './sprites.js';
-import { taxFiches, taxScales, taxUses } from './collection.js';
+import { taxFiches, taxScales, taxUses, taxShocks } from './collection.js';
 
 const RATE = 0.02; // l'impôt plancher discuté : 2 % par an
 const STACKS = 620; // le tas dessiné ne dépasse pas ce nombre de liasses
@@ -63,6 +64,7 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pi
     // Le dictionnaire : à qui comparer la fortune, et ce que la taxe paierait. Tirés au hasard à chaque partie.
     const scale = pick('compare', taxScales(bundle));
     const use = pick('finance', taxUses(bundle));
+    const shock = pick('choc', taxShocks(bundle));
     if (!fortune || !scale) return resolve([]);
     const income = scale.valeur * (scale.par === 'mois' ? 12 : 1); // revenu d'une année
     const years = fortune / income;
@@ -109,8 +111,6 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pi
       ctx.drawImage(throne, Math.round(W / 2 - throne.width / 2), top - throne.height + 8);
       const you = sprite(player.sprites.repos, bundle.palette);
       ctx.drawImage(you, 14, GROUND - you.height);
-      ctx.fillStyle = '#e43b44';
-      ctx.fillRect(14 + you.width + 4, GROUND - 2, 1, 1);
       if (state.fly > 0) {
         ctx.fillStyle = '#f6c21c';
         ctx.fillRect(W - 44, H - 26, 30, 12);
@@ -134,46 +134,36 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pi
     };
 
     const legend = h('p', { className: 'legende' },
-      h('i', { className: 'liasse' }), ` une liasse : ${frenchNumber(stackYears)} ans de revenus d’${scale.compare}`,
-      h('i', { className: 'point' }), ' le point rouge : toute sa carrière');
-    const bar = (label, fact) => h('div', {},
-      h('p', {}, label), h('span', {}, h('i', { style: `--part: ${fact.valeur}` }), h('b', {}, `${frenchNumber(fact.valeur)} %`)));
-    const most = fiche('prelevements-52');
-    const few = fiche('prelevements-27');
+      h('i', { className: 'liasse' }), ` une liasse : ${frenchNumber(stackYears)} ans de revenus d’${scale.compare}`);
     const rule = fiche('impot-plancher');
     const owner = boss.inspiration ? `la famille de ${boss.inspiration}` : boss.nom;
-    const fly = () => {
-      audio?.play('tampon');
-      audio?.play('sauvetage');
-      if (yearly) animate('rain', 1000);
-      setTimeout(() => animate('fly', 1300), yearly ? 900 : 0);
-    };
+    const under = yearly > tax; // 2 % pèsent moins que ce que la fortune rapporte en un an
 
-    // Chaque temps : un grand titre, une phrase, toutes ses sources, et le bouton qui y mène.
+    // Chaque écran : un grand titre, une phrase, toutes ses sources.
     const beats = [
       {
         title: `${billions(fortune)} milliards d’euros`,
         line: `La fortune de ${owner} : ${round(years)} ans de revenus d’${scale.compare}.`,
-        source: [estimate, scale], more: legend,
+        more: [yearly > 0 && h('p', { className: 'qui' }, `Rien qu’en dividendes, elle rapporte ${billions(yearly)} milliards par an.`), legend],
+        source: [estimate, scale, ...(yearly > 0 ? rent : [])],
+        enter: () => yearly && setTimeout(() => animate('rain', 1000), 500),
       },
-      use ? {
+      {
         // Ce que 2 % paieraient. L'impôt est différentiel : c'est un maximum, la phrase le dit.
-        title: `${round(tax / use.valeur)} ${use.finance}`,
-        line: `Ce que paieraient 2 % de cette fortune${use.ponctuel ? ' en un an' : ', chaque année'} : au plus ${billions(tax)} milliards.`,
-        more: yearly > tax && h('p', { className: 'qui' }, `Moins que les dividendes du groupe familial : ${billions(yearly)} milliards par an.`),
-        source: [use, estimate, rule, ...(yearly > tax ? rent : [])], button: 'Taxer 2 %', enter: fly,
-      } : {
-        title: `Au plus ${billions(tax)} milliards par an`,
-        line: yearly > tax ? `2 % de cette fortune : moins que les dividendes du groupe familial (${billions(yearly)} milliards).` : '2 % de cette fortune.',
-        source: [estimate, rule, ...(yearly > tax ? rent : [])], button: 'Taxer 2 %', enter: fly,
+        title: use ? `${round(tax / use.valeur)} ${use.finance}` : `Au plus ${billions(tax)} milliards par an`,
+        line: use
+          ? `Ce que paieraient 2 % de cette fortune${use.ponctuel ? ' en un an' : ', chaque année'} : au plus ${billions(tax)} milliards${under ? ', moins que ses dividendes' : ''}.`
+          : `2 % de cette fortune${under ? ' : moins que ses dividendes' : ''}.`,
+        more: shock && h('article', { className: 'choc' }, h('b', {}, shock.titre), h('p', {}, shock.texte)),
+        source: [use, estimate, rule, shock], button: 'Taxer 2 %', compact: true,
+        enter: () => {
+          audio?.play('tampon');
+          audio?.play('sauvetage');
+          state.rain = 1;
+          animate('fly', 1300);
+        },
       },
-      most?.valeur && few?.valeur && {
-        title: 'Et c’est juste',
-        line: `Impôts et cotisations, en part des revenus (${most.periode.split(',')[0]}) :`,
-        source: most, button: 'Est-ce juste ?', hideHeap: true,
-        more: h('div', { className: 'barres' }, bar('Presque tout le monde', most), bar('Les milliardaires', few)),
-      },
-    ].filter(Boolean);
+    ];
 
     const title = h('p', { className: 'montant' });
     const line = h('p', { className: 'gros' });
@@ -185,7 +175,7 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pi
       const beat = beats[at];
       title.textContent = beat.title;
       line.textContent = beat.line;
-      scene.hidden = Boolean(beat.hideHeap);
+      scene.classList.toggle('reduit', Boolean(beat.compact)); // deuxième écran : le tas se fait petit, le fait prend la place
       more.replaceChildren(...[beat.more].flat().filter(Boolean));
       const facts = [beat.source].flat().filter(Boolean);
       source.replaceChildren(facts.length ? sourcesOf(facts) : '');
@@ -197,7 +187,7 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pi
       if (++at < beats.length) return show();
       root.replaceChildren();
       root.hidden = true;
-      resolve(taxFiches(bundle, boss, [scale, use].filter(Boolean)));
+      resolve(taxFiches(bundle, boss, [scale, use, shock].filter(Boolean)));
     };
 
     root.replaceChildren(h('section', { className: 'panneau taxe' }, title, line, scene, more, source, h('div', { className: 'pied' }, button)));

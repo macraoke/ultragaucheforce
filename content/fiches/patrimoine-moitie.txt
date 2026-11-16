@@ -3,6 +3,7 @@ theme: richesses
 texte: Début 2024, la moitié des ménages la moins dotée ne possédait que 7 % du patrimoine brut total. L'autre moitié en détenait 93 %.
 portee: France hors Mayotte, ménages vivant en logement ordinaire. Patrimoine brut, soit l'ensemble des actifs sans déduire les emprunts. Chiffres arrondis par l'Insee ; son tableau détaillé paru en avril 2026 donne 92,8 % pour la moitié la mieux dotée, soit 7,2 % par différence pour l'autre moitié.
 periode: début 2024
+choc: oui
 source.titre: Insee Focus n° 371 — Les montants de patrimoine détenus par les ménages en 2024 (9 décembre 2025)
 source.url: https://www.insee.fr/fr/statistiques/8672665
 source.nature: officielle

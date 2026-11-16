@@ -1,0 +1,11 @@
+titre: Une infirmière en Ehpad : 54 088 euros
+theme: richesses
+texte: En 2018, une infirmière salariée d'Ehpad coûtait en moyenne 54 088 euros par an, salaire brut et cotisations compris, selon la Caisse nationale de solidarité pour l'autonomie.
+portee: Salaire brut chargé par équivalent temps plein, moyenne pondérée sur 4 184 établissements (p. 54). Chiffre de 2018, donc d'avant les hausses du Ségur de la santé. L'intérim n'est pas compté. Ce n'est pas le coût d'une infirmière à l'hôpital.
+periode: 2018
+valeur: 54088
+finance: infirmières en Ehpad
+source.titre: CNSA — Situation économique et financière des Ehpad entre 2017 et 2018 (mai 2020)
+source.url: https://www.cnsa.fr/sites/default/files/2024-04/PUB-cnsa-situation_ehpad_2017-2018_vf.pdf
+source.nature: officielle
+verifie: 2026-11-16

@@ -1,0 +1,12 @@
+titre: Une rénovation d'ampleur : 36 271 euros d'aide
+theme: richesses
+texte: En 2024, une rénovation d'ampleur d'un logement coûte en moyenne 55 065 euros et reçoit 36 271 euros d'aide de l'État.
+portee: L'aide de l'État du parcours accompagné de MaPrimeRénov', bilan 2024 de l'Agence nationale de l'habitat. Le reste des travaux est à la charge du ménage ; la page ne dit rien des autres aides.
+periode: 2024
+valeur: 36271
+finance: rénovations d'ampleur de logements
+ponctuel: oui
+source.titre: Ministère de la Transition écologique — Bilan 2024 de l'Anah (communiqué du 24 janvier 2025)
+source.url: https://www.ecologie.gouv.fr/presse/communique-presse-bilan-2024-lanah-effort-massif-mieux-renover-logements
+source.nature: officielle
+verifie: 2026-11-16

@@ -12,7 +12,7 @@ import { showHeroCard } from './herocard.js';
 import { showTaxScene } from './tax.js';
 import { showAtelier } from './atelier.js';
 import { loadSave, storeSave, discover, isFound } from './save.js';
-import { cardName, citationOfWord, rarityName } from './collection.js';
+import { cardName, citationOfWord, levelOrder, rarityName } from './collection.js';
 import { registerServiceWorker } from './sw-register.js';
 
 const bundle = await (await fetch('content.json')).json();
@@ -83,7 +83,7 @@ function setMode(next) {
 
 /** Fond du menu : une vraie partie, jouée par le robot de test. */
 function attract() {
-  const id = bundle.campagne[0];
+  const id = levelOrder(bundle)[0];
   if (!id) return (game = null);
   game = new Game(bundle, id, { seed: Math.floor(Math.random() * 1e9), invincible: true });
   bot = {};
@@ -179,7 +179,8 @@ async function win() {
     collect('boss', boss.id, true);
   }
   for (const fiche of [level.fiche].flat()) collect('fiches', fiche, true);
-  const index = bundle.campagne.indexOf(id);
+  const order = levelOrder(bundle);
+  const index = order.indexOf(id);
   // Le score d'un niveau, c'est la taille de la manif à l'arrivée ; on garde le record.
   const best = save.records[id] || 0;
   if (!custom && game.crowd > best) save.records[id] = game.crowd;
@@ -187,8 +188,8 @@ async function win() {
   storeSave(save);
   screens.end({
     level, stats: game.stats, time: game.time, crowd: game.crowd, won, best: custom ? null : best,
-    next: index >= 0 ? bundle.campagne[index + 1] : null,
-    last: index === bundle.campagne.length - 1,
+    next: index >= 0 ? order[index + 1] : null,
+    last: index === order.length - 1,
   });
   won = []; // rejouer ce niveau repart d'une rangée vide
 }

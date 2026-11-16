@@ -1,0 +1,11 @@
+titre: Un magistrat : 95 401 euros
+theme: richesses
+texte: Un magistrat de l'ordre judiciaire coûte en moyenne 95 401 euros par an, cotisations comprises, selon le projet de budget pour 2026.
+portee: Coût moyen chargé hors pensions, tableau des coûts du programme « Justice judiciaire » (p. 57). Le tableau n'imprime pas l'unité : ce sont des euros par an. Un magistrat débutant : 64 749 euros. Ni la retraite, ni le bureau, ni le greffe ne sont comptés.
+periode: prévision 2026
+valeur: 95401
+finance: magistrats
+source.titre: Assemblée nationale — Projet annuel de performances 2026, Justice
+source.url: https://www.assemblee-nationale.fr/dyn/contenu/visualisation/1088005/file/PAP2026_BG_Justice_JA.pdf
+source.nature: officielle
+verifie: 2026-11-16

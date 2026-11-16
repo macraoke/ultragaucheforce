@@ -3,6 +3,7 @@ theme: richesses
 texte: Début 2024, les 10 % de ménages les mieux dotés détenaient 47,9 % du patrimoine brut total des ménages.
 portee: France hors Mayotte, ménages vivant en logement ordinaire. Patrimoine brut, donc dettes non déduites. Les 5 % les mieux dotés en détiennent 34,2 % et les 1 % les mieux dotés 15,4 %.
 periode: début 2024
+choc: oui
 source.titre: Insee — Répartition de la masse totale de patrimoine brut entre les ménages (données triennales 2015-2024, parution du 7 avril 2026)
 source.url: https://www.insee.fr/fr/statistiques/2502915
 source.nature: officielle

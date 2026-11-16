@@ -3,6 +3,7 @@ theme: richesses
 texte: Selon l'Institut des politiques publiques, le taux d'imposition global passe de 46 % pour les 0,1 % de foyers les plus riches à 26 % pour les 0,0002 % les plus riches, que la note appelle « milliardaires ».
 portee: Note IPP n° 92 (juin 2023), sur des données fiscales de 2016. Impôts directs seulement, impôt sur les sociétés inclus ; ni TVA ni impôts de production. Le revenu retenu est un revenu « économique », qui ajoute les bénéfices non distribués des sociétés contrôlées par le foyer. Les 0,0002 % représentent 75 foyers fiscaux.
 periode: revenus de 2016, note publiée en juin 2023
+choc: oui
 source.titre: Institut des politiques publiques — Note IPP n° 92, « Quels impôts les milliardaires paient-ils ? » (juin 2023)
 source.url: https://www.ipp.eu/wp-content/uploads/2023/06/Note_IPP_Billionaires-version-actualisee.pdf
 source.nature: associative

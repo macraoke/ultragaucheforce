@@ -44,7 +44,7 @@ GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 ```
 
-Déposé dans `content/niveaux/`, il apparaît dans « Niveaux de la communauté ». La campagne, elle, suit l'ordre de [`content/campagne.txt`](../content/campagne.txt).
+Déposé dans `content/niveaux/`, il devient une étape du plan de campagne, à la suite des autres. [`content/campagne.txt`](../content/campagne.txt) fixe l'ordre des premières étapes.
 
 ## L'en-tête
 

@@ -338,10 +338,11 @@ function buildFact(f, ctx, report) {
   // `valeur` : le nombre brut, quand une scène du jeu calcule avec (exemple : le Smic net mensuel).
   // Le dictionnaire de la scène de taxe : une fiche qui porte `compare` sert d'échelle à une fortune (« N ans de revenus
   // d'un chirurgien » ; `valeur` = son revenu, `par` an ou mois) ; une fiche qui porte `finance` dit ce que la taxe
-  // paierait (« N enseignants » ; `valeur` = le coût d'un seul, par an, ou une fois pour toutes si `ponctuel`).
+  // paierait (« N enseignants » ; `valeur` = le coût d'un seul, par an, ou une fois pour toutes si `ponctuel`) ;
+  // une fiche marquée `choc` est un fait frappant sur les inégalités, que la scène affiche à son tour.
   const spec = {
     titre: req(), theme: pick(THEMES), texte: req(), portee: str(), periode: str(), valeur: num(0, 1e15, 0),
-    compare: str(), finance: str(), par: pick(['an', 'mois']), ponctuel: bool(), ...SOURCE,
+    compare: str(), finance: str(), par: pick(['an', 'mois']), ponctuel: bool(), choc: bool(), ...SOURCE,
   };
   noSections(f, report);
   const out = readFields(f, spec, report);

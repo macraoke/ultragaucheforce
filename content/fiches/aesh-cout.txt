@@ -1,0 +1,11 @@
+titre: Un poste d'AESH : 34 755 euros
+theme: richesses
+texte: Un poste d'accompagnant d'élève en situation de handicap (AESH) à temps plein coûte 34 755 euros par an, cotisations comprises, selon le projet de budget pour 2026.
+portee: Coût moyen chargé hors pensions d'un équivalent temps plein, tableau des coûts du programme « Vie de l'élève » (p. 163). Le tableau n'imprime pas l'unité : ce sont des euros par an. La plupart des AESH ne sont pas à temps plein. Ni la formation ni les déplacements ne sont comptés.
+periode: prévision 2026
+valeur: 34755
+finance: postes d'AESH à temps plein
+source.titre: Assemblée nationale — Projet annuel de performances 2026, Enseignement scolaire
+source.url: https://www.assemblee-nationale.fr/dyn/contenu/visualisation/1087978/file/PAP2026_BG_Enseignement_scolaire_EC.pdf
+source.nature: officielle
+verifie: 2026-11-16

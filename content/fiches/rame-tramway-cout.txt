@@ -1,0 +1,12 @@
+titre: 35 rames de tramway : 115 millions
+theme: richesses
+texte: En septembre 2021, le réseau de transports de Lyon commande 35 rames de tramway pour 115 millions d'euros, annonce le constructeur Alstom. Soit 3,3 millions par rame.
+portee: Le prix des rames seules, aux conditions d'un contrat de 2018. Ni les voies, ni les stations, ni l'exploitation ne sont comptées. Prix de 2021. La division est la nôtre.
+periode: commande du 2 septembre 2021
+valeur: 3285714
+finance: rames de tramway
+ponctuel: oui
+source.titre: Alstom — 35 tramways Citadis supplémentaires pour le réseau de Lyon (2 septembre 2021)
+source.url: https://www.alstom.com/fr/press-releases-news/2021/9/alstom-fournira-35-tramways-citadis-supplementaires-au-reseau-de-transports-en-commun-de-lyon
+source.nature: presse
+verifie: 2026-11-16
