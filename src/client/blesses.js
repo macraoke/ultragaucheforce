@@ -60,6 +60,7 @@ export function injuryParts(n) {
     limbs,
     parts.acouphenes && `${whole(parts.acouphenes)} avec un acouphène`,
     // L'origine n'est indiquée que pour une vingtaine d'agents sur 1 233 : le tiers se compte parmi eux.
-    parts.tiers && `${word(parts.tiers, 'blessé', 'blessés')} sans ambiguïté par un tiers, sur environ ${whole(parts.origine)} dont l’origine est connue`,
+    // Pas en dessous de 2 : « 1 sur environ 1 » ferait lire 100 % là où la source dit 12 sur une vingtaine.
+    parts.tiers >= 2 && `${word(parts.tiers, 'blessé', 'blessés')} sans ambiguïté par un tiers, sur environ ${whole(parts.origine)} dont l’origine est connue`,
   ].filter(Boolean);
 }

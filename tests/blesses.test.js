@@ -61,5 +61,7 @@ test('blessés : 1 233 blessés redonnent les nombres de la source', () => {
     '1 167 blessés légers', '126 arrêts de travail', '737 blessures aux jambes ou aux pieds et 451 aux bras ou aux mains',
     '117 avec un acouphène', '12 blessés sans ambiguïté par un tiers, sur environ 20 dont l’origine est connue',
   ]);
-  assert.deepEqual(injuryParts(60).map(plain).at(-1), '1 blessé sans ambiguïté par un tiers, sur environ 1 dont l’origine est connue');
+  // En dessous de 2 blessés par un tiers, la mention ne s'écrit pas : « 1 sur environ 1 » ferait lire 100 %.
+  assert.ok(!injuryParts(60).map(plain).some((p) => p.includes('par un tiers')));
+  assert.deepEqual(injuryParts(205).map(plain).at(-1), '2 blessés sans ambiguïté par un tiers, sur environ 3 dont l’origine est connue');
 });
