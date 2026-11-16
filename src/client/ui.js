@@ -125,7 +125,10 @@ export class Screens {
     return order.find((id) => !this.save.termines[id]) || order[0];
   }
 
-  /** Le plan de campagne : toutes les étapes, l'une après l'autre. Le clavier attend sur la prochaine à jouer. */
+  /**
+   * Le plan de campagne : toutes les étapes, l'une après l'autre. Le clavier attend sur la prochaine à jouer.
+   * Une étape terminée porte sa coche verte et, à côté de « Jouer », son record : la plus grande manif à l'arrivée.
+   */
   levels() {
     const { niveaux } = this.bundle;
     const next = this.nextLevel();
@@ -133,13 +136,15 @@ export class Screens {
     const stop = (id, i) => {
       const lv = niveaux[id];
       const best = this.save.records[id];
+      const done = this.save.termines[id];
       // L'accroche dit le lieu ; sans elle (un niveau dessiné dans l'Atelier), l'étape crédite son auteur.
-      const line = [lv.accroche || (lv.auteur && `par ${lv.auteur}`), best ? `✊ ${best.toLocaleString('fr-FR')}` : ''].filter(Boolean).join(' · ');
+      const line = lv.accroche || (lv.auteur && `par ${lv.auteur}`);
       const play = this.button('Jouer', () => this.go.play(id));
       if (id === next) ahead = play;
-      return h('li', { className: this.save.termines[id] ? 'faite' : '' },
+      return h('li', { className: done ? 'faite' : '' },
         h('span', { className: 'numero' }, String(i + 1)),
-        h('div', {}, h('h3', {}, lv.titre, this.save.termines[id] ? ' ✔' : ''), line && h('p', {}, line)),
+        h('div', {}, h('h3', {}, lv.titre, done && [' ', h('span', { className: 'coche' }, '✔︎')]), line && h('p', {}, line)),
+        best ? h('div', { className: 'record' }, h('small', {}, 'Record'), h('b', {}, `✊ ${best.toLocaleString('fr-FR')}`)) : null,
         play);
     };
     this.show('liste plan',
