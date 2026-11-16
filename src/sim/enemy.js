@@ -112,7 +112,7 @@ export function updateEnemy(game, e, dt) {
     e.overrun = true; // débordée : le client l'ouvre en grand
     game.stats.overrun++;
     if (def.camp === 'ordre') game.stats.overrunOrder++;
-    game.emit('overrun', { x: e.x + e.w / 2, y: e.y, need: def.debordement, crowd: game.crowd });
+    game.emit('overrun', { x: e.x + e.w / 2, y: e.y, feet: e.y + e.h, need: def.debordement, crowd: game.crowd });
     game.sfx('debordement', e.x);
     game.discover('ennemi', def.id);
     return;

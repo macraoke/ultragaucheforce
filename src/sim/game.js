@@ -10,7 +10,7 @@
 //   boss {state: 'enter' | 'phase' | 'stand' | 'defeated'} · won · lost
 //   hurt {x, y, kind, hp, max, dir} : le héros est touché (kind : 'tir' | 'gaz' | 'charge' | 'contact' | 'explosion')
 //   parry {x, y, line} : un bouclier ou une ligne qui tient arrête un coup · down {x, y, end} : une unité hors service
-//   recruit {id, n, crowd, x, y} · overrun {x, y, need, crowd} : une ligne cède
+//   recruit {id, n, crowd, x, y} · overrun {x, y, feet, need, crowd} : une ligne cède
 //   blocked {x, y, feet, need, crowd, joined, dir} : le héros bute sur une ligne qui tient ; `joined` passants arrivent
 //   dispersed {n, crowd, reason, x, y, gone} : la manif perd du monde (reason : 'charge' | 'gaz' | 'chute' | 'interpelle'
 //     | 'touche' ; gone : où étaient les manifestants qui ne sont plus dessinés, six au plus)

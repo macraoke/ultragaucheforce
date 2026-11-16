@@ -739,5 +739,13 @@ html.bas .choix-heros > * span { display: none; }
 #hud-manif.baisse { animation: baisse .6s; }
 @keyframes baisse { 0%, 40% { color: var(--rouge); transform: translateX(-3px); } 20% { transform: translateX(3px); } 100% { color: var(--or); } }
 @keyframes rougit { 0%, 40% { color: var(--rouge); } }
+/* Effets réduits : rien ne tressaute ni ne clignote ; la barre rougit une fois, doucement, et revient. */
+@keyframes vie-rougit { 0%, 30% { background: var(--rouge); } }
 body.sobre .pile.touche { animation: none; }
+body.sobre .pile.touche .vie { animation: vie-rougit .9s ease-out; }
 body.sobre #hud-manif.baisse { animation: rougit .6s; }
+@media (prefers-reduced-motion: reduce) {
+  .pile.touche { animation: none; }
+  .pile.touche .vie { animation: vie-rougit .9s ease-out; }
+  #hud-manif.baisse { animation: rougit .6s; }
+}

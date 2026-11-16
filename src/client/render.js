@@ -128,12 +128,17 @@ export class Renderer {
         this.burst(e.x, e.y, '#f6c21c', 14, 90);
       } else if (e.type === 'overrun') {
         // La ligne cède : le compteur au-dessus du seuil, le cri, des confettis, et elle s'ouvre (voir `opening`).
-        this.floaters.push({ x: e.x, y: e.y - 22, text: 'ON EST LÀ !', t: 2.2, color: '#f6c21c', size: 12, keep: true }); // « On est là, même si Macron le veut pas »
-        if (e.need) this.floaters.push({ x: e.x, y: e.y - 8, text: `✊ ${e.crowd.toLocaleString('fr-FR')} / ${e.need.toLocaleString('fr-FR')}`, t: 2.2, color: '#f4f4f4', bg: '#257953', size: 7.5, keep: true });
+        // Au pouce, le haut de l'image est aux notes de déblocage : tout se dit au pied de la ligne, sans monter.
+        const low = this.thumbs && e.feet;
+        this.floaters.push({ x: e.x, y: low ? e.feet + 18 : e.y - 22, rise: low ? 0 : 14, text: 'ON EST LÀ !', t: 2.2, color: '#f6c21c', size: 12, keep: true }); // « On est là, même si Macron le veut pas »
+        if (e.need) {
+          this.floaters.push({ x: e.x, y: low ? e.feet + 4 : e.y - 8, rise: low ? 0 : 14, text: `✊ ${e.crowd.toLocaleString('fr-FR')} / ${e.need.toLocaleString('fr-FR')}`,
+            t: 2.2, color: '#f4f4f4', bg: '#257953', size: 7.5, keep: true });
+        }
         this.rings.push({ x: e.x, y: e.y + 10, t: 0.3, color: '#f6c21c' });
         this.burst(e.x, e.y, '#94b0c2', 10, 70);
         this.burst(e.x, e.y, '#f6c21c', 12, 110);
-        this.burst(e.x, e.y, '#e43b44', 8, 90);
+        this.burst(e.x, e.y, '#f4f4f4', 8, 90);
         this.shake = Math.max(this.shake, 5);
       } else if (e.type === 'checkpoint') {
         // Le piquet de grève rejoint la manif, et c'est d'ici qu'on repartira.
@@ -142,11 +147,17 @@ export class Renderer {
         this.burst(e.x + TILE / 2, e.y, '#f6c21c', 10, 70);
       } else if (e.type === 'blocked') {
         // Le héros bute sur une ligne qui tient : combien il en manque, et les passants qui arrivent par derrière.
+        // Au pouce, sous le compteur, au pied de la ligne : là où les notes de déblocage ne passent jamais.
+        const low = this.thumbs;
         const short = e.need - e.crowd;
-        if (short > 0) this.floaters.push({ x: e.x, y: e.y - 24, text: `IL EN MANQUE ${short.toLocaleString('fr-FR')}`, t: 1.6, color: '#f4f4f4', bg: '#e43b44', size: 6.5, keep: true });
+        if (short > 0) {
+          this.floaters.push({ x: e.x, y: low ? e.feet + 24 : e.y - 24, rise: low ? 0 : 14, text: `IL EN MANQUE ${short.toLocaleString('fr-FR')}`,
+            t: 1.6, color: '#f4f4f4', bg: '#e43b44', size: 6.5, keep: true });
+        }
         if (e.joined > 0) {
           const from = e.x + e.dir * 60;
-          this.floaters.push({ x: from, y: e.y - 6, text: `+ ${e.joined.toLocaleString('fr-FR')} passants`, t: 1.8, color: '#f6c21c', size: 8, keep: true });
+          this.floaters.push({ x: from, y: low ? e.feet + 36 : e.y - 6, rise: low ? 0 : 14, text: `+ ${e.joined.toLocaleString('fr-FR')} passants`,
+            t: 1.8, color: '#f6c21c', size: 8, keep: true });
           for (let k = 0; k < Math.min(4, Math.ceil(e.joined / 6)); k++) {
             this.runners.push({ x: from + e.dir * (90 + k * 14), y: e.feet, dir: -e.dir, t: 0.9, n: k, join: true });
           }
@@ -158,8 +169,8 @@ export class Renderer {
         this.hurt = { t: 1.2, hp: e.hp, max: e.max, dir: e.kind === 'gaz' ? 0 : e.dir };
         this.edge = 0.35;
         this.floaters.push({ x: e.x, y: e.y - 16, text: HURT_WORDS[e.kind] || 'TOUCHÉ', t: 1, color: '#e43b44', size: 8, keep: true });
-        this.burst(e.x - e.dir * 4, e.y + 8, '#f4f4f4', 6, 70);
-        this.burst(e.x - e.dir * 4, e.y + 8, '#e43b44', 6, 50);
+        this.burst(e.x - e.dir * 4, e.y + 8, '#f4f4f4', 6, 70); // des éclats blancs et jaunes : rien qui ressemble à du sang
+        this.burst(e.x - e.dir * 4, e.y + 8, '#f6c21c', 6, 50);
       } else if (e.type === 'parry') {
         // Paré : des étincelles sur le bouclier ; on le dit une fois de temps en temps, pas à chaque tract.
         this.burst(e.x, e.y, '#f4f4f4', 4, 60);
@@ -174,7 +185,8 @@ export class Renderer {
       } else if (e.type === 'dispersed') {
         // La manif perd du monde : combien et pourquoi, au même style que les « + 20 », et ceux qui s'en vont.
         const [one, many] = LOSS_WORDS[e.reason] || LOSS_WORDS.charge;
-        this.floaters.push({ x: e.x, y: e.y - 8, text: `− ${e.n.toLocaleString('fr-FR')} ${e.n > 1 ? many : one}`, t: 1.8, color: '#e43b44', size: 9, keep: true });
+        // Hors de l'image (la queue du cortège) : le texte attend au bord de l'écran, avec une flèche (voir `combatBefore`).
+        this.floaters.push({ x: e.x, y: e.y - 8, wx: e.x, edge: true, text: `− ${e.n.toLocaleString('fr-FR')} ${e.n > 1 ? many : one}`, t: 1.8, color: '#e43b44', size: 9, keep: true });
         for (const m of e.gone || []) {
           const dir = e.reason === 'interpelle' ? Math.sign(e.x - m.x) || 1 : Math.sign(m.x - e.x) || -m.facing || 1;
           this.runners.push({ x: m.x, y: m.y, dir, t: 0.9, n: this.runners.length });
@@ -203,7 +215,7 @@ export class Renderer {
     this.particles = this.particles.filter((p) => p.t > 0);
     for (const f of this.floaters) {
       f.t -= dt;
-      f.y -= 14 * dt;
+      f.y -= (f.rise ?? 14) * dt;
     }
     this.floaters = this.floaters.filter((f) => f.t > 0);
     for (const r of this.runners) {
@@ -284,7 +296,19 @@ export class Renderer {
   combatBefore(game) {
     const { cx, cy } = this;
     const { hero } = game;
+    this.thumbs = document.body.classList.contains('tactile');
     this.weepers = []; // les gazés : leurs larmes passent par-dessus le nuage (voir `combatAfter`)
+    // Une perte hors de l'image : son texte se pose au bord, du côté où elle a eu lieu, avec une flèche.
+    for (const f of this.floaters) {
+      if (!f.edge) continue;
+      f.base ??= f.text;
+      this.tctx.font = `${f.size || 7}px ${FONT}`;
+      const half = this.tctx.measureText(`◀ ${f.base}`).width / 2 + 4;
+      const side = f.wx < cx + half ? -1 : f.wx > cx + this.viewW - half ? 1 : 0;
+      f.x = Math.max(cx + half, Math.min(cx + this.viewW - half, f.wx));
+      f.y = Math.max(cy + 40, Math.min(cy + this.viewH - 30, f.y));
+      f.text = side < 0 ? `◀ ${f.base}` : side > 0 ? `${f.base} ▶` : f.base;
+    }
     for (const f of this.floaters) if (f.keep) this.reserve(f.text, f.x - cx, f.y - cy, f.size || 7, 150);
     if (this.hurt && !hero.dead) this.reserve('■ ■ ■', hero.x + hero.w / 2 - cx, hero.y - 14 - cy, 7, 0);
     // « EN GRÈVE ! », « EN PANNE » : le temps qu'on les lise.
@@ -432,12 +456,14 @@ export class Renderer {
     const rows = h.anim === 'saut' ? s.saut || s.marche1 || s.repos : this.frames(s, h.anim === 'marche', h.animTime);
     for (const c of h.clones || []) this.actor(c, rows, { flip: c.facing < 0, alpha: 0.55 });
     // Touché : blanc un instant, puis il pâlit et revient, lentement, tant qu'il ne craint rien. Il ne disparaît jamais.
-    const pale = h.flash <= 0 && h.invuln > 0 && Math.floor(this.clock * 7) % 2;
+    // Effets réduits : il reste pâle, sans clignoter, et ne sursaute pas.
+    const safe = h.flash <= 0 && h.invuln > 0;
+    const pale = safe && (this.reduced || Math.floor(this.clock * 7) % 2);
     // Et son dessin recule de quelques pixels, à l'opposé du coup, avec un petit sursaut, le temps d'un quart de seconde.
-    const jolt = this.hurt ? Math.max(0, this.hurt.t - 0.95) / 0.25 : 0;
+    const jolt = this.hurt && !this.reduced ? Math.max(0, this.hurt.t - 0.95) / 0.25 : 0;
     const dx = Math.round((this.hurt?.dir || 0) * 4 * jolt);
     const dy = -Math.round(3 * Math.sin(jolt * Math.PI));
-    this.actor(h, rows, { flash: h.flash > 0, alpha: pale ? 0.4 : 1, dx, dy });
+    this.actor(h, rows, { flash: h.flash > 0, alpha: pale ? (this.reduced ? 0.6 : 0.4) : 1, dx, dy });
     if (this.hurt) this.pips(h, rows.length);
   }
 
@@ -453,7 +479,7 @@ export class Renderer {
     ctx.fillRect(x0 - 1, y0 - 1, width + 2, size + 2);
     for (let i = 0; i < max; i++) {
       const lost = i >= hp;
-      if (lost && i === hp && Math.floor(this.clock * 10) % 2) continue; // celui qu'on vient de perdre clignote
+      if (lost && i === hp && !this.reduced && Math.floor(this.clock * 10) % 2) continue; // celui qu'on vient de perdre clignote
       ctx.fillStyle = lost ? '#e43b44' : '#38b764';
       if (lost && i > hp) ctx.fillStyle = '#566c86';
       ctx.fillRect(x0 + i * (size + 1), y0, size, size);
@@ -492,8 +518,9 @@ export class Renderer {
     const stunned = e.state === 'stunned';
     const rows = this.frames(s, moving && !stunned, e.animTime, e.def.deplacement === 'vol' ? 14 : 7);
     // Touché : blanc, et le dessin recule d'un pixel ou deux dans le sens du coup. Gazé : il tousse, il tremble.
-    const flinch = e.flash > 0 ? (e.hitDir || 0) * (e.flash > 0.06 ? 2 : 1) : 0;
-    const cough = stunned && e.daze === 'gaz' && Math.floor(this.clock * 12 + e.x) % 3 === 0 ? 1 : 0;
+    const still = this.reduced; // effets réduits : le blanc suffit, le dessin ne bouge pas
+    const flinch = e.flash > 0 && !still ? (e.hitDir || 0) * (e.flash > 0.06 ? 2 : 1) : 0;
+    const cough = !still && stunned && e.daze === 'gaz' && Math.floor(this.clock * 12 + e.x) % 3 === 0 ? 1 : 0;
     this.actor(e, rows, { flash: e.flash > 0, dx: flinch + cough, ...(set && { flip: false }) });
     const top = e.y + e.h - (rows?.length || e.h) - this.cy;
     if (e.aim) this.aim(e);
@@ -519,15 +546,17 @@ export class Renderer {
     const need = e.def.debordement;
     const part = Math.min(1, this.crowd / need);
     const enough = part >= 1;
-    const bumped = e.nag > 1.65 || e.parry > 0.15;
+    const bumped = !this.reduced && (e.nag > 1.65 || e.parry > 0.15);
     const text = `✊ ${this.crowd.toLocaleString('fr-FR')} / ${need.toLocaleString('fr-FR')}`;
-    const y = top - (speaks ? 30 : 18);
-    this.label(text, cx + (e.nag > 1.65 ? Math.round(Math.sin(this.clock * 60)) : 0), y,
+    // Au pouce, le compteur se lit au pied de la ligne : le haut de l'image est aux notes de déblocage.
+    const base = e.y + e.h - this.cy;
+    const y = this.thumbs ? base + 4 : top - (speaks ? 30 : 18);
+    this.label(text, cx + (bumped && e.nag > 1.65 ? Math.round(Math.sin(this.clock * 60)) : 0), y,
       { size: 7 + (bumped ? 1.5 : 0), color: '#f4f4f4', bg: enough ? '#257953' : '#e43b44' });
     const { ctx } = this;
     const width = 36;
     const x = Math.round(cx - width / 2);
-    const by = Math.round(top - 7);
+    const by = Math.round(this.thumbs ? base + 17 : top - 7);
     ctx.fillStyle = '#1a1c2c';
     ctx.fillRect(x - 1, by - 1, width + 2, 5);
     ctx.fillStyle = '#566c86';
@@ -569,6 +598,8 @@ export class Renderer {
     const { ctx } = this;
     const seen = this.watch.get(e) ?? { state: e.state, at: -9 };
     seen.opened ??= this.clock;
+    // Le sens du recul se décide une fois, quand elle cède : elle ne saute pas d'un côté à l'autre quand le héros la dépasse.
+    seen.away ??= Math.sign(e.x + e.w / 2 - (this.heroBox.x + this.heroBox.w / 2)) || 1;
     this.watch.set(e, seen);
     const k = Math.min(1, (this.clock - seen.opened) / 0.6);
     const ease = 1 - (1 - k) ** 2;
@@ -577,8 +608,7 @@ export class Renderer {
     const y = Math.round(e.y + e.h - standing.height - this.cy);
     if (x > this.viewW + 40 || x + standing.width < -40) return;
     if (e.def.deplacement !== 'fixe') {
-      const away = Math.sign(e.x + e.w / 2 - (this.heroBox.x + this.heroBox.w / 2)) || 1;
-      ctx.drawImage(sprite(rows, this.palette, e.facing < 0, false, !e.def.sprites.fin), x + Math.round(ease * 18 * away), y);
+      ctx.drawImage(sprite(rows, this.palette, e.facing < 0, false, !e.def.sprites.fin), x + Math.round(ease * 18 * seen.away), y);
       return;
     }
     if (ease > 0) this.actor(e, rows, { alpha: ease, dim: !e.def.sprites.fin });
@@ -605,11 +635,11 @@ export class Renderer {
 
   /** Sonné (onde, bousculade) : des étoiles tournent autour de sa tête ; elles clignotent quand il va reprendre. */
   stars(e, cx, top) {
-    if (e.stun < 0.4 && Math.floor(this.clock * 12) % 2) return;
+    if (e.stun < 0.4 && !this.reduced && Math.floor(this.clock * 12) % 2) return;
     const { ctx } = this;
     const rx = Math.max(6, e.w / 2 + 2);
     for (let k = 0; k < 3; k++) {
-      const a = this.clock * 7 + (k * Math.PI * 2) / 3;
+      const a = (this.reduced ? 0.5 : this.clock * 7) + (k * Math.PI * 2) / 3; // effets réduits : elles ne tournent pas
       const x = Math.round(cx + Math.cos(a) * rx);
       const y = Math.round(top + 2 + Math.sin(a) * 2); // autour de la tête, sous sa jauge
       ctx.fillStyle = '#1a1c2c';
@@ -650,7 +680,7 @@ export class Renderer {
     this.watch.set(e, seen);
     const age = this.clock - seen.at;
     if (age > 0.7) return;
-    const jump = age < 0.12 ? (0.12 - age) * 30 : 0;
+    const jump = age < 0.12 && !this.reduced ? (0.12 - age) * 30 : 0;
     const above = e.hp < e.def.pv ? 7 : 0; // au-dessus de sa jauge, s'il en a une
     this.label('!', cx, top - 10 - above - jump, { size: 10, color: '#e43b44' });
   }
