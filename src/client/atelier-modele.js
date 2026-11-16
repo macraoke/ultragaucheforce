@@ -293,3 +293,18 @@ export function proposal(repo, text, title) {
   const full = `${base}&value=${encodeURIComponent(text)}`;
   return full.length <= MAX_URL ? { url: full, filled: true } : { url: base, filled: false };
 }
+
+/**
+ * Les autres façons de contribuer, depuis l'Atelier : les propositions ouvertes, les formulaires d'issue
+ * du dépôt (`.github/ISSUE_TEMPLATE/`), les guides. Des liens, rien d'autre : ni compte, ni API.
+ * @returns {{text: string, url: string}[]}
+ */
+export const contributions = (repo) => [
+  { text: 'Les propositions en cours', url: `${repo}/pulls` },
+  { text: 'Proposer une pancarte', url: `${repo}/issues/new?template=blague-ou-pancarte.yml` },
+  { text: 'Proposer un personnage', url: `${repo}/issues/new?template=personnage.yml` },
+  { text: 'Une source à corriger', url: `${repo}/issues/new?template=source-a-corriger.yml` },
+  { text: 'Signaler un bug', url: `${repo}/issues/new?template=bug.yml` },
+  { text: 'Le guide des niveaux', url: `${repo}/blob/main/docs/ajouter-un-niveau.md` },
+  { text: 'Comment contribuer', url: `${repo}/blob/main/CONTRIBUTING.md` },
+];

@@ -624,6 +624,23 @@ html.bas .taxe .pied button.gros { font-size: 1rem; padding: .5em .8em; }
 .atelier .reglages .ligne { display: flex; align-items: center; gap: 6px; }
 .atelier .reglages .ligne > span { flex: 0 0 4.2em; }
 .atelier .reglages .ligne > input, .atelier .reglages .ligne > select, .atelier .reglages .ligne > button { flex: 1; min-width: 0; padding: .45em .3em; }
+.atelier .reglages h3 { margin: 0; font-size: 1rem; }
+.atelier .reglages .alerte { margin: 0; padding: .4em .6em; background: var(--rouge-sombre); color: var(--blanc); font-weight: 700; line-height: 1.25; }
+.atelier button.danger { background: var(--rouge); color: var(--blanc); border-color: var(--rouge); box-shadow: none; }
+/* les brouillons : à gauche, comme les réglages */
+.atelier .brouillons { width: min(340px, 100%); align-content: start; }
+.atelier .brouillons p { margin: 0; }
+.atelier .brouillons ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.atelier .brouillons li { margin: 0; display: grid; gap: 6px; padding: 6px; background: var(--encre); }
+.atelier .brouillons .nom { display: grid; gap: 3px; width: 100%; padding: .45em .55em; text-align: left; font: 700 .9rem/1.2 var(--texte); letter-spacing: 0; text-transform: none; overflow-wrap: anywhere; }
+.atelier .brouillons .nom small { font-weight: 400; font-size: .75rem; opacity: .8; }
+.atelier .brouillons .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.atelier .brouillons .actions span { flex: 1 0 100%; font-size: .8rem; font-weight: 700; }
+/* les autres contributions : à droite, sous « GitHub » */
+.atelier .liens { left: auto; right: 0; width: min(270px, 100%); align-content: start; gap: 5px; }
+.atelier .liens a.bouton { display: block; padding: .55em .7em; font-size: .8rem; background: transparent; color: var(--papier); border: 2px solid var(--papier); box-shadow: none; }
+.atelier .liens a.bouton:hover, .atelier .liens a.bouton:focus-visible { background: var(--encre); }
+html.bas .atelier .liens a.bouton { padding: .42em .6em; }
 .atelier .fiche { position: absolute; inset: 0; z-index: 3; display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 6px; padding: 6px; background: var(--nuit); }
 .atelier .fiche textarea { color: #a7f070; font: 12px/1.15 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: pre; overflow: auto; resize: none; }
 .atelier .fiche .bas { display: flex; gap: 6px; align-items: center; font-size: .85rem; }
@@ -633,6 +650,8 @@ html.bas .taxe .pied button.gros { font-size: 1rem; padding: .5em .8em; }
 .atelier .etat .alerte { max-width: 100%; padding: .35em .6em; background: var(--rouge-sombre); color: var(--blanc); border: 0; box-shadow: none; font: 700 .82rem/1.2 var(--texte); letter-spacing: 0; text-transform: none; text-align: left; }
 .atelier .etat .ecrire { display: flex; align-items: center; gap: 6px; }
 .atelier .etat .ecrire input { flex: 1; }
+.atelier .etat .sauve { flex: none; font-size: .75rem; opacity: .6; }
+.atelier .etat .sauve.rate { opacity: 1; padding: .3em .5em; background: var(--rouge-sombre); color: var(--blanc); font-weight: 700; }
 body.tactile .atelier input[type='text'], body.tactile .atelier select, body.tactile .atelier textarea { font-size: 16px; }
 
 /* Radio Manif */

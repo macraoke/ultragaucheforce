@@ -123,6 +123,7 @@ Tout est sur l'appareil du joueur ; une mise à jour ne lui fait rien perdre.
 - **Un identifiant ne change pas.** Le nom du fichier est l'identifiant, et il dit la personne ou l'étiquette (`melenchon`, `arnault`) ; le nom affiché, lui, peut changer.
 - **Une pancarte corrigée garde son déblocage** : l'ancien texte reste au bout de la ligne, après `était:`. Sa rareté ne bouge pas.
 - **Rien n'est retiré** : ce qu'une version du jeu ne connaît pas reste dans la sauvegarde.
+- **Les brouillons de l'Atelier à part** : leur propre clé et leur propre numéro de version (`src/client/atelier-brouillons.js`). Un stockage refusé ou plein ne bloque ni le dessin ni la partie : l'Atelier le dit.
 
 ## Hors-ligne : seulement dans la version construite
 
