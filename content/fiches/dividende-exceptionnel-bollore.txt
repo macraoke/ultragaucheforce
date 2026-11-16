@@ -1,9 +1,0 @@
-titre: 1,5 euro par action, en plus
-theme: richesses
-texte: Bolloré SE a proposé à son assemblée générale du 27 mai 2026 un dividende exceptionnel de 1,5 euro par action, de l'ordre de 4,2 milliards d'euros, en plus du dividende ordinaire de 0,08 euro.
-portee: Il est pris sur les plus-values des cessions de Bolloré Africa Logistics et de Bolloré Logistics, environ 10 milliards d'euros au total, « en l'absence de réinvestissement significatif à ce jour ». Le groupe dit que la Compagnie de l'Odet, qui détient 71 % du capital de Bolloré, en recevrait la part correspondante : les sommes vont à des sociétés, pas directement à des personnes.
-periode: exercice 2025, paiement prévu le 25 juin 2026
-source.titre: Bolloré — Résultats de l'exercice 2025 (communiqué du 17 mars 2026)
-source.url: https://ml-eu.globenewswire.com/Resource/Download/0bcda417-1642-4cd0-aedb-a55490e88c36
-source.nature: officielle
-verifie: 2026-11-16
