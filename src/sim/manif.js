@@ -130,6 +130,7 @@ export function updateCortege(game, dt) {
   const { trail } = game;
   if (!trail.length) return;
   const clouds = [];
+  const harmful = game.harmfulClouds();
   game.cortege.forEach((m, i) => {
     let k = Math.max(0, trail.length - 1 - (i + 1) * SPACING);
     while (k < trail.length - 1 && !trail[k].ground) k++; // jamais figé en l'air
@@ -153,7 +154,7 @@ export function updateCortege(game, dt) {
       m.animTime += dt;
     }
     m.gassed = Math.max(0, m.gassed - dt);
-    const cloud = m.gassed <= 0 && game.clouds.find((c) => Math.hypot(c.x - m.x, c.y - (m.y - 8)) < c.r);
+    const cloud = m.gassed <= 0 && harmful.find((c) => Math.hypot(c.x - m.x, c.y - (m.y - 8)) < c.r);
     if (!cloud) return;
     m.gassed = 3;
     if (!m.counted) {
@@ -190,7 +191,7 @@ export function updateKettle(game, dt) {
   const cx = hero.x + hero.w / 2;
   const k = game.kettle;
   if (!k) {
-    if (hero.dead) return;
+    if (hero.dead || game.truce) return; // le boss vaincu, plus de nasse
     const feet = hero.y + hero.h;
     const mark = game.nasses.find((n) => !n.on && Math.abs(n.x - cx) <= TILE / 2 && feet <= n.y + TILE && feet >= n.y - NASSE_HEIGHT);
     const pace = game.level.nasse?.rythme || 0;

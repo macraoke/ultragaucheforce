@@ -24,6 +24,8 @@
 //                (jamais sous 1 avec un cortège)
 //   power()      multiplicateur des dégâts des projectiles du héros : le nombre fait la force
 //   kettle       null | { x, t, limit, x0, x1 } : nasse en cours (x0, x1 = bords intérieurs des lignes)
+//   lines        les lignes qui tiennent au début du pas (débordement, nasse) : elles arrêtent les deux camps
+//   truce        le boss est vaincu : en face, plus personne n'attaque, et ce qui vole encore ne blesse plus
 //   Ennemis : blocking, aim, jet, beam, rush, rope (voir enemy.js) · boss.seated (voir boss.js)
 //
 // Repères : tout est en pixels, tuile = 16. Les boîtes (héros, ennemis, projectiles, accessoires, boss)
@@ -31,7 +33,7 @@
 
 import { makeRng } from './rng.js';
 import { TILE } from './world.js';
-import { hitsSolid, overlap } from './physics.js';
+import { hitsSolid, overlap, holds } from './physics.js';
 import { updateHero, setHeroDef, FEEL } from './hero.js';
 import { createEnemy, updateEnemy, sturdy, LINE_REACH } from './enemy.js';
 import { updateProjectiles } from './projectile.js';
@@ -89,6 +91,7 @@ export class Game {
     };
 
     this.enemies = [];
+    this.lines = [];
     this.projectiles = [];
     this.clouds = [];
     this.props = [];
@@ -142,6 +145,7 @@ export class Game {
       this.recordTrail();
       if (hero.y > this.world.h * TILE + 48) this.killHero(); // tombé sous la carte
     }
+    this.lines = this.enemies.filter(holds); // une ligne qui cède pendant le pas cesse aussitôt d'arrêter (voir `holds`)
     for (const e of this.enemies) updateEnemy(this, e, DT);
     this.blockHero();
     if (this.boss) updateBoss(this, this.boss, DT);
@@ -157,6 +161,11 @@ export class Game {
       (tx, ty, def) => this.emit('debris', { x: tx * TILE + 8, y: ty * TILE + 8, color: tileColor(def), n: 2 }),
     );
     if (this.events.length > MAX_EVENTS) this.events.splice(0, this.events.length - MAX_EVENTS);
+  }
+
+  /** Le boss vaincu (il s'éjecte, puis disparaît), l'ordre cesse le feu jusqu'à la fin du niveau. */
+  get truce() {
+    return Boolean(this.boss && (this.boss.state === 'ejecting' || this.boss.state === 'gone'));
   }
 
   emit(type, data = {}) {
@@ -221,7 +230,9 @@ export class Game {
       }
     }
     if (team !== 'ordre' && this.boss && near(this.boss)) this.hurtBoss(damage);
-    if (team !== 'luttes' && !hero.dead && near(hero)) this.hurtHero(1, { x, kind: 'explosion' });
+    // Au cessez-le-feu, ce que l'ordre a lancé ne blesse plus : une grenade encore en l'air, un tonneau qu'elle fait sauter.
+    const harmless = this.truce && (team === 'ordre' || credit === 'ordre');
+    if (team !== 'luttes' && !harmless && !hero.dead && near(hero)) this.hurtHero(1, { x, kind: 'explosion' });
     if (team !== 'ordre') {
       for (const cage of this.props) {
         if (cage.kind !== 'cage' || cage.on || !near(cage)) continue;
@@ -235,7 +246,7 @@ export class Game {
     const { hero } = this;
     for (const c of this.clouds) c.t -= DT;
     this.clouds = this.clouds.filter((c) => c.t > 0);
-    const inGas = (b) => this.clouds.some((c) => Math.hypot(c.x - (b.x + b.w / 2), c.y - (b.y + b.h / 2)) < c.r);
+    const inGas = (b, clouds = this.clouds) => clouds.some((c) => Math.hypot(c.x - (b.x + b.w / 2), c.y - (b.y + b.h / 2)) < c.r);
     // Le gaz ne choisit pas son camp : il étourdit aussi ceux qui l'ont lancé.
     for (const e of this.enemies) {
       if (e.state === 'done' || e.state === 'sleep' || sturdy(e) || !inGas(e)) continue;
@@ -243,7 +254,7 @@ export class Game {
       e.stun = Math.max(e.stun, 1);
       e.daze = 'gaz'; // gazé par ses propres grenades : il pleure et tousse, il ne fait plus rien
     }
-    if (!hero.dead && inGas(hero)) {
+    if (!hero.dead && inGas(hero, this.harmfulClouds())) {
       hero.gasTime += DT;
       if (hero.gasTime >= 1) {
         hero.gasTime = 0;
@@ -252,6 +263,11 @@ export class Game {
     } else {
       hero.gasTime = Math.max(0, hero.gasTime - DT);
     }
+  }
+
+  /** Les nuages qui gazent encore le héros et le cortège : au cessez-le-feu, plus ceux de l'ordre. */
+  harmfulClouds() {
+    return this.truce ? this.clouds.filter((c) => c.team !== 'ordre') : this.clouds;
   }
 
   /** Y a-t-il un personnage dans ce rectangle ? (pour ne jamais faire pousser un mur sur quelqu'un) */
@@ -458,7 +474,8 @@ export class Game {
       this.sfx('palier', this.hero.x);
       this.headline();
       // Une poubelle prend feu et une équipe télé vient la filmer : elle compte parmi les renforts du palier.
-      this.reinforce(this.ignite() ? 1 : 2);
+      // Au cessez-le-feu, plus de renfort, ni d'équipe venue filmer.
+      if (!this.truce) this.reinforce(this.ignite() ? 1 : 2);
     }
   }
 

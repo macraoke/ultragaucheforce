@@ -2,7 +2,7 @@
 // Un seul modèle, entièrement réglé par les fiches (voir WEAPONS dans behaviors.js).
 
 import { TILE } from './world.js';
-import { hitsSolid, overlap } from './physics.js';
+import { hitsSolid, overlap, holds } from './physics.js';
 import { joinRecruit } from './manif.js';
 
 const DEFAULTS = {
@@ -89,7 +89,7 @@ function burst(game, p, quiet = false) {
     game.sfx('impact', cx);
   }
   if (p.gas > 0) {
-    game.clouds.push({ x: cx, y: cy, r: 26, t: p.gas });
+    game.clouds.push({ x: cx, y: cy, r: 26, t: p.gas, team: p.team });
     game.sfx('gaz', cx);
   }
 }
@@ -130,7 +130,19 @@ function touchActors(game, p) {
     }
     return;
   }
-  // Camp de l'ordre : vise le héros… et, pour les grenades « fratricides », touche aussi les collègues.
+  // Camp de l'ordre : un tir qui touche une ligne qui tient s'y écrase, comme nos tracts (sauf « perce ») ; une grenade
+  // en cloche passe au-dessus. Une grenade « fratricide » qui la touche y éclate, plus bas, comme sur un collègue.
+  if (!p.friendly) {
+    for (const l of game.lines) {
+      if (l === p.owner || !holds(l) || p.hits.has(l) || !overlap(p, l)) continue;
+      p.hits.add(l);
+      game.parry(l, l.x + l.w / 2, true);
+      if (!p.pierce) return burst(game, p, true);
+    }
+  }
+  // Le boss vaincu, ce qui vole encore ne blesse plus ni le héros ni le cortège : il file jusqu'au décor.
+  if (game.truce) return;
+  // Puis il vise le héros… et, pour les grenades « fratricides », touche aussi les collègues.
   if (!game.hero.dead && overlap(p, game.hero)) {
     game.hurtHero(p.damage, { dir: Math.sign(p.vx), x: p.x + p.w / 2, kind: p.explosion > 0 ? 'explosion' : 'tir' });
     return burst(game, p);

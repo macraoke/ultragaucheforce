@@ -7,7 +7,7 @@
 // Ajouter une mécanique = ajouter une entrée ici (déclaration + fonction). Rien d'autre.
 
 import { TILE } from './world.js';
-import { hitsSolid } from './physics.js';
+import { hitsSolid, holds } from './physics.js';
 import { spawnProjectile } from './projectile.js';
 
 /**
@@ -92,7 +92,7 @@ export const WEAPONS = {
     params: {
       duree: [0.3, 6, 1.5], // secondes de jet
       pause: [0.5, 10, 3], // secondes entre deux jets
-      portee: [32, 320, 140], // longueur du jet, pixels (il s'arrête au premier mur)
+      portee: [32, 320, 140], // longueur du jet, pixels (il s'arrête au premier mur, ou sur une ligne qui tient)
       poussee: [20, 600, 220], // vitesse de recul imposée, pixels par seconde
     },
     texts: ['son'],
@@ -116,8 +116,11 @@ export const WEAPONS = {
       const dir = shooter.facing;
       const x = dir > 0 ? shooter.x + shooter.w : shooter.x;
       const y = shooter.y + shooter.h * 0.35;
+      // Le jet s'arrête au premier mur, ou sur une ligne qui tient, comme un tir.
+      const lines = game.lines.filter((l) => l !== shooter && holds(l) && y >= l.y && y <= l.y + l.h);
+      const stops = (px) => world.solid(Math.floor(px / TILE), Math.floor(y / TILE)) || lines.some((l) => px >= l.x && px <= l.x + l.w);
       let length = 0;
-      while (length < w.portee && !world.solid(Math.floor((x + dir * (length + 4)) / TILE), Math.floor(y / TILE))) length += 4;
+      while (length < w.portee && !stops(x + dir * (length + 4))) length += 4;
       shooter.jet = { x, y, length, dir };
       const x0 = dir > 0 ? x : x - length;
       const soaked = (cx, top, bottom) => cx >= x0 && cx <= x0 + length && top <= y + 6 && bottom >= y - 6;
