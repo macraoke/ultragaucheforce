@@ -2,15 +2,15 @@
 
 On le dessine dans le jeu, on l'essaie, on le propose. Le niveau lui-même est un fichier texte : un en-tête, puis une carte où un caractère vaut une case.
 
-## Le plus simple : l'Atelier
+## Le plus simple : l'Atelier (bêta)
 
 1. Dans le jeu, ouvrez **Atelier**.
 2. Choisissez dans la palette (Terrain, Repères, En face, La manif, Décors), puis peignez : un toucher pose, un glissé trace. Il y a une gomme, un rectangle, et une case « Mur du fond ».
 3. La carte s'agrandit par ses quatre côtés, jusqu'à 400 × 60. L'en-tête s'écrit tout seul.
-4. **Tester** lance votre niveau tout de suite. S'il manque quelque chose, l'Atelier le dit en une phrase et montre la case.
+4. **Tester** lance votre niveau tout de suite. S'il manque quelque chose, l'Atelier le dit en une phrase et montre la case. **← Retour à l'édition**, à côté de la pause, dans la pause et à la fin de l'essai, ramène à la carte, là où vous en étiez.
 5. **Proposer** ouvre la page GitHub de création du fichier, déjà remplie. Niveau trop long pour un lien ? Il est copié : collez-le dans la page qui s'ouvre.
-6. **Brouillons** : chaque niveau commencé s'enregistre tout seul dans le navigateur pendant qu'on dessine. On le retrouve en rouvrant le jeu ; on peut en commencer un autre, le renommer, le dupliquer, le supprimer. Rien ne quitte l'appareil.
-7. **GitHub** mène au reste : les propositions en cours, une pancarte, un personnage, une source à corriger, un bug.
+6. **Mes niveaux** : chaque niveau commencé s'enregistre tout seul dans le navigateur pendant qu'on dessine. L'Atelier rouvre sur leur liste : ouvrir, tester, renommer, dupliquer, supprimer, en commencer un nouveau. Rien ne quitte l'appareil.
+7. **GitHub** mène au reste : les propositions en cours, une idée de niveau, une pancarte, un personnage, une source à corriger, un bug.
 
 > [!NOTE]
 > Le bouton **Texte** montre la fiche du niveau. C'est là que se règlent les clés que la palette ne couvre pas (`citation`, `fiche`, `accroche`, `heros`, `camarades`, `musique`, `manif`, `nasse.*`).
