@@ -510,22 +510,24 @@ test('une campagne : six niveaux, six pistes différentes, et chaque niveau ouvr
   }
 });
 
-test('« Rejouer » un niveau : une autre piste ; la piste d’un niveau n’est une préférence que la première fois', async () => {
+test('« Sa piste en premier » : chaque entrée dans un niveau commence par sa piste à lui, puis le sac', async () => {
+  // Valentin, 16 novembre 2026 : « Sa piste en premier : chaque entrée dans un niveau commence par sa piste à lui,
+  // et le sac prend le relais ensuite. »
   for (const id of bundle.campagne) {
+    const own = real.filter((t) => t.ou === id).map((t) => t.id);
     for (let seed = 1; seed <= 20; seed++) {
       const s = setup({ list: real, random: seeded(seed) });
       await s.on();
-      const [first, again] = await campaignOpenings(s, [id, id]);
-      assert.notEqual(again, first, `${id}, graine ${seed}`);
+      const [first, again] = await campaignOpenings(s, [id, id]); // deux entrées, le boss entre les deux
+      if (!own.length) {
+        assert.notEqual(again, first, `${id} sans piste à lui : le sac, graine ${seed}`);
+        continue;
+      }
+      assert.ok(own.includes(first) && own.includes(again), `${id} : ${first}, puis ${again}`);
+      if (own.length > 1) assert.notEqual(again, first, `${id} : pas la même que la visite d'avant`);
     }
   }
-  // La chaîne d'info n'a qu'une piste à elle : la deuxième fois, une de tous les niveaux.
-  const s = setup({ list: real, random: seeded(3) });
-  await s.on();
-  const [first, again] = await campaignOpenings(s, ['chaine-info', 'chaine-info']);
-  assert.equal(first, 'jles-aime-pas');
-  assert.equal(bundle.musiques[again].ou, 'jeu');
-  // Une piste nommée par un niveau (`musique`) : d'abord elle, puis le sac.
+  // Une piste nommée par un niveau (`musique`) : à chaque entrée.
   const n = setup({ random: seeded(5) });
   await n.on();
   const named = [];
@@ -538,7 +540,39 @@ test('« Rejouer » un niveau : une autre piste ; la piste d’un niveau n’est
     n.ready();
     n.playing();
   }
-  assert.deepEqual(named.slice(0, 2), ['jeu-b', 'jeu-a']);
+  assert.deepEqual(named, ['jeu-b', 'jeu-b', 'jeu-b']);
+});
+
+test('« Recommencer » n’est pas une entrée ; après sa piste, le sac, jamais celle qui vient de passer ; sa piste en échec, le sac', async () => {
+  const s = setup({ list: real, random: seeded(9) });
+  await s.on();
+  s.radio.play('chaine-info');
+  assert.equal(s.radio.current.id, 'jles-aime-pas');
+  s.ready();
+  s.playing();
+  const loads = s.widget.loads.length;
+  s.radio.play('chaine-info'); // « Recommencer »
+  assert.equal(s.widget.loads.length, loads, 'la musique continue');
+  s.emit('FINISH');
+  assert.equal(s.radio.current.ou, 'jeu', 'le sac prend le relais');
+  assert.notEqual(s.radio.current.id, 'jles-aime-pas');
+  s.ready();
+  s.playing();
+  s.radio.play('boss');
+  s.ready();
+  s.playing();
+  s.radio.play('chaine-info'); // nouvelle entrée : sa piste, de nouveau
+  assert.equal(s.radio.current.id, 'jles-aime-pas');
+  s.emit('ERROR'); // chiffrée, sans module de lecture
+  assert.equal(s.radio.current.ou, 'jeu', 'sa piste échoue : le sac');
+  // Plus tard, sa piste en échec n'est plus proposée à l'entrée : le sac directement.
+  s.ready();
+  s.playing();
+  s.radio.play('boss');
+  s.ready();
+  s.playing();
+  s.radio.play('chaine-info');
+  assert.equal(s.radio.current.ou, 'jeu');
 });
 
 test('aucune piste de niveau ne revient avant que les autres soient passées, d’un niveau à l’autre comme en fin de piste', async () => {
