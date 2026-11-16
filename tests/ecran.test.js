@@ -207,6 +207,55 @@ test('les porteurs lèvent leur pancarte à tour de rôle : un tiers à la fois,
   assert.ok(share > 0.25 && share < 0.42, `levées ${(100 * share).toFixed(0)} % du temps`);
 });
 
+test('une recrue sur plusieurs, à quelques secondes d’écart, crie son slogan ; le gain s’affiche toujours', () => {
+  const r = renderer();
+  const join = (x, text) => r.absorb([{ type: 'recruit', x, y: 150, n: 20 }, { type: 'bubble', x, y: 144, text }]);
+  r.clock = 0;
+  join(100, 'LA RETRAITE AVANT L’ARTHRITE');
+  r.clock = 1;
+  join(260, 'DE L’ARGENT POUR L’HÔPITAL');
+  let texts = r.floaters.map((f) => f.text);
+  assert.ok(texts.includes('LA RETRAITE AVANT L’ARTHRITE') && !texts.includes('DE L’ARGENT POUR L’HÔPITAL'), 'la seconde rejoint sans crier');
+  assert.equal(texts.filter((t) => t === '+ 20').length, 2, 'ses « + 20 » s’affichent tous les deux');
+  r.clock = 3.5;
+  join(400, 'TOUS ENSEMBLE');
+  texts = r.floaters.map((f) => f.text);
+  assert.ok(texts.includes('TOUS ENSEMBLE'), 'plus tard, une autre crie le sien');
+  r.absorb([{ type: 'bubble', x: 200, y: 100, text: 'DÉCONSTRUCTION !' }]);
+  assert.ok(r.floaters.some((f) => f.text === 'DÉCONSTRUCTION !'), 'le nom d’une spéciale passe toujours');
+});
+
+test('des pertes pour la même raison, au même endroit, font un seul texte qui s’additionne', () => {
+  const r = renderer();
+  r.absorb([{ type: 'dispersed', reason: 'gaz', n: 10, x: 40, y: 150 }, { type: 'dispersed', reason: 'gaz', n: 9, x: 60, y: 150 }]);
+  r.absorb([{ type: 'dispersed', reason: 'interpelle', n: 3, x: 50, y: 150 }]);
+  assert.deepEqual(r.floaters.map((f) => f.text), ['− 19 gazés', '− 3 interpellés']);
+});
+
+test('« GARDE À VUE » s’écrit quand le héros approche ; de loin, le dessin suffit', () => {
+  const r = renderer();
+  const said = [];
+  r.label = (text) => said.push(text);
+  const cage = { kind: 'cage', x: 300, y: 150, w: 16, h: 16, on: false };
+  r.heroBox = { x: 20, y: 148, w: 12, h: 18 };
+  r.prop(cage);
+  assert.deepEqual(said, []);
+  r.heroBox = { x: 200, y: 148, w: 12, h: 18 };
+  r.prop(cage);
+  assert.deepEqual(said, ['GARDE À VUE']);
+});
+
+test('des unités identiques côte à côte n’ont qu’un écriteau ; une autre, plus loin ou différente, a le sien', () => {
+  const r = renderer();
+  const unit = (id, x) => ({ def: { id }, x, y: 150, w: 12, h: 18 });
+  r.groups.clear();
+  assert.equal(r.first('écriteau', unit('crs', 100)), true);
+  assert.equal(r.first('écriteau', unit('crs', 114)), false);
+  assert.equal(r.first('écriteau', unit('crs', 128)), false, 'de proche en proche, toute la ligne');
+  assert.equal(r.first('écriteau', unit('bac', 120)), true, 'une autre unité');
+  assert.equal(r.first('écriteau', unit('crs', 260)), true, 'un autre groupe');
+});
+
 test('la bulle du boss reste entière dans la vue, sous le HUD', () => {
   const r = renderer();
   const def = Object.values(bundle.boss)[0];

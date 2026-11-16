@@ -33,6 +33,9 @@ const NEAR_HERO = 14; // un manifestant plus près que cela du héros passe en t
 const REC = '● REC'; // le cadre de la caméra l'affiche déjà : pas de bulle en double
 const SIGN_TURN = 6; // secondes d'un tour : les porteurs lèvent leur pancarte à tour de rôle…
 const SIGN_SHARE = 3; // … un tour sur trois chacun : un tiers des pancartes levées à la fois, toutes à leur tour
+const SLOGAN_GAP = 3; // secondes entre deux slogans de recrues : les autres recrues rejoignent sans crier
+const NEAR_PROP = { x: 10 * TILE, y: 6 * TILE }; // « GARDE À VUE », « PIQUET DE GRÈVE » : écrits quand le héros approche
+const GROUP = { x: 40, y: 24 }; // des unités identiques aussi proches font un groupe : un seul écriteau, une seule bulle, un seul « ! »
 const SAFE_TOP = 100; // pixels CSS en haut de l'écran laissés au HUD, au moins (bandeau au pouce, barre de vie du boss) ; plus s'il descend plus bas
 
 export class Renderer {
@@ -50,6 +53,9 @@ export class Renderer {
     this.scale = 2;
     this.ratio = 3; // pixels CSS par pixel du monde (3 sur ordinateur, 5/3 sur téléphone)
     this.hudBottom = 0; // où descend le HUD, en pixels CSS depuis le haut (main.js le mesure)
+    this.groups = new Map(); // à chaque image, où chaque genre de texte a déjà été écrit pour un groupe d'unités (`first`)
+    this.loud = new Set(); // les unités hors service dont la bulle se lit (une par groupe)
+    this.lastSlogan = -Infinity;
     this.held = new WeakMap(); // porteur de pancarte du cortège → { up, since, label } : levée ou baissée, depuis quand
     this.raised = new Set(); // les porteurs dont la pancarte est levée à cette image
     this.particles = [];
@@ -120,6 +126,7 @@ export class Renderer {
 
   /** Transforme les événements de la simulation en particules, textes flottants et secousses. */
   absorb(events) {
+    let prev = null;
     for (const e of events) {
       if (e.type === 'debris') this.burst(e.x, e.y, this.palette[e.color] || '#fff', e.n || 6, 70);
       else if (e.type === 'explosion') {
@@ -131,7 +138,14 @@ export class Renderer {
       else if (e.type === 'fire') {
         this.burst(e.x, e.y - 14, '#ef7d57', 12, 70);
         this.burst(e.x, e.y - 14, '#f6c21c', 8, 50);
-      } else if (e.type === 'bubble') this.float({ x: e.x, y: e.y, text: e.text, t: 1.6, color: e.color || '#f4f4f4' });
+      } else if (e.type === 'bubble') {
+        // Le slogan d'une recrue suit son « + n » : un seul toutes les SLOGAN_GAP secondes, les suivantes rejoignent sans crier.
+        const slogan = prev?.type === 'recruit' && prev.x === e.x;
+        if (!slogan || this.clock - this.lastSlogan >= SLOGAN_GAP) {
+          if (slogan) this.lastSlogan = this.clock;
+          this.float({ x: e.x, y: e.y, text: e.text, t: 1.6, color: e.color || '#f4f4f4' });
+        }
+      }
       else if (e.type === 'recruit') {
         this.float({ x: e.x, y: e.y - 14, text: `+ ${e.n.toLocaleString('fr-FR')}`, n: e.n, t: 1.8, color: '#f6c21c', size: 11, gain: true });
         if (e.healed) this.float({ x: e.x, y: e.y - 28, text: 'SOIGNÉ', t: 1.8, color: '#38b764', size: 9, gain: true });
@@ -180,12 +194,17 @@ export class Renderer {
         // La manif perd du monde : combien et pourquoi, au même style que les « + 20 », et ceux qui s'en vont.
         const [one, many] = LOSS_WORDS[e.reason] || LOSS_WORDS.charge;
         // Hors de l'image (la queue du cortège) : le texte attend au bord de l'écran, avec une flèche (voir `combatBefore`).
-        this.float({ x: e.x, y: e.y - 8, wx: e.x, edge: true, text: `− ${e.n.toLocaleString('fr-FR')} ${e.n > 1 ? many : one}`, t: 1.8, color: '#e43b44', size: 9, keep: true });
+        // Une perte de plus, pour la même raison et au même endroit, s'ajoute au même texte : « − 19 gazés », pas deux.
+        const loss = (n) => `− ${n.toLocaleString('fr-FR')} ${n > 1 ? many : one}`;
+        const same = this.floaters.find((g) => g.reason === e.reason && g.t > FADE && Math.abs(g.wx - e.x) < 120);
+        if (same) Object.assign(same, { lost: same.lost + e.n, t: Math.max(same.t, 1.8) }, { base: loss(same.lost + e.n), text: loss(same.lost + e.n) });
+        else this.float({ x: e.x, y: e.y - 8, wx: e.x, edge: true, reason: e.reason, lost: e.n, text: loss(e.n), t: 1.8, color: '#e43b44', size: 9, keep: true });
         for (const m of e.gone || []) {
           const dir = e.reason === 'interpelle' ? Math.sign(e.x - m.x) || 1 : Math.sign(m.x - e.x) || -m.facing || 1;
           this.runners.push({ x: m.x, y: m.y, dir, t: 0.9, n: this.runners.length });
         }
       }
+      prev = e;
     }
   }
 
@@ -275,6 +294,7 @@ export class Renderer {
 
     this.heroBox = game.hero;
     this.boxes = []; // les pancartes déjà posées à cette image : aucune ne recouvre l'autre
+    this.groups.clear();
     this.backRows = game.level?.murs;
     this.backWalls(game, cx, cy);
     for (const d of game.decors) if (!this.bundle.decors[d.id]?.devant) this.decor(d);
@@ -349,9 +369,11 @@ export class Renderer {
     }
     for (const f of this.floaters) if (f.keep) this.reserve(f.text, f.x - cx, f.y - cy, f.size || 7, 150);
     if (this.hurt && !hero.dead) this.reserve('■ ■ ■', hero.x + hero.w / 2 - cx, hero.y - 14 - cy, 7, 0);
-    // « EN GRÈVE ! », « EN PANNE » : le temps qu'on les lise.
+    // « EN GRÈVE ! », « EN PANNE » : le temps qu'on les lise ; une bulle pour un groupe d'unités identiques qui cèdent ensemble.
+    this.loud.clear();
     for (const e of game.enemies) {
-      if (e.state !== 'done' || !e.bubble) continue;
+      if (e.state !== 'done' || !e.bubble || !this.first('fin', e, e.bubble.text)) continue; // « EN GRÈVE ! » ×5 : un seul
+      this.loud.add(e);
       const rows = e.def.sprites.fin || e.def.sprites.repos;
       this.reserve(e.bubble.text, e.x + e.w / 2 - cx, e.y + e.h - rows.length - cy - 9, 6, 0);
     }
@@ -539,8 +561,8 @@ export class Renderer {
       if (e.bubble) {
         const pop = Math.max(0, e.bubble.t - 2.3) * 12; // il claque, puis se pose
         const strike = e.def.fin === 'greve';
-        this.label(e.bubble.text, cx, top - 9, { size: 6 + pop, color: '#1a1c2c', bg: strike ? '#f6c21c' : '#94b0c2' });
-      } else if (e.def.ecriteau && !e.overrun && since < ECRITEAU) {
+        if (this.loud.has(e)) this.label(e.bubble.text, cx, top - 9, { size: 6 + pop, color: '#1a1c2c', bg: strike ? '#f6c21c' : '#94b0c2' });
+      } else if (e.def.ecriteau && !e.overrun && since < ECRITEAU && this.first('écriteau', e)) {
         // Son écriteau, un moment, puis il s'efface : l'écran ne se remplit pas d'unités à l'arrêt.
         this.label(e.def.ecriteau, cx, e.y - 9 - this.cy, { size: 5, color: '#1a1c2c', bg: '#f4f4f4', alpha: Math.min(1, ECRITEAU - since) });
       }
@@ -654,7 +676,7 @@ export class Renderer {
         ctx.fillRect(x, y, 1, 1);
       }
     }
-    if (Math.floor(this.clock * 2.5 + e.x) % 2) this.label('KOF !', cx, top - 9, { size: 6, color: '#f4f4f4' });
+    if (Math.floor(this.clock * 2.5 + e.x) % 2 && this.first('kof', e)) this.label('KOF !', cx, top - 9, { size: 6, color: '#f4f4f4' });
   }
 
   /** Une unité qui repère le héros le fait savoir : un « ! » rouge, le temps d'un battement. */
@@ -667,7 +689,7 @@ export class Renderer {
     if (age > 0.7) return;
     const jump = age < 0.12 && !this.reduced ? (0.12 - age) * 30 : 0;
     const above = e.hp < e.def.pv ? 7 : 0; // au-dessus de sa jauge, s'il en a une
-    this.label('!', cx, top - 10 - above - jump, { size: 10, color: '#e43b44' });
+    if (this.first('alerte', e)) this.label('!', cx, top - 10 - above - jump, { size: 10, color: '#e43b44' });
   }
 
   /** Un manifestant qui s'en va en courant et s'efface. */
@@ -703,6 +725,22 @@ export class Renderer {
     ctx.fillRect(0, H - b, W, b);
     ctx.fillRect(0, b, b, H - 2 * b);
     ctx.fillRect(W - b, b, b, H - 2 * b);
+  }
+
+  /**
+   * Faux si un texte de ce genre (`kind`) est déjà écrit à cette image pour une unité identique et voisine : des unités
+   * côte à côte font un groupe, qui n'a qu'un écriteau, qu'une bulle, qu'un « ! ». De proche en proche : toute la ligne.
+   * `same` dit ce qui fait le groupe : l'unité par défaut ; le texte pour « EN GRÈVE ! », quelles que soient les unités.
+   */
+  first(kind, e, same = e.def.id) {
+    const key = `${kind}:${same}`;
+    const seen = this.groups.get(key) ?? [];
+    const x = e.x + e.w / 2;
+    const y = e.y + e.h;
+    const alone = !seen.some((p) => Math.abs(p.x - x) < GROUP.x && Math.abs(p.y - y) < GROUP.y);
+    seen.push({ x, y });
+    this.groups.set(key, seen);
+    return alone;
   }
 
   /** Un trait d'un pixel entre deux points du monde. */
@@ -842,6 +880,10 @@ export class Renderer {
     if (p.kind === 'sortie') {
       if (p.on !== false) this.label('SORTIE ▶', x + img.width / 2, y - 9, { size: 6, color: '#1a1c2c', bg: '#f6c21c' });
     }
+    // « GARDE À VUE », « PIQUET DE GRÈVE » : on les lit en approchant ; de loin, le dessin suffit.
+    const h = this.heroBox;
+    const near = h && Math.abs(p.x + p.w / 2 - (h.x + h.w / 2)) < NEAR_PROP.x && Math.abs(p.y + p.h - (h.y + h.h)) < NEAR_PROP.y;
+    if (!near) return;
     if (p.kind === 'cage' && !p.on) this.label('GARDE À VUE', x + 8, y - 8, { size: 4.5, color: '#f4f4f4', bg: '#333c57' });
     if (p.kind === 'piquet' && !p.on) this.label('PIQUET DE GRÈVE', x + img.width / 2, y - 8, { size: 4.5, color: '#1a1c2c', bg: '#f6c21c' });
   }
