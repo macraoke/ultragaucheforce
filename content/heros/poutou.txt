@@ -1,5 +1,5 @@
 nom: L'Immunité ouvrière
-origine: Au débat à onze candidats du 4 avril 2017, l'ouvrier chez Ford lance : « nous n'avons pas d'immunité ouvrière, désolé, on y va ». Il en fait son nom, son cri et sa spéciale.
+origine: Au débat à onze candidats du 4 avril 2017, l'ouvrier chez Ford lance : « nous n'avons pas d'immunité ouvrière, désolé, on y va ». Le jeu en fait son nom, son cri et sa spéciale.
 inspiration: Philippe Poutou
 traitement: l'ouvrier en tee-shirt à manches longues, au milieu des cravates
 cri: NOUS N'AVONS PAS D'IMMUNITÉ OUVRIÈRE !
