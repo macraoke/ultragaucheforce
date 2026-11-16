@@ -2,7 +2,7 @@
 
 > **Taxez les riches. Abattez la Citadelle.**
 
-Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les plateaux télé la racontent : surarmée de tracts et de tomates. On part à dix place de la République, on arrive à des centaines devant la Citadelle, et on taxe la fortune qui s'y est assise. Ça se joue dans le navigateur, au clavier ou au pouce.
+Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les plateaux télé la racontent : surarmée de tracts et de tomates. On part à dix place de la République, on arrive à des centaines devant la Citadelle, et on taxe la fortune qui s'y est assise. Ça se joue dans le navigateur, au clavier ou au pouce : **[ultragaucheforce.fr](https://ultragaucheforce.fr)**.
 
 | | |
 |---|---|
