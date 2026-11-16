@@ -261,7 +261,9 @@ export function showAtelier(root, { bundle, save, test, back }) {
   const signInput = h('input', {
     type: 'text', enterKeyHint: 'done',
     oninput: () => commit(setField(model, `panneau.${sign}`, signInput.value.trim() || '…'), `panneau.${sign}`),
-    onkeydown: (e) => e.key === 'Enter' && closeSign(),
+    onkeydown: (e) => {
+      if (e.key === 'Enter') closeSign(); // sans rien renvoyer : `false` annulerait la frappe
+    },
   });
   const signBox = h('label', { className: 'ecrire' }, 'Texte', signInput);
   const editSign = (digit) => {
