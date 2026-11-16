@@ -7,7 +7,7 @@ fiche: blesses-comptage
 fond: campagne
 cortege: oui
 manif: 5
-nasse.ennemi: gendarme-mobile
+nasse.ennemi: crs
 nasse.nombre: 3
 nasse.vitesse: 20
 
