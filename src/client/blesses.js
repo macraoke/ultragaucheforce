@@ -25,7 +25,7 @@ export const CRS_OCTOBRE_2026 = {
 export const FROM_FILE = {
   // Ce qu'un agent s'est fait seul : une porte, une chute du fourgon, une course, un trou.
   alone: [
-    '« poignet gauche en fermant la porte du VR »',
+    '« poignet gauche en fermant la porte du VR [véhicule de reconnaissance] »',
     '« se tord la cheville en chutant du fourgon »',
     '« une entorse [lors d’une] poursuite pédestre »',
     '« des douleurs aux côtes droites lors d’une course-poursuite »',
