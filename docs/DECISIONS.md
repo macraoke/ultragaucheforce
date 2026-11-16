@@ -42,7 +42,7 @@ Le prix : un format maison. Il tient en moins de cent lignes (`src/content/parse
 
 Le prix : pas de musique hors-ligne, et un lecteur tiers avec ses traceurs. Il n'est chargé que si la musique est activée.
 
-Le lecteur ne dit pas toujours qu'une piste se tait. Radio Manif vérifie que la lecture avance : sinon, elle passe à une autre piste. Quand le navigateur refuse de jouer sans geste du joueur, un bouton le montre et le prochain toucher relance la musique.
+Le lecteur ne dit pas toujours qu'une piste se tait. Radio Manif vérifie que la lecture avance : une piste morte cède la place à une autre, un réseau lent est attendu. Quand le navigateur refuse de jouer sans geste du joueur, un bouton le montre et le prochain toucher relance la musique. SoundCloud injoignable : on joue sans musique, et seul le bouton de Radio Manif, ou le retour du réseau, réessaie.
 
 ## Le but : une manif qui grossit
 

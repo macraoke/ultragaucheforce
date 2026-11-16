@@ -77,4 +77,4 @@ auteur: ton pseudo
 
 Sur la page de la piste, **Share → Embed** doit proposer un lecteur. Préférez l'instrumental, et le Creative Commons : une piste « tous droits réservés » peut disparaître du lecteur du jour au lendemain.
 
-Une piste qui ne démarre pas (retirée, ou chiffrée dans un navigateur qui ne sait pas la lire) laisse la place à une autre au bout de dix secondes. Une piste réservée aux abonnés Go+ ne joue qu'un extrait de trente secondes.
+Une piste retirée laisse aussitôt la place à une autre ; une piste chiffrée, dans un navigateur qui ne sait pas la lire, au bout d'une quinzaine de secondes. Une piste réservée aux abonnés Go+ ne joue qu'un extrait de trente secondes.
