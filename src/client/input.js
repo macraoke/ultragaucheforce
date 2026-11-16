@@ -33,6 +33,7 @@ export const CONTROLS = [
   ['Creuser, viser en haut', '↓ ou ↑ sans avancer, puis tirer', 'bas ou haut, puis tirer', 'pouce gauche vers le bas ou le haut, puis TIR ; ou TIR glissé vers le haut'],
   ['Spéciale', 'K, C ou Maj', 'B ou gâchette gauche', 'SPÉ'],
   ['Pause', 'Échap ou P', 'Start', 'II'],
+  ['Piste suivante (en pause)', 'N', 'croix jusqu’à ⏭, puis A', '⏭, à côté de « Pause »'],
 ];
 
 /** Les commandes en une ligne, pour le carton d'ouverture et la pause : [touche, ce qu'elle fait]. */
