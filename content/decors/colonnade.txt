@@ -1,4 +1,4 @@
-nom: La colonnade de l'Assemblée
+nom: Colonnade de l'Assemblée
 auteur: UltraGauche Force
 --- image
 ..................................GWWWWWWWWWWWWWWWWWWWWWWWWWWG..................................

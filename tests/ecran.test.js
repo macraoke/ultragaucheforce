@@ -66,8 +66,8 @@ test('les notes attendent leur tour ; une rafale du même genre se replie en une
   assert.equal(notes.length, 1);
   assert.equal(notes[0].text, '3 pancartes débloquées', 'toutes les raretés se replient pareil');
   assert.equal(notes[0].tone, 'rarete-3', 'le bord a la couleur de la plus rare');
-  queueNote(notes, { text: 'Débloqué : La BAC', group: 'cartes' });
-  queueNote(notes, { text: 'Débloqué : Les CRS', group: 'cartes' });
+  queueNote(notes, { text: 'Débloqué : BAC', group: 'cartes' });
+  queueNote(notes, { text: 'Débloqué : CRS', group: 'cartes' });
   assert.deepEqual(notes.map((n) => n.text), ['3 pancartes débloquées', '2 cartes débloquées']);
 });
 

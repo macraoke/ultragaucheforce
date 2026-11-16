@@ -1,5 +1,5 @@
 # Un plateau : il ne bouge pas, il cadre, et la panique monte. Sa réplique est un vrai bandeau de la chaîne.
-nom: Le plateau de CNews
+nom: Plateau de CNews
 pv: 6
 vitesse: 0
 deplacement: fixe

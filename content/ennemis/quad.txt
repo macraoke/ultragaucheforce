@@ -1,5 +1,5 @@
 # Deux gendarmes par quad, comme à Sainte-Soline.
-nom: Le peloton sur quads
+nom: Quads
 pv: 3
 vitesse: 120
 deplacement: moto

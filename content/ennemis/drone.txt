@@ -1,6 +1,6 @@
 # Il ne blesse personne : il cadre le héros, et la panique monte.
 # Clin d'œil à « We Become What We Behold » de Nicky Case.
-nom: Le drone de PANIQUE TV
+nom: Drone de PANIQUE TV
 pv: 1
 vitesse: 60
 deplacement: vol

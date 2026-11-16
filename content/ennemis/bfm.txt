@@ -1,5 +1,5 @@
 # Il ne blesse personne : il cadre le héros, et la panique monte. Ses répliques sont de vrais bandeaux de la chaîne.
-nom: Le duplex de BFM-TV
+nom: Duplex de BFM-TV
 pv: 2
 vitesse: 34
 deplacement: marche

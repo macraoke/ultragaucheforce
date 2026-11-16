@@ -1,5 +1,5 @@
 # Ses mots viennent de `content/citations/` ; ses répliques sont de vrais bandeaux de chaînes d'info.
-nom: L'éditorialiste
+nom: Éditorialiste
 pv: 2
 vitesse: 14
 deplacement: marche

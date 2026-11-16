@@ -1,4 +1,4 @@
-nom: Le premier de cordée
+nom: Premier de cordée
 origine: D'après Emmanuel Macron, président de la République.
 pv: 10
 vitesse: 0

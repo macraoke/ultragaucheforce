@@ -111,7 +111,7 @@ Elle attend sur place. Le héros la touche, ou lui tend un tract : elle rejoint 
 
 <!-- fichier: content/recrues/pompier.txt -->
 ```text
-nom: Le pompier
+nom: Pompier
 apport: 25
 slogan: DES MOYENS, PAS DES MIRACLES
 fiche: programme-services-publics-ruraux
@@ -153,7 +153,7 @@ Pour la placer, un niveau la déclare dans sa légende : `p: pompier`.
 <!-- fichier: content/ennemis/compagnie-d-intervention.txt -->
 ```text
 # Les sommations sont celles de l'article R. 211-11 du code de la sécurité intérieure.
-nom: La compagnie d'intervention
+nom: Compagnie d'intervention
 pv: 3
 vitesse: 30
 deplacement: marche

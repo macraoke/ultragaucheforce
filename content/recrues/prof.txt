@@ -1,4 +1,4 @@
-nom: La prof
+nom: Prof
 apport: 20
 slogan: NOS CLASSES DÉBORDENT, NOTRE PATIENCE AUSSI
 slogan: SANS ÉDUCATION, PAS DE NATION

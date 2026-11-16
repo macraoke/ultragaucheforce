@@ -1,5 +1,5 @@
 # Grenades lacrymogènes tirées en cloche ; le gaz touche aussi son camp (fratricide: 1).
-nom: L'escadron de gendarmes mobiles
+nom: Gendarmes mobiles
 pv: 3
 vitesse: 26
 deplacement: marche

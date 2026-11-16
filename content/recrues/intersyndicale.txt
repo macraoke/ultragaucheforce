@@ -1,4 +1,4 @@
-nom: L'intersyndicale
+nom: Intersyndicale
 apport: 150
 slogan: JUSQU'AU RETRAIT
 slogan: AUGMENTEZ LES SALAIRES !

@@ -1,4 +1,4 @@
-nom: La paysanne
+nom: Paysanne
 apport: 30
 slogan: LA PLANÈTE AVANT LE PROFIT
 slogan: - DE RICHES, + DE RUCHES

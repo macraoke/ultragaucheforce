@@ -1,5 +1,5 @@
 # Elle soigne : un point de vie rendu au héros quand elle le rejoint.
-nom: La street medic
+nom: Street medic
 apport: 5
 soin: 1
 fiche: street-medics

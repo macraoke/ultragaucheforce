@@ -1,4 +1,4 @@
-nom: Le faux jeune
+nom: Faux jeune
 pv: 2
 vitesse: 80
 deplacement: marche

@@ -238,7 +238,7 @@ export class Screens {
     const actionsFor = (card) => (card.kind === 'heros' && !this.go.playing() ? [this.button('Jouer avec', () => this.playAs(card.item.id), 'gros')] : []);
     let shown = null;
     this.show('biblio',
-      h('h2', {}, 'La Collection ', h('small', {}, `${all.found} / ${all.total}`)),
+      h('h2', {}, 'Collection ', h('small', {}, `${all.found} / ${all.total}`)),
       progress(all.found, all.total),
       h('div', { className: 'onglets' }, SHELVES.map((shelf) => {
         const { found, total } = collectionCount(bundle, save, shelf.id);
@@ -374,8 +374,8 @@ export class Screens {
       this.keys(),
       this.button('Reprendre', () => this.go.resume(), 'gros'),
       this.editButton(),
-      this.button('Retour au piquet de grève', () => this.go.checkpoint()),
-      this.button('Recommencer le niveau', () => this.go.restart()),
+      this.button('Retour au piquet', () => this.go.checkpoint()),
+      this.button('Recommencer', () => this.go.restart()),
       this.button('Commandes', () => this.controls()),
       this.button('Collection', () => this.collection()),
       this.button('Options', () => this.options()),

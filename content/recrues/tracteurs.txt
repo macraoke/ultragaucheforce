@@ -1,4 +1,4 @@
-nom: Le convoi de tracteurs
+nom: Tracteurs
 apport: 60
 slogan: SI Y'A PLUS DE TERRE, Y'A PLUS DE BIÈRE
 fiche: programme-services-publics-ruraux
