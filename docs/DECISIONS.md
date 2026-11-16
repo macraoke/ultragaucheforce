@@ -34,6 +34,8 @@ Le prix : un format maison. Il tient en moins de cent lignes (`src/content/parse
 - **Reproductible** : même graine, mêmes actions, même partie. C'est ce qu'il faudra pour jouer à plusieurs en ligne.
 - **Identique partout** : téléphone ou grand écran, seule la fenêtre change.
 
+**Une caméra qui avance avec le monde** (Valentin, 16 novembre 2026 : « tout est vraiment flou/illisible pendant que je me déplace ») : l'écran dessine à son rythme (60, 120 images par seconde, parfois une de travers), le monde avance par pas. La caméra suit le héros à chaque pas, pas à chaque image, et ce qu'elle suit (le héros, le cortège, ses pancartes) est arrondi par rapport à elle : en marche, rien ne recule puis n'avance d'un pixel.
+
 ## Des fichiers pour les sons, SoundCloud pour la musique
 
 - **Bruitages** : dans le dépôt, sous licence libre, joués hors-ligne. Une ligne de texte pour un son synthétisé, quelques kilo-octets pour un enregistrement.
