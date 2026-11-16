@@ -37,6 +37,7 @@ function ring(ctx, x, y, radius, width) {
 /**
  * @param {HTMLElement} root
  * @param {{bundle: object, save: object, test: (level: object) => void, back: () => void}} ctx
+ * @returns {() => void} ce que fait Échap
  */
 export function showAtelier(root, { bundle, save, test, back }) {
   const { palette } = bundle;
@@ -654,4 +655,16 @@ export function showAtelier(root, { bundle, save, test, back }) {
   root.hidden = false;
   new ResizeObserver(() => draw()).observe(canvas);
   changed();
+
+  // Échap referme d'abord ce qui est ouvert par-dessus la carte (le texte d'un panneau, les réglages, la fiche),
+  // puis ramène à l'écran d'avant. Le brouillon est déjà enregistré.
+  return () => {
+    if (!panel.isConnected) return;
+    if (sign) closeSign();
+    else if (!settings.hidden) {
+      settings.hidden = true;
+      refresh();
+    } else if (!sheet.hidden) closeText();
+    else leave(back);
+  };
 }

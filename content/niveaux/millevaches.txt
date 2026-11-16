@@ -1,5 +1,6 @@
 titre: Le camp d'entraînement de Millevaches
 auteur: UltraGauche Force
+accroche: Le plateau de Millevaches, en Limousin : des bois, des prés et des vaches.
 citation: lisnard-camp-entrainement
 fiche: sainte-soline-bilan
 fiche: tarnac-relaxe

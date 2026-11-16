@@ -139,8 +139,10 @@ button.discret { background: transparent; color: var(--papier); border-color: va
   margin: .5em 0 0;
   font-size: clamp(1rem, calc(var(--vw, 1vw) * 4.2), 2.8rem);
   color: var(--or);
-  -webkit-text-stroke: 2px var(--nuit);
+  /* Jaune sur les bandes blanche et rouge : le contour et l'ombre du nom le détachent du fond. */
+  -webkit-text-stroke: clamp(2px, calc(var(--vw, 1vw) * .4), 4px) var(--nuit);
   paint-order: stroke fill;
+  text-shadow: clamp(2px, calc(var(--vw, 1vw) * .45), 5px) clamp(2px, calc(var(--vw, 1vw) * .45), 5px) 0 var(--nuit);
   animation: claque .3s .85s both;
 }
 .carton .source, .carton .bonus {
@@ -155,6 +157,7 @@ button.discret { background: transparent; color: var(--papier); border-color: va
 }
 .carton .bonus { background: var(--rouge); text-transform: uppercase; font-family: var(--titre); letter-spacing: .04em; }
 
+.carton .confettis { position: absolute; inset: 0; } /* hors de la grille : la scène reste au centre */
 .carton .confettis i {
   position: absolute;
   top: calc(var(--vh, 1vh) * -4);
@@ -182,8 +185,9 @@ button.discret { background: transparent; color: var(--papier); border-color: va
 }
 @keyframes tombe { to { transform: translateY(calc(var(--vh, 1vh) * 112)) rotate(720deg); } }
 
+/* Debout, le portrait passe au-dessus du nom ; pas sur un téléphone pivoté, où l'écran de jeu reste en paysage. */
 @media (orientation: portrait) {
-  .carton .scene { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+  html:not(.pivote) .carton .scene { grid-template-columns: 1fr; justify-items: center; text-align: center; }
 }
 
 /* ------------------------------------------------------------------ Galerie */
@@ -217,6 +221,7 @@ button.discret { background: transparent; color: var(--papier); border-color: va
 .galerie article small { opacity: .75; }
 .galerie .dessins { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px; padding: 10px; margin-bottom: 8px; background: #6b7f99; }
 .galerie .dessins.sombre { background: #2a2f45; }
+.galerie .dessins canvas { max-width: 100%; height: auto !important; } /* un grand dessin rapetisse dans une carte étroite, au lieu d'élargir la page */
 .galerie .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 .galerie .actions button { font-size: .8rem; }
 .galerie ul.textes { padding-left: 1.1em; columns: 2 320px; font-size: .85rem; line-height: 1.4; }
@@ -444,6 +449,7 @@ html.bas .fin .pied button.gros { font-size: 1.15rem; }
 .vote .appel { font: 900 clamp(3rem, 16vmin, 8rem)/.9 var(--titre); text-transform: uppercase; color: var(--or); margin: .1em 0 .2em; transform: rotate(-2deg); }
 .vote .dates { font: 900 clamp(1.1rem, 4vmin, 2rem)/1.1 var(--titre); text-transform: uppercase; letter-spacing: .04em; margin: 0 0 .8em; }
 .vote .dates a { color: var(--blanc); }
+body.tactile .vote .dates a { display: inline-flex; align-items: center; min-height: 40px; } /* au pouce : une cible de 40 pixels */
 .vote nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 1em; }
 .vote .pied { justify-content: center; }
 .panneau .mention { font-size: .8rem; opacity: .9; }
@@ -456,11 +462,16 @@ html.bas .fin .pied button.gros { font-size: 1.15rem; }
 .plan .etapes p { margin: .2em 0 0; font-size: .85rem; opacity: .9; }
 details { margin: .5em 0; }
 details summary { cursor: pointer; font-weight: 700; }
+/* À propos, au pouce : chaque lien et chaque rubrique est une cible de 40 pixels au moins. */
+/* Un lien reste en ligne : son rembourrage agrandit la cible sans écarter les lignes du texte. */
+body.tactile .apropos a { padding-block: .7em; }
+body.tactile .apropos summary { padding-block: .55em; }
 details.portee { font-size: .82rem; opacity: .9; }
 details.portee p { margin: .3em 0 0; }
 html.bas .intro .tv { margin-bottom: 6px; font-size: .9rem; }
 html.bas .intro .manchette { margin: .3em 0; font-size: 1.1rem; }
 html.bas .intro h2, html.bas .intro p { margin: .25em 0; }
+html.bas .intro p.accroche { font-size: .82rem; line-height: 1.3; }
 html.bas .menu .logo { font-size: 2.6rem; }
 html.bas .menu .troupe { display: none; }
 html.bas .menu nav { gap: 6px; margin: 6px 0; }
@@ -582,7 +593,7 @@ body.tactile .atelier input[type='text'], body.tactile .atelier select, body.tac
 #radio { position: fixed; right: max(10px, env(safe-area-inset-right)); bottom: max(10px, env(safe-area-inset-bottom)); z-index: 30; width: min(320px, calc(100vw - 20px)); background: var(--nuit); border: 3px solid var(--blanc); box-shadow: 4px 4px 0 var(--rouge); padding: 6px 8px; font-size: .72rem; }
 #radio[hidden] { display: none; }
 /* Le lecteur n'est visible que sur le menu principal ; ailleurs il continue de jouer, hors de l'écran. */
-#radio.cache, body:not([data-ecran='menu']) #radio { left: -9999px; right: auto; }
+#radio.cache, body:not([data-ecran='menu']) #radio { left: -9999px; right: auto; visibility: hidden; } /* hors de l'écran, hors du Tab ; la musique continue */
 #radio strong { font: 900 .85rem/1 var(--titre); text-transform: uppercase; letter-spacing: .05em; color: var(--or); }
 #radio iframe { display: block; width: 100%; height: 76px; border: 0; margin: 4px 0; }
 #radio p { margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -671,6 +682,7 @@ article.carte .genre.rarete-3 { background: var(--or); color: var(--nuit); }
 .carte-mini .signe { font: 900 2rem/1 var(--titre); }
 .carte-mini .nom { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; align-self: center; overflow-wrap: anywhere; }
 .carte-mini .nouveau { position: absolute; top: 6px; right: -24px; transform: rotate(35deg); padding: 3px 26px; background: var(--rouge); color: var(--blanc); font: 900 .5rem/1 var(--titre); letter-spacing: .08em; text-transform: uppercase; }
+.carte-mini:has(.nouveau) .numero b { float: none; margin-left: .35em; } /* le badge « Nouveau » occupe le coin : les étoiles suivent le numéro */
 .carte-mini.cachee { background: #cfc8b4; box-shadow: 3px 3px 0 #0005; }
 .carte-mini.cachee .vignette { background: #0002; color: #0006; border: 0; transform: none; }
 .carte-mini.cachee .vignette canvas { filter: brightness(0) opacity(.7); }
@@ -689,17 +701,34 @@ html.bas .carte-ouverte.partage .pied { flex-direction: column; margin-top: 0; }
 .carte-ouverte .pied { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 12px; }
 @keyframes retourne { from { transform: rotateY(90deg) scale(.8); } to { transform: none; } }
 
-/* les cartes gagnées pendant un niveau : une rangée, retournées une à une */
+/* les cartes débloquées pendant un niveau : une rangée, retournées une à une */
 .debloquees { display: flex; gap: 8px; overflow-x: auto; padding: 4px 4px 10px; perspective: 900px; }
 .debloquees .carte-mini { flex: 0 0 96px; animation: retourne .4s ease-out both; }
 body.sobre .debloquees .carte-mini, body.sobre .carte-ouverte article.carte { animation: none; }
 @media (prefers-reduced-motion: reduce) { .debloquees .carte-mini, .carte-ouverte article.carte { animation: none; } }
 .carte-ouverte article.carte > * { flex-shrink: 0; } /* trop haute pour l'écran : elle défile, elle ne s'écrase pas */
+/* « Fermer » se pose sur l'album : un fond plein, la miniature dessous ne se voit pas à travers. */
+.carte-ouverte:not(.partage) .pied button.discret { background: var(--nuit); }
+.carte-ouverte:not(.partage) .pied button.discret:hover { background: var(--encre); }
 html.bas .carte-ouverte .cadre { width: min(100%, 560px); }
-html.bas .carte-ouverte article.carte .vignette { height: 72px; }
-html.bas .biblio h2 { margin-bottom: .3em; }
-html.bas .biblio .onglets { gap: 6px; margin: .4em 0 .6em; }
-html.bas .biblio .onglets button { font-size: .78rem; padding: .5em .7em .9em; }
+/* Écran bas (téléphone) : la carte prend toute la hauteur, « Fermer » passe à côté, l'image à gauche du texte. */
+html.bas .carte-ouverte:not(.partage) { padding: 8px max(8px, env(safe-area-inset-right)) 8px max(8px, env(safe-area-inset-left)); }
+html.bas .carte-ouverte:not(.partage) .cadre { width: min(100%, 740px); display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 10px; }
+html.bas .carte-ouverte:not(.partage) .cadre > .pied { flex-direction: column; margin-top: 0; }
+html.bas .carte-ouverte article.carte { display: block; max-height: calc(var(--vh, 1vh) * 100 - 16px); }
+html.bas .carte-ouverte article.carte > * { margin-bottom: 5px; }
+html.bas .carte-ouverte article.carte > :not(header, .vignette) { display: flow-root; } /* le texte se range à côté de l'image */
+html.bas .carte-ouverte article.carte > .vignette { float: left; width: 34%; height: 128px; margin: 0 10px 5px 0; }
+html.bas .carte-ouverte article.carte.niveaux > .vignette { float: none; width: auto; height: 64px; margin-right: 0; }
+/* Écran bas : l'en-tête, les rayons et les filtres se serrent, une rangée entière de cartes reste en vue. */
+html.bas .panneau.biblio { padding-block: 10px; }
+html.bas .biblio h2 { font-size: 1.3rem; margin-bottom: .25em; }
+html.bas .biblio > .jauge { height: 6px; margin: 0 0 .5em; }
+html.bas .biblio .onglets { gap: 6px; margin: 0 0 .5em; }
+html.bas .biblio .onglets button { font-size: .74rem; padding: .45em .65em .85em; }
+html.bas .biblio .raretes { margin-bottom: .5em; }
+/* Au pouce, les rayons et les filtres de rareté se touchent sans viser. */
+body.tactile .biblio .onglets button, body.tactile .biblio .raretes button { min-height: 40px; }
 
 /* ------------------------------------------------------------------ choix du héros, +1, pile de vies */
 

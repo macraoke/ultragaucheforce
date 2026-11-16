@@ -78,5 +78,8 @@ export const sourceName = (item) => item.source.titre.split(' — ')[0];
 /** La ligne « Source : … » affichée sous une fiche réelle : le nom de la source, cliquable. */
 export const sourceLine = (item) => h('small', { className: 'source' }, 'Source : ', link(item.source.url, sourceName(item)));
 
+/** Entre guillemets, avec des espaces insécables : « », « ! » ou « ? » ne se retrouvent jamais seuls au bout d'une ligne. */
+export const quoted = (text) => `« ${text.replace(/ (?=[!?;:])/g, ' ')} »`;
+
 /** L'attribution d'une citation : qui, quand ; le tout mène à la source. */
 export const signature = (quote) => link(quote.source.url, `${quote.auteur}, ${frenchDate(quote.date)}`);

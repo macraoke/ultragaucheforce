@@ -1,5 +1,6 @@
 titre: La raffinerie bloquée
 auteur: UltraGauche Force
+accroche: Une raffinerie en grève, comme en octobre 2022.
 citation: le-maire-temps-de-la-negociation
 fiche: requisition-suspendue-gonfreville
 fiche: stations-perturbees-octobre-2022

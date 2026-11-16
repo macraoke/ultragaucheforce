@@ -1,7 +1,7 @@
 // Les écrans du jeu, en HTML : texte net à toute taille, liens cliquables vers les sources.
 // Chaque fonction remplit `#ecran` ; `close()` le vide et rend la main au jeu.
 
-import { h, link, signature } from './dom.js';
+import { h, link, quoted, signature } from './dom.js';
 import { spriteElement } from './sprites.js';
 import { REPO, VERSION, REFERENCES, ANALYTICS } from './config.js';
 import { storeSave, eraseProgress, isFound, isReadOnly } from './save.js';
@@ -16,6 +16,9 @@ const PANIC_NAMES = ['calme', 'alerte', 'hystérie']; // les trois crans de la c
 const AIRTIME = 9; // secondes d'antenne d'une citation qui tient sur le fil
 const SCROLL = 4.5; // vitesse de défilement d'une ligne trop longue, en hauteurs de lettre par seconde
 
+/** « CC-BY-SA-3.0 » → « CC BY-SA 3.0 » : à l'écran, toutes les licences s'écrivent de la même façon. */
+export const licenceName = (id) => id.replace(/^CC-/, 'CC ').replace(/-(\d+(?:\.\d+)*)$/, ' $1');
+
 export class Screens {
   /**
    * @param {HTMLElement} root
@@ -26,13 +29,16 @@ export class Screens {
     this.root = root;
     Object.assign(this, ctx);
     this.open = false;
+    this.escape = null; // ce que fait Échap sur l'écran ouvert : revenir à l'écran d'avant (null : rien)
   }
 
+  /** Ouvre un écran. Échap n'y fait rien, sauf si l'écran le dit juste après (`this.escape`). */
   show(className, ...children) {
     this.root.replaceChildren(h('section', { className: `panneau ${className}` }, ...children));
     document.body.dataset.ecran = className.split(' ')[0]; // la feuille de style sait quel écran est ouvert
     this.root.hidden = false;
     this.open = true;
+    this.escape = null;
     // Le bouton principal prend la main (Entrée, manette) ; sinon le premier.
     (this.root.querySelector('button.gros') || this.root.querySelector('button, a'))?.focus({ preventScroll: true });
   }
@@ -42,6 +48,7 @@ export class Screens {
     delete document.body.dataset.ecran;
     this.root.hidden = true;
     this.open = false;
+    this.escape = null;
   }
 
   button(label, action, className = '') {
@@ -95,23 +102,30 @@ export class Screens {
     return order.find((id) => !this.save.termines[id]) || order[0];
   }
 
-  /** Le plan de campagne : toutes les étapes, l'une après l'autre. */
+  /** Le plan de campagne : toutes les étapes, l'une après l'autre. Le clavier attend sur la prochaine à jouer. */
   levels() {
     const { niveaux } = this.bundle;
+    const next = this.nextLevel();
+    let ahead = null;
     const stop = (id, i) => {
       const lv = niveaux[id];
       const best = this.save.records[id];
+      // L'accroche dit le lieu ; sans elle (un niveau dessiné dans l'Atelier), l'étape crédite son auteur.
+      const line = [lv.accroche || (lv.auteur && `par ${lv.auteur}`), best ? `✊ ${best.toLocaleString('fr-FR')}` : ''].filter(Boolean).join(' · ');
+      const play = this.button('Jouer', () => this.go.play(id));
+      if (id === next) ahead = play;
       return h('li', { className: this.save.termines[id] ? 'faite' : '' },
         h('span', { className: 'numero' }, String(i + 1)),
-        h('div', {},
-          h('h3', {}, lv.titre, this.save.termines[id] ? ' ✔' : ''),
-          h('p', {}, [lv.accroche, best ? `✊ ${best.toLocaleString('fr-FR')}` : ''].filter(Boolean).join(' · ') || `par ${lv.auteur}`)),
-        this.button('Jouer', () => this.go.play(id)));
+        h('div', {}, h('h3', {}, lv.titre, this.save.termines[id] ? ' ✔' : ''), line && h('p', {}, line)),
+        play);
     };
     this.show('liste plan',
       h('h2', {}, 'Plan de campagne'),
       h('ol', { className: 'etapes' }, levelOrder(this.bundle).map(stop)),
       h('div', { className: 'pied' }, this.back(), this.button('Dessiner une étape', () => this.go.atelier())));
+    this.escape = () => this.menu();
+    ahead?.focus({ preventScroll: true });
+    ahead?.closest('li').scrollIntoView({ block: 'center' }); // un écran bas défile jusqu'à elle
   }
 
   // ------------------------------------------------------------------ Collection
@@ -119,13 +133,18 @@ export class Screens {
   /**
    * L'album : un rayon par onglet, des cartes compactes qu'on ouvre d'un toucher.
    * Ce qui n'a pas encore été croisé en jouant reste en silhouette.
+   * @param {{rarity?: number | null, keep?: number | null, back?: (() => void) | null}} o
+   *        `rarity` : le filtre ; `keep` : le filtre qui garde le clavier ; `back` : l'écran d'où l'on vient
+   *        (par défaut le menu, ou la pause en pleine partie)
    */
-  collection(tab = SHELVES[0].id, rarity = null, keep = false) {
+  collection(tab = SHELVES[0].id, { rarity = null, keep = null, back = null } = {}) {
     const { bundle, save } = this;
+    const leave = back || (() => this.go.back());
     const all = collectionCount(bundle, save);
     const fresh = new Set(allCards(bundle).filter((c) => isFound(save, c.kind, c.item.id) && isFresh(save, c)).map((c) => c.shelf));
     // Un héros déjà rencontré se joue depuis sa carte ; pas en pleine partie, où ce serait l'abandonner.
     const actionsFor = (card) => (card.kind === 'heros' && !this.go.playing() ? [this.button('Jouer avec', () => this.playAs(card.item.id), 'gros')] : []);
+    let shown = null;
     this.show('biblio',
       h('h2', {}, 'La Collection ', h('small', {}, `${all.found} / ${all.total}`)),
       progress(all.found, all.total),
@@ -133,15 +152,20 @@ export class Screens {
         const { found, total } = collectionCount(bundle, save, shelf.id);
         if (!total) return null;
         const label = [shelf.titre, ' ', h('small', {}, `${found}/${total}`), fresh.has(shelf.id) && shelf.id !== tab && h('i', { className: 'pastille' }), progress(found, total)];
-        return this.button(label, () => this.collection(shelf.id), shelf.id === tab ? '' : 'discret');
+        const button = this.button(label, () => this.collection(shelf.id, { back }), shelf.id === tab ? '' : 'discret');
+        if (shelf.id === tab) shown = button;
+        return button;
       })),
       h('div', { className: 'raretes' }, rarityCounts(bundle, save, tab).reverse().map((r) => Object.assign(this.button(
         [`${r.name}s `, h('small', {}, `${r.found}/${r.total}`)],
-        () => this.collection(tab, rarity === r.rarity ? null : r.rarity, r.rarity), `rarete-${r.rarity}${rarity === r.rarity ? '' : ' discret'}`),
+        () => this.collection(tab, { rarity: rarity === r.rarity ? null : r.rarity, keep: r.rarity, back }), `rarete-${r.rarity}${rarity === r.rarity ? '' : ' discret'}`),
       { ariaPressed: String(rarity === r.rarity) }))),
       h('div', { className: 'contenu album' }, shelfGrid(bundle, tab, save, actionsFor, rarity)),
-      h('div', { className: 'pied' }, this.back(() => this.go.back())));
-    if (keep !== false) this.root.querySelector(`.raretes .rarete-${keep}`)?.focus({ preventScroll: true }); // le clavier reste sur le filtre
+      h('div', { className: 'pied' }, this.back(leave)));
+    this.escape = leave;
+    // Le clavier reste où il était : sur le filtre qu'on vient de toucher, sinon sur le rayon ouvert.
+    const keyboard = keep === null ? shown : this.root.querySelector(`.raretes .rarete-${keep}`);
+    keyboard?.focus({ preventScroll: true });
     markSeen(save, tab); // affichées avec leur badge « Nouveau » cette fois-ci, plus la prochaine
     storeSave(save);
   }
@@ -165,6 +189,7 @@ export class Screens {
         h('tr', {}, ['', 'Clavier', 'Manette', 'Tactile'].map((c, i) => cell('th', c, i))),
         CONTROLS.map((row) => h('tr', {}, row.map((c, i) => cell('td', c, i))))),
       h('div', { className: 'pied' }, this.back(() => this.go.back())));
+    this.escape = () => this.go.back();
   }
 
   /** Les réglages. Effacer sa progression ne se fait que depuis le menu, jamais en pleine partie. */
@@ -187,6 +212,7 @@ export class Screens {
       note && h('p', { className: 'mention' }, note),
       h('div', { className: 'pied' }, this.back(() => this.go.back()),
         !inGame && this.button('Effacer ma progression', () => this.confirmErase(), 'discret effacer')));
+    this.escape = () => this.go.back();
   }
 
   /** Effacer demande confirmation, et dit ce qui sera perdu. « Annuler » a la main. */
@@ -199,24 +225,26 @@ export class Screens {
         eraseProgress(this.save);
         this.options('Progression effacée.');
       }, 'discret effacer'));
+    this.escape = () => this.options(); // Échap, c'est Annuler
   }
 
   about() {
     const fold = (title, ...body) => h('details', {}, h('summary', {}, title), ...body);
-    this.show('liste',
+    this.show('liste apropos',
       h('h2', {}, 'À propos'),
       h('p', {}, MENTION),
       h('p', {}, link(REPO, 'Le dépôt'), ' · ', link(`${REPO}/blob/main/CONTRIBUTING.md`, 'Contribuer'), ' · ',
         link(`${REPO}/blob/main/CHARTE.md`, 'La charte'), ' · ', h('a', { href: 'galerie.html' }, 'La Galerie')),
       ANALYTICS.token && fold('Ce que le jeu compte',
-        h('p', {}, 'Par niveau : les parties lancées, terminées ou perdues, la taille de la manif, la durée, les personnages perdus, le boss, et les images partagées. Un numéro tiré au hasard relie les compteurs d’une même visite ; il est oublié à la fermeture de la page. Aucun cookie : rien n’est écrit sur votre appareil pour cela. La progression, elle, ne le quitte pas.')),
+        h('p', {}, 'Par niveau : les parties lancées, terminées ou perdues, la taille de la manif, la durée, les personnages perdus, le boss, et les images partagées. Un numéro tiré au hasard relie les compteurs d’une même visite ; il est oublié à la fermeture de la page. Aucun cookie : rien n’est écrit sur ton appareil pour cela. La progression, elle, ne le quitte pas.')),
       fold('Références', h('ul', {}, REFERENCES.map((r) => h('li', {}, link(r.url, r.titre), ` — ${r.note}`)))),
       fold('Crédits et licences',
         h('p', {}, 'Code : MIT. Contenus : CC BY-SA 4.0. Bruitages synthétisés avec ZzFX de Frank Force (MIT).'),
         h('ul', {}, Object.values(this.bundle.sons).filter((x) => x.fichier).map((x) =>
-          h('li', {}, link(x.source, x.nom), ` — ${x.auteur}, ${x.licence}`))),
-        h('p', {}, h('b', {}, 'Radio Manif : '), Object.values(this.bundle.musiques).map((m, i) => [i ? ' · ' : '', link(m.url, `${m.titre} (${m.artiste})`)]))),
+          h('li', {}, link(x.source, x.nom), ` — ${x.auteur}, ${licenceName(x.licence)}`))),
+        h('p', {}, h('b', {}, 'Radio Manif : '), Object.values(this.bundle.musiques).map((m, i) => [i ? ' · ' : '', link(m.url, m.titre), ` — ${m.artiste}`]))),
       h('div', { className: 'pied' }, this.back()));
+    this.escape = () => this.menu();
   }
 
   // ------------------------------------------------------------------ en partie
@@ -232,6 +260,7 @@ export class Screens {
       this.button('Collection', () => this.collection()),
       this.button('Options', () => this.options()),
       this.button('Quitter', () => this.go.quit(), 'discret'));
+    this.escape = () => this.go.resume(); // Échap met en pause, et en sort
   }
 
   /**
@@ -252,14 +281,33 @@ export class Screens {
       storeSave(this.save);
       this.go.restart(); // la partie repart avec ce héros, et ce carton se réaffiche
     };
+    // Échap ne lance pas le niveau : il ramène là d'où l'on vient, le plan, l'Atelier ou le menu.
+    // Un changement de héros réaffiche ce carton : l'écran d'avant reste le même.
+    const before = this.root.firstElementChild?.classList;
+    if (!before?.contains('intro')) {
+      const from = ['plan', 'atelier'].find((name) => before?.contains(name));
+      this.introBack = () => {
+        this.go.quit();
+        if (from === 'plan') this.levels();
+        if (from === 'atelier') this.go.atelier();
+      };
+    }
     this.show('intro',
       h('div', { className: 'tv' }, h('strong', {}, 'PANIQUE TV'), h('em', {}, quote ? 'ILS L’ONT DIT' : 'ÉDITION SPÉCIALE')),
-      quote ? h('p', { className: 'manchette' }, `« ${quote.texte} »`) : level.intro && h('p', { className: 'manchette' }, level.intro),
+      quote ? h('p', { className: 'manchette' }, quoted(quote.texte)) : level.intro && h('p', { className: 'manchette' }, level.intro),
       quote && h('p', { className: 'signature' }, signature(quote)),
       h('h2', {}, level.titre),
-      level.accroche && h('p', {}, level.accroche),
+      level.accroche && h('p', { className: 'accroche' }, level.accroche),
       choose && heroes.length > 1 && this.heroRow(heroes, mine, hero, pick),
       h('div', { className: 'depart' }, this.keys(), go)); // écran bas : les commandes à côté du bouton, pas au-dessus
+    this.escape = this.introBack;
+    this.fitHeroNames();
+    // Une longue déclaration sur un écran bas : la manchette rapetisse jusqu'à ce que le carton tienne sans défiler.
+    const panel = this.root.firstChild;
+    const headline = panel.querySelector('.manchette');
+    for (let size = headline && parseFloat(getComputedStyle(headline).fontSize); headline && panel.scrollHeight > panel.clientHeight && size > 12; size -= 1) {
+      headline.style.fontSize = `${size - 1}px`;
+    }
     go.focus({ preventScroll: true }); // Entrée lance le niveau…
     this.root.firstChild.onkeydown = (e) => { // … ← et → changent de héros
       const turn = { ArrowLeft: -1, ArrowRight: 1 }[e.key];
@@ -273,8 +321,17 @@ export class Screens {
   heroRow(heroes, mine, current, pick) {
     const face = (x) => spriteElement(x.sprites.portrait || x.sprites.repos, this.bundle.palette, 2);
     return h('div', { className: 'choix-heros' }, heroes.map((x) => (mine.includes(x.id)
-      ? h('button', { type: 'button', className: x.id === current ? 'choisi' : 'discret', onclick: () => pick(x.id) }, face(x), h('span', {}, x.nom))
+      ? h('button', { type: 'button', className: x.id === current ? 'choisi' : 'discret', onclick: () => pick(x.id) }, face(x), h('span', { className: 'nom' }, x.nom))
       : h('span', { className: 'inconnu' }, face(x), h('span', {}, '???')))));
+  }
+
+  /** Un nom de héros tient dans sa case : un mot trop long (« TYRANNOGAUCHISTE ») fait réduire la lettre. */
+  fitHeroNames() {
+    for (const name of this.root.querySelectorAll('.choix-heros .nom')) {
+      const box = name.parentElement;
+      const room = box.clientWidth - parseFloat(getComputedStyle(box).paddingLeft) - parseFloat(getComputedStyle(box).paddingRight);
+      for (let size = parseFloat(getComputedStyle(name).fontSize); name.scrollWidth > room && size > 7; size -= 0.5) name.style.fontSize = `${size - 0.5}px`;
+    }
   }
 
   lost() {
@@ -333,7 +390,7 @@ export class Screens {
       h('p', { className: 'dates' }, dates ? link(dates.source.url, 'Dimanche 18 avril et dimanche 2 mai 2027') : 'Dimanche 18 avril et dimanche 2 mai 2027'),
       h('nav', {},
         steps.map((x) => h('a', { className: 'bouton', href: x.source.url, target: '_blank', rel: 'noopener' }, x.titre)),
-        programme.length ? this.button('Le programme', () => this.collection('propositions')) : null),
+        programme.length ? this.button('Le programme', () => this.collection('propositions', { back: () => this.final() })) : null),
       h('div', { className: 'pied' },
         this.button('Menu', () => this.go.quit(), 'gros'),
         h('a', { className: 'bouton discret', href: REPO, target: '_blank', rel: 'noopener' }, 'Contribuer au jeu')));

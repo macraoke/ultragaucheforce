@@ -1,6 +1,6 @@
-titre: Vers une 6e République
+titre: Vers une 6ᵉ République
 theme: programme
-texte: Le programme L'Avenir en commun propose de convoquer un référendum (article 11 de la Constitution) pour lancer une Assemblée constituante et passer à la 6e République. Le projet de Constitution serait soumis à référendum.
+texte: Le programme L'Avenir en commun propose de convoquer un référendum (article 11 de la Constitution) pour lancer une Assemblée constituante et passer à la 6ᵉ République. Le projet de Constitution serait soumis à référendum.
 portee: Édition 2027 du programme de La France insoumise, chapitre « Le pouvoir au peuple ». Le même chapitre propose le référendum d'initiative citoyenne (RIC), le droit de vote à 16 ans, l'élection de l'Assemblée nationale à la proportionnelle et la reconnaissance du vote blanc. Il s'agit d'une proposition d'un mouvement politique, pas d'une mesure en vigueur.
 periode: édition 2027, présentée en novembre 2026
 source.titre: Mélenchon 2027 — L'Avenir en commun, chapitre « Le pouvoir au peuple »
