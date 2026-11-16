@@ -7,7 +7,7 @@ reaction: rien
 fin: greve
 largeur: 32
 hauteur: 18
-ligne.vie: 60
+ligne.vie: 180
 ligne.poussee: 10
 citation: macron-la-foule
 fiche: rio-conseil-etat

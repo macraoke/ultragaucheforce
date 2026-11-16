@@ -8,7 +8,7 @@ vue: 230
 fin: panne
 largeur: 32
 hauteur: 20
-ligne.vie: 50
+ligne.vie: 150
 ligne.poussee: 10
 fiche: centaure-blindes
 arme.type: tir

@@ -8,7 +8,7 @@ fin: panne
 camp: pouvoir
 largeur: 32
 hauteur: 32
-ligne.vie: 150
+ligne.vie: 450
 ligne.poussee: 10
 citation: macron-viennent-me-chercher
 auteur: UltraGauche Force
