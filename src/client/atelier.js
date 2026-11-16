@@ -1,15 +1,32 @@
 // L'Atelier : dessiner un niveau avec les vraies tuiles et les vrais personnages, le tester, le proposer.
 // Le niveau reste une fiche texte (voir atelier-modele.js) ; cet écran la peint, à la souris ou au doigt.
+// Chaque niveau commencé est un brouillon, gardé dans le navigateur pendant qu'on dessine (atelier-brouillons.js).
 
 import { h } from './dom.js';
 import { sprite } from './sprites.js';
 import { SKIES } from './render.js';
-import { storeSave } from './save.js';
 import { REPO } from './config.js';
 import { checkLevel, TILE, BACKDROPS } from '../content/rules.js';
 import {
   TEMPLATE, History, readLevel, writeLevel, getField, setField, legendOf, paint, line, box, resize, cellOfError, plain, proposal,
+  contributions,
 } from './atelier-modele.js';
+import { Drafts, KEY, freeName, nameOf, when } from './atelier-brouillons.js';
+
+/** Les brouillons, partagés par chaque ouverture de l'Atelier : refusés par le navigateur, ils tiennent en mémoire. */
+let shared = null;
+const store = () => (shared ??= new Drafts());
+/**
+ * Où l'on en était en quittant l'Atelier : le brouillon, la vue, l'outil, l'historique. Un retour d'essai
+ * reprend tout cela, pour ce même brouillon.
+ */
+let kept = null;
+const SAVE_DELAY = 600; // millisecondes après le dernier geste ; l'onglet caché ou fermé enregistre tout de suite
+const WARNINGS = {
+  refus: 'Ton navigateur refuse d’enregistrer : tes brouillons tiennent jusqu’à la fermeture de l’onglet.',
+  plein: 'Stockage plein : supprime un brouillon pour enregistrer.',
+  lecture: 'Ces brouillons viennent d’une version plus récente du jeu : rien n’est enregistré ici.',
+};
 
 const ZOOMS = [0.5, 0.75, 1, 1.5, 2, 3, 4];
 const STEP = 5; // lignes ou colonnes ajoutées ou retirées d'un coup
@@ -36,10 +53,12 @@ function ring(ctx, x, y, radius, width) {
 
 /**
  * @param {HTMLElement} root
- * @param {{bundle: object, save: object, test: (level: object) => void, back: () => void}} ctx
+ * @param {{bundle: object, save: object, test: (level: object) => void, back: () => void, resume?: boolean}} ctx
+ *        `resume` : retour d'un essai, on reprend l'édition là où on l'avait laissée. Sinon, avec des brouillons
+ *        enregistrés, l'Atelier s'ouvre sur « Mes niveaux ».
  * @returns {() => void} ce que fait Échap
  */
-export function showAtelier(root, { bundle, save, test, back }) {
+export function showAtelier(root, { bundle, save, test, back, resume = false }) {
   const { palette } = bundle;
   const bySymbol = Object.fromEntries(Object.values(bundle.tuiles).map((t) => [t.symbole, t]));
   const image = (def) => def?.sprites && (def.sprites.image || def.sprites.repos || Object.values(def.sprites)[0]);
@@ -47,8 +66,19 @@ export function showAtelier(root, { bundle, save, test, back }) {
   // Ce que l'en-tête reçoit de lui-même quand un boss ou une nasse arrive sur la carte.
   const defaults = { boss: Object.keys(bundle.boss)[0], nasse: has(bundle.ennemis, 'crs') ? 'crs' : Object.keys(bundle.ennemis)[0] };
 
-  let model = readLevel(save.brouillon) || readLevel(TEMPLATE);
-  const history = new History();
+  const drafts = store();
+  drafts.adopt(save.brouillon, TEMPLATE); // l'ancien brouillon unique de l'Atelier devient le premier, une seule fois
+  // Le brouillon ouvert la dernière fois, sinon le plus récent ; aucun : un niveau neuf, brouillon au premier geste.
+  let current = [drafts.open, drafts.list()[0]?.id].find((id) => id && readLevel(drafts.get(id)?.texte)) || '';
+  if (current) drafts.select(current);
+  let model = readLevel(current ? drafts.track(current).texte : TEMPLATE);
+  let history = new History();
+  let unsaved = false; // un changement attend d'être enregistré
+  let saveTimer = 0;
+  let said = 'ok'; // le dernier état du stockage qu'on a dit
+  let renaming = ''; // le brouillon dont on écrit le nouveau nom
+  let removing = ''; // le brouillon dont on confirme la suppression
+  let entry = false; // « Mes niveaux » est l'écran d'arrivée : Échap y ramène au menu
   let typing = null; // les frappes dans un même champ ne font qu'un pas d'annulation
   let report = { level: null, errors: [] };
   let flaw = null; // la case de la première erreur
@@ -179,15 +209,257 @@ export function showAtelier(root, { bundle, save, test, back }) {
       h('button', { type: 'button', className: 'discret', title: `${label} : ajouter`, onclick: () => grow(side, STEP) }, '+'))),
     h('button', { type: 'button', className: 'discret', onclick: () => commit(readLevel(TEMPLATE)) }, 'Tout effacer'));
 
+  // ---------------------------------------------------------------- les brouillons
+
+  const shelf = h('div', { className: 'niveaux', hidden: true });
+  const savedNote = h('span', { className: 'sauve' });
+
+  /** Enregistre tout de suite ce qui attend ; un niveau neuf devient un brouillon. */
+  const flush = () => {
+    clearTimeout(saveTimer);
+    if (!unsaved) return;
+    unsaved = false;
+    // La fiche ouverte (bouton Texte), si elle est lisible : c'est elle qu'on est en train d'écrire.
+    const typed = !sheet.hidden && readLevel(area.value);
+    const text = writeLevel(typed || model);
+    if (!current) current = drafts.create(text).id;
+    else {
+      const result = drafts.save(current, text);
+      if (result.copy) {
+        // Changé dans un autre onglet entre-temps : les deux versions restent, celle-ci sous un autre nom.
+        current = result.id;
+        model = readLevel(result.copy.texte);
+        if (typed) area.value = result.copy.texte;
+        changed(false);
+        say(`Ce niveau a changé dans un autre onglet : ta version est gardée à part, « ${nameOf(result.copy.texte)} ».`);
+      }
+    }
+    stored();
+  };
+  /**
+   * Un autre onglet a écrit : le niveau ouvert, s'il y a changé et que rien n'attend ici, se recharge.
+   * Si quelque chose attend, l'enregistrement le gardera à part (voir `flush`).
+   */
+  const reloadFromElsewhere = () => {
+    if (!current || !drafts.changedElsewhere(current)) return;
+    if (unsaved || gesture || sign || !sheet.hidden) return void flush();
+    const next = readLevel(drafts.track(current).texte);
+    if (!next) return;
+    history.record(model); // on peut revenir à ce qu'on avait
+    model = next;
+    changed(false);
+    say('Mis à jour depuis un autre onglet.');
+  };
+  /** Un enregistrement discret, peu après le dernier geste. */
+  const schedule = () => {
+    unsaved = true;
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(flush, SAVE_DELAY);
+  };
+  /** Après un passage par le stockage : la mention en bas, la liste si elle est ouverte, un mot si ça coince. */
+  const stored = () => {
+    const ok = drafts.status === 'ok';
+    if (!ok && drafts.status !== said) say(WARNINGS[drafts.status]);
+    said = drafts.status;
+    savedNote.textContent = ok ? (current ? 'Enregistré' : '') : 'Non enregistré';
+    savedNote.title = ok ? when(drafts.get(current)?.modifie) : WARNINGS[drafts.status];
+    savedNote.classList.toggle('rate', !ok);
+    if (!shelf.hidden && !renaming && !removing) renderShelf();
+  };
+  const saveNow = () => {
+    // Le texte de la fiche, s'il est ouvert et lisible, compte aussi.
+    const typed = !sheet.hidden && area.value !== writeLevel(model) && readLevel(area.value);
+    if (typed) commit(typed);
+    unsaved = true;
+    flush();
+    say(WARNINGS[drafts.status] || 'Enregistré.');
+  };
+
+  /** Un autre niveau à l'écran : l'historique repart de zéro, la vue se recadre sur le départ. */
+  const load = (id, next) => {
+    clearTimeout(saveTimer);
+    unsaved = false;
+    current = id;
+    drafts.select(id);
+    drafts.track(id);
+    model = next;
+    history = new History();
+    typing = null;
+    sign = null;
+    zoom = 0;
+    closePanels();
+    showList(false);
+    changed(false);
+    stored();
+  };
+  const openDraft = (id) => {
+    if (id === current) return showList(false); // celui qu'on dessinait : on y retourne tel quel
+    flush();
+    const next = readLevel(drafts.get(id)?.texte);
+    if (!next) return say('Ce brouillon n’a plus de carte.');
+    return load(id, next);
+  };
+  /** Essayer un brouillon de la liste : il s'ouvre, puis se lance ; une erreur reste à l'écran, sa case montrée. */
+  const testDraft = (id) => {
+    openDraft(id);
+    if (id === current && shelf.hidden) launch();
+  };
+  const fresh = () => {
+    flush();
+    const next = setField(readLevel(TEMPLATE), 'titre', freeName('Mon niveau', drafts.list().map((d) => d.nom)));
+    load(drafts.create(writeLevel(next)).id, next);
+  };
+  const rename = (id, typed) => {
+    const name = typed.replace(/\s+/g, ' ').trim() || 'Sans titre';
+    renaming = '';
+    if (id !== current) drafts.rename(id, name);
+    else if (name !== getField(model, 'titre')) {
+      commit(setField(model, 'titre', name)); // s'annule, comme le champ Titre des Réglages
+      flush();
+    }
+    stored();
+    renderShelf([id, 'Renommer']);
+  };
+  const duplicate = (id) => {
+    if (id === current) flush();
+    const copy = drafts.duplicate(id);
+    stored(); // la liste se redessine, le clavier reste sur « Dupliquer »
+    if (copy) say(WARNINGS[drafts.status] || `Dupliqué : « ${nameOf(copy.texte)} ».`);
+  };
+  const remove = (id) => {
+    const order = drafts.list().map((d) => d.id);
+    removing = '';
+    drafts.remove(id);
+    if (id === current) {
+      // Le niveau à l'écran part avec son brouillon : le plus récent prend sa place, ou un niveau neuf.
+      const next = drafts.list().find((d) => readLevel(d.texte));
+      load(next?.id || '', readLevel(next?.texte || TEMPLATE));
+      showList(true);
+    }
+    stored();
+    // Le clavier passe à la ligne qui prend sa place, ou à « Nouveau niveau ».
+    const left = drafts.list();
+    const neighbour = left.find((d) => d.id === order[order.indexOf(id) + 1]) || left.at(-1);
+    renderShelf(neighbour ? [neighbour.id, 'Ouvrir'] : ['', 'Nouveau niveau']);
+    say(WARNINGS[drafts.status] || 'Brouillon supprimé.');
+  };
+
+  const small = (text, onclick, className = 'discret') => h('button', { type: 'button', className, onclick }, text);
+  const row = (draft) => {
+    const li = h('li', { className: !entry && draft.id === current ? 'ouvert' : '' });
+    li.dataset.id = draft.id;
+    if (draft.id === renaming) {
+      const input = h('input', {
+        type: 'text', value: draft.nom, enterKeyHint: 'done', ariaLabel: 'Nouveau nom',
+        onkeydown: (e) => {
+          if (e.key !== 'Enter') return; // sans rien renvoyer : `false` annulerait la frappe
+          e.preventDefault(); // le clavier passe à « Renommer » : la même Entrée ne doit pas l'appuyer
+          rename(draft.id, input.value);
+        },
+      });
+      li.append(input, h('div', { className: 'actions' },
+        small('OK', () => rename(draft.id, input.value), ''),
+        small('Annuler', () => {
+          renaming = '';
+          renderShelf([draft.id, 'Renommer']);
+        })));
+      return li;
+    }
+    const mine = !entry && draft.id === current; // celui qui attend dans l'éditeur
+    const ask = (which) => () => {
+      renaming = which === 'nom' ? draft.id : '';
+      removing = which === 'suppression' ? draft.id : '';
+      renderShelf([draft.id, 'Supprimer']); // la confirmation, ou, en la refermant, le bouton qui l'a ouverte
+    };
+    const actions = draft.id === removing
+      ? [h('span', {}, 'Le supprimer pour de bon ?'), small('Supprimer', () => remove(draft.id), 'danger'), small('Garder', ask(''))]
+      : [small('Ouvrir', () => openDraft(draft.id), ''), small('Tester', () => testDraft(draft.id), ''),
+        small('Renommer', ask('nom')), small('Dupliquer', () => duplicate(draft.id)), small('Supprimer', ask('suppression'))];
+    li.append(
+      h('div', { className: 'nom' }, h('b', {}, draft.nom), h('small', {}, [mine && 'ouvert', when(draft.modifie)].filter(Boolean).join(' · '))),
+      h('div', { className: 'actions' }, actions));
+    return li;
+  };
+  /**
+   * Redessine « Mes niveaux ». Le clavier ne s'y perd pas : `focus` ([brouillon, texte du bouton]) dit où il va ;
+   * sans lui, il reste sur le même bouton de la même ligne. Un nom en cours d'écriture prend la main.
+   */
+  function renderShelf(focus = null) {
+    const had = shelf.contains(document.activeElement) ? document.activeElement : null;
+    const want = focus || (had && [had.closest('li')?.dataset.id || '', had.textContent]);
+    const list = drafts.list();
+    const warning = WARNINGS[drafts.status];
+    shelf.replaceChildren(...[
+      h('h3', {}, 'Mes niveaux'),
+      warning && h('p', { className: 'alerte' }, warning),
+      h('div', { className: 'ligne' }, small('Nouveau niveau', fresh, ''), small('Enregistrer', saveNow)),
+      list.length ? h('ul', {}, list.map(row)) : h('p', {}, 'Rien encore : dessine, ça s’enregistre tout seul.'),
+    ].filter(Boolean));
+    const input = shelf.querySelector('input');
+    if (input) {
+      input.focus();
+      input.select();
+      return;
+    }
+    if (!want) return;
+    const [id, label] = want;
+    const line = id ? [...shelf.querySelectorAll('li')].find((x) => x.dataset.id === id) : null;
+    const target = [...(line || shelf).querySelectorAll('button')].find((b) => b.textContent === label)
+      || line?.querySelector('button') || shelf.querySelector('button');
+    target?.focus();
+  }
+
+  // ---------------------------------------------------------------- les autres contributions, sur GitHub
+
+  const links = h('nav', { className: 'reglages liens', hidden: true },
+    h('h3', {}, 'Sur GitHub'),
+    contributions(REPO).map(({ text, url }) => h('a', { className: 'bouton', href: url, target: '_blank', rel: 'noopener' }, `${text} ↗`)));
+
+  // ---------------------------------------------------------------- les panneaux par-dessus l'établi
+
+  const panels = { reglages: settings, github: links };
+  /** Referme le panneau ouvert ; vrai s'il y en avait un. */
+  const closePanels = () => {
+    const open = Object.values(panels).some((el) => !el.hidden);
+    for (const el of Object.values(panels)) el.hidden = true;
+    return open;
+  };
+  /** Ouvre un panneau, ou le referme : un seul à la fois, et jamais sous la fiche. */
+  function togglePanel(name) {
+    if (!closeText()) return;
+    const opening = panels[name].hidden;
+    closePanels();
+    panels[name].hidden = !opening;
+    refresh();
+  }
+  /**
+   * « Mes niveaux » couvre l'établi ; le refermer ramène à l'édition du brouillon ouvert.
+   * @param {[string, string] | null} focus  à l'ouverture : le bouton qui prend le clavier
+   */
+  function showList(on, focus = null) {
+    if (on && !closeText()) return;
+    if (on) flush();
+    else entry = false;
+    renaming = removing = '';
+    closePanels();
+    const lost = !on && (shelf.contains(document.activeElement) || document.activeElement === document.body);
+    shelf.hidden = !on;
+    panel.classList.toggle('accueil', on);
+    if (on) renderShelf(focus);
+    refresh();
+    if (lost) shelfButton.focus(); // le clavier ne tombe pas dans le vide : il revient au bouton « Mes niveaux »
+  }
+
   // ---------------------------------------------------------------- la fiche, pour qui veut la copier
 
-  const area = h('textarea', { spellcheck: false, autocapitalize: 'off' });
+  const area = h('textarea', { spellcheck: false, autocapitalize: 'off', oninput: () => schedule() }); // s'enregistre aussi
   const sheetNote = h('span', {});
   const sheet = h('div', { className: 'fiche', hidden: true }, area, h('div', { className: 'bas' },
     h('button', { type: 'button', onclick: () => closeText() }, 'Fermer'),
     h('button', { type: 'button', className: 'discret', onclick: () => copy(area.value) }, 'Copier'),
     sheetNote));
   const openText = () => {
+    closePanels();
     area.value = writeLevel(model);
     sheetNote.textContent = '';
     sheet.hidden = false;
@@ -224,14 +496,22 @@ export function showAtelier(root, { bundle, save, test, back }) {
 
   // ---------------------------------------------------------------- la barre et le pied
 
-  const leave = (then) => {
+  /** `trying` : on part essayer le niveau ; un niveau neuf devient alors un brouillon, pour y revenir. */
+  const leave = (then, trying = false) => {
     closeText();
+    if (trying && !current) unsaved = true;
+    flush();
+    // La palette est refaite à chaque ouverture : on garde la place du choix, pas l'objet.
+    const g = groups.findIndex(([, items]) => items.includes(picked));
+    kept = { id: current, history, cam: { ...cam }, zoom, tool, rect, behind, shown, picked: [g, groups[g]?.[1].indexOf(picked)] };
     live.abort();
     then();
   };
   const ready = () => closeText() && !report.errors.length;
+  const launch = () => ready() && leave(() => test(report.level), true);
   const propose = async () => {
     if (!ready()) return;
+    flush();
     const { url, filled } = proposal(REPO, writeLevel(model), report.level.titre);
     if (!filled && await copy(writeLevel(model))) say('Copié : colle-le dans la page qui s’ouvre.');
     window.open(url, '_blank', 'noopener');
@@ -244,24 +524,25 @@ export function showAtelier(root, { bundle, save, test, back }) {
     model = next;
     changed();
   };
-  const settingsButton = h('button', {
-    type: 'button', className: 'discret', onclick: () => {
-      settings.hidden = !settings.hidden;
-      refresh();
-    },
-  }, 'Réglages');
+  const settingsButton = h('button', { type: 'button', className: 'discret', onclick: () => togglePanel('reglages') }, 'Réglages');
+  const shelfButton = h('button', { type: 'button', className: 'discret', onclick: () => showList(shelf.hidden) }, 'Mes niveaux');
+  const linksButton = h('button', { type: 'button', className: 'discret', onclick: () => togglePanel('github') }, 'GitHub');
   const undoButton = h('button', { type: 'button', className: 'discret', title: 'Annuler', onclick: () => travel('undo') }, '↶');
   const redoButton = h('button', { type: 'button', className: 'discret', title: 'Rétablir', onclick: () => travel('redo') }, '↷');
   const textButton = h('button', { type: 'button', className: 'discret', onclick: () => (sheet.hidden ? openText() : closeText()) }, 'Texte');
-  const testButton = h('button', { type: 'button', onclick: () => ready() && leave(() => test(report.level)) }, 'Tester');
+  const testButton = h('button', { type: 'button', onclick: launch }, 'Tester');
   const proposeButton = h('button', { type: 'button', onclick: propose }, 'Proposer');
+  // Ce qui ne sert qu'à dessiner : caché tant que « Mes niveaux » couvre l'établi.
+  for (const button of [settingsButton, undoButton, redoButton, textButton, testButton, proposeButton]) button.classList.add('edition');
 
   const toolName = h('span', { className: 'outil' });
   const message = h('div', { className: 'message' });
   const signInput = h('input', {
     type: 'text', enterKeyHint: 'done',
     oninput: () => commit(setField(model, `panneau.${sign}`, signInput.value.trim() || '…'), `panneau.${sign}`),
-    onkeydown: (e) => e.key === 'Enter' && closeSign(),
+    onkeydown: (e) => {
+      if (e.key === 'Enter') closeSign(); // sans rien renvoyer : `false` annulerait la frappe
+    },
   });
   const signBox = h('label', { className: 'ecrire' }, 'Texte', signInput);
   const editSign = (digit) => {
@@ -463,10 +744,10 @@ export function showAtelier(root, { bundle, save, test, back }) {
     changed();
   }
 
-  function changed() {
+  /** @param {boolean} dirty  faux quand le niveau vient d'être ouvert : rien à enregistrer */
+  function changed(dirty = true) {
     const text = writeLevel(model);
-    save.brouillon = text;
-    storeSave(save);
+    if (dirty) schedule();
     report = checkLevel(text, bundle);
     flaw = cellOfError(model, report.errors[0]);
     refresh();
@@ -479,6 +760,8 @@ export function showAtelier(root, { bundle, save, test, back }) {
     undoButton.disabled = !history.past.length;
     redoButton.disabled = !history.future.length;
     press(settingsButton, !settings.hidden);
+    press(shelfButton, !shelf.hidden);
+    press(linksButton, !links.hidden);
     press(textButton, !sheet.hidden);
     press(eraserButton, tool === 'gomme');
     press(handButton, tool === 'main');
@@ -625,12 +908,25 @@ export function showAtelier(root, { bundle, save, test, back }) {
 
   window.addEventListener('keydown', (e) => {
     if (!panel.isConnected) return live.abort();
-    if (!(e.ctrlKey || e.metaKey) || e.target.closest?.('input, textarea, select')) return undefined;
+    if (!(e.ctrlKey || e.metaKey)) return undefined;
     const key = e.key.toLowerCase();
-    if (key !== 'z' && key !== 'y') return undefined;
+    if (key === 's') { // Ctrl+S : le brouillon, pas la page
+      e.preventDefault();
+      return saveNow();
+    }
+    if (e.target.closest?.('input, textarea, select') || (key !== 'z' && key !== 'y')) return undefined;
     e.preventDefault();
     return travel(key === 'y' || e.shiftKey ? 'redo' : 'undo');
   }, { signal: live.signal });
+  // Onglet caché, fermé ou rechargé : ce qui attend s'enregistre tout de suite.
+  window.addEventListener('pagehide', flush, { signal: live.signal });
+  // Un autre onglet a écrit les brouillons : le niveau ouvert et la liste se mettent à jour.
+  window.addEventListener('storage', (e) => {
+    if (!panel.isConnected || (e.key !== null && e.key !== KEY)) return;
+    reloadFromElsewhere();
+    if (!shelf.hidden && !renaming && !removing) renderShelf();
+  }, { signal: live.signal });
+  document.addEventListener('visibilitychange', () => document.hidden && flush(), { signal: live.signal });
 
   // ---------------------------------------------------------------- l'écran
 
@@ -642,29 +938,55 @@ export function showAtelier(root, { bundle, save, test, back }) {
   const panel = h('section', { className: 'panneau atelier' },
     h('div', { className: 'barre' },
       h('button', { type: 'button', className: 'discret', onclick: () => leave(back) }, '← Retour'),
-      settingsButton, h('span', { className: 'pousse' }), undoButton, redoButton, textButton, testButton, proposeButton),
+      h('span', { className: 'beta' }, 'Atelier bêta'),
+      settingsButton, shelfButton, h('span', { className: 'pousse' }), undoButton, redoButton, textButton, testButton, proposeButton,
+      linksButton),
     h('div', { className: 'etabli' },
       h('div', { className: 'palette' },
         h('div', { className: 'outils' }, eraserButton, rectButton, handButton),
         h('div', { className: 'groupes' }, tabs),
         choices, behindRow),
-      plan, settings),
-    h('div', { className: 'etat' }, toolName, message));
+      plan, settings, shelf, links),
+    h('div', { className: 'etat' }, toolName, message, savedNote));
+
+  // Retour d'un essai : le même brouillon, la même vue, le même outil, et l'annulation intacte.
+  const restored = resume && kept?.id === current ? kept : null;
+  if (restored) {
+    ({ history, tool, rect, behind, shown, zoom } = restored);
+    Object.assign(cam, restored.cam);
+    behindBox.checked = behind;
+    picked = groups[restored.picked[0]]?.[1][restored.picked[1]] || picked;
+  }
 
   root.replaceChildren(panel);
   root.hidden = false;
   new ResizeObserver(() => draw()).observe(canvas);
-  changed();
+  changed(false);
+  stored();
+  // Des brouillons enregistrés : on arrive sur « Mes niveaux ». Sinon, on dessine tout de suite.
+  if (!resume && drafts.list().length) {
+    entry = true;
+    showList(true, [drafts.list()[0].id, 'Ouvrir']); // Entrée, ou A, rouvre le dernier
+  }
 
-  // Échap referme d'abord ce qui est ouvert par-dessus la carte (le texte d'un panneau, les réglages, la fiche),
-  // puis ramène à l'écran d'avant. Le brouillon est déjà enregistré.
+  // Échap referme d'abord ce qui est ouvert par-dessus la carte (le texte d'un panneau, un nom en cours,
+  // un panneau, la fiche, « Mes niveaux » ouvert depuis l'édition), puis ramène à l'écran d'avant.
+  // Ce qui se referme rend le clavier au bouton qui l'avait ouvert.
   return () => {
     if (!panel.isConnected) return;
     if (sign) closeSign();
-    else if (!settings.hidden) {
-      settings.hidden = true;
+    else if (renaming || removing) {
+      const where = renaming ? [renaming, 'Renommer'] : [removing, 'Supprimer'];
+      renaming = removing = '';
+      renderShelf(where);
+    } else if (!settings.hidden || !links.hidden) {
+      const opener = settings.hidden ? linksButton : settingsButton;
+      closePanels();
       refresh();
-    } else if (!sheet.hidden) closeText();
+      opener.focus();
+    } else if (!sheet.hidden) {
+      if (closeText()) textButton.focus();
+    } else if (!shelf.hidden && !entry) showList(false);
     else leave(back);
   };
 }

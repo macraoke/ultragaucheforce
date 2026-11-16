@@ -25,6 +25,7 @@ const radio = new Radio(bundle, document.getElementById('radio'));
 const renderer = new Renderer(document.getElementById('monde'), document.getElementById('textes'), bundle);
 const input = new Input(document.getElementById('tactile'));
 const hud = new Hud(bundle);
+const editButton = document.getElementById('edition'); // en essai depuis l'Atelier : retour à l'édition, à côté de la pause
 
 /** @type {Game | null} */
 let game = null;
@@ -63,6 +64,8 @@ const screens = new Screens(screenRoot, {
     },
     quit: () => toMenu(),
     atelier: (button) => openAtelier(button),
+    edit: () => backToEdit(),
+    testing: () => Boolean(custom),
     options: () => applyOptions(),
     learn: (ids) => ids.forEach((id) => collect('fiches', id, true)),
     back: () => (mode === 'paused' ? screens.pause() : screens.menu()),
@@ -97,6 +100,7 @@ function toMenu() {
   begin = null;
   custom = null;
   current = null;
+  showEditButton(false);
   setMode('menu');
   attract();
   screens.menu();
@@ -151,7 +155,9 @@ function start(id, level = null) {
   collect('citations', current.level.citation, true);
   collect('heros', game.hero.def.id, true);
   collectCortege();
+  showEditButton(Boolean(level));
   setMode('paused');
+  fitRight();
   begin = () => {
     begin = null;
     if (id) measure('niveau lancé', { niveau: id }); // chaque vraie partie, rejouée ou non ; pas un changement de héros sur le carton
@@ -163,19 +169,42 @@ function start(id, level = null) {
 
 let atelier = null; // le module de l'Atelier, chargé à sa première ouverture : le menu n'en a pas besoin
 
-/** Ouvre l'Atelier. La première fois, il se charge : le bouton qui l'ouvre le dit, et dit s'il manque le réseau. */
-async function openAtelier(button = null) {
+/**
+ * Ouvre l'Atelier. La première fois, il se charge : le bouton qui l'ouvre le dit, et dit s'il manque le réseau.
+ * @param {boolean} resume  retour d'un essai : l'Atelier reprend l'édition là où on l'avait laissée
+ */
+async function openAtelier(button = null, resume = false) {
   if (!atelier) {
-    const label = button?.textContent;
+    const label = button?.innerHTML; // le libellé et son étiquette « bêta »
     const slow = button && setTimeout(() => (button.textContent = 'Chargement…'), 150);
     atelier = await import('./atelier.js').catch(() => null);
     clearTimeout(slow);
-    if (button) button.textContent = atelier ? label : 'Atelier : pas de réseau';
+    if (button && atelier) button.innerHTML = label;
+    else if (button) button.textContent = 'Atelier : pas de réseau';
     if (!atelier || (button && !button.isConnected)) return; // pas de réseau, ou le joueur est passé à un autre écran
   }
   setMode('menu');
   document.body.dataset.ecran = 'atelier';
-  screens.escape = atelier.showAtelier(screenRoot, { bundle, save, test: (level) => start(null, level), back: () => toMenu() });
+  screens.escape = atelier.showAtelier(screenRoot, { bundle, save, resume, test: (level) => start(null, level), back: () => toMenu() });
+}
+
+/** Quitter un essai, à tout moment : l'édition du même brouillon. */
+function backToEdit() {
+  toMenu();
+  openAtelier(null, true);
+}
+
+/** En essai, le bouton de retour à l'édition s'affiche à côté de la pause ; les notes se rangent à sa gauche. */
+function showEditButton(on) {
+  editButton.hidden = !on;
+  document.body.classList.toggle('essai', on);
+  hud.row = 0; // la première ligne du HUD a changé : à remesurer
+}
+
+/** La largeur des boutons du HUD à droite : au pouce, les notes s'arrêtent avant eux. */
+function fitRight() {
+  const width = document.querySelector('#hud .droite').offsetWidth;
+  if (width) document.getElementById('scene').style.setProperty('--hud-droite', `${width}px`);
 }
 
 function togglePause() {
@@ -329,6 +358,7 @@ input.onBack = back;
 input.onAny = () => audio.unlock();
 input.onDevice = () => screens.open && screens.refreshKeys(); // un carton ou une pause ouverts redisent les touches
 document.getElementById('pause').onclick = togglePause;
+editButton.onclick = () => backToEdit();
 addEventListener('pointerdown', () => audio.unlock(), true);
 // Une musique que le navigateur a refusé de lancer sans geste repart au prochain toucher, clic ou touche.
 // Juste après le geste, pas pendant : si ce geste lance un niveau, la piste du niveau passe d'abord.
@@ -361,6 +391,7 @@ function layout() {
   // Au pouce, le HUD est sous le bandeau : le panneau se pose sous sa première ligne (`placeSign`).
   renderer.signTop = thumbs ? 30 : Math.max(30, Math.ceil((140 * (window.devicePixelRatio || 1)) / renderer.scale));
   hud.row = 0; // à remesurer
+  fitRight();
   input.refreshTouch();
   screens.fitShelf(); // la Collection ouverte : une rangée de cartes tient-elle encore sous ses rayons ?
 }

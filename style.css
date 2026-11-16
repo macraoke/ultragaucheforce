@@ -48,6 +48,8 @@ button, .bouton {
 button:hover, .bouton:hover { background: var(--blanc); }
 button:active, .bouton:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--rouge); }
 button.discret { background: transparent; color: var(--papier); border-color: var(--papier); box-shadow: none; }
+/* « bêta » : sur le bouton qui ouvre l'Atelier, et dans l'Atelier */
+.beta { display: inline-block; margin-left: .4em; padding: .2em .4em; background: var(--rouge); color: var(--blanc); font: 900 .62em/1 var(--titre); letter-spacing: .05em; text-transform: uppercase; vertical-align: .15em; }
 
 /* ------------------------------------------------------------------ carton de héros */
 
@@ -291,6 +293,10 @@ body.sobre #hud-charges.demande, body.sobre #tactile b.demande { animation: none
 @keyframes grossit { 0% { transform: scale(1.7); } 100% { transform: scale(1); } }
 body.sobre #hud-manif.grossit { animation: none; }
 #pause { pointer-events: auto; font-size: 1em; padding: .35em .6em; box-shadow: 2px 2px 0 var(--rouge); text-shadow: none; }
+/* En essai depuis l'Atelier : le retour à l'édition, à gauche de la pause. */
+#edition { pointer-events: auto; font-size: 1em; padding: .35em .6em; background: var(--nuit); color: var(--papier); border-color: var(--papier); box-shadow: 2px 2px 0 var(--rouge); text-shadow: none; }
+#edition:hover { background: var(--encre); }
+#edition[hidden] { display: none; }
 #hud-boss { position: absolute; left: 50%; top: 3.2em; transform: translateX(-50%); width: min(60%, 420px); text-align: center; }
 #hud-boss span { display: block; height: .8em; margin-top: .25em; background: var(--nuit); border: 2px solid var(--blanc); }
 #hud-boss i { display: block; height: 100%; background: var(--or); transition: width .15s; }
@@ -380,6 +386,9 @@ html.pivote body.tactile #bandeau { padding: 0 env(safe-area-inset-bottom) 0 env
 html.pivote body.tactile #hud .gauche { left: max(10px, env(safe-area-inset-top)); }
 html.pivote body.tactile #hud .droite { right: max(10px, env(safe-area-inset-bottom)); }
 html.pivote body.tactile #toasts { right: calc(max(10px, env(safe-area-inset-bottom)) + 3.2em); }
+/* En essai, le retour à l'édition s'ajoute à côté de la pause : les notes s'arrêtent avant lui (`--hud-droite`, mesuré). */
+body.tactile.essai #toasts { right: calc(max(10px, env(safe-area-inset-right)) + var(--hud-droite, 3.2em) + 8px); max-width: calc(52% - var(--hud-droite, 3.2em)); }
+html.pivote body.tactile.essai #toasts { right: calc(max(10px, env(safe-area-inset-bottom)) + var(--hud-droite, 3.2em) + 8px); }
 
 /* ------------------------------------------------------------------ écrans */
 
@@ -624,6 +633,33 @@ html.bas .taxe .pied button.gros { font-size: 1rem; padding: .5em .8em; }
 .atelier .reglages .ligne { display: flex; align-items: center; gap: 6px; }
 .atelier .reglages .ligne > span { flex: 0 0 4.2em; }
 .atelier .reglages .ligne > input, .atelier .reglages .ligne > select, .atelier .reglages .ligne > button { flex: 1; min-width: 0; padding: .45em .3em; }
+.atelier .reglages h3 { margin: 0; font-size: 1rem; }
+.atelier .reglages .alerte { margin: 0; padding: .4em .6em; background: var(--rouge-sombre); color: var(--blanc); font-weight: 700; line-height: 1.25; }
+.atelier button.danger { background: var(--rouge); color: var(--blanc); border-color: var(--rouge); box-shadow: none; }
+/* « Mes niveaux » : la liste des brouillons couvre l'établi ; ce qui ne sert qu'à dessiner se cache */
+.atelier .niveaux { position: absolute; inset: 0; z-index: 4; overflow: auto; display: grid; align-content: start; justify-items: center; gap: 8px; padding: 10px; background: var(--nuit); border: 2px solid var(--encre); font-size: .85rem; }
+.atelier .niveaux > * { width: min(100%, 760px); }
+.atelier .niveaux h3 { margin: 0; font-size: 1.3rem; }
+.atelier .niveaux p { margin: 0; }
+.atelier .niveaux .alerte { padding: .4em .6em; background: var(--rouge-sombre); color: var(--blanc); font-weight: 700; line-height: 1.25; }
+.atelier .niveaux .ligne { display: flex; gap: 6px; }
+.atelier .niveaux ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.atelier .niveaux li { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding: 8px 10px; background: var(--encre); border-left: 4px solid transparent; }
+.atelier .niveaux li.ouvert { border-left-color: var(--or); }
+.atelier .niveaux .nom { flex: 1 1 11em; min-width: 0; display: grid; gap: 3px; }
+.atelier .niveaux .nom b { font: 700 1rem/1.2 var(--texte); overflow-wrap: anywhere; }
+.atelier .niveaux .nom small { font-size: .78rem; opacity: .8; }
+.atelier .niveaux li > input { flex: 1 1 14em; }
+.atelier .niveaux .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.atelier .niveaux .actions span { font-weight: 700; margin-right: 4px; }
+/* sous la liste, l'éditeur sort du jeu : ni le clavier ni la manette ne s'y perdent */
+.atelier.accueil .barre .edition, .atelier.accueil .etat .outil, .atelier.accueil .etat .sauve, .atelier.accueil .palette, .atelier.accueil .plan { display: none; }
+.atelier .barre .beta { flex: none; margin: 0; padding: .45em .55em; font-size: .72rem; }
+/* les autres contributions : à droite, sous « GitHub », au-dessus de « Mes niveaux » */
+.atelier .liens { left: auto; right: 0; z-index: 5; width: min(270px, 100%); align-content: start; gap: 5px; }
+.atelier .liens a.bouton { display: block; padding: .55em .7em; font-size: .8rem; background: transparent; color: var(--papier); border: 2px solid var(--papier); box-shadow: none; }
+.atelier .liens a.bouton:hover, .atelier .liens a.bouton:focus-visible { background: var(--encre); }
+html.bas .atelier .liens a.bouton { padding: .42em .6em; }
 .atelier .fiche { position: absolute; inset: 0; z-index: 3; display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 6px; padding: 6px; background: var(--nuit); }
 .atelier .fiche textarea { color: #a7f070; font: 12px/1.15 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: pre; overflow: auto; resize: none; }
 .atelier .fiche .bas { display: flex; gap: 6px; align-items: center; font-size: .85rem; }
@@ -633,6 +669,8 @@ html.bas .taxe .pied button.gros { font-size: 1rem; padding: .5em .8em; }
 .atelier .etat .alerte { max-width: 100%; padding: .35em .6em; background: var(--rouge-sombre); color: var(--blanc); border: 0; box-shadow: none; font: 700 .82rem/1.2 var(--texte); letter-spacing: 0; text-transform: none; text-align: left; }
 .atelier .etat .ecrire { display: flex; align-items: center; gap: 6px; }
 .atelier .etat .ecrire input { flex: 1; }
+.atelier .etat .sauve { flex: none; font-size: .75rem; opacity: .6; }
+.atelier .etat .sauve.rate { opacity: 1; padding: .3em .5em; background: var(--rouge-sombre); color: var(--blanc); font-weight: 700; }
 body.tactile .atelier input[type='text'], body.tactile .atelier select, body.tactile .atelier textarea { font-size: 16px; }
 
 /* Radio Manif */
