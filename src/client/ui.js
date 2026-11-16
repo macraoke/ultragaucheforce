@@ -10,6 +10,7 @@ import { livesStack } from './lives.js';
 import { KEY_NAMES, CONTROLS, brief, mentions } from './input.js';
 import { CRS_OCTOBRE_2026, injuryParts } from './blesses.js';
 import { PANIC_STEPS } from '../sim/game.js';
+import { SIGN_LINGER } from './render.js';
 
 const MENTION = 'Satire citoyenne, libre et collaborative.';
 const PANIC_NAMES = ['calme', 'alerte', 'hystérie']; // les trois crans de la chaîne
@@ -471,6 +472,8 @@ export class Hud {
     delete this.q('bandeau').dataset.alerte; // une alerte interrompue ne fige pas le fil de la partie suivante
     this.notes = [];
     this.note = null;
+    this.now = undefined;
+    this.signUntil = -1;
     this.q('toasts').replaceChildren();
     this.nextQuote();
   }
@@ -502,7 +505,7 @@ export class Hud {
   }
 
   update(game) {
-    this.pump(game.time);
+    this.pump(game.time, Boolean(game.sign));
     const { hero, boss } = game;
     const special = hero.def.speciale;
     // Un panneau demande la spéciale : la puce et le bouton SPÉ clignotent jusqu'à ce qu'elle serve.
@@ -639,8 +642,21 @@ export class Hud {
     queueNote(this.notes, { text, tone, group });
   }
 
-  /** Fait passer les notes, au temps de jeu `now` : rien ne défile pendant une pause ou un carton. */
-  pump(now) {
+  /**
+   * Fait passer les notes, au temps de jeu `now` : rien ne défile pendant une pause ou un carton.
+   * Au pouce, un panneau d'aide (`sign`) s'affiche en haut, au même endroit : les notes l'attendent, et le temps
+   * de lecture de celle qui était là ne court pas.
+   */
+  pump(now, sign = false) {
+    const dt = Math.max(0, now - (this.now ?? now));
+    this.now = now;
+    if (sign) this.signUntil = now + SIGN_LINGER;
+    const wait = document.body.classList.contains('tactile') && now < (this.signUntil ?? -1);
+    this.q('toasts').classList.toggle('attend', wait);
+    if (wait) {
+      if (this.note) this.note.until += dt;
+      return;
+    }
     if (this.note && now >= this.note.until) {
       this.note.el.remove();
       this.note = null;

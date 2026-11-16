@@ -367,6 +367,7 @@ body.tactile #hud .gauche { left: max(10px, env(safe-area-inset-left)); }
 body.tactile #hud .droite { right: max(10px, env(safe-area-inset-right)); }
 body.tactile #toasts { left: auto; right: calc(max(10px, env(safe-area-inset-right)) + 3.2em); top: calc(var(--haut-bandeau) + 8px); justify-items: end; max-width: 44%; }
 body.tactile #toasts p { font-size: .72rem; padding: .35em .6em; }
+body.tactile #toasts.attend { visibility: hidden; } /* un panneau d'aide occupe le haut : la note attend (voir Hud.pump) */
 /* Pendant un boss, une seule ligne : la note s'arrête au-dessus de sa barre de vie. */
 body.tactile #hud:has(> #hud-boss:not([hidden])) ~ #toasts p { max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 html.pivote body.tactile #bandeau { padding: 0 env(safe-area-inset-bottom) 0 env(safe-area-inset-top); }

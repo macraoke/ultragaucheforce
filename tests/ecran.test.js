@@ -103,6 +103,18 @@ test('un texte qui a sa place (une ligne qui cède, un coup) n’est ni évincé
   }
 });
 
+test('« TOUCHÉ » monte au-dessus d’une sommation ; le compteur au pied d’une ligne ne bouge pas', () => {
+  const r = renderer();
+  const hurt = { x: 200, y: 96, text: 'TOUCHÉ', t: 1, size: 8, keep: true };
+  const line = { x: 200, y: 100, rise: 0, text: '✊ 312 / 500', t: 2, size: 7.5, keep: true };
+  r.float(hurt);
+  r.float(line);
+  r.voice = r.textBox('Obéissance à la loi. Dispersez-vous.', 200, 96, 5.5, 80);
+  r.placeFloaters([r.voice]);
+  assert.ok(!overlap(r.textBox(hurt.text, hurt.x, hurt.y, hurt.size, 150), r.voice), 'la sommation reste lisible');
+  assert.equal(line.y, 100, 'au pied de la ligne, il garde sa place');
+});
+
 test('deux gains au même moment et au même endroit font un seul nombre', () => {
   const r = renderer();
   r.absorb([{ type: 'recruit', x: 100, y: 150, n: 20 }, { type: 'recruit', x: 120, y: 150, n: 30 }]);

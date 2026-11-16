@@ -7,7 +7,7 @@ import { sprite } from './sprites.js';
 import { withKeys } from './input.js';
 
 const TILE = 16;
-const SIGN_LINGER = 1.6; // secondes pendant lesquelles un panneau dépassé reste lisible, en s'effaçant
+export const SIGN_LINGER = 1.6; // secondes pendant lesquelles un panneau dépassé reste lisible, en s'effaçant
 const FONT = "Impact, Haettenschweiler, 'Arial Narrow Bold', 'HelveticaNeue-CondensedBlack', 'Roboto Condensed', sans-serif";
 export const SKIES = {
   campagne: ['#6fc4ee', '#d5f0f7'],
@@ -305,7 +305,8 @@ export class Renderer {
     const talker = game.enemies.filter((e) => e.bubble && e.state !== 'done' && e.bubble.text !== REC)
       .sort((a, b) => warns(b) - warns(a) || Math.abs(a.x - game.hero.x) - Math.abs(b.x - game.hero.x))[0];
     // Rien ne la recouvre : ni texte flottant, ni pancarte du cortège.
-    if (talker) this.boxes.push(this.textBox(talker.bubble.text, talker.x + talker.w / 2 - cx, talker.y - 10 - cy, 5.5, 80));
+    this.voice = talker ? this.textBox(talker.bubble.text, talker.x + talker.w / 2 - cx, talker.y - 10 - cy, 5.5, 80) : null;
+    if (this.voice) this.boxes.push(this.voice);
     this.combatBefore(game); // les coups se lisent : les pancartes du cortège s'effacent devant eux
     const fixed = this.boxes.slice(gains); // gains des recrues, voix, coups : les textes flottants passent autour
     // Le héros se lit au premier coup d'œil : aucune pancarte ne se lève devant lui ni juste au-dessus de sa tête.
@@ -1127,8 +1128,16 @@ export class Renderer {
   placeFloaters(fixed) {
     const placed = [...fixed];
     // Ceux qui ont leur place (`keep` : au pied d'une ligne, au bord de l'écran) ne bougent pas ; les autres passent autour.
+    // Seule exception : un texte `keep` qui monte (« TOUCHÉ ») passe au-dessus d'une sommation plutôt que de la cacher.
     for (const f of this.floaters.filter((g) => g.keep)) {
       const box = this.textBox(f.text, f.x - this.cx, f.y - this.cy, f.size, 150);
+      const voice = this.voice;
+      if (voice && (f.rise ?? 14) > 0 && !f.edge && box.x0 < voice.x1 && box.x1 > voice.x0 && box.y0 < voice.y1 && box.y1 > voice.y0) {
+        const lift = box.y1 - voice.y0 + 1;
+        f.y -= lift;
+        box.y0 -= lift;
+        box.y1 -= lift;
+      }
       placed.push(box);
       this.boxes.push(box);
     }
