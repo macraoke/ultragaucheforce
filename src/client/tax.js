@@ -1,8 +1,8 @@
 // La scène de taxation, après le boss. Il est assis sur sa fortune, un tas de liasses qui remplit son cadre.
 // Un seul écran, en deux temps, une idée chacun :
 //   - avant « Taxer les riches » : sa fortune, à l'échelle de quelqu'un (et ce qu'elle rapporte en un an) ;
-//   - après : la fortune s'efface du récit (le tas et sa légende la gardent) et ce que ça paierait prend sa place,
-//     en aussi gros ; dessous, en petit, d'où vient l'argent (2 % par an, combien ça fait), puis ce que chacun paie
+//   - après : la fortune s'efface du récit (le tas et sa légende la gardent). D'abord, en petit, d'où vient l'argent
+//     (2 % par an, combien ça fait) ; dessous, en aussi gros que la fortune, ce que ça paierait ; puis ce que chacun paie
 //     déjà : autour de 52 % pour presque tout le monde, 27 % pour les milliardaires, ensemble. La part des 2 % quitte le tas.
 // L'échelle et l'exemple se tirent au hasard dans les fiches sourcées de `content/fiches/` (clés `compare` et
 // `finance`) : d'une partie à l'autre, ce ne sont pas les mêmes. Le bouton suivant reprend un slogan scandé en manif.
@@ -243,9 +243,9 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pi
     const fourth = most && billionaires && step('juste', 'Ce que chacun paie déjà',
       h('div', { className: 'barres' }, bar('Presque tout le monde', most, '≈ '), bar('Les milliardaires', billionaires)),
       'Tous impôts et cotisations compris, en part du revenu, en 2016.', [most, billionaires]);
-    // Après la taxe, ce que ça paierait en tête (sans exemple tiré : les 2 % eux-mêmes), d'où vient l'argent dessous.
-    const after = [third, second, fourth].filter(Boolean);
-    after[0].classList.add('titre');
+    // Après la taxe, d'où vient l'argent, puis ce que ça paierait, en gros (sans exemple tiré : les 2 % eux-mêmes, en gros).
+    const after = [second, third, fourth].filter(Boolean);
+    (third || second).classList.add('titre');
     after.forEach((li, i) => {
       li.hidden = true;
       li.style.setProperty('--rang', i);
