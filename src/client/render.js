@@ -31,6 +31,7 @@ const SIGN_UP = 1; // une pancarte levée le reste au moins une seconde…
 const SIGN_DOWN = 0.5; // … et une pancarte baissée attend une demi-seconde avant de se relever
 const NEAR_HERO = 14; // un manifestant plus près que cela du héros passe en transparence
 const REC = '● REC'; // le cadre de la caméra l'affiche déjà : pas de bulle en double
+const SAFE_TOP = 96; // pixels CSS en haut de l'écran pris par le HUD (et le bandeau, au pouce) pendant un boss
 
 export class Renderer {
   constructor(canvas, textCanvas, bundle) {
@@ -862,12 +863,19 @@ export class Renderer {
       this.actor(b, moving ? s.marche1 || s.repos : s.repos, { flash: flicker, dy: Math.round(Math.sin(this.clock * 3) * 1.5) });
     }
     if (b.bubble) {
-      // La bulle reste entière dans la vue, même quand le boss est au bord ; au pouce, sous le bandeau (30 px CSS au plus).
+      // La bulle reste entière dans la vue, sous la ligne du HUD et la barre de vie du boss (SAFE_TOP) :
+      // sans place au-dessus de sa tête, elle passe à côté de lui, du côté du héros.
       const box = this.textBox(b.bubble.text, 0, 0, 7, 150);
       const half = (box.x1 - box.x0) / 2;
-      const band = document.body.classList.contains('tactile') ? 30 / this.ratio : 0;
-      const x = Math.min(this.viewW - half, Math.max(half, b.x + b.w / 2 - this.cx));
-      const y = Math.max(band - box.y0, b.y - 14 - this.cy);
+      const safe = SAFE_TOP / this.ratio - box.y0;
+      let x = b.x + b.w / 2 - this.cx;
+      let y = b.y - 14 - this.cy;
+      if (y < safe) {
+        const left = this.heroBox.x + this.heroBox.w / 2 < b.x + b.w / 2;
+        x = left ? b.x - this.cx - half - 2 : b.x + b.w - this.cx + half + 2;
+        y = Math.max(safe, b.y + 4 - this.cy);
+      }
+      x = Math.min(this.viewW - half, Math.max(half, x));
       this.label(b.bubble.text, x, y, { size: 7, color: '#1a1c2c', bg: '#f6c21c', width: 150 });
     }
   }

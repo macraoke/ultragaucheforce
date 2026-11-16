@@ -152,6 +152,22 @@ test('devant le héros, une pancarte se baisse tout de suite', () => {
   assert.ok(!r.raised.has(cortege[0]));
 });
 
+test('la bulle du boss reste entière dans la vue, sous le HUD', () => {
+  const r = renderer();
+  const def = Object.values(bundle.boss)[0];
+  const said = [];
+  r.label = (text, x, y) => said.push({ x, y, box: r.textBox(text, x, y, 7, 150) });
+  r.heroBox = { x: 100, w: 12, h: 18, y: 150 };
+  const text = 'JE SUIS LE PARATONNERRE, LE BOUC ÉMISSAIRE.';
+  r.boss({ def, x: 370, y: 120, w: 40, h: 60, state: 'idle', flash: 0, bubble: { text } }); // au bord droit
+  r.boss({ def, x: 200, y: 6, w: 40, h: 60, state: 'idle', flash: 0, bubble: { text } }); // tout en haut
+  for (const { box } of said) {
+    assert.ok(box.x0 >= 0 && box.x1 <= r.viewW, 'dans la largeur de la vue');
+    assert.ok(box.y0 >= 96 / r.ratio - 1e-9, 'sous le HUD et la barre de vie');
+  }
+  assert.ok(said[1].x < 200, 'sans place au-dessus de lui, elle passe à côté, du côté du héros');
+});
+
 // ---------------------------------------------------------------- lisibilité et travail inutile
 
 test('sur téléphone, un petit texte du monde grandit jusqu’à onze pixels à l’écran', () => {
