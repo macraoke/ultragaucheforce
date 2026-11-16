@@ -1,7 +1,7 @@
 titre: S'inscrire avant le 6ᵉ vendredi
 theme: democratie
-texte: Depuis le 1er juillet 2026, la date limite d'inscription sur les listes électorales est la même en mairie et en ligne : le 6e vendredi précédant le scrutin.
-portee: Règle issue du décret n° 2026-493 du 12 juin 2026 ; auparavant, l'inscription en ligne s'arrêtait le 6e mercredi. Pour un premier tour le 18 avril 2027, ce 6e vendredi tombe le 12 mars 2027 (calcul fait d'après la règle, la page ne donne pas cette date). Inscription en ligne officielle : https://www.service-public.gouv.fr/particuliers/vosdroits/R16396
+texte: Depuis le 1er juillet 2026, la date limite d'inscription sur les listes électorales est la même en mairie et en ligne : le 6ᵉ vendredi précédant le scrutin.
+portee: Règle issue du décret n° 2026-493 du 12 juin 2026 ; auparavant, l'inscription en ligne s'arrêtait le 6ᵉ mercredi. Pour un premier tour le 18 avril 2027, ce 6ᵉ vendredi tombe le 12 mars 2027 (calcul fait d'après la règle, la page ne donne pas cette date). Inscription en ligne officielle : https://www.service-public.gouv.fr/particuliers/vosdroits/R16396
 periode: règle en vigueur depuis le 1er juillet 2026
 source.titre: Service-Public.gouv.fr — Inscription sur les listes électorales : des changements à partir de juillet 2026
 source.url: https://www.service-public.gouv.fr/particuliers/actualites/A18967
