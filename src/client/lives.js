@@ -26,6 +26,7 @@ export function livesStack(bundle, game) {
         return h('span', { className: i === 0 ? 'tete en-jeu' : 'tete' }, spriteElement(hero.sprites.portrait || hero.sprites.repos, bundle.palette, 1));
       }),
       more ? h('b', {}, `+${more}`) : null),
-    // Ce qu'il reste de coups à encaisser au personnage en jeu.
-    h('span', { className: `vie${left <= 0.34 ? ' basse' : ''}`, role: 'meter', ariaLabel: 'Vie' }, h('i', { style: `width: ${left * 100}%` })));
+    // Ce qu'il reste de coups à encaisser au personnage en jeu : un cran par coup.
+    h('span', { className: `vie${left <= 0.34 ? ' basse' : ''}`, role: 'meter', ariaLabel: 'Vie', style: `--crans: ${playing.def.pv}` },
+      h('i', { style: `width: ${left * 100}%` })));
 }

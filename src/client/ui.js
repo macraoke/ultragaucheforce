@@ -380,6 +380,7 @@ export class Hud {
   /** Nouvelle partie : le fil repart, sans alerte ni notification de la précédente. */
   reset() {
     this.last = '';
+    this.pile = '';
     this.crowd = 0;
     this.ask = null;
     clearTimeout(this.bannerTimer);
@@ -420,7 +421,15 @@ export class Hud {
     if (state === this.last) return; // on ne touche au DOM que si quelque chose a changé
     this.last = state;
     this.q('hud-heros').textContent = hero.def.nom;
-    this.q('hud-vies').replaceChildren(livesStack(this.bundle, game));
+    // La pile ne se redessine que si elle change : un coup reçu la fait sursauter, sans qu'une autre mise à jour l'interrompe.
+    const pile = [hero.def.id, hero.hp, game.stack.join()].join('|');
+    if (pile !== this.pile) {
+      const hurt = this.pile && hero.def.id === this.hero && (hero.hp < this.hp || game.stack.length < this.height);
+      const stack = livesStack(this.bundle, game);
+      if (hurt) stack.classList.add('touche');
+      this.q('hud-vies').replaceChildren(stack);
+      Object.assign(this, { pile, hero: hero.def.id, hp: hero.hp, height: game.stack.length });
+    }
     // L'attaque spéciale : sa touche sur cet appareil, son nom, et combien il en reste.
     const charges = this.q('hud-charges');
     if (special) charges.replaceChildren(h('kbd', {}, KEY_NAMES[this.device].speciale), ` ${(special.nom || 'Spéciale').replace(/\s*!$/, '')} × ${hero.charges}`);
@@ -439,11 +448,11 @@ export class Hud {
     march.hidden = !game.crowd;
     if (game.crowd !== this.crowd) {
       march.textContent = `✊ ${game.crowd.toLocaleString('fr-FR')}`;
-      if (game.crowd > this.crowd) {
-        march.classList.remove('grossit');
-        void march.offsetWidth; // relance l'animation
-        march.classList.add('grossit');
-      }
+      // Il sursaute quand elle grossit, il rougit quand elle perd du monde.
+      const move = game.crowd > this.crowd ? 'grossit' : 'baisse';
+      march.classList.remove('grossit', 'baisse');
+      void march.offsetWidth; // relance l'animation
+      march.classList.add(move);
       this.crowd = game.crowd;
     }
     // La panique est celle de la chaîne : trois crans dans le bandeau, celui en cours se remplit,
