@@ -8,6 +8,7 @@ import { storeSave, eraseProgress, isFound, isReadOnly } from './save.js';
 import { SHELVES, VOTE_FICHES, allCards, collectionCount, isFresh, levelOrder, markSeen, openCard, progress, rarityCounts, shelfGrid, wonCards } from './collection.js';
 import { livesStack } from './lives.js';
 import { KEY_NAMES, CONTROLS, brief, mentions } from './input.js';
+import { CRS_OCTOBRE_2026, injuryParts } from './blesses.js';
 import { PANIC_STEPS } from '../sim/game.js';
 
 const MENTION = 'Satire citoyenne, libre et collaborative.';
@@ -285,21 +286,18 @@ export class Screens {
   }
 
   /**
-   * Fin de niveau, en un écran : la manif, le bilan des blessés tel qu'on l'annonce côté forces de l'ordre
-   * avec ce qui le compose, un fait réel à ouvrir, ce qui a été débloqué.
+   * Fin de niveau, en un écran : la manif, le bilan des blessés tel qu'on l'annonce côté forces de l'ordre, réparti
+   * comme les CRS blessés en octobre 2026, des faits réels à ouvrir (« Et en vrai ? »), ce qui a été débloqué.
+   * @param {number} hurt      les blessés annoncés côté forces de l'ordre pendant la partie
+   * @param {string[]} facts   les fiches de « Et en vrai ? »
    */
-  end({ level, stats, time, crowd, next, last, won = [], best = 0, share = null }) {
-    const fact = this.bundle.fiches[level.fiche?.[0]];
-    const card = fact && allCards(this.bundle).find((c) => c.kind === 'fiches' && c.item === fact);
+  end({ level, hurt = 0, facts = [], time, crowd, next, last, won = [], best = 0, share = null }) {
+    const cards = allCards(this.bundle).filter((c) => c.kind === 'fiches');
+    const truths = facts.map((id) => cards.find((c) => c.item.id === id)).filter(Boolean);
     const minutes = `${Math.floor(time / 60)} min ${String(Math.floor(time % 60)).padStart(2, '0')} s`;
     const n = (x) => x.toLocaleString('fr-FR');
-    const part = (count, one, many) => (count ? `${n(count)} ${count > 1 ? many : one}` : '');
-    const hurt = stats.breakdownsBySelf + stats.breakdownsByPlayer + stats.overrunOrder;
-    const parts = [
-      part(stats.breakdownsBySelf, 'gazé par ses propres grenades', 'gazés par leurs propres grenades'),
-      part(stats.breakdownsByPlayer, 'atteint par un tract', 'atteints par un tract'),
-      part(stats.overrunOrder, 'débordé par le nombre', 'débordés par le nombre'),
-    ].filter(Boolean);
+    const parts = injuryParts(hurt);
+    const crs = CRS_OCTOBRE_2026;
     this.show('fin',
       h('h2', {}, 'Niveau terminé ', h('small', {}, `${level.titre} · ${minutes}`)),
       h('div', { className: 'bilans' },
@@ -310,9 +308,10 @@ export class Screens {
         h('article', { className: 'annonce' },
           h('p', { className: 'chiffre' }, n(hurt)),
           h('p', {}, hurt > 1 ? 'blessés annoncés côté forces de l’ordre' : 'blessé annoncé côté forces de l’ordre'),
-          parts.length ? h('p', { className: 'dont' }, `dont ${parts.join(', ')}`) : null)),
-      card && h('button', { type: 'button', className: 'vrai', onclick: () => openCard(this.bundle, card) },
-        'Et en vrai ? ', h('b', {}, fact.titre)),
+          parts.length ? h('p', { className: 'dont' },
+            `${hurt > 1 ? 'Répartis' : 'Réparti'} comme les ${n(crs.blesses)} CRS blessés en octobre 2026 : ${parts.join(', ')}.`) : null)),
+      truths.length ? h('div', { className: 'vrai' }, h('span', {}, 'Et en vrai ?'),
+        truths.map((card) => h('button', { type: 'button', onclick: () => openCard(this.bundle, card) }, card.item.titre))) : null,
       won.length ? wonCards(this.bundle, won) : null,
       h('div', { className: 'pied' },
         next && this.button('Niveau suivant', () => this.go.play(next), 'gros'),

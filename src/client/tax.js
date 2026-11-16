@@ -1,49 +1,55 @@
-// La scène de taxation, après le boss. Il est assis sur sa fortune. Un seul écran :
-// la fortune, à l'échelle de quelqu'un, et ce qu'elle rapporte en un an ; puis le bouton « Taxer 2 % » fait
-// apparaître au même endroit ce que 2 % paieraient et un fait frappant sur les inégalités.
-// L'échelle, l'exemple et le fait se tirent au hasard dans les fiches sourcées de `content/fiches/` (clés `compare`,
-// `finance`, `choc`) : d'une partie à l'autre, ce ne sont pas les mêmes.
+// La scène de taxation, après le boss. Il est assis sur sa fortune, un tas de liasses qui remplit son cadre.
+// Un seul écran, qui se lit dans l'ordre, une idée par étape :
+//   1. sa fortune, à l'échelle de quelqu'un (et ce qu'elle rapporte en un an) ;
+//   2. « Taxer les riches » : 2 % par an, combien ça fait ; la part des 2 % quitte le tas ;
+//   3. ce que ça paierait ;
+//   4. ce que chacun paie déjà : 52 % pour presque tout le monde, 27 % pour les milliardaires, toujours ensemble.
+// L'échelle et l'exemple se tirent au hasard dans les fiches sourcées de `content/fiches/` (clés `compare` et
+// `finance`) : d'une partie à l'autre, ce ne sont pas les mêmes. Le bouton suivant reprend un slogan scandé en manif.
 
-import { h, link, frenchNumber } from './dom.js';
+import { h, link, frenchNumber, plural, round, money, billions, de } from './dom.js';
 import { sprite } from './sprites.js';
-import { taxFiches, taxScales, taxUses, taxShocks } from './collection.js';
+import { TAX_RATES, taxFiches, taxScales, taxUses } from './collection.js';
 
 const RATE = 0.02; // l'impôt plancher discuté : 2 % par an
-const STACKS = 620; // le tas dessiné ne dépasse pas ce nombre de liasses
-const STACK_YEARS = [100, 200, 500, 1000, 2000, 5000, 1e4, 2e4, 5e4, 1e5, 2e5, 5e5, 1e6, 2e6, 5e6, 1e7]; // ce que vaut une liasse, en années de revenus
-const W = 400;
-const H = 190;
-const CELL = { w: 7, h: 4 };
-const GROUND = H - 14;
+/** Un exemple n'est tiré que si 2 % de la fortune en paient au moins dix : « 2 Canadair » ne dit rien. */
+export const MIN_COUNT = 10;
+const STACKS = 380; // le tas compte entre 285 et 380 liasses, quelle que soit la fortune : il remplit toujours son cadre
+const STEPS = [1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 6, 8]; // ce que vaut une liasse : un de ces nombres × 10ⁿ années de revenus
+const CELL = { w: 6, h: 4 }; // une liasse, en pixels
+const SEAT = 8; // largeur du sommet du tas, en liasses : de quoi asseoir le boss
+const SIDE = 22; // de chaque côté du tas : le héros à gauche, la caisse commune à droite
+const GROUND = 8;
+const SINK = 8; // le boss s'enfonce un peu dans son tas
 
-/** Les liasses du tas, de bas en haut : un trapèze assez large au sommet pour s'y asseoir. */
-function heap(count) {
-  const stacks = [];
-  for (let row = 0, width = 54; stacks.length < count && width >= 8; row++, width -= 2) {
-    for (let i = 0; i < width && stacks.length < count; i++) {
-      stacks.push({ x: W / 2 - (width * CELL.w) / 2 + i * CELL.w, y: GROUND - (row + 1) * CELL.h });
-    }
-  }
-  return stacks;
-}
+/**
+ * Le bouton qui mène au bilan du niveau : un slogan tiré au hasard. « On lâche rien ! », et des slogans courts
+ * réellement scandés en manif, recopiés tels quels de `content/pancartes/` (un test vérifie qu'ils y sont).
+ */
+export const SLOGANS = [
+  'On lâche rien !',
+  'ON EST LÀ, MÊME SI MACRON LE VEUT PAS',
+  'REJOIGNEZ-NOUS, NE NOUS REGARDEZ PAS',
+  'LES PETITS PAS, ÇA SUFFIT PAS',
+  'PARIS DEBOUT SOULÈVE-TOI !',
+  'AH, ANTI, ANTICAPITALISTE !',
+  'GRÈVER, C\'EST RÊVER GRAVE.',
+];
 
-function drawStack(ctx, x, y) {
-  ctx.fillStyle = '#1f6b4a';
-  ctx.fillRect(x, y, CELL.w - 1, CELL.h - 1);
-  ctx.fillStyle = '#38b764';
-  ctx.fillRect(x + 1, y, CELL.w - 3, CELL.h - 2);
-  ctx.fillStyle = '#f6c21c';
-  ctx.fillRect(x + 2, y + 1, 2, 1);
-}
-
-const billions = (euros) => frenchNumber(euros / 1e9, 1);
-/** Un grand nombre arrondi vers le bas à deux chiffres : 64 640 → « 64 000 », 247 → « 240 ». Jamais plus que le vrai. */
-export const round = (n) => {
-  const step = 10 ** Math.max(0, Math.floor(Math.log10(Math.max(1, n))) - 1);
-  return frenchNumber(Math.floor(n / step) * step);
-};
+export { round, money }; // arrondis vers le bas : voir `dom.js`
 /** Ce que vaut une fiche sur un an : sa valeur, douze fois si elle est donnée par mois (`par: mois`). */
 export const perYear = (fact) => fact.valeur * (fact.par === 'mois' ? 12 : 1);
+
+/** Ce que vaut une liasse, en années de revenus : le plus petit des nombres ronds qui garde le tas sous STACKS liasses. */
+export function stackYearsFor(years) {
+  for (let power = 0; power < 15; power++) {
+    for (const step of STEPS) {
+      const value = Math.round(step * 10 ** power * 10) / 10;
+      if (years / value <= STACKS) return value;
+    }
+  }
+  return Infinity;
+}
 
 /**
  * Les nombres de l'écran de taxe, sans rien dessiner.
@@ -56,21 +62,51 @@ export function taxNumbers(billionsOwned, scale, use = null, rent = []) {
   const fortune = billionsOwned * 1e9;
   const income = perYear(scale);
   const years = fortune / income;
-  const stackYears = STACK_YEARS.find((y) => years / y <= STACKS) ?? STACK_YEARS.at(-1);
+  const stackYears = stackYearsFor(years);
   const yearly = rent.length && rent.every((f) => f?.valeur) ? rent.reduce((total, f) => total * f.valeur, 1) : 0;
   const tax = fortune * RATE;
   return { fortune, income, years, stackYears, unit: income * stackYears, yearly, tax, count: use ? tax / perYear(use) : 0 };
 }
 
-const last = {}; // la dernière comparaison montrée de chaque sorte : on en change à la partie suivante
-/** Tire une comparaison au hasard, autre que la précédente s'il y a le choix. */
+/** Les exemples qu'on peut tirer pour cette fortune : ceux dont 2 % paient au moins MIN_COUNT. */
+export const usesFor = (bundle, billionsOwned) =>
+  taxUses(bundle).filter((use) => (billionsOwned * 1e9 * RATE) / perYear(use) >= MIN_COUNT);
+
+const last = {}; // le dernier tirage de chaque sorte : on en change à la partie suivante
+/** Tire au hasard dans une liste, autre chose que la fois précédente s'il y a le choix. */
 export function draw(kind, list, random = Math.random) {
-  const pool = list.length > 1 ? list.filter((f) => f.id !== last[kind]) : list;
+  const pool = list.length > 1 ? list.filter((f) => (f.id ?? f) !== last[kind]) : list;
   const pick = pool[Math.floor(random() * pool.length)];
-  last[kind] = pick?.id;
+  last[kind] = pick?.id ?? pick;
   return pick;
 }
-/** La ligne des sources : chaque nombre affiché renvoie à la page où il se lit. Une adresse n'y figure qu'une fois. */
+
+/**
+ * Les liasses du tas, de bas en haut : chaque rangée a une liasse de moins que celle du dessous, et le sommet
+ * reste assez large pour s'y asseoir. Le canvas est taillé sur le tas : agrandi, le tas remplit son cadre.
+ */
+export function heap(count) {
+  let base = SEAT;
+  for (let room = SEAT; room < count;) room += ++base;
+  const stacks = [];
+  for (let row = 0, width = base; stacks.length < count; row++, width--) {
+    const n = Math.min(width, count - stacks.length);
+    const left = SIDE + ((base - n) * CELL.w) / 2;
+    for (let i = 0; i < n; i++) stacks.push({ x: left + i * CELL.w, row });
+  }
+  return { stacks, width: 2 * SIDE + base * CELL.w, rows: (stacks.at(-1)?.row ?? 0) + 1 };
+}
+
+function drawStack(ctx, x, y, gold = false) {
+  ctx.fillStyle = gold ? '#c98f1e' : '#1f6b4a';
+  ctx.fillRect(x, y, CELL.w - 1, CELL.h - 1);
+  ctx.fillStyle = gold ? '#f6c21c' : '#38b764';
+  ctx.fillRect(x + 1, y, CELL.w - 3, CELL.h - 2);
+  ctx.fillStyle = gold ? '#fff3b0' : '#f6c21c';
+  ctx.fillRect(x + 2, y + 1, 1, 1);
+}
+
+/** Les sources d'une étape, en petit : le nom de chaque page, cliquable. Une adresse n'y figure qu'une fois. */
 function sourcesOf(facts) {
   const seen = new Set();
   const names = {};
@@ -79,8 +115,12 @@ function sourcesOf(facts) {
     names[name] = (names[name] || 0) + 1;
     return link(f.source.url, names[name] > 1 ? `${name} (${names[name]})` : name); // deux rapports d'une même maison
   });
-  return h('p', { className: 'source' }, links.length > 1 ? 'Sources : ' : 'Source : ', links.map((l, i) => [i > 0 && ' · ', l]));
+  return links.length ? h('small', { className: 'source' }, links.map((l, i) => [i > 0 && ' · ', l])) : null;
 }
+
+/** Une étape du récit : ce dont on parle, le grand nombre, une phrase, ses sources. */
+const step = (className, label, number, text, facts) => h('li', { className },
+  h('p', { className: 'etiquette' }, label), number, h('p', { className: 'phrase' }, text, ' ', sourcesOf(facts)));
 
 /**
  * @returns {Promise<{learned: string[], said: {caption: string, result: string} | null}>}
@@ -91,8 +131,7 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pi
     const fiche = (id) => bundle.fiches[id];
     // Le dictionnaire : à qui comparer la fortune, et ce que la taxe paierait. Tirés au hasard à chaque partie.
     const scale = pick('compare', taxScales(bundle));
-    const use = pick('finance', taxUses(bundle));
-    const shock = pick('choc', taxShocks(bundle));
+    const use = pick('finance', usesFor(bundle, boss.fortune.montant || 0));
     if (!boss.fortune.montant || !scale) return resolve({ learned: [], said: null });
     const estimate = fiche(boss.fortune.fiche); // d'où vient le montant de la fortune
     // Ce que la fortune rapporte en un an : un dividende par action multiplié par un nombre d'actions, chacun avec sa source.
@@ -101,44 +140,50 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pi
     const base = Math.round(fortune / unit);
     const gained = Math.round(yearly / unit);
     const taken = Math.max(1, Math.round(tax / unit));
-    const stacks = heap(base + gained);
-    const top = Math.min(...stacks.slice(0, base).map((s) => s.y));
+    const pile = heap(base + gained);
     const player = hero || Object.values(bundle.heros)[0];
+    const throne = sprite(boss.sprites.repos, bundle.palette, true);
+    const you = sprite(player.sprites.repos, bundle.palette);
+    const W = pile.width;
+    const H = GROUND + pile.rows * CELL.h + throne.height - SINK + 4;
+    const floor = H - GROUND;
+    const stacks = pile.stacks.map((s) => ({ x: s.x, y: floor - (s.row + 1) * CELL.h }));
+    const top = Math.min(...stacks.slice(0, base).map((s) => s.y));
+    const chest = { x: W - SIDE + 3, y: floor - 10, w: SIDE - 6, h: 10 }; // la caisse commune, à droite
 
-    const scene = h('canvas', { className: 'pixel tas', width: W, height: H });
+    const scene = h('canvas', { className: 'pixel', width: W, height: H });
     const ctx = scene.getContext('2d');
     const state = { rain: 0, fly: 0 }; // 0 → 1 : les dividendes tombent sur le tas, puis les 2 % s'en vont
-    const draw = () => {
+    const paint = () => {
       ctx.clearRect(0, 0, W, H);
       ctx.fillStyle = '#333c57';
-      ctx.fillRect(0, GROUND, W, 14);
+      ctx.fillRect(0, floor, W, GROUND);
+      const leavingFrom = stacks.length - taken;
       stacks.forEach((s, i) => {
-        const fresh = i >= base; // une liasse de dividendes : elle tombe du ciel
-        const leaving = i >= stacks.length - taken;
         let { x, y } = s;
-        if (fresh) {
+        if (i >= base) { // une liasse de dividendes : elle tombe du ciel
           const t = Math.min(1, Math.max(0, state.rain * 1.5 - ((i - base) / Math.max(1, gained)) * 0.5));
           if (t <= 0) return;
           y = -CELL.h + (s.y + CELL.h) * t * t;
         }
-        if (leaving && state.fly > 0) {
-          if (state.fly >= 1) return;
-          // les liasses prélevées s'envolent en cloche vers la caisse commune, à droite
+        const leaving = i >= leavingFrom && state.fly > 0;
+        if (leaving) {
+          // la part des 2 %, en or, s'envole en cloche vers la caisse commune et s'y range
           const t = Math.min(1, Math.max(0, state.fly * 1.6 - ((stacks.length - i) / taken) * 0.6));
-          x += (W - 30 - x) * t;
-          y += (H - 40 - y) * t - Math.sin(t * Math.PI) * 50;
+          const k = i - leavingFrom;
+          const to = { x: chest.x + 1 + (k % 2) * (CELL.w - 1), y: chest.y - CELL.h * (1 + Math.floor(k / 2)) + 2 };
+          x += (to.x - x) * t;
+          y += (to.y - y) * t - Math.sin(t * Math.PI) * 30;
         }
-        drawStack(ctx, x, y);
+        drawStack(ctx, Math.round(x), Math.round(y), leaving);
       });
-      const throne = sprite(boss.sprites.repos, bundle.palette, true);
-      ctx.drawImage(throne, Math.round(W / 2 - throne.width / 2), top - throne.height + 8);
-      const you = sprite(player.sprites.repos, bundle.palette);
-      ctx.drawImage(you, 14, GROUND - you.height);
+      ctx.drawImage(throne, Math.round(W / 2 - throne.width / 2), top - throne.height + SINK);
+      ctx.drawImage(you, 4, floor - you.height);
       if (state.fly > 0) {
         ctx.fillStyle = '#f6c21c';
-        ctx.fillRect(W - 44, H - 26, 30, 12);
+        ctx.fillRect(chest.x, chest.y, chest.w, chest.h);
         ctx.fillStyle = '#1a1c2c';
-        ctx.fillRect(W - 42, H - 24, 26, 2);
+        ctx.fillRect(chest.x + 2, chest.y + 2, chest.w - 4, 2);
       }
     };
     /** Fait passer `key` de 0 à 1 ; arrive à l'image finale même si l'onglet est en arrière-plan. */
@@ -146,64 +191,83 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pi
       const start = performance.now();
       const frame = (now) => {
         state[key] = Math.min(1, (now - start) / ms);
-        draw();
+        paint();
         if (state[key] < 1) requestAnimationFrame(frame);
       };
       requestAnimationFrame(frame);
       setTimeout(() => {
         state[key] = 1;
-        draw();
+        paint();
       }, ms + 200);
     };
 
-    const legend = h('p', { className: 'legende' },
-      h('i', { className: 'liasse' }), ` une liasse : ${frenchNumber(stackYears)} ans de revenus d’${scale.compare}`);
-    const rule = fiche('impot-plancher');
-    const owner = boss.inspiration ? `la famille de ${boss.inspiration}` : boss.nom;
+    const owner = boss.inspiration ? `la famille ${de(boss.inspiration)}` : boss.nom;
     const under = yearly > tax; // 2 % pèsent moins que ce que la fortune rapporte en un an
+    const rule = fiche('impot-plancher');
+    const [most, billionaires] = TAX_RATES.map(fiche);
 
-    // Avant de taxer : la fortune, son échelle, ce qu'elle rapporte.
-    const title = h('p', { className: 'montant' }, `${billions(fortune)} milliards d’euros`);
-    const line = h('p', { className: 'gros' }, `La fortune de ${owner} : ${round(years)} ans de revenus d’${scale.compare}.`);
-    const before = h('div', { className: 'detail' },
-      yearly > 0 && h('p', { className: 'qui' }, `Rien qu’en dividendes, elle rapporte ${billions(yearly)} milliards par an.`), legend);
-    // Après : ce que 2 % paieraient (au plus : l'impôt est différentiel), et un fait frappant.
-    const result = use ? `${round(count)} ${use.finance}` : `Au plus ${billions(tax)} milliards par an`;
+    // La légende, sous le tas : ce que vaut une liasse ; après la taxe, ce que sont les liasses d'or.
+    const goldKey = h('span', { className: 'cle', hidden: true }, h('i', { className: 'liasse or' }), ' 2 % par an');
+    const legend = h('figcaption', { className: 'legende' },
+      h('span', { className: 'cle' }, h('i', { className: 'liasse' }), ` 1 liasse = ${frenchNumber(stackYears, stackYears % 1 ? 1 : 0)} ${plural(stackYears, 'an', 'ans')} de revenus ${de(scale.compare)}`),
+      goldKey);
+    const figure = h('figure', { className: 'tas' }, scene, legend);
+
+    // 1. Sa fortune.
+    const first = step('fortune', `La fortune ${de(owner)}`, h('p', { className: 'montant' }, `${billions(boss.fortune.montant)} d’euros`),
+      [`${round(years)} ans de revenus ${de(scale.compare)}.`, yearly > 0 && ` Rien qu’en dividendes, elle rapporte ${money(yearly)} par an.`],
+      [estimate, scale, ...(yearly > 0 ? rent : [])]);
+    // 2. Taxée à 2 % : au plus, puisque l'impôt est différentiel.
+    const second = step('impot', 'Taxée à 2 % par an', h('p', { className: 'nombre' }, money(tax)),
+      [`Au plus : on déduit les impôts déjà payés sur ses revenus.`, under && ' Moins que ses dividendes.'], [rule]);
+    // 3. Ce que ça paierait.
+    const result = use ? `${round(count)} ${use.finance}` : `Au plus ${money(tax)} par an`;
+    const third = use && step('paie', 'Ce que ça paierait', h('p', { className: 'nombre' }, h('b', {}, round(count)), ` ${use.finance}`),
+      `${use.ponctuel ? 'En un an' : 'Chaque année'}, au plus.`, [use]);
+    // 4. Ce que chacun paie déjà : les deux taux, côte à côte.
+    const bar = (label, fact) => h('p', { className: 'barre' }, h('span', {}, label),
+      h('i', { style: `--part: ${fact.valeur}` }), h('b', {}, `${fact.valeur} %`));
+    const fourth = most && billionaires && step('juste', 'Ce que chacun paie déjà',
+      h('div', { className: 'barres' }, bar('Presque tout le monde', most), bar('Les milliardaires', billionaires)),
+      'Tous impôts et cotisations compris, en part du revenu, en 2016.', [most, billionaires]);
+    const after = [second, third, fourth].filter(Boolean);
+    after.forEach((li, i) => {
+      li.hidden = true;
+      li.style.setProperty('--rang', i);
+    });
+
     // L'image à partager garde la réserve de l'écran : « jusqu'à », puisque l'impôt est différentiel.
-    const said = { result, caption: use ? `2 % de la fortune de ${owner}, ${use.ponctuel ? 'en un an' : 'chaque année'}, c’est jusqu’à :` : `2 % de la fortune de ${owner} :` };
-    const after = h('div', { className: 'detail apres', hidden: true },
-      h('p', { className: 'resultat' }, result),
-      h('p', { className: 'qui' }, use
-        ? `Ce que paieraient 2 % de cette fortune${use.ponctuel ? ' en un an' : ', chaque année'} : au plus ${billions(tax)} milliards${under ? ', moins que ses dividendes' : ''}.`
-        : `2 % de cette fortune${under ? ' : moins que ses dividendes' : ''}.`),
-      shock && h('article', { className: 'choc' }, h('b', {}, shock.titre), h('p', {}, shock.texte)));
-    const source = h('div', {}, sourcesOf([estimate, scale, ...(yearly > 0 ? rent : [])]));
-    const button = h('button', { type: 'button', className: 'gros' }, 'Taxer 2 %');
-    const panel = h('section', { className: 'panneau taxe' }, title, line, scene, before, after, source, h('div', { className: 'pied' }, button));
+    const said = { result, caption: use ? `2 % de la fortune ${de(owner)}, ${use.ponctuel ? 'en un an' : 'chaque année'}, c’est jusqu’à :` : `2 % de la fortune ${de(owner)} :` };
+    const button = h('button', { type: 'button', className: 'gros' }, 'Taxer les riches');
+    const story = h('div', { className: 'recit' }, h('ol', { className: 'etapes' }, first, after), h('div', { className: 'pied' }, button));
+    const panel = h('section', { className: 'panneau taxe' }, figure, story);
     let taxed = false;
     button.onclick = () => {
       audio?.play('clic');
       if (taxed) {
         root.replaceChildren();
         root.hidden = true;
-        return resolve({ learned: taxFiches(bundle, boss, [scale, use, shock].filter(Boolean)), said });
+        return resolve({ learned: taxFiches(bundle, boss, [scale, use].filter(Boolean)), said });
       }
       taxed = true;
       audio?.play('tampon');
       audio?.play('sauvetage');
       state.rain = 1;
       animate('fly', 1300);
-      panel.classList.add('faite'); // même écran : le tas se fait petit, le résultat prend la place
-      before.hidden = true;
-      after.hidden = false;
-      source.replaceChildren(sourcesOf([estimate, scale, ...(yearly > 0 ? rent : []), use, rule, shock]));
-      button.textContent = 'Continuer';
+      panel.classList.add('faite'); // même écran : le récit continue sous la fortune
+      after.forEach((li) => { li.hidden = false; });
+      goldKey.hidden = false;
+      // Le bouton suivant mène au bilan du niveau : un slogan de manif, tiré au hasard.
+      const slogan = pick('slogan', SLOGANS);
+      const line = bundle.pancartes?.find((p) => p.texte === slogan);
+      button.textContent = slogan;
+      if (line) button.title = line.credit.split(' — ')[0];
     };
 
     root.replaceChildren(panel);
     document.body.dataset.ecran = 'taxe';
     root.hidden = false;
-    draw();
+    paint();
     if (yearly) setTimeout(() => animate('rain', 1000), 500);
     button.focus({ preventScroll: true });
   });
