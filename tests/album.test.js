@@ -14,7 +14,7 @@ test('débloqué dans le niveau : les clés de sauvegarde retrouvent leurs carte
   const sign = bundle.pancartes.find((p) => p.credit && p.texte.includes(':')) || bundle.pancartes.find((p) => p.credit);
   const keys = [`pancartes:${sign.texte}`, 'ennemis:crs', 'heros:zucman', 'heros:inconnu', 'fiches:smic'];
   const found = cardsByKeys(bundle, keys);
-  assert.deepEqual(found.map(cardKey), ['heros:zucman', 'ennemis:crs', `pancartes:${sign.texte}`, 'fiches:smic']);
+  assert.deepEqual(found.map(cardKey), ['heros:zucman', `pancartes:${sign.texte}`, 'ennemis:crs', 'fiches:smic']);
   assert.deepEqual(cardsByKeys(bundle, []), []);
   assert.equal(new Set(cards.map(cardKey)).size, cards.length, 'une clé par carte');
 });
