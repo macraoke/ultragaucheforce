@@ -155,6 +155,7 @@ export class Renderer {
     this.crowd = game.crowd || 0;
     this.heroBox = game.hero;
     this.boxes = []; // les pancartes déjà posées à cette image : aucune ne recouvre l'autre
+    this.backRows = game.level?.murs;
     this.backWalls(game, cx, cy);
     for (const d of game.decors) if (!this.bundle.decors[d.id]?.devant) this.decor(d);
     for (const e of game.enemies) if (e.beam) this.beam(e);
@@ -248,6 +249,7 @@ export class Renderer {
 
   tiles(world, cx, cy) {
     const { ctx } = this;
+    const back = this.backRows;
     const x0 = Math.max(0, Math.floor(cx / TILE));
     const y0 = Math.max(0, Math.floor(cy / TILE));
     const x1 = Math.min(world.w - 1, Math.floor((cx + this.viewW) / TILE));
@@ -260,7 +262,9 @@ export class Renderer {
         const x = tx * TILE - cx;
         const y = ty * TILE - cy;
         ctx.drawImage(sprite(def.sprites.image, this.palette), x, y);
-        if (def.id === 'terre' && (ty === 0 || !world.tiles[(ty - 1) * world.w + tx])) {
+        // L'herbe ne pousse qu'à ciel ouvert : pas au fond d'une cave (là où il y a un mur du fond au-dessus).
+        const cellar = back?.[ty - 1]?.[tx] && back[ty - 1][tx] !== '.';
+        if (def.id === 'terre' && !cellar && (ty === 0 || !world.tiles[(ty - 1) * world.w + tx])) {
           ctx.fillStyle = '#38b764';
           ctx.fillRect(x, y, TILE, 3);
           ctx.fillStyle = '#a7f070';
