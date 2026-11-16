@@ -29,6 +29,7 @@ const FADE = 0.25; // secondes pour qu'un texte flottant évincé s'efface
 const MIN_TEXT = 11; // taille d'un texte du monde à l'écran, en pixels CSS, au moins : lisible sur téléphone
 const SIGN_UP = 1; // une pancarte levée le reste au moins une seconde…
 const SIGN_DOWN = 0.5; // … et une pancarte baissée attend une demi-seconde avant de se relever
+const SIGN_GAP = 18; // pixels du jeu libres de chaque côté, au moins, entre une pancarte qui se lève et ses voisines levées
 const NEAR_HERO = 14; // un manifestant plus près que cela du héros passe en transparence
 const REC = '● REC'; // le cadre de la caméra l'affiche déjà : pas de bulle en double
 const SIGN_TURN = 6; // secondes d'un tour : les porteurs lèvent leur pancarte à tour de rôle…
@@ -1214,7 +1215,9 @@ export class Renderer {
     // Pour se relever, une pancarte veut de l'air autour des textes prioritaires, surtout en dessous
     // (le héros bouge, les textes flottants montent) : sinon elle retomberait aussitôt.
     const free = (box) => !drifting.some((b) => box.x0 < b.x1 && box.x1 > b.x0 && box.y0 < b.y1 && box.y1 > b.y0);
-    const roomy = (box) => clear({ x0: box.x0 - 12, x1: box.x1 + 12, y0: box.y0 - 6, y1: box.y1 + 18 }, priority) && clear(box) && free(box);
+    // Et de l'air sur les côtés des pancartes déjà levées (SIGN_GAP) : quand le cortège piétine, elles ne se touchent pas.
+    const roomy = (box) => clear({ x0: box.x0 - 12, x1: box.x1 + 12, y0: box.y0 - 6, y1: box.y1 + 18 }, priority)
+      && !this.boxes.slice(priority).some((b) => box.x0 - SIGN_GAP < b.x1 && box.x1 + SIGN_GAP > b.x0 && box.y0 < b.y1 && box.y1 > b.y0) && free(box);
     const up = [];
     const keep = (sign, ok) => {
       if (ok) {
@@ -1224,13 +1227,12 @@ export class Renderer {
         up.push(sign.box);
       } else if (sign.held.up) Object.assign(sign.held, { up: false, since: now });
     };
-    // Celles levées depuis peu ne cèdent qu'aux textes prioritaires ; les plus anciennes ensuite ;
-    // les baissées depuis assez longtemps se relèvent là où il reste de la place.
-    const young = signs.filter((s) => s.held.up && now - s.held.since < SIGN_UP);
-    const old = signs.filter((s) => s.held.up && now - s.held.since >= SIGN_UP).sort((a, b) => a.held.since - b.held.since);
+    // Les levées, de la plus ancienne à la plus récente : chacune reste levée si rien de déjà placé ne la recouvre
+    // (deux pancartes qui se croisent : la dernière levée se baisse) ; celles levées depuis peu, même hors de leur tour.
+    // Puis les baissées depuis assez longtemps se relèvent là où il reste de la place.
+    const raised = signs.filter((s) => s.held.up).sort((a, b) => a.held.since - b.held.since);
     const down = signs.filter((s) => !s.held.up && now - s.held.since >= SIGN_DOWN);
-    for (const s of young) keep(s, clear(s.box, priority));
-    for (const s of old) keep(s, s.turn && clear(s.box));
+    for (const s of raised) keep(s, (s.turn || now - s.held.since < SIGN_UP) && clear(s.box));
     for (const s of down) keep(s, s.turn && roomy(s.box));
     this.raised = new Set(signs.filter((s) => s.held.up).map((s) => s.m));
     return up;

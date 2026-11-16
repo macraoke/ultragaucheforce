@@ -172,6 +172,34 @@ test('une pancarte levée le reste une seconde ; baissée, elle attend une demi-
   assert.ok([...history].some(([m, seen]) => m.kind === 'pancarte' && seen.at(-1)), 'des pancartes restent levées');
 });
 
+test('deux pancartes levées ne se recouvrent jamais, même dans leur première seconde : quand elles se croisent, la dernière levée se baisse', () => {
+  const r = renderer();
+  r.viewW = 600;
+  const cortege = crowd(7); // porteurs 0, 3 et 6 ; 0 et 6 sur la même rangée
+  const [first, , , , , , last] = cortege;
+  cortege[3].x = 2000; // hors de l'image
+  const raisedBoxes = () => cortege.filter((m) => r.raised.has(m)).map((m) => {
+    const s = r.spot(m, cortege.indexOf(m));
+    return r.textBox(m.label, s.hand, s.top, 4.6, s.width);
+  });
+  last.x = 2000;
+  r.clock = 0;
+  r.boxes = [];
+  r.raiseSigns(cortege);
+  assert.ok(r.raised.has(first));
+  // L'autre arrive de loin, se lève, puis traverse la première, dans sa première seconde comme dans la sienne.
+  for (let frame = 1; frame < 60; frame++) {
+    r.clock = frame / 60;
+    last.x = 400 - frame * 6;
+    r.boxes = [];
+    r.raiseSigns(cortege);
+    if (frame === 1) assert.ok(r.raised.has(last), 'elle se lève');
+    const boxes = raisedBoxes();
+    assert.ok(boxes.every((a, k) => boxes.slice(k + 1).every((b) => !overlap(a, b))), `image ${frame} : deux pancartes l’une sur l’autre`);
+    assert.ok(r.raised.has(first), `image ${frame} : la première levée reste levée`);
+  }
+});
+
 test('devant le héros, une pancarte se baisse tout de suite', () => {
   const r = renderer();
   const cortege = crowd(1);
