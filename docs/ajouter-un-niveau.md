@@ -54,7 +54,7 @@ Déposé dans `content/niveaux/`, il devient une étape du plan de campagne, à 
 | `auteur` | votre pseudo, pour le crédit |
 | `citation` | la vraie déclaration qui ouvre le niveau (un fichier de `content/citations/`) |
 | `fiche` | un fait sourcé de `content/fiches/` ; répétable ; la première s'affiche à la fin du niveau |
-| `accroche` | une phrase sous le titre |
+| `accroche` | une phrase courte et factuelle sur le lieu, sans sermon : elle s'affiche sur le plan de campagne, sur le carton d'ouverture et sur la carte du lieu dans la Collection |
 | `fond` | `campagne`, `ville` ou `citadelle` |
 | `cortege` | `oui` : la manif suit le héros |
 | `manif` | combien de manifestants au départ (10 avec un cortège, sauf indication ; 5000 au plus) |
