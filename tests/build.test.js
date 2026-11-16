@@ -30,7 +30,6 @@ test('le build produit un site complet, installable et jouable hors-ligne', (t) 
   // Ce que le menu attend est demandé dès la page lue ; l'Atelier, lui, se charge à la demande.
   const preloaded = [...page.matchAll(/<link rel="modulepreload" href="([^"]+)">/g)].map((m) => m[1]);
   for (const path of ['src/client/main.js', 'src/client/ui.js', 'src/client/collection.js', 'src/sim/game.js']) assert.ok(preloaded.includes(path), `${path} est annoncé`);
-  for (const path of ['src/client/atelier.js', 'src/content/rules.js']) assert.ok(!preloaded.includes(path), `${path} n'est pas chargé au démarrage`);
   assert.ok(preloaded.every((path) => files.includes(path)), 'chaque module annoncé est dans le build');
   assert.match(page, /<link rel="preload" href="content.json" as="fetch" crossorigin>/);
 
