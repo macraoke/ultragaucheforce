@@ -34,10 +34,11 @@ function fit(card, scene, words) {
 /**
  * @param {object} bundle  le contenu du jeu
  * @param {object} hero    une fiche de `bundle.heros`
- * @param {{audio?: object, reduced?: boolean, rescued?: boolean}} options
+ * @param {{audio?: object, reduced?: boolean, rescued?: boolean, onClose?: () => void}} options
+ *        `onClose` : appelé quand le carton commence à s'effacer, juste avant de laisser revoir le jeu
  * @returns {Promise<void>} résolue quand le carton est fermé
  */
-export function showHeroCard(bundle, hero, { audio = null, reduced = false, rescued = true } = {}) {
+export function showHeroCard(bundle, hero, { audio = null, reduced = false, rescued = true, onClose = null } = {}) {
   return new Promise((resolve) => {
     const card = el('div', `carton${reduced ? ' sobre' : ''}`);
     card.setAttribute('role', 'dialog');
@@ -111,6 +112,7 @@ export function showHeroCard(bundle, hero, { audio = null, reduced = false, resc
     function close() {
       if (closed) return;
       closed = true;
+      onClose?.();
       timers.forEach(clearTimeout);
       removeEventListener('keydown', onKey, true);
       card.classList.add('sort');

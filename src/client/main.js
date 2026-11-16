@@ -257,9 +257,12 @@ function handle(events) {
       const hero = bundle.heros[e.hero];
       collect('heros', hero.id, true);
       collectCortege(); // les soutiens venus avec le camarade libéré
-      // Le grand carton joue à chaque libération.
+      // Le grand carton joue à chaque libération. Il est opaque : le monde n'est pas redessiné dessous,
+      // sauf une fois quand il s'efface, tel que le joueur va le retrouver (caméra arrivée, panneau passé).
       setMode('card');
-      showHeroCard(bundle, hero, { audio, reduced: save.options.sobre }).then(() => {
+      const opened = performance.now();
+      const onClose = () => renderer.draw(game, (performance.now() - opened) / 1000);
+      showHeroCard(bundle, hero, { audio, reduced: save.options.sobre, onClose }).then(() => {
         if (mode !== 'card') return;
         setMode('playing');
         if (game.level.cortege) audio.play('slogan'); // le cortège salue le camarade libéré
@@ -299,7 +302,7 @@ function frame(now) {
   renderer.device = input.device;
   hud.device = input.device;
   if (!demo) placeSign();
-  renderer.draw(game, dt);
+  if (mode !== 'card') renderer.draw(game, dt); // sous le carton de héros, opaque, rien à redessiner (voir `handle`)
   if (!demo) hud.update(game);
 }
 
