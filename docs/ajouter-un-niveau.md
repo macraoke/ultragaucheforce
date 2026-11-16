@@ -1,15 +1,19 @@
 # Ajouter un niveau
 
-Un fichier texte : un en-tête, puis une carte où un caractère vaut une case.
+On le dessine dans le jeu, on l'essaie, on le propose. Le niveau lui-même est un fichier texte : un en-tête, puis une carte où un caractère vaut une case.
 
 ## Le plus simple : l'Atelier
 
 1. Dans le jeu, ouvrez **Atelier**.
-2. Modifiez le modèle. Les erreurs s'affichent au fil de la frappe, ligne et colonne comprises.
-3. **Tester** lance votre niveau tout de suite.
-4. **Proposer sur GitHub** ouvre la page de création du fichier, déjà remplie. Niveau trop long pour un lien ? Il est copié : collez-le dans la page qui s'ouvre.
+2. Choisissez dans la palette (Terrain, Repères, En face, La manif, Décors), puis peignez : un toucher pose, un glissé trace. Il y a une gomme, un rectangle, et une case « Mur du fond ».
+3. La carte s'agrandit par ses quatre côtés, jusqu'à 400 × 60. L'en-tête s'écrit tout seul.
+4. **Tester** lance votre niveau tout de suite. S'il manque quelque chose, l'Atelier le dit en une phrase et montre la case.
+5. **Proposer** ouvre la page GitHub de création du fichier, déjà remplie. Niveau trop long pour un lien ? Il est copié : collez-le dans la page qui s'ouvre.
 
-Sans l'Atelier : créez `content/niveaux/mon-niveau.txt` (voir [CONTRIBUER.md](../CONTRIBUER.md)).
+> [!NOTE]
+> Le bouton **Texte** montre la fiche du niveau. C'est là que se règlent les clés que la palette ne couvre pas (`citation`, `fiche`, `accroche`, `heros`, `camarades`, `musique`, `manif`, `nasse.*`).
+
+Sans l'Atelier : créez `content/niveaux/mon-niveau.txt` (voir [CONTRIBUTING.md](../CONTRIBUTING.md)).
 
 ## Un niveau complet
 
@@ -80,6 +84,7 @@ Le niveau devient une carte de la Collection, avec sa citation et ses fiches.
 | `S` | sortie : le camion-sono (au moins une ; il occupe la case du `S` et les deux à sa droite) |
 | `K` | camarade en garde à vue : le libérer donne une vie, change de héros et amène 20 personnes |
 | `Q` | piquet de grève : point de reprise, et 10 personnes de plus |
+| `E` | pancarte à ramasser : le jeu en tire une de `content/pancartes/`, d'abord une que le joueur n'a pas |
 | `Y` | boss |
 | `N` | nasse : deux lignes se referment quand le héros passe ici |
 | `1` à `9` | panneau |
@@ -150,19 +155,21 @@ Au même endroit, c'est toujours la même pancarte. Modèles : [`banderole`](../
 
 ## Conseils de construction
 
-- **Posez le sol sur du socle** (`O`) : une rangée de terre ou de pavé, puis du socle dessous. On peut alors creuser sans tomber dans le vide ni rester coincé.
+- **Du sol épais** : plusieurs rangées de terre, de pavé ou de pierre, et deux rangées de socle (`O`) tout en bas. On creuse partout, on ne tombe jamais dans le vide.
+- **Des étages et des sous-sols** : un bâtiment à planchers, une cave, une galerie. Le héros tire devant lui, et aussi vers le bas ou vers le haut quand il ne bouge pas : c'est ainsi qu'il creuse.
+- **Récompensez qui explore** : une pancarte (`E`), un camarade (`K`), une assemblée générale, sur un toit ou au fond d'une galerie.
+- **Un mur du fond derrière chaque cavité** : sans lui, on voit le ciel à travers le sol.
 - **Tout mur se grimpe** en sautant plusieurs fois contre lui. Évitez seulement un surplomb d'acier au-dessus d'un mur à escalader.
 - Pas de trou de plus de quatre cases de large.
-- Le héros tire à l'horizontale : placez ce qui doit être détruit à sa hauteur, ou près d'un tonneau.
-- Écartez les tonneaux de deux cases : assez près pour la réaction en chaîne, assez loin pour qu'on la voie.
+- Écartez les tonneaux de deux cases : assez près pour la réaction en chaîne, assez loin pour qu'on la voie. Un tonneau ouvre le sol sur deux rangées : une cave juste dessous devient un raccourci.
 - **Des recrues sur le chemin au sol** avant chaque ligne : le robot joueur ne monte pas les chercher.
-- En hauteur, ce qui récompense : une assemblée générale, un camarade à libérer.
+- Une ligne (barrage, grille) se contourne par-dessous si le sol se creuse. Pour qu'elle ne cède qu'au nombre, posez-la sur du socle.
 - Trois à six minutes suffisent : un sauvetage, une ligne à déborder, un passage à casser, la sortie.
 - Un panneau, c'est un conseil en quelques mots.
 
 ## Les murs du fond (facultatif)
 
-Pour qu'un bâtiment ait un intérieur, ajoutez après la carte une section `--- murs`, de la même taille : les tuiles qu'on y dessine s'affichent assombries, derrière l'action, sans collision. Les niveaux de la campagne s'en servent pour la grange, le métro ou la Citadelle.
+Pour qu'un bâtiment ait un intérieur, ou une cave un fond, cochez « Mur du fond » dans l'Atelier. Dans le fichier, c'est une section `--- murs` après la carte, de la même taille : les tuiles qu'on y dessine s'affichent assombries, derrière l'action, sans collision. Les niveaux de la campagne s'en servent pour la grange, le métro ou la Citadelle.
 
 ```text
 --- murs

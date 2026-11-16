@@ -1,7 +1,7 @@
 blank_issues_enabled: true
 contact_links:
   - name: Comment contribuer
-    url: https://github.com/macraoke/ultragaucheforce/blob/main/CONTRIBUER.md
+    url: https://github.com/macraoke/ultragaucheforce/blob/main/CONTRIBUTING.md
     about: Tout est en fichiers texte, sans rien installer.
   - name: La charte
     url: https://github.com/macraoke/ultragaucheforce/blob/main/CHARTE.md

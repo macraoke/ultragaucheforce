@@ -5,7 +5,9 @@ Une ligne de texte, et c'est dans le jeu. Le jeu n'affiche que du vrai : ce qui 
 - Une **pancarte** vue en manif, un **slogan** scandé : [`content/pancartes/`](../content/pancartes). Le cortège les brandit, les banderoles et les tags les reprennent.
 - Un **bandeau** de chaîne d'info : [`content/manchettes/`](../content/manchettes). PANIQUE TV le diffuse en alerte quand la panique monte.
 
-Chacune devient une carte de la Collection, rayons « Pancartes » et « Vu à la télé » : on la trouve en la croisant dans le jeu.
+Chacune devient une carte de la Collection, rayons « Pancartes » et « Vu à la télé ». Le joueur la gagne en la croisant : dans le cortège, sur une banderole, ou en ramassant une pancarte posée dans un niveau.
+
+Chaque ligne a une **rareté** : commune, rare, épique ou légendaire. Elle se tire de son texte, vous n'avez rien à régler. Les plus rares sortent moins souvent.
 
 ## Comment
 
@@ -27,8 +29,6 @@ Une ligne du jeu :
 TU NOUS METS 64 ANS, ON TE MAI 68 | vue à Paris, mars 2023 — https://www.carenews.com/news/reforme-des-retraites-a-la-manifestation-du-7-mars-les-jeunes-interrogent-la-place-du-travail
 ```
 
-Sans crédit après la barre verticale, la ligne n'entre pas dans la Collection.
-
 ## Une pancarte, un slogan
 
 <!-- fichier: content/pancartes/camille.txt -->
@@ -41,7 +41,7 @@ LE SLOGAN TEL QU'IL EST SCANDÉ | scandé à Paris, sept. 2025 — https://adres
 - En majuscules, mot pour mot, comme la source le rapporte.
 - « vue à … » pour une pancarte, « scandé à … » pour un slogan : la ville, le mois, l'année.
 - La source : un article ou un reportage que vous avez lu. Pas une image qui circule.
-- Jusqu'à 26 caractères, le cortège la porte ; jusqu'à 24, elle va aussi sur les banderoles et les tags. Plus longue, elle vit dans la Collection.
+- Courte (26 caractères au plus), le cortège la porte ; plus longue, elle se ramasse dans un niveau.
 
 Une recrue peut la reprendre : clé `slogan` de [sa fiche](ajouter-un-personnage.md#une-recrue).
 

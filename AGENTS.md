@@ -44,7 +44,7 @@ Node 22. Aucune dépendance, aucune étape de build pour jouer.
 - Chaque fiche devient une carte de la Collection (`src/client/collection.js`) : `citation`, `fiche` et `origine` font son texte.
 - Une mécanique se change dans `src/sim/behaviors.js` : réglages déclarés et bornés, un test, sa ligne dans `docs/ajouter-un-personnage.md`.
 - Identifiants en anglais ; commentaires, contenu et docs en français.
-- Le format : `CONTRIBUER.md`. Les clés de chaque fiche : `docs/`. En cas de doute, `src/content/rules.js` fait foi.
+- Le format : `CONTRIBUTING.md`. Les clés de chaque fiche : `docs/`. En cas de doute, `src/content/rules.js` fait foi.
 - Ce qui entre ou non dans le jeu : `CHARTE.md`.
 
 ## N'inventez jamais une source

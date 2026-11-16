@@ -1,13 +1,16 @@
 # Contribuer
 
-Ici, on ajoute une pancarte comme on ajoute un niveau : en écrivant un fichier texte. Pas de code, rien à installer.
+Ici, on ajoute une pancarte comme on ajoute un niveau : sans code, sans rien installer.
+
+> [!TIP]
+> Le plus court chemin : [une pancarte vue en manif](docs/ajouter-une-blague.md), une ligne de texte. Ou un niveau, dessiné dans l'Atelier du jeu.
 
 | Je veux… | Où | Guide |
 |---|---|---|
 | lancer une idée | [une issue](https://github.com/macraoke/ultragaucheforce/issues/new/choose) | |
 | une pancarte vue en manif, un slogan scandé | `content/pancartes/` | [pancarte ou bandeau](docs/ajouter-une-blague.md) |
 | un bandeau vu sur une chaîne d'info | `content/manchettes/` | [pancarte ou bandeau](docs/ajouter-une-blague.md) |
-| un niveau | l'Atelier du jeu, puis `content/niveaux/` | [niveau](docs/ajouter-un-niveau.md) |
+| un niveau | l'Atelier du jeu : on le dessine, on l'essaie, on le propose | [niveau](docs/ajouter-un-niveau.md) |
 | un héros, une recrue, une unité d'en face, un boss | `content/heros/`, `content/recrues/`, `content/ennemis/`, `content/boss/` | [personnage](docs/ajouter-un-personnage.md) |
 | un décor | `content/decors/` | [niveau](docs/ajouter-un-niveau.md#un-décor) |
 | un drapeau | `content/drapeaux/` | [drapeau](docs/ajouter-un-drapeau.md) |
@@ -46,7 +49,7 @@ Sur la carte d'un personnage ou d'un lieu, trois clés font le texte :
 | `fiche` | un fait sourcé de `content/fiches/` ; répétable |
 | `origine` | une phrase, s'il reste quelque chose à dire |
 
-Une pancarte, un slogan ou un bandeau porte sa source sur sa ligne : `TEXTE | où et quand — lien`.
+Une pancarte, un slogan ou un bandeau porte sa source sur sa ligne : `TEXTE | où et quand — lien`. Sa rareté (commune, rare, épique, légendaire) se tire de son texte : rien à régler.
 
 ## Proposer depuis GitHub
 

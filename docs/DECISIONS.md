@@ -96,6 +96,15 @@ Le public visé est autant la classe moyenne que les jeunes.
 - **On choisit son héros** parmi ceux de la Collection ; chaque camarade libéré vaut une vie de plus.
 - **La Collection se joue** : cartes à retourner, « Nouveau », progression par rayon, cartes gagnées en fin de niveau.
 
+## Itération 4
+
+- **Des niveaux en hauteur et en profondeur** : sol épais qu'on creuse partout, galeries, caves, métro, immeubles à étages. Le héros tire aussi vers le bas et vers le haut.
+- **Les pancartes se collectionnent** : toutes se valent, avec ou sans source ; chacune a une rareté tirée de son texte ; on en ramasse dans les niveaux.
+- **Les vies sont des personnages** : chaque camarade libéré rejoint la pile ; quand le héros tombe, le suivant prend sa place.
+- **Des écrans courts** : un écran, une idée ; ce qui précise se déplie. Une citation est simplement signée, et sa signature mène à la source.
+- **Les 2 % en trois idées** : rien pour lui, juste par rapport aux autres, de quoi financer beaucoup.
+- **L'Atelier se dessine** : une palette d'images, on peint, on essaie.
+
 ## Hors-ligne : seulement dans la version construite
 
 `npm run build` ajoute le service worker, les icônes et le contenu assemblé. En développement, aucun cache.
