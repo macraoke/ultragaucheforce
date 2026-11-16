@@ -429,11 +429,12 @@ test('toutes les pistes échouent (API de SoundCloud en panne) : injoignable ; a
 /** Un hasard à graine, pour des tirages nombreux et reproductibles. */
 const seeded = (seed) => () => ((seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648);
 
-test('au boss, au hasard : Monarch ou AGGRESSIVE FOMO ; Ryukken toujours après Monarch, jamais tirée', async () => {
+test('au boss, au hasard : Monarch, AGGRESSIVE FOMO ou « coupé cassé » ; Ryukken toujours après Monarch, jamais tirée', async () => {
   // Décision de Valentin, 16 novembre 2026 : « Au hasard, Ryukken après Monarch ».
   const monarch = bundle.musiques['abattez-la-citadelle'];
   const ryukken = bundle.musiques['abattez-la-citadelle-ryukken'];
   const fomo = bundle.musiques['aggressive-fomo'];
+  const coupe = bundle.musiques['abattez-la-citadelle-coupe'];
   assert.equal(monarch.puis, ryukken.id);
   const random = seeded(7);
   const count = new Map();
@@ -441,8 +442,10 @@ test('au boss, au hasard : Monarch ou AGGRESSIVE FOMO ; Ryukken toujours après 
     const t = chooseTrack(real, { slot: 'boss', random });
     count.set(t.id, (count.get(t.id) || 0) + 1);
   }
-  assert.ok(count.get(monarch.id) > 300, `Monarch : ${count.get(monarch.id)} sur 1000`);
-  assert.ok(count.get(fomo.id) > 300, `AGGRESSIVE FOMO : ${count.get(fomo.id)} sur 1000`);
+  assert.ok(count.get(monarch.id) > 250, `Monarch : ${count.get(monarch.id)} sur 1000`);
+  assert.ok(count.get(fomo.id) > 250, `AGGRESSIVE FOMO : ${count.get(fomo.id)} sur 1000`);
+  assert.ok(count.get(coupe.id) > 250, `coupé cassé : ${count.get(coupe.id)} sur 1000`);
+  assert.ok(!coupe.puis); // pas de suite
   assert.equal(count.get(ryukken.id) || 0, 0); // jamais tirée au hasard
   // Dans la Radio : à chaque arrivée au boss tirée sur Monarch, Ryukken suit son extrait.
   let monarchs = 0;
@@ -451,7 +454,7 @@ test('au boss, au hasard : Monarch ou AGGRESSIVE FOMO ; Ryukken toujours après 
     await s.on();
     s.radio.play('boss');
     const first = s.radio.current;
-    assert.ok(first === monarch || first === fomo, first.id);
+    assert.ok(first === monarch || first === fomo || first === coupe, first.id);
     if (first !== monarch) continue;
     monarchs++;
     s.ready();
@@ -464,7 +467,7 @@ test('au boss, au hasard : Monarch ou AGGRESSIVE FOMO ; Ryukken toujours après 
     assert.notEqual(s.radio.current, ryukken);
     assert.equal(s.radio.current.ou, 'boss');
   }
-  assert.ok(monarchs > 50 && monarchs < 150, `Monarch : ${monarchs} arrivées au boss sur 200`);
+  assert.ok(monarchs > 35 && monarchs < 100, `Monarch : ${monarchs} arrivées au boss sur 200`);
 });
 
 test('l’extrait de Monarch ne se charge pas : la version de Ryukken prend sa place', async () => {
