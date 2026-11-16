@@ -10,7 +10,6 @@ fin: greve
 largeur: 10
 hauteur: 16
 fiche: raid-emeutes-2023
-ecriteau: CODE 562
 auteur: UltraGauche Force
 --- repos
 .....k......

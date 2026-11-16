@@ -11,7 +11,6 @@ largeur: 10
 hauteur: 17
 fiche: lbd-tirs-2018
 fiche: lbd-defenseur-des-droits
-ecriteau: CODE 562
 interpelle: 3
 arme.type: tir
 arme.cadence: 0.4

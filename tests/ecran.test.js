@@ -287,19 +287,71 @@ test('« GARDE À VUE » : écrit pour une cage à l’étage du héros, et jama
   }
 });
 
-test('des unités identiques côte à côte n’ont qu’un écriteau ; une autre, plus loin ou différente, a le sien', () => {
+test('des unités identiques côte à côte n’ont qu’un « ! » ; une autre, plus loin ou différente, a le sien', () => {
   const r = renderer();
   const unit = (id, x) => ({ def: { id }, x, y: 150, w: 12, h: 18 });
   r.groups.clear();
-  assert.equal(r.first('écriteau', unit('crs', 100)), true);
-  assert.equal(r.first('écriteau', unit('crs', 114)), false);
-  assert.equal(r.first('écriteau', unit('crs', 128)), false, 'de proche en proche, toute la ligne');
-  assert.equal(r.first('écriteau', unit('bac', 120)), true, 'une autre unité');
-  assert.equal(r.first('écriteau', unit('crs', 260)), true, 'un autre groupe');
-  // Une unité hors de l'image n'écrit rien : elle ne prend pas l'écriteau de sa voisine visible.
+  assert.equal(r.first('alerte', unit('crs', 100)), true);
+  assert.equal(r.first('alerte', unit('crs', 114)), false);
+  assert.equal(r.first('alerte', unit('crs', 128)), false, 'de proche en proche, toute la ligne');
+  assert.equal(r.first('alerte', unit('bac', 120)), true, 'une autre unité');
+  assert.equal(r.first('alerte', unit('crs', 260)), true, 'un autre groupe');
+  // Une unité hors de l'image n'écrit rien : elle ne prend pas le « ! » de sa voisine visible.
   r.groups.clear();
-  assert.equal(r.first('écriteau', unit('gm', -50)), true);
-  assert.equal(r.first('écriteau', unit('gm', -20)), true, 'la voisine visible a le sien');
+  assert.equal(r.first('alerte', unit('gm', -50)), true);
+  assert.equal(r.first('alerte', unit('gm', -20)), true, 'la voisine visible a le sien');
+});
+
+test('hors service, une unité n’a rien d’écrit au-dessus d’elle : elle s’assoit ou s’éteint, et une fleur pousse', () => {
+  const r = renderer();
+  const said = [];
+  r.label = (text) => said.push(text);
+  const drawn = [];
+  const actor = r.actor.bind(r);
+  r.actor = (a, rows, opts) => { drawn.push({ rows, opts }); return actor(a, rows, opts); };
+  r.combatBefore({ hero: { x: 0, y: 150, w: 12, h: 18, dead: false }, enemies: [] });
+  const down = (id, extra = {}) => {
+    const def = bundle.ennemis[id];
+    return { def, x: 120, y: 150, w: def.largeur, h: def.hauteur, facing: -1, flash: 0, state: 'done', ...extra };
+  };
+  // Le CRS en grève, le canon à eau en panne : la simulation dit encore « EN GRÈVE ! », « EN PANNE », le CRS a son écriteau.
+  const crs = down('crs', { bubble: { text: 'EN GRÈVE !', t: 2.5 } });
+  const canon = down('canon-a-eau', { x: 220, bubble: { text: 'EN PANNE', t: 2.5 } });
+  assert.ok(crs.def.sprites.fin && !canon.def.sprites.fin);
+  for (let i = 0; i < 3; i++) {
+    r.clock += 1;
+    r.enemy(crs);
+    r.enemy(canon);
+  }
+  assert.deepEqual(said, [], 'ni « EN GRÈVE ! », ni « EN PANNE », ni écriteau');
+  // Le CRS s'assoit en tailleur, dans son dessin de fin ; le canon à eau garde le sien, apaisé (et non assombri).
+  const sitting = drawn.find((d) => d.rows.length < crs.def.sprites.fin.length);
+  assert.ok(sitting, 'le CRS est dessiné assis');
+  assert.equal(sitting.opts.dim, false, 'son dessin de fin, à ses couleurs');
+  assert.ok(drawn.some((d) => d.rows === canon.def.sprites.repos && d.opts.dim === 'calm'), 'le canon à eau, apaisé');
+  // Une fleur chacun, toute poussée : à la main du CRS, sur le toit du canon à eau.
+  r.combatBefore({ hero: { x: 0, y: 150, w: 12, h: 18, dead: false }, enemies: [] });
+  r.enemy(crs);
+  r.enemy(canon);
+  assert.equal(r.flowers.length, 2);
+  assert.ok(r.flowers.every(([, , grown]) => grown >= 1));
+  const [x, y] = r.flowers[1];
+  const top = canon.y + canon.h - canon.def.sprites.repos.length;
+  assert.ok(y < top + 4 && Math.abs(x - (canon.x + canon.w / 2)) < 4, 'la fleur est plantée sur le canon à eau');
+});
+
+test('assise en tailleur : le haut du dessin jusqu’à la ceinture, puis les genoux ; une machine ne s’assoit pas', async () => {
+  const { seated, hand, crown } = await import('../src/client/sprites.js');
+  const fin = bundle.ennemis.crs.sprites.fin;
+  const sit = seated(fin);
+  assert.equal(sit.length, 14, 'la ceinture (rangée 12) et deux rangées de jambes');
+  assert.equal(sit[0].length, fin[0].length + 4, 'deux colonnes de chaque côté pour les genoux');
+  assert.equal(sit[11], `..${fin[11]}..`, 'le haut ne change pas');
+  assert.match(sit[12], /^\.\.n{12}\.\.\.\.$/, 'les genoux écartés');
+  assert.equal(seated(bundle.ennemis['canon-a-eau'].sprites.repos), null);
+  assert.equal(seated(bundle.ennemis.drone.sprites.fin), null);
+  assert.deepEqual(hand(sit), { x: 13, y: 7 }, 'la main tendue, sous la tête');
+  assert.deepEqual(crown(bundle.ennemis.drone.sprites.fin), { x: 7, y: 2 });
 });
 
 test('la bulle du boss reste entière dans la vue, sous le HUD', () => {

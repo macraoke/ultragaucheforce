@@ -21,7 +21,7 @@ Chaque section `--- nom` est une image : une lettre par pixel, les lettres étan
 | `portrait` | héros : le portrait géant du carton de déblocage ; boss : obligatoire |
 | `projectile` | ce que lance son arme |
 | `onde` | héros : l'onde de la spéciale `sol` |
-| `fin` | unité : une fois hors service (sans lui, son dessin `repos`, éteint) |
+| `fin` | unité : une fois hors service, elle a posé ce qui la rendait menaçante (sans lui, son dessin `repos`, apaisé, presque gris) |
 | `ejecte` | boss : la caricature qui s'éjecte, indemne |
 | `image`, `image2` | recrue : obligatoire, et sa seconde pose |
 
@@ -161,7 +161,6 @@ reaction: charge
 vue: 190
 bouclier: oui
 fin: greve
-ecriteau: CODE 562
 fiche: sommations-mots-exacts
 sommation: PREMIÈRE SOMMATION : NOUS ALLONS FAIRE USAGE DE LA FORCE.
 sommation: DERNIÈRE SOMMATION : NOUS ALLONS FAIRE USAGE DE LA FORCE.
@@ -199,9 +198,8 @@ auteur: ton pseudo
 | `ligne.vie` | une ligne : ses points de vie ; 0, ce n'est pas une ligne | 0 à 5000 |
 | `ligne.poussee` | une ligne : les points de vie que lui retirent cent manifestants qui poussent, par seconde | 0 à 50, 10 par défaut |
 | `interpelle` | combien de manifestants elle emmène quand elle atteint le cortège, une fois toutes les deux secondes et demie | 0 à 20 |
-| `fin` | à zéro point de vie | `greve`, `panne` (elle fume) |
+| `fin` | à zéro point de vie | `greve` (elle s'assoit), `panne` (elle fume) |
 | `camp` | à qui elle appartient ; seules les unités de l'ordre comptent dans le bilan des blessés | `ordre` (par défaut), `medias`, `pouvoir` |
-| `ecriteau` | ce qu'on lit au-dessus d'elle une fois hors service | |
 | `replique` | une phrase qu'elle prononce ; répétable | |
 | `sommation` | réaction `charge` : dites une par une avant la première ruée ; répétable | |
 | `citation`, `fiche`, `origine` | sa carte | |
@@ -209,7 +207,9 @@ auteur: ton pseudo
 
 L'arme est facultative. Pour placer l'unité, un niveau la déclare dans sa légende : `c: compagnie-d-intervention`.
 
-Ce que le joueur voit, sans rien régler : une unité touchée blanchit et recule d'un pixel, puis montre sa jauge ; un bouclier de face arrête le coup (« PARÉ », des étincelles), mais pas le souffle d'une explosion ; sonnée, des étoiles tournent autour de sa tête ; gazée par son propre camp, elle pleure et tousse (« KOF ! ») ; quand elle repère le héros, un « ! » ; hors service, « EN GRÈVE ! » ou « EN PANNE », puis son `ecriteau` quelques secondes. Des unités identiques côte à côte font un groupe : un seul « ! », un seul « KOF ! », un seul écriteau pour le groupe, et un seul « EN GRÈVE ! » pour des unités voisines qui le disent en même temps.
+Ce que le joueur voit, sans rien régler : une unité touchée blanchit et recule d'un pixel, puis montre sa jauge ; un bouclier de face arrête le coup (« PARÉ », des étincelles), mais pas le souffle d'une explosion ; sonnée, des étoiles tournent autour de sa tête ; gazée par son propre camp, elle pleure et tousse (« KOF ! ») ; quand elle repère le héros, un « ! ». Des unités identiques côte à côte font un groupe : un seul « ! », un seul « KOF ! ».
+
+Hors service, rien ne s'écrit au-dessus d'elle : le dessin suffit. Au moment où elle tombe, un cercle et son bruitage ; puis son dessin `fin`, sinon son `repos`, apaisé, presque gris. En grève, elle s'assoit en tailleur, si son dessin a deux jambes sous une ceinture d'au plus douze pixels. En panne, elle fume. Et une petite fleur pousse : dans sa main tendue (le pixel de peau `s` ou `S` le plus en avant, sous la tête), sinon plantée au sommet de son dessin. Son dessin `fin` reprend `repos` sans ce qui la rendait menaçante : le CRS a posé son bouclier et ouvert sa visière, le drone a perdu ses hélices, l'éditorialiste montre la mire. Personne n'est blessé à l'écran ([charte](../CHARTE.md)).
 
 ### Une ligne : `ligne.vie`
 

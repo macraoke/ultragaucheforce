@@ -12,7 +12,6 @@ ligne.poussee: 10
 citation: macron-la-foule
 fiche: rio-conseil-etat
 fiche: nasse-conseil-etat
-ecriteau: CODE 562
 auteur: UltraGauche Force
 --- repos
 ....................................
