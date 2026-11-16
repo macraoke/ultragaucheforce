@@ -1,0 +1,11 @@
+texte: Désobéissons.
+auteur: Sandrine Rousseau
+fonction: députée
+date: 2022-10-18
+contexte: Entretien à Reporterre, après « Aujourd'hui, l'heure est à la désobéissance. ».
+categorie: gauche
+note: Date de publication de l'entretien (mis à jour le 19 octobre 2022). Phrase complète : « Tout acte d'obéissance à un système qui nous envoie dans le mur participe de notre responsabilité à aggraver la situation. Désobéissons. »
+source.titre: Reporterre — Sandrine Rousseau : « Désobéissons ! »
+source.url: https://reporterre.net/Sandrine-Rousseau-Desobeissons
+source.nature: presse
+verifie: 2026-11-16

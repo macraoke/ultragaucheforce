@@ -1,0 +1,11 @@
+texte: c'est ma super héroïne, c'est Déconstruction Woman
+auteur: Guy Carlier
+fonction: chroniqueur, « Carlier Libre », Sud Radio
+date: 2021-10-14
+contexte: Chronique sur Sandrine Rousseau, après la primaire écologiste. La phrase complète commence par « J'aime beaucoup Sandrine Rousseau ».
+categorie: diabolisation
+note: Le texte de la chronique sur le site de la radio écrit « Déconstruction Woman.. » avec deux points. Seule cette phrase est reprise ; le reste de la chronique n'est pas citée. Le personnage Déconstruction Woman lui doit son nom.
+source.titre: Sud Radio — « Carlier Libre » avec Guy Carlier : « Sandrine Rousseau déconstruit même la démocratie »
+source.url: https://www.sudradio.fr/societe/carlier-libre-avec-guy-carlier-sandrine-rousseau-deconstruit-meme-la-democratie
+source.nature: presse
+verifie: 2026-11-16
