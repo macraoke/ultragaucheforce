@@ -1,0 +1,10 @@
+titre: 7,20 euros par action
+theme: richesses
+texte: Au titre de 2025, L'Oréal verse un dividende de 7,20 euros par action.
+portee: Dividende proposé par le conseil d'administration à l'assemblée générale du 24 avril 2026 (la page « L'action » du site de L'Oréal l'indique comme approuvé à cette assemblée), mis en paiement le 4 mai 2026. Multiplié par les actions de la famille Bettencourt Meyers, cela fait environ 1,34 milliard d'euros en un an, avant impôt, versés pour l'essentiel à des sociétés holdings, sans la majoration réservée aux actions au nominatif. La multiplication est la nôtre.
+periode: dividende de l'exercice 2025
+valeur: 7.2
+source.titre: L'Oréal Finance — Résultats annuels 2025 (communiqué du 12 février 2026)
+source.url: https://www.loreal-finance.com/fr/communique-de-presse/resultats-annuels-2025
+source.nature: officielle
+verifie: 2026-11-16

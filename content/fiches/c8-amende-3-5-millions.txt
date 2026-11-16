@@ -1,0 +1,9 @@
+titre: C8 : 3,5 millions d'euros
+theme: democratie
+texte: Le 9 février 2023, l'Arcom sanctionne C8 d'une amende de 3,5 millions d'euros après des propos tenus dans « Touche pas à mon poste » à l'égard d'un député invité. Pour le régulateur, ils « ont porté atteinte aux droits de l'invité, au respect de son honneur et de sa réputation ».
+portee: Selon Puremédias, qui reprend le communiqué de l'Arcom.
+periode: 9 février 2023
+source.titre: Puremédias — Affaire Louis Boyard dans « TPMP » : C8 condamnée à verser 3,5 millions d'euros d'amende par l'Arcom
+source.url: https://www.ozap.com/actu/affaire-louis-boyard-dans-tpmp-c8-condamnee-a-verser-3-5-millions-d-euros-d-amende-par-l-arcom/627728
+source.nature: presse
+verifie: 2026-11-16

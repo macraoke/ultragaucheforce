@@ -1,0 +1,11 @@
+texte: Ne pensez-vous pas qu'il est temps de passer à autre chose ?
+auteur: Rodolphe Saadé
+fonction: PDG de CMA CGM
+date: 2025-05-12
+contexte: Audition devant la commission d'enquête du Sénat sur l'utilisation des aides publiques aux grandes entreprises : question au rapporteur Fabien Gay, qui l'interrogeait sur la taxe au tonnage.
+categorie: puissants
+note: Compte rendu rédigé du Sénat, pas le mot à mot de la vidéo. Phrase complète : « Dans ce cas, faut-il encore parler de la taxe au tonnage, monsieur le rapporteur ? Ne pensez-vous pas qu'il est temps de passer à autre chose ? »
+source.titre: Sénat — CE Aides publiques aux entreprises : compte rendu de la semaine du 12 mai 2025 (audition de CMA-CGM)
+source.url: https://www.senat.fr/compte-rendu-commissions/20250512/ce_aides_publiques.html
+source.nature: officielle
+verifie: 2026-11-16

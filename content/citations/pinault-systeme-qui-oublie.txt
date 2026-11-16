@@ -1,0 +1,12 @@
+texte: J'ai peur qu'il mène la France vers un système qui oublie les plus modestes.
+auteur: François Pinault
+fonction: fondateur de Kering, collectionneur d'art
+date: 2018-06-22
+contexte: Portrait de sa collection d'art contemporain dans le magazine M du Monde, à propos d'Emmanuel Macron, dont il dit aussi qu'il « ne comprend pas les petites gens ».
+categorie: puissants
+mot: LES PLUS MODESTES
+note: Lue dans la dépêche de l'AFP publiée par Public Sénat le dimanche 24 juin 2018, qui dit le portrait « paru vendredi » : la date du 22 juin 2018 en est déduite. Le portrait du Monde n'a pas été ouvert. Le 24 juin, François Pinault a déploré dans le Journal du Dimanche une polémique « excessive et tellement désolante » et « une petite phrase largement tronquée ». Le porte-parole du gouvernement, Benjamin Griveaux, avait répondu : « De la part de quelqu'un qui, pendant longtemps, n'a pas payé d'impôts, je ne suis pas certain qu'il comprenne lui-même les petites gens ».
+source.titre: Public Sénat (AFP) — François Pinault dit « sa grande admiration pour l'action » de Macron et juge la « polémique excessive »
+source.url: https://www.publicsenat.fr/actualites/politique/francois-pinault-dit-sa-grande-admiration-pour-l-action-de-macron-et-juge-la
+source.nature: presse
+verifie: 2026-11-16

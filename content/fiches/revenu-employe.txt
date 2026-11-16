@@ -1,0 +1,12 @@
+titre: 1 979 euros net par mois
+theme: richesses
+texte: En 2025, un employé du secteur privé gagne en moyenne 1 979 euros net par mois en équivalent temps plein (2 553 euros brut), selon l'Insee.
+portee: Insee Première n° 2132 (22 octobre 2026) : catégorie « employés » dans son ensemble, salaire net de cotisations, en équivalent temps plein ; salariés du privé, hors agriculture et particuliers employeurs. Ce n'est pas le chiffre d'un métier en particulier.
+periode: 2025
+valeur: 1979
+par: mois
+compare: un employé du privé
+source.titre: Insee — Les salaires dans le secteur privé en 2025 (employés)
+source.url: https://www.insee.fr/fr/statistiques/9087193
+source.nature: officielle
+verifie: 2026-11-16

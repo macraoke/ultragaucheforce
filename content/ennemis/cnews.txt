@@ -11,6 +11,8 @@ camp: medias
 largeur: 32
 hauteur: 22
 replique: LFI : LE NAZISME EST-IL PASSÉ À L'EXTRÊME GAUCHE ?
+fiche: cnews-amendes-juillet-2024
+fiche: cnews-amendes-novembre-2024
 auteur: UltraGauche Force
 --- repos
 .....KKK.......KKK.......KKK....

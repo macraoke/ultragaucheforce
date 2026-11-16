@@ -1,0 +1,12 @@
+texte: Nous avons plus que jamais besoin de retrouver un élan positif et collectif.
+auteur: Françoise Bettencourt Meyers
+fonction: présidente de la Fondation Bettencourt Schueller
+date: 2024
+contexte: Première phrase de l'éditorial du rapport d'activité 2023 de la Fondation Bettencourt Schueller, signé « Françoise Bettencourt Meyers, Présidente ».
+categorie: puissants
+mot: ÉLAN COLLECTIF
+note: La phrase suivante : « C'est précisément cet élan qui depuis plus de trente-cinq ans fait vivre notre Fondation, pour « donner des ailes aux talents » et les aider à construire un monde meilleur. » Le fichier PDF a été créé le 28 mars 2024 d'après ses métadonnées ; l'éditorial n'est pas daté.
+source.titre: Fondation Bettencourt Schueller — Rapport d'activité 2023
+source.url: https://www.fondationbs.org/sites/default/files/2024-04/rapport_dactivite_2023.pdf
+source.nature: officielle
+verifie: 2026-11-16

@@ -1,0 +1,9 @@
+titre: 31,5 milliards estimés
+theme: richesses
+texte: Selon le classement Challenges publié le 8 juillet 2026, Rodolphe Saadé et sa famille, avec CMA CGM, sont la cinquième fortune professionnelle de France, avec un patrimoine estimé à 31,5 milliards d'euros.
+portee: Estimation des actifs professionnels, cotés et non cotés, de la personne « et sa famille » : le classement ne prend pas en compte les biens personnels (immobilier privé, voitures, œuvres d'art…). Ce n'est pas de l'argent disponible. Challenges indique 3,5 milliards de moins que l'an passé (10 %).
+periode: classement 2026, publié le 8 juillet 2026
+source.titre: Challenges — Les 500 plus grandes fortunes de France en 2026
+source.url: https://www.challenges.fr/classements/fortune/
+source.nature: presse
+verifie: 2026-11-16

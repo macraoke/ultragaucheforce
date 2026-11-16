@@ -1,0 +1,11 @@
+texte: nous ouvriers, nous n'avons pas d'immunité ouvrière, désolé, on y va
+auteur: Philippe Poutou
+fonction: candidat du NPA à l'élection présidentielle, ouvrier chez Ford
+date: 2017-04-04
+contexte: Débat télévisé à onze candidats de la présidentielle, le 4 avril 2017.
+categorie: gauche
+note: Paris Match Belgique rapporte : « Nous, quand on est convoqué par la police, nous ouvriers, nous n'avons pas d'immunité ouvrière, désolé, on y va, le système vous protège ». La dépêche AFP reprise par Public Sénat donne une version un peu différente : « quand on est convoqués par la police, nous n'avons pas d'immunité ouvrière, on y va! ». Le personnage L'Immunité ouvrière lui doit son nom.
+source.titre: Paris Match Belgique — Clashs, critiques, menaces... Quand Philippe Poutou rentre dans les plumes de ses adversaires
+source.url: https://www.parismatch.be/actualites/politique/2017/04/05/clashs-critiques-menaces-quand-philippe-poutou-rentre-dans-les-plumes-de-ses-adversaires-IHZEU42GCFA6PDBIFWWANMLARU/
+source.nature: presse
+verifie: 2026-11-16

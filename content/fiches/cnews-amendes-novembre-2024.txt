@@ -1,0 +1,9 @@
+titre: CNews : 150 000 euros en novembre 2024
+theme: democratie
+texte: Le 14 novembre 2024, l'Arcom annonce deux nouvelles amendes contre CNews : 100 000 euros pour l'émission « En quête d'esprit » du 25 février, et 50 000 euros pour « Morandini Live » du 28 septembre.
+portee: Selon Puremédias. La première sanctionne une émission où l'avortement avait été présenté comme « une cause de mortalité », sans contradiction sur le plateau ; la seconde, des propos jugés inexacts à propos de parents d'élèves musulmans.
+periode: 14 novembre 2024
+source.titre: Puremédias — CNews à nouveau sanctionnée par l'Arcom : 150.000 euros d'amendes pour des propos « inexacts » sur l'avortement et concernant « des parents d'élèves musulmans »
+source.url: https://www.ozap.com/actu/cnews-a-nouveau-sanctionnee-par-larcom-150000-euros-damendes-pour-des-propos-inexacts-sur-lavortement-et-concernant-des-parents-deleves-musulmans/647611
+source.nature: presse
+verifie: 2026-11-16

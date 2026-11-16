@@ -1,0 +1,9 @@
+titre: Concorde, 16 mars 2023 : 283 gardes à vue classées
+theme: ordre
+texte: Sur les 292 personnes placées en garde à vue en marge du premier rassemblement spontané du 16 mars 2023, place de la Concorde, seules neuf ont été présentées au parquet. 283 procédures ont été classées sans suite, pour infraction insuffisamment caractérisée ou absence d'infraction.
+portee: Décompte rapporté par France 24 le 21 mars 2023. Le lendemain, 60 personnes ont été placées en garde à vue : 34 procédures classées, 21 mesures alternatives (rappel à la loi, avertissement probatoire…) et cinq procès.
+periode: 16 mars 2023
+source.titre: France 24 — Retraites : des policiers accusés de violence et des gardes à vue "arbitraires" critiquées
+source.url: https://www.france24.com/fr/france/20230321-retraites-des-policiers-accus%C3%A9s-de-violence-et-des-gardes-%C3%A0-vue-arbitraires-critiqu%C3%A9es
+source.nature: presse
+verifie: 2026-11-16

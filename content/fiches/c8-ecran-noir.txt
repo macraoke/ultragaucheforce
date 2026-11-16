@@ -1,0 +1,9 @@
+titre: C8 : écran noir
+theme: democratie
+texte: Après la décision du Conseil d'État du 19 février 2025, C8 et NRJ 12 cessent d'émettre leur signal le vendredi 28 février 2025, à minuit.
+portee: Selon Puremédias. Le Conseil d'État a acté le non-renouvellement des fréquences des deux chaînes, décidé par l'Arcom.
+periode: 28 février 2025
+source.titre: Puremédias — C8 et NRJ 12, c'est vraiment fini ! Le Conseil d'État confirme l'exclusion par l'Arcom des deux chaînes de la TNT
+source.url: https://www.ozap.com/actu/c8-et-nrj12-cest-vraiment-fini-le-conseil-detat-confirme-lexclusion-par-larcom-des-deux-chaines-de-la-tnt/648732
+source.nature: presse
+verifie: 2026-11-16

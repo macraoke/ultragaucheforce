@@ -1,0 +1,12 @@
+texte: Françoise Bettencourt Meyers, l'héritière discrète de L'Oréal
+auteur: AFP
+fonction: agence de presse
+date: 2025-04-28
+contexte: Titre du portrait diffusé par l'AFP la veille de l'assemblée générale de L'Oréal, où elle laisse son siège d'administratrice à la holding familiale Téthys.
+categorie: puissants
+mot: HÉRITIÈRE DISCRÈTE
+note: Dans le texte : « Ses apparitions sont rares et sa parole encore plus ». Page lue sur La Gazette France, qui reprend la dépêche de l'AFP (publiée le 28 avril 2025 à 13 h 46). Le boss lui doit son nom.
+source.titre: La Gazette France (dépêche AFP) — Françoise Bettencourt Meyers, l'héritière discrète de L'Oréal
+source.url: https://www.lagazettefrance.fr/article/francoise-bettencourt-meyers-l-heritiere-discrete-de-l-oreal
+source.nature: presse
+verifie: 2026-11-16

@@ -1,0 +1,29 @@
+# Une pompe à essence. Écran éteint : la station est à sec.
+nom: Pompe à essence
+auteur: UltraGauche Force
+--- image
+..kkkkkkkkkkkkkkkk..
+.kWWWWWWWWWWWWWWWWk.
+.kWRRRRRRRRRRRRRRWk.
+.kWRwwwwwwwwwwwwRWk.
+.kWRwkkkkkkkkkkwRWk.
+.kWRwkYkYkYkkkkwRWk.
+.kWRwkkkkkkkkkkwRWk.
+.kWRwwwwwwwwwwwwRWk.
+.kWRRRRRRRRRRRRRRWk.
+.kWWWWWWWWWWWWWWWWk.
+.kWWWWWWWWWWWWWhWWk.
+.kWWwwwwwwwwwwwhhWk.
+.kWWwkkkkkkkkkwhHWk.
+.kWWwkYYkYkYkkwhHWk.
+.kWWwkkkkkkkkkwhHWk.
+.kWWwwwwwwwwwwwhHWk.
+.kWWWWWWWWWWWWWhHWk.
+.kWWWWWRRRRWWWWhHWk.
+.kWWWWWRYYRWWWWhHWk.
+.kWWWWWRRRRWWWWhHWk.
+.kWWWWWWWWWWWWWWWWk.
+.kWWWWWWWWWWWWWWWWk.
+.kWWWWWWWWWWWWWWWWk.
+.kkkkkkkkkkkkkkkkkk.
+HHHHHHHHHHHHHHHHHHHH

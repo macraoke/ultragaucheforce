@@ -6,4 +6,4 @@ periode: 17 novembre 2018 à mars 2020
 source.titre: Assemblée nationale — Question écrite n° 16069, réponse du ministère de l'Intérieur (JO du 29 septembre 2020)
 source.url: https://questions.assemblee-nationale.fr/q15/15-16069QE.htm
 source.nature: officielle
-verifie: 2026-11-15
+verifie: 2026-11-16

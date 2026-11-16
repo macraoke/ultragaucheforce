@@ -1,0 +1,9 @@
+titre: Les « contusionnés » à part
+theme: ordre
+texte: En zone de compétence de la police nationale (ZPN), 353 policiers avaient été blessés en 2018 et 413 en 2019, « auxquels il faut ajouter plus de 1 500 CRS “contusionnés” » : des fonctionnaires « qui poursuivent leur mission malgré leurs blessures légères ».
+portee: Rapport n° 3786 de la commission d'enquête de l'Assemblée nationale sur le maintien de l'ordre (enregistré le 20 janvier 2021, p. 24), d'après les chiffres de la directrice centrale des CRS. Le rapport ne donne pas d'année pour les contusionnés ; dans son audition, reproduite p. 581, elle dit « plus de 1 500 en 2019 ». Les contusionnés sont comptés à part des blessés. Le rapport ne dit pas ce que contiennent les bilans annoncés au soir d'une manifestation.
+periode: 2018 et 2019, rapport du 20 janvier 2021
+source.titre: Assemblée nationale — Rapport n° 3786 de la commission d'enquête sur le maintien de l'ordre
+source.url: https://www.assemblee-nationale.fr/dyn/15/rapports/ceordre/l15b3786_rapport-enquete.pdf
+source.nature: officielle
+verifie: 2026-11-16

@@ -1,0 +1,12 @@
+texte: Cette œuvre-là, je ne peux pas la laisser filer.
+auteur: François Pinault
+fonction: collectionneur d'art, fondateur de Kering
+date: 2021-05-10
+contexte: Interview publiée par la Bourse de Commerce — Pinault Collection, à l'ouverture du musée, à la question « Que se passe-t-il au moment de la rencontre avec une œuvre d'art ? ».
+categorie: puissants
+mot: LAISSER FILER
+note: Phrase complète : « C'est la passion qui vous marque et vous êtes un peu piégé, en vous disant cette œuvre-là, je ne peux pas la laisser filer. » Page datée du 10 mai 2021.
+source.titre: Bourse de Commerce — Pinault Collection — L'interview de François Pinault
+source.url: https://www.pinaultcollection.com/fr/boursedecommerce/linterview-de-francois-pinault
+source.nature: officielle
+verifie: 2026-11-16

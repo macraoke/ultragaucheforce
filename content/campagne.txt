@@ -1,3 +1,7 @@
 # L'ordre de la campagne : un identifiant de niveau par ligne (le nom du fichier, sans « .txt »).
 millevaches
+rond-point
+raffinerie
+chaine-info
+soir-du-49-3
 bismillah

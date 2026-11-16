@@ -1,0 +1,9 @@
+titre: 180 millions d'impôts en France
+theme: richesses
+texte: Devant le Sénat, le directeur financier de CMA CGM a déclaré que le groupe s'était acquitté de 180 millions d'euros d'impôts sur les sociétés en France en 2024, pour un total mondial de 310 millions d'euros.
+portee: Chiffres donnés par le groupe lui-même, dans un compte rendu rédigé et non un mot à mot, lors de l'audition du 12 mai 2025. Selon lui, l'impôt sur les sociétés de droit commun ne porte que sur les activités autres que le transport maritime, lequel relève de la taxe au tonnage. Pour 2025, le président de la commission rappelle 500 millions d'euros de contributions additionnelles et exceptionnelles.
+periode: exercice 2024
+source.titre: Sénat — CE Aides publiques aux entreprises : compte rendu de la semaine du 12 mai 2025 (audition de CMA-CGM)
+source.url: https://www.senat.fr/compte-rendu-commissions/20250512/ce_aides_publiques.html
+source.nature: officielle
+verifie: 2026-11-16

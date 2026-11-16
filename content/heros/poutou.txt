@@ -1,0 +1,123 @@
+nom: L'Immunité ouvrière
+origine: Au débat à onze candidats du 4 avril 2017, l'ouvrier chez Ford lance : « nous n'avons pas d'immunité ouvrière, désolé, on y va ». Le jeu en fait son nom, son cri et sa spéciale.
+inspiration: Philippe Poutou
+traitement: l'ouvrier en tee-shirt à manches longues, au milieu des cravates
+cri: NOUS N'AVONS PAS D'IMMUNITÉ OUVRIÈRE !
+citation: poutou-immunite-ouvriere
+pv: 3
+vitesse: 125
+saut: 3
+auteur: UltraGauche Force
+
+# Arme : des boulons qui rebondissent au ras du sol et traversent tout, pour nettoyer le terrain devant soi.
+arme.type: tir
+arme.cadence: 2.6
+arme.vitesse: 190
+arme.gravite: 650
+arme.elan: 40
+arme.rebonds: 3
+arme.perce: 1
+arme.portee: 260
+arme.degats: 2
+arme.terrain: 1
+arme.taille: 5
+arme.image: projectile
+arme.son: impact
+
+# Spéciale : une barricade de pavés, deux cases de haut, qui sépare le héros de ce qui le poursuit.
+speciale.type: mur
+speciale.nom: IMMUNITÉ OUVRIÈRE !
+speciale.charges: 4
+speciale.hauteur: 2
+speciale.distance: 2
+speciale.tuile: pave
+speciale.son: speciale
+
+--- repos
+...TTTTTT...
+..TTTTTTTT..
+..TTssssss..
+..Tsksskss..
+..ssSSSSss..
+....SSSS....
+..wwwwwwww..
+.wwwwwwwwwwh
+.wwwwRwwwwsh
+.wwwwwwwwwsh
+..wwwwwwww..
+..KKKKKKKK..
+..BBBBBBBB..
+..BBB..BBB..
+..BBB..BBB..
+..BB....BB..
+..BB....BB..
+.kkk....kkk.
+--- marche1
+...TTTTTT...
+..TTTTTTTT..
+..TTssssss..
+..Tsksskss..
+..ssSSSSss..
+....SSSS....
+..wwwwwwww..
+.wwwwwwwwwwh
+.wwwwRwwwwsh
+.wwwwwwwwwsh
+..wwwwwwww..
+..KKKKKKKK..
+..BBBBBBBB..
+..BBB..BBB..
+.BBB....BB..
+.BB.....BBB.
+BB.......BB.
+kk.......kkk
+--- marche2
+...TTTTTT...
+..TTTTTTTT..
+..TTssssss..
+..Tsksskss..
+..ssSSSSss..
+....SSSS....
+..wwwwwwww..
+.wwwwwwwwwwh
+.wwwwRwwwwsh
+.wwwwwwwwwsh
+..wwwwwwww..
+..KKKKKKKK..
+..BBBBBBBB..
+...BBBBBB...
+....BBBB....
+....BB.BB...
+....BB.BB...
+...kkk.kkk..
+--- portrait
+.........TTTTTT.........
+........TTTTTTTT........
+.......TTTTTTTTTT.......
+......TTTTTTTTTTTT......
+.....TTTssssssssTTT.....
+.....TTssssssssssTT.....
+.....TssssssssssssT.....
+.....sskkssssssskkss....
+.....sskkssssssskkss....
+.....ssssssSSssssss.....
+.....sssssSSSSsssss.....
+.....ssSSSSSSSSSSss.....
+.....sSSSrrrrrrSSSs.....
+......SSSSSSSSSSSS......
+.......SSSSSSSSSS.......
+........ssssssss........
+....wwww.wwwwww.wwww....
+...wwwwwwwwwwwwwwwwww...
+..wwwwwwwwwwwwwwwwwwww..
+..wwwwwwwwwwwwwwwwwwww..
+..wwwwwwwwwRRwwwwwwwww..
+..wwwwwwwwwRRwwwwwwwww..
+..wwwwwwwwwwwwwwwwwwww..
+..wwwwwwwwwwwwwwwwwwww..
+--- projectile
+.hhh.
+hGwGh
+hwHwh
+hGwGh
+.hhh.

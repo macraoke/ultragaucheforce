@@ -12,6 +12,7 @@ Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les platea
 
 - **Faire grossir la manif.** Une soignante, un cheminot, une intersyndicale : chaque recrue compte, une assemblée générale double tout.
 - **Déborder.** Un barrage ne se casse pas : il cède devant le nombre.
+- **Six étapes.** Le camp d'entraînement de Millevaches, le rond-point, la raffinerie bloquée, le siège de la chaîne d'info, le soir du 49.3 devant l'Assemblée, puis la Citadelle.
 - **Creuser, grimper.** Tout le décor se détruit. Sous la rue, le métro, les catacombes, la salle des coffres ; au-dessus, six étages et les toits.
 - **Libérer.** On part avec un seul personnage, tiré au hasard la première fois. Chaque camarade sorti de garde à vue rejoint l'équipe et se joue tout de suite ; quand il tombe, on repart avec le précédent.
 - **Débloquer.** Les gens qui rejoignent la manif portent parfois une pancarte : commune, rare, épique ou légendaire. Il y en a 344, toutes relevées en manif.
@@ -31,6 +32,8 @@ Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les platea
 | ![Millevaches : la base sous le rond-point](docs/captures/millevaches-base.jpg) | ![Millevaches : la grange et sa cave](docs/captures/millevaches-grange.jpg) |
 | ![Millevaches : la mine](docs/captures/millevaches-mine.jpg) | ![Millevaches : le château d'eau](docs/captures/millevaches-chateau-d-eau.jpg) |
 | ![Millevaches : la méga-bassine](docs/captures/millevaches-bassine.jpg) | ![Millevaches : l'hélicoptère](docs/captures/millevaches-helicoptere.jpg) |
+| ![Le rond-point : le péage levé](docs/captures/rond-point-peage.jpg) | ![La raffinerie bloquée : la cuve du dépôt de carburant](docs/captures/raffinerie-cuves.jpg) |
+| ![Le siège de la chaîne d'info : la régie](docs/captures/chaine-info-regie.jpg) | ![Le soir du 49.3 : devant l'Assemblée](docs/captures/soir-du-49-3-assemblee.jpg) |
 | ![Une équipe télé filme la poubelle qui brûle](docs/captures/feu-de-poubelle.jpg) | ![PANIQUE TV en pleine hystérie](docs/captures/panique-bandeau.jpg) |
 | ![Le duplex de BFM-TV](docs/captures/duplex-bfm.jpg) | ![La fortune, à l'échelle](docs/captures/taxe-fortune.jpg) |
 | ![Le menu](docs/captures/menu.jpg) | ![L'ouverture d'un niveau](docs/captures/ouverture.jpg) |

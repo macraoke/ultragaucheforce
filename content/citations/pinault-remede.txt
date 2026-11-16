@@ -1,0 +1,11 @@
+texte: C'est un remède, c'est le meilleur, je crois.
+auteur: François Pinault
+fonction: collectionneur d'art, fondateur de Kering
+date: 2021-05-10
+contexte: Interview publiée par la Bourse de Commerce — Pinault Collection, à l'ouverture du musée, sur ce qu'il souhaite pour le public qui viendra voir les œuvres d'art contemporain.
+categorie: puissants
+note: « C'est » désigne l'art : il espère que le public « essaiera d'ouvrir son esprit et ça lui permettra de voir les choses différemment de la marche du monde, de sa propre vie ». Page datée du 10 mai 2021.
+source.titre: Bourse de Commerce — Pinault Collection — L'interview de François Pinault
+source.url: https://www.pinaultcollection.com/fr/boursedecommerce/linterview-de-francois-pinault
+source.nature: officielle
+verifie: 2026-11-16

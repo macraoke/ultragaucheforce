@@ -1,0 +1,10 @@
+titre: 52 251 576 actions Kering
+theme: richesses
+texte: Au 31 décembre 2025, le groupe Artémis détient 52 251 576 actions Kering, soit 42,34 % du capital, et Artémis est contrôlée par la famille Pinault.
+portee: Le document écrit : « Artémis est détenue en totalité par la Société financière Pinault, elle-même contrôlée par la famille Pinault », et appelle Artémis la « holding familiale ». Les actions sont détenues par des sociétés holdings, pas par des personnes. Artémis pèse 59,07 % des droits de vote théoriques.
+periode: 31 décembre 2025
+valeur: 52251576
+source.titre: Kering — Document d'enregistrement universel 2025, chapitre 7 « Capital social et actionnariat », p. 478-479
+source.url: https://www.kering.com/api/download-file/?path=01_Document_d_Enregistrement_Universel_2025_FR_5a41111e66.pdf
+source.nature: officielle
+verifie: 2026-11-16

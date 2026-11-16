@@ -1,0 +1,12 @@
+texte: Nous aurons connu trois rois, un empereur, 26 présidents de la République.
+auteur: Vincent Bolloré
+fonction: actionnaire majoritaire du groupe Bolloré, ancien président du conseil de surveillance de Vivendi et du groupe Canal+
+date: 2022-01-19
+contexte: Devant la commission d'enquête du Sénat sur la concentration des médias, à propos des deux siècles du groupe : « Dans trois semaines, le groupe fêtera ses 200 ans. » Il ajoute : « Nous nous adapterons. »
+categorie: puissants
+mot: TROIS ROIS
+note: Compte rendu rédigé, pas le mot à mot de la vidéo. Il reprend la formule le 24 mars 2026 devant l'Assemblée nationale : « nous avons connu trois rois, un empereur et vingt-six présidents de la République : on va se débrouiller ! »
+source.titre: Sénat — Commission d'enquête sur la concentration des médias, compte rendu du 19 janvier 2022
+source.url: https://www.senat.fr/compte-rendu-commissions/20220117/ce_medias.html
+source.nature: officielle
+verifie: 2026-11-16

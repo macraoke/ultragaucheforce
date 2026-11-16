@@ -1,0 +1,12 @@
+titre: 5 953,34 euros net par mois
+theme: richesses
+texte: Depuis le 1er janvier 2024, l'indemnité d'un député est de 7 637,39 euros brut par mois, soit 5 953,34 euros net, selon l'Assemblée nationale.
+portee: Fiche de synthèse n° 7 (janvier 2026) : indemnité parlementaire seule (base, résidence, fonction), net des retenues sociales, avant impôt sur le revenu. Elle ne compte ni l'avance de frais de mandat, ni les indemnités spéciales de certains postes.
+periode: montants en vigueur depuis le 1er janvier 2024
+valeur: 5953.34
+par: mois
+compare: un député
+source.titre: Assemblée nationale — La situation matérielle du député
+source.url: https://www.assemblee-nationale.fr/dyn/synthese/deputes-groupes-parlementaires/la-situation-materielle-du-depute
+source.nature: officielle
+verifie: 2026-11-16

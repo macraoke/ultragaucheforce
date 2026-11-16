@@ -1,0 +1,12 @@
+titre: 2 092 euros net par mois
+theme: richesses
+texte: En 2025, un ouvrier du secteur privé gagne en moyenne 2 092 euros net par mois en équivalent temps plein (2 717 euros brut), selon l'Insee.
+portee: Insee Première n° 2132 (22 octobre 2026) : salaire moyen net de cotisations, en équivalent temps plein ; salariés du privé, hors agriculture et particuliers employeurs. C'est une moyenne, pas un revenu fiscal du foyer.
+periode: 2025
+valeur: 2092
+par: mois
+compare: un ouvrier du privé
+source.titre: Insee — Les salaires dans le secteur privé en 2025
+source.url: https://www.insee.fr/fr/statistiques/9087193
+source.nature: officielle
+verifie: 2026-11-16

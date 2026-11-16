@@ -1,0 +1,15 @@
+nom: Palettes empilées
+auteur: UltraGauche Force
+--- image
+..tttttttttttttttttt..
+.TttttTttttttTttttttT.
+.TTTTTTTTTTTTTTTTTTTT.
+.T..T............T..T.
+.TTTTTTTTTTTTTTTTTTTT.
+TttttttTtttttTtttttttT
+TTTTTTTTTTTTTTTTTTTTTT
+T.T................T.T
+TTTTTTTTTTTTTTTTTTTTTT
+TttttTtttttttTttttttTT
+TTTTTTTTTTTTTTTTTTTTTT
+T.T................T.T

@@ -1,0 +1,12 @@
+texte: Enfin, notre groupe est discret, je l'assume et c'est largement lié à ma personnalité : j'ai toujours mis en avant l'entreprise et nos produits plus que ma personne.
+auteur: Emmanuel Besnier
+fonction: PDG de Lactalis
+date: 2018-06-07
+contexte: Déclaration liminaire devant la commission d'enquête de l'Assemblée nationale, audition publique (compte rendu officiel n° 25, p. 6). Le boss lui doit son nom.
+categorie: puissants
+mot: DISCRET
+note: Forbes écrit sur son profil que, « thanks to his disdain for the press », il a été appelé « the invisible billionaire ». Lui, dans cette audition, parle de discrétion, jamais d'invisibilité.
+source.titre: Assemblée nationale — commission d'enquête, compte rendu n° 25, audition de M. Emmanuel Besnier, 7 juin 2018
+source.url: https://www.assemblee-nationale.fr/dyn/15/comptes-rendus/celact/l15celact1718025_compte-rendu.pdf
+source.nature: officielle
+verifie: 2026-11-16

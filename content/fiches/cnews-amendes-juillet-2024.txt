@@ -1,0 +1,9 @@
+titre: CNews : deux amendes en juillet 2024
+theme: democratie
+texte: Le 10 juillet 2024, l'Arcom inflige à CNews deux amendes, de 60 000 et de 20 000 euros, pour « manquements » à ses obligations, à propos de deux séquences diffusées en 2023.
+portee: Selon Puremédias, qui reprend l'AFP. La première sanction vise un débat de « La matinale Week-End » du 10 décembre 2023 sur le projet de loi immigration ; la seconde, des propos climatosceptiques.
+periode: 10 juillet 2024
+source.titre: Puremédias — « L'immigration tue » : l'Arcom inflige à CNews deux nouvelles amendes pour « manquements » à ses obligations
+source.url: https://www.ozap.com/actu/-l-immigration-tue-l-arcom-inflige-a-cnews-deux-nouvelles-amendes-pour-manquements-a-ses-obligations/644828
+source.nature: presse
+verifie: 2026-11-16
