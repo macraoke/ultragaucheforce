@@ -46,6 +46,9 @@ export const FROM_FILE = {
 /** « 1 167 » : un nombre entier, en français. */
 const whole = (x) => x.toLocaleString('fr-FR');
 
+/** Entre un nombre et le mot qui le suit : une espace insécable, pour que le nombre ne reste pas seul en fin de ligne. */
+const NBSP = '\u00a0';
+
 /**
  * Les `n` blessés annoncés, répartis comme les CRS blessés en octobre 2026. Chaque part est arrondie à l'entier le plus
  * proche, sans décimale : 2,84 blessés légers sur 3 s'écrivent 3, et 0,31 arrêt de travail, 0. Aucune part ne dépasse
@@ -66,7 +69,7 @@ export function injuries(n) {
 }
 
 /** « 1 blessé léger », « 2 blessés légers ». */
-const word = (x, one, many) => `${whole(x)} ${plural(x, one, many)}`;
+const word = (x, one, many) => `${whole(x)}${NBSP}${plural(x, one, many)}`;
 
 /**
  * La répartition entière, en morceaux, dans l'ordre de la source : « 38 blessés légers », « 4 arrêts de travail »…
@@ -79,16 +82,16 @@ export function injuryParts(n) {
   if (!parts) return [];
   const limbs = [
     parts.jambes && word(parts.jambes, 'blessure aux jambes ou aux pieds', 'blessures aux jambes ou aux pieds'),
-    parts.bras && (parts.jambes ? `${whole(parts.bras)} aux bras ou aux mains` : word(parts.bras, 'blessure aux bras ou aux mains', 'blessures aux bras ou aux mains')),
+    parts.bras && (parts.jambes ? `${whole(parts.bras)}${NBSP}aux bras ou aux mains` : word(parts.bras, 'blessure aux bras ou aux mains', 'blessures aux bras ou aux mains')),
   ].filter(Boolean).join(' et ');
   return [
     parts.legers && word(parts.legers, 'blessé léger', 'blessés légers'),
     parts.arrets && word(parts.arrets, 'arrêt de travail', 'arrêts de travail'),
     limbs,
-    parts.acouphenes && `${whole(parts.acouphenes)} avec un acouphène`,
+    parts.acouphenes && `${whole(parts.acouphenes)}${NBSP}avec un acouphène`,
     // L'origine n'est indiquée que pour une vingtaine d'agents sur 1 233 : le tiers se compte parmi eux.
     // Pas en dessous de 2 : « 1 sur environ 1 » ferait lire 100 % là où la source dit 12 sur une vingtaine.
-    parts.tiers >= 2 && `${word(parts.tiers, 'blessé', 'blessés')} sans ambiguïté par un tiers, sur environ ${whole(parts.origine)} dont l’origine est connue`,
+    parts.tiers >= 2 && `${word(parts.tiers, 'blessé', 'blessés')} sans ambiguïté par un tiers, sur environ ${whole(parts.origine)}${NBSP}dont l’origine est connue`,
   ].filter(Boolean);
 }
 

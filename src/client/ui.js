@@ -494,7 +494,7 @@ export class Screens {
           h('p', { className: 'chiffre' }, n(hurt)),
           h('p', {}, hurt > 1 ? 'blessés annoncés côté forces de l’ordre' : 'blessé annoncé côté forces de l’ordre'),
           parts.length ? h('p', { className: 'dont' },
-            `${hurt > 1 ? 'Répartis' : 'Réparti'} comme les ${n(crs.blesses)} CRS blessés en octobre 2026 : ${parts.join(', ')}.`) : null,
+            `${hurt > 1 ? 'Répartis' : 'Réparti'} comme les ${n(crs.blesses)}\u00a0CRS blessés en octobre 2026 : ${parts.join(', ')}.`) : null,
           // Espaces insécables : « ne reste pas seul en fin de ligne, » et ; ne commencent pas la suivante.
           file.length ? h('p', { className: 'fichier' }, h('span', {}, 'Dans leur fichier : '),
             `${file.join('\u00a0; ').replace(/« /g, '«\u00a0').replace(/ »/g, '\u00a0»')}.`) : null)),

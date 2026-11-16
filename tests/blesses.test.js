@@ -113,12 +113,19 @@ test('blessés : l’écran tiré garde des entiers, les blessés légers en tê
     assert.equal(parts.length, Math.min(3, all.length), `${n} blessés : les légers et deux autres parts`);
     assert.deepEqual(parts, all.filter((p) => parts.includes(p)), `${n} blessés : des parts de la répartition, dans son ordre`);
     for (const part of parts) {
-      assert.doesNotMatch(part, /\d,\d|(^|\D)0 /, `${n} blessés : « ${part} »`);
+      assert.doesNotMatch(plain(part), /\d,\d|(^|\D)0 /, `${n} blessés : « ${part} »`);
       for (const x of plain(part).match(/\d+( \d{3})*/g)) assert.ok(Number(x.replace(/ /g, '')) <= n, `${n} blessés : ${x} dépasse le total dans « ${part} »`);
     }
     assert.ok(file.length >= 1);
   }
   assert.deepEqual(report(0, 1), { parts: [], file: [] }, 'sans blessé, rien');
+});
+
+test('blessés : un nombre ne reste jamais seul en fin de ligne, une espace insécable le lie au mot qui suit', () => {
+  for (let n = 1; n <= 20000; n++) {
+    for (const part of injuryParts(n)) assert.doesNotMatch(part, /\d /, `${n} blessés : « ${part} » a un nombre suivi d’une espace ordinaire`);
+  }
+  assert.ok(injuryParts(1233).every((part) => /\d\u00a0\D/.test(part)), 'l’espace qui suit le nombre est insécable');
 });
 
 test('blessés : la partie garde sa graine, l’écran de fin en tire ce qu’il montre', () => {
