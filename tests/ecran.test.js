@@ -190,13 +190,54 @@ test('la bulle du boss reste entière dans la vue, sous le HUD', () => {
   r.label = (text, x, y) => said.push({ x, y, box: r.textBox(text, x, y, 7, 150) });
   r.heroBox = { x: 100, w: 12, h: 18, y: 150 };
   const text = 'JE SUIS LE PARATONNERRE, LE BOUC ÉMISSAIRE.';
-  r.boss({ def, x: 370, y: 120, w: 40, h: 60, state: 'idle', flash: 0, bubble: { text } }); // au bord droit
-  r.boss({ def, x: 200, y: 6, w: 40, h: 60, state: 'idle', flash: 0, bubble: { text } }); // tout en haut
+  for (const b of [{ x: 370, y: 120 }, { x: 200, y: 6 }]) { // au bord droit, puis tout en haut
+    const boss = { def, ...b, w: 40, h: 60, state: 'idle', flash: 0, bubble: { text } };
+    r.boxes = [];
+    r.bossSay = r.bossBubble(boss);
+    r.boss(boss);
+  }
   for (const { box } of said) {
     assert.ok(box.x0 >= 0 && box.x1 <= r.viewW, 'dans la largeur de la vue');
-    assert.ok(box.y0 >= 96 / r.ratio - 1e-9, 'sous le HUD et la barre de vie');
+    assert.ok(box.y0 >= 100 / r.ratio - 1e-9, 'sous le HUD et la barre de vie');
   }
   assert.ok(said[1].x < 200, 'sans place au-dessus de lui, elle passe à côté, du côté du héros');
+});
+
+test('la bulle du boss ne se pose pas sur un texte déjà là ; textes flottants et pancartes passent autour', () => {
+  const r = renderer(5 / 3); // au pouce
+  const def = Object.values(bundle.boss)[0];
+  r.heroBox = { x: 100, w: 12, h: 18, y: 150 };
+  const boss = { def, x: 200, y: 20, w: 40, h: 60, state: 'idle', flash: 0, bubble: { text: 'QUAND LES TARIFS DE FRET ÉTAIENT DE 350 DOLLARS' } };
+  r.boxes = [];
+  const free = r.bossBubble(boss);
+  r.boxes = [{ ...free.box }]; // un texte des combats occupe déjà cette place
+  const say = r.bossBubble(boss);
+  assert.ok(!overlap(say.box, free.box), 'elle prend une autre place');
+  r.boxes.push(say.box);
+  r.float({ x: say.x, y: say.y + 2, text: 'ON REPART D’ICI', t: 2.2, size: 8 });
+  r.placeFloaters([say.box]);
+  const [f] = r.floaters;
+  assert.ok(!overlap(r.textBox(f.text, f.x, f.y, f.size, 150), say.box), 'le texte flottant passe autour');
+});
+
+test('un texte flottant ne monte jamais sous la bande du HUD', () => {
+  const r = renderer();
+  r.float({ x: 200, y: 20, text: 'DÉCONSTRUCTION !', t: 1.6, size: 7 });
+  r.float({ x: 200, y: 24, text: 'DÉSOBÉISSONS !', t: 1.6, size: 7 });
+  r.placeFloaters([]);
+  for (const f of r.floaters) assert.ok(r.textBox(f.text, f.x, f.y, f.size, 150).y0 >= 100 / r.ratio - 1e-9, f.text);
+  const [a, b] = r.floaters.map((f) => r.textBox(f.text, f.x, f.y, f.size, 150));
+  assert.ok(!overlap(a, b), 'au plafond, le second passe dessous');
+});
+
+test('un gain (« + 20 », « +1 », « SOIGNÉ ») n’est jamais évincé avant un slogan', () => {
+  const r = renderer();
+  // Une recrue rejoint : son « + 20 » naît avant son slogan ; puis d'autres slogans arrivent.
+  r.absorb([{ type: 'recruit', x: 100, y: 150, n: 20 }, { type: 'bubble', x: 100, y: 144, text: 'LA RETRAITE AVANT L’ARTHRITE' }]);
+  r.absorb(['UN', 'DEUX', 'TROIS'].map((text, i) => ({ type: 'bubble', x: 100 + i * 80, y: 120, text })));
+  const gain = r.floaters.find((f) => f.text === '+ 20');
+  assert.ok(gain.t > 0.25, 'le gain reste');
+  assert.ok(r.floaters.filter((f) => f.t > 0.25).length <= 4);
 });
 
 // ---------------------------------------------------------------- lisibilité et travail inutile

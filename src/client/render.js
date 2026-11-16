@@ -31,7 +31,7 @@ const SIGN_UP = 1; // une pancarte levée le reste au moins une seconde…
 const SIGN_DOWN = 0.5; // … et une pancarte baissée attend une demi-seconde avant de se relever
 const NEAR_HERO = 14; // un manifestant plus près que cela du héros passe en transparence
 const REC = '● REC'; // le cadre de la caméra l'affiche déjà : pas de bulle en double
-const SAFE_TOP = 96; // pixels CSS en haut de l'écran pris par le HUD (et le bandeau, au pouce) pendant un boss
+const SAFE_TOP = 100; // pixels CSS en haut de l'écran pris par le HUD (et le bandeau, au pouce), barre de vie du boss comprise
 
 export class Renderer {
   constructor(canvas, textCanvas, bundle) {
@@ -130,13 +130,13 @@ export class Renderer {
         this.burst(e.x, e.y - 14, '#f6c21c', 8, 50);
       } else if (e.type === 'bubble') this.float({ x: e.x, y: e.y, text: e.text, t: 1.6, color: e.color || '#f4f4f4' });
       else if (e.type === 'recruit') {
-        this.float({ x: e.x, y: e.y - 14, text: `+ ${e.n.toLocaleString('fr-FR')}`, n: e.n, t: 1.8, color: '#f6c21c', size: 11 });
-        if (e.healed) this.float({ x: e.x, y: e.y - 28, text: 'SOIGNÉ', t: 1.8, color: '#38b764', size: 9 });
+        this.float({ x: e.x, y: e.y - 14, text: `+ ${e.n.toLocaleString('fr-FR')}`, n: e.n, t: 1.8, color: '#f6c21c', size: 11, gain: true });
+        if (e.healed) this.float({ x: e.x, y: e.y - 28, text: 'SOIGNÉ', t: 1.8, color: '#38b764', size: 9, gain: true });
         this.burst(e.x, e.y, '#f6c21c', 10, 80);
         this.burst(e.x, e.y, '#e43b44', 8, 60);
       } else if (e.type === 'heroCard' && e.x !== undefined) {
         // Un camarade libéré : une vie de plus, comme dans Broforce.
-        this.float({ x: e.x, y: e.y - 10, text: '+1', t: 2.4, color: '#f6c21c', size: 20 });
+        this.float({ x: e.x, y: e.y - 10, text: '+1', t: 2.4, color: '#f6c21c', size: 20, gain: true });
         this.burst(e.x, e.y, '#f6c21c', 14, 90);
       } else if (e.type === 'overrun') {
         // La ligne cède : le compteur au-dessus du seuil, le cri, des confettis, et elle s'ouvre (voir `opening`).
@@ -154,7 +154,7 @@ export class Renderer {
         this.shake = Math.max(this.shake, 5);
       } else if (e.type === 'checkpoint') {
         // Le piquet de grève rejoint la manif, et c'est d'ici qu'on repartira.
-        this.float({ x: e.x + TILE / 2, y: e.y - 14, text: '+ 10', t: 1.8, color: '#f6c21c', size: 11 });
+        this.float({ x: e.x + TILE / 2, y: e.y - 14, text: '+ 10', t: 1.8, color: '#f6c21c', size: 11, gain: true });
         this.float({ x: e.x + TILE / 2, y: e.y - 28, text: 'ON REPART D’ICI', t: 2.2, color: '#f4f4f4', size: 8 });
         this.burst(e.x + TILE / 2, e.y, '#f6c21c', 10, 70);
       } else if (e.type === 'blocked') {
@@ -234,7 +234,9 @@ export class Renderer {
     this.floaters.push(f);
     const alive = this.floaters.filter((g) => g.t > FADE);
     const loose = alive.filter((g) => !g.keep);
-    if (alive.length > MAX_FLOATERS && loose.length) loose[0].t = FADE;
+    // Un gain (« + 20 », « +1 », « SOIGNÉ ») passe après un slogan ou un nom de spéciale : on le lit en premier.
+    const out = loose.find((g) => !g.gain) ?? loose[0];
+    if (alive.length > MAX_FLOATERS && out) out.t = FADE;
   }
 
   burst(x, y, color, n, speed) {
@@ -308,6 +310,9 @@ export class Renderer {
     this.voice = talker ? this.textBox(talker.bubble.text, talker.x + talker.w / 2 - cx, talker.y - 10 - cy, 5.5, 80) : null;
     if (this.voice) this.boxes.push(this.voice);
     this.combatBefore(game); // les coups se lisent : les pancartes du cortège s'effacent devant eux
+    // La bulle du boss a sa place avant les textes flottants et les pancartes : ils passent autour d'elle.
+    this.bossSay = this.bossBubble(game.boss);
+    if (this.bossSay) this.boxes.push(this.bossSay.box);
     const fixed = this.boxes.slice(gains); // gains des recrues, voix, coups : les textes flottants passent autour
     // Le héros se lit au premier coup d'œil : aucune pancarte ne se lève devant lui ni juste au-dessus de sa tête.
     const { hero } = game;
@@ -863,22 +868,39 @@ export class Renderer {
       const flicker = b.flash > 0 && Math.floor(this.clock * 24) % 2 === 0; // coups reçus : scintille, sans rester blanc
       this.actor(b, moving ? s.marche1 || s.repos : s.repos, { flash: flicker, dy: Math.round(Math.sin(this.clock * 3) * 1.5) });
     }
-    if (b.bubble) {
-      // La bulle reste entière dans la vue, sous la ligne du HUD et la barre de vie du boss (SAFE_TOP) :
-      // sans place au-dessus de sa tête, elle passe à côté de lui, du côté du héros.
-      const box = this.textBox(b.bubble.text, 0, 0, 7, 150);
-      const half = (box.x1 - box.x0) / 2;
-      const safe = SAFE_TOP / this.ratio - box.y0;
-      let x = b.x + b.w / 2 - this.cx;
-      let y = b.y - 14 - this.cy;
-      if (y < safe) {
-        const left = this.heroBox.x + this.heroBox.w / 2 < b.x + b.w / 2;
-        x = left ? b.x - this.cx - half - 2 : b.x + b.w - this.cx + half + 2;
-        y = Math.max(safe, b.y + 4 - this.cy);
+    const say = this.bossSay;
+    if (b.bubble && say) this.label(b.bubble.text, say.x, say.y, { size: 7, color: '#1a1c2c', bg: '#f6c21c', width: 150 });
+  }
+
+  /**
+   * Où se pose la bulle du boss : entière dans la vue, sous la bande du HUD et la barre de vie (SAFE_TOP), et sur rien
+   * de ce qui est déjà réservé (la voix d'en face, les textes des combats). Au-dessus de sa tête si possible ;
+   * sinon à côté de lui, du côté du héros, puis de l'autre ; un peu plus bas si ces places sont prises.
+   */
+  bossBubble(b) {
+    if (!b?.bubble || b.state === 'gone') return null;
+    const { text } = b.bubble;
+    const base = this.textBox(text, 0, 0, 7, 150);
+    const half = (base.x1 - base.x0) / 2;
+    const top = SAFE_TOP / this.ratio - base.y0;
+    const left = this.heroBox.x + this.heroBox.w / 2 < b.x + b.w / 2;
+    const beside = (side) => (side < 0 ? b.x - this.cx - half - 2 : b.x + b.w - this.cx + half + 2);
+    const above = b.y - 14 - this.cy;
+    const sides = [[beside(left ? -1 : 1), b.y + 4 - this.cy], [beside(left ? 1 : -1), b.y + 4 - this.cy]];
+    const step = base.y1 - base.y0 + 2;
+    let first = null;
+    for (let k = 0; k < 4; k++) {
+      // Au-dessus de sa tête seulement s'il y a la place (plus bas, elle serait sur lui) ; à côté, on peut descendre.
+      const spots = k === 0 && above >= top ? [[b.x + b.w / 2 - this.cx, above], ...sides] : sides;
+      for (const [sx, sy] of spots) {
+        const x = Math.min(this.viewW - half, Math.max(half, sx));
+        const y = Math.max(top, sy + k * step);
+        const box = { x0: x + base.x0, x1: x + base.x1, y0: y + base.y0, y1: y + base.y1 };
+        first ??= { x, y, box };
+        if (!this.boxes.some((o) => box.x0 < o.x1 && box.x1 > o.x0 && box.y0 < o.y1 && box.y1 > o.y0)) return { x, y, box };
       }
-      x = Math.min(this.viewW - half, Math.max(half, x));
-      this.label(b.bubble.text, x, y, { size: 7, color: '#1a1c2c', bg: '#f6c21c', width: 150 });
     }
+    return first;
   }
 
   prop(p) {
@@ -1127,29 +1149,31 @@ export class Renderer {
    */
   placeFloaters(fixed) {
     const placed = [...fixed];
+    const ceiling = SAFE_TOP / this.ratio; // jamais sous la bande du HUD : un texte qui y arriverait s'arrête au plafond
+    const shift = (f, box, dy) => {
+      f.y += dy;
+      box.y0 += dy;
+      box.y1 += dy;
+    };
     // Ceux qui ont leur place (`keep` : au pied d'une ligne, au bord de l'écran) ne bougent pas ; les autres passent autour.
     // Seule exception : un texte `keep` qui monte (« TOUCHÉ ») passe au-dessus d'une sommation plutôt que de la cacher.
     for (const f of this.floaters.filter((g) => g.keep)) {
       const box = this.textBox(f.text, f.x - this.cx, f.y - this.cy, f.size, 150);
       const voice = this.voice;
-      if (voice && (f.rise ?? 14) > 0 && !f.edge && box.x0 < voice.x1 && box.x1 > voice.x0 && box.y0 < voice.y1 && box.y1 > voice.y0) {
-        const lift = box.y1 - voice.y0 + 1;
-        f.y -= lift;
-        box.y0 -= lift;
-        box.y1 -= lift;
-      }
+      const rises = (f.rise ?? 14) > 0;
+      if (voice && rises && !f.edge && box.x0 < voice.x1 && box.x1 > voice.x0 && box.y0 < voice.y1 && box.y1 > voice.y0) shift(f, box, voice.y0 - 1 - box.y1);
+      if ((rises || f.edge) && box.y0 < ceiling) shift(f, box, ceiling - box.y0);
       placed.push(box);
       this.boxes.push(box);
     }
     for (const f of this.floaters.filter((g) => !g.keep)) {
       const box = this.textBox(f.text, f.x - this.cx, f.y - this.cy, f.size, 150);
-      for (let k = 0; k < 8; k++) {
-        const other = placed.find((b) => box.x0 < b.x1 && box.x1 > b.x0 && box.y0 < b.y1 && box.y1 > b.y0);
-        if (!other) break;
-        const lift = box.y1 - other.y0 + 1;
-        f.y -= lift;
-        box.y0 -= lift;
-        box.y1 -= lift;
+      const hit = () => placed.find((b) => box.x0 < b.x1 && box.x1 > b.x0 && box.y0 < b.y1 && box.y1 > b.y0);
+      for (let k = 0, other; k < 8 && (other = hit()); k++) shift(f, box, other.y0 - 1 - box.y1);
+      // Trop haut : il s'arrête au plafond, et passe sous ce qui le gêne encore.
+      if (box.y0 < ceiling) {
+        shift(f, box, ceiling - box.y0);
+        for (let k = 0, other; k < 8 && (other = hit()); k++) shift(f, box, other.y1 + 1 - box.y0);
       }
       placed.push(box);
       if (f.t > FADE) this.boxes.push(box);
