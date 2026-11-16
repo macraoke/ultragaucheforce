@@ -414,8 +414,11 @@ html.pivote body.tactile #toasts { right: calc(max(10px, env(safe-area-inset-bot
 .panneau .pied button.effacer { margin-left: auto; font-size: .8em; opacity: .75; } /* à l'écart, en bas des Options du menu */
 .pause .touches { margin: 0; }
 .intro .depart { display: flex; flex-direction: column; align-items: center; }
-/* « ← Retour » à gauche de « C'est parti », plus discret : le bouton principal reste celui qui lance le niveau. */
-.intro .boutons { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; }
+/*
+ * « ← Retour » à gauche de « C'est parti », plus discret : le bouton principal reste celui qui lance le niveau.
+ * Les deux boutons restent sur une ligne ; sur un écran bas, ce sont les commandes, à côté, qui se resserrent.
+ */
+.intro .boutons { display: flex; flex: none; justify-content: center; align-items: center; gap: 10px; }
 .panneau .onglets { display: flex; flex-wrap: wrap; gap: 8px; margin: .8em 0; }
 .panneau .contenu { font-size: .9rem; }
 
@@ -511,7 +514,10 @@ html.bas .pause h2 { margin: 0; font-size: 1.4rem; }
 html.bas .pause button { padding: .5em .6em; }
 html.bas .pause button.gros { font-size: 1.15rem; }
 html.bas .intro .depart { flex-direction: row; justify-content: center; gap: 14px; margin-top: .3em; }
-html.bas .intro .depart .touches { justify-content: flex-start; max-width: 25em; margin: 0; font-size: .72rem; line-height: 1.5; text-align: left; }
+html.bas .intro .depart .touches { justify-content: flex-start; max-width: 25em; min-width: 0; margin: 0; font-size: .72rem; line-height: 1.5; text-align: left; }
+html.bas .intro .boutons { gap: 8px; }
+html.bas .intro .boutons button.discret { font-size: .85rem; padding: .4em .75em; }
+body.tactile .intro .boutons button.discret { min-height: 40px; }
 html.bas .panneau.commandes { padding: 10px 14px; }
 html.bas .commandes h2 { font-size: 1.3rem; margin: 0 0 .3em; }
 html.bas .commandes table { font-size: .7rem; line-height: 1.25; }
