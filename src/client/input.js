@@ -152,6 +152,7 @@ export class Input {
     this.onBack = () => {}; // Échap, et B de la manette hors partie : l'écran d'avant (en partie, Échap met en pause)
     this.onAny = () => {}; // premier geste : sert à débloquer le son
     this.onDevice = () => {}; // le joueur a changé d'appareil : les écrans ouverts redisent les touches
+    this.held = new Set(); // boutons de manette tenus en quittant un menu : ils ne comptent en jeu qu'une fois relâchés
     // L'appareil dont on montre les touches : le dernier qui a servi.
     this.device = document.body.classList.contains('tactile') ? 'pouce' : 'clavier';
 
@@ -275,7 +276,11 @@ export class Input {
   gamepad() {
     const pad = this.findPad();
     if (!pad) return {};
-    const b = (i) => Boolean(pad.buttons[i]?.pressed);
+    const raw = (i) => Boolean(pad.buttons[i]?.pressed);
+    // Le bouton qui a fermé un menu (B sur la pause, A sur « Reprendre ») ne part pas en jeu tant qu'il reste enfoncé :
+    // B est aussi la spéciale, A le saut.
+    for (const i of this.held) if (!raw(i)) this.held.delete(i);
+    const b = (i) => raw(i) && !this.held.has(i);
     // Ce qui est tenu en jouant ne compte pas comme un appui dans le menu qui s'ouvre (A, B tenus en mettant en pause).
     this.padMenu = this.menuButtons(pad);
     if (b(9)) {
@@ -303,6 +308,9 @@ export class Input {
     this.padPause = now.start; // évite un second basculement au retour en partie
     const pressed = (k) => now[k] && !was[k];
     if (pressed('start')) return this.onPause();
+    // A et B servent aussi en jeu (saut, spéciale) : l'appui qui agit ici est retenu jusqu'à ce qu'on le relâche.
+    if (pressed('ok')) this.held.add(0);
+    if (pressed('back')) this.held.add(1);
     const card = document.querySelector('.carton');
     if (card) {
       if (pressed('ok')) card.dispatchEvent(new Event('pointerdown'));
