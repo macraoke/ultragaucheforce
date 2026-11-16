@@ -1,0 +1,12 @@
+texte: Notre groupe est plutôt paratonnerre.
+auteur: Vincent Bolloré
+fonction: président de la Compagnie de l'Odet et ancien président-directeur général du Groupe Bolloré
+date: 2026-03-24
+contexte: Sous serment devant la commission d'enquête de l'Assemblée nationale sur l'audiovisuel public, en réponse à une question sur ceux qui sont « aux manettes ».
+categorie: puissants
+mot: PARATONNERRE
+note: Page 20 du compte rendu. Phrase suivante : « C'est peut-être de notre faute, mais on ne peut pas dire qu'on nous aide à fonctionner. »
+source.titre: Assemblée nationale — Compte rendu n° 48, commission d'enquête sur l'audiovisuel public, 24 mars 2026
+source.url: https://www.assemblee-nationale.fr/dyn/17/comptes-rendus/ceaudio/l17ceaudio2526048_compte-rendu.pdf
+source.nature: officielle
+verifie: 2026-11-16

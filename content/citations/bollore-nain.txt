@@ -1,0 +1,12 @@
+texte: En réalité, le géant Vivendi est un nain.
+auteur: Vincent Bolloré
+fonction: actionnaire majoritaire du groupe Bolloré, ancien président du conseil de surveillance de Vivendi et du groupe Canal+
+date: 2022-01-19
+contexte: Devant la commission d'enquête du Sénat sur la concentration des médias, après avoir comparé la capitalisation de Vivendi (15 milliards d'euros) à celles de Sony, Disney, Tencent et Apple.
+categorie: puissants
+mot: NAIN
+note: Compte rendu rédigé, pas le mot à mot de la vidéo : Public Sénat rapporte « c'est un petit nain ».
+source.titre: Sénat — Commission d'enquête sur la concentration des médias, compte rendu du 19 janvier 2022
+source.url: https://www.senat.fr/compte-rendu-commissions/20220117/ce_medias.html
+source.nature: officielle
+verifie: 2026-11-16

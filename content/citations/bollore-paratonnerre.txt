@@ -1,0 +1,12 @@
+texte: J'étais le sale type, mais c'est à cela que je sers, au fond : je suis le paratonnerre, le bouc émissaire.
+auteur: Vincent Bolloré
+fonction: ancien président du conseil de surveillance de Vivendi et du groupe Canal+
+date: 2024-03-13
+contexte: Sous serment devant la commission d'enquête de l'Assemblée nationale sur la TNT, à propos des économies faites à son arrivée chez Canal+.
+categorie: puissants
+mot: PARATONNERRE
+note: Page 11 du compte rendu. Le boss lui doit son nom. Il reprend la formule dans trois auditions : « J'assume d'être un paratonnerre » (Sénat, 19 janvier 2022), « je suis le paratonnerre, le bouc émissaire » (ici) et « Notre groupe est plutôt paratonnerre » (Assemblée nationale, 24 mars 2026).
+source.titre: Assemblée nationale — Compte rendu n° 18, commission d'enquête sur la TNT, 13 mars 2024
+source.url: https://www.assemblee-nationale.fr/dyn/16/comptes-rendus/cetnt/l16cetnt2324018_compte-rendu.pdf
+source.nature: officielle
+verifie: 2026-11-16

@@ -1,0 +1,12 @@
+texte: Si le titre baisse, je plonge dans le menu des pizzas.
+auteur: Vincent Bolloré
+fonction: ancien président du conseil de surveillance de Vivendi et du groupe Canal+
+date: 2024-03-13
+contexte: Sous serment devant la commission d'enquête de l'Assemblée nationale sur la TNT, à propos d'un restaurateur qui a placé ses économies en actions Vivendi-Bolloré.
+categorie: puissants
+mot: PIZZAS
+note: Page 7 du compte rendu. Phrase suivante : « J'étais donc tenu, en vertu de l'obligation fiduciaire, de faire en sorte que les choses se redressent. »
+source.titre: Assemblée nationale — Compte rendu n° 18, commission d'enquête sur la TNT, 13 mars 2024
+source.url: https://www.assemblee-nationale.fr/dyn/16/comptes-rendus/cetnt/l16cetnt2324018_compte-rendu.pdf
+source.nature: officielle
+verifie: 2026-11-16

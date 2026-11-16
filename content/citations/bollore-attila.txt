@@ -1,0 +1,12 @@
+texte: Pour ma part, je suis tout doux et débonnaire – pas du tout un Attila !
+auteur: Vincent Bolloré
+fonction: ancien président du conseil de surveillance de Vivendi et du groupe Canal+
+date: 2024-03-13
+contexte: Sous serment devant la commission d'enquête de l'Assemblée nationale sur la TNT. Plus tôt dans l'audition : « j'arrivais avec une réputation d'Attila » (p. 10).
+categorie: puissants
+mot: ATTILA
+note: Page 20 du compte rendu. Le texte écrit un tiret demi-cadratin avant « pas du tout un Attila ».
+source.titre: Assemblée nationale — Compte rendu n° 18, commission d'enquête sur la TNT, 13 mars 2024
+source.url: https://www.assemblee-nationale.fr/dyn/16/comptes-rendus/cetnt/l16cetnt2324018_compte-rendu.pdf
+source.nature: officielle
+verifie: 2026-11-16
