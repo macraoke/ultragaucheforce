@@ -1053,7 +1053,8 @@ export class Renderer {
    * elle. Gêné là, il monte d'un cran, sinon il passe sous ses pieds ; il y reste tant qu'elle est à l'écran, comme une
    * étiquette (`placeTags`) : pas de retour d'un saut quand la gêne s'en va. Sa place est réservée : les textes
    * flottants et les pancartes du cortège passent autour. Une recrue si haut que même sous ses pieds son gain serait
-   * sous la bande du HUD n'en a pas (null : rien à écrire), comme un accessoire caché.
+   * sous la bande du HUD n'en a pas, comme un accessoire caché ; sans aucune place libre, il attend qu'il y en ait une
+   * (null : rien à écrire à cette image).
    */
   gainSpot(r, text) {
     const x = r.x + r.w / 2 - this.cx;
@@ -1064,11 +1065,11 @@ export class Renderer {
       return { x, y };
     }
     // Sa place la plus basse (un cran sous ses pieds) passe sous la bande du HUD : pas de gain. Il revient quand elle
-    // en sort, deux pixels plus bas : une caméra qui sautille ne le fait pas clignoter.
+    // en sort avec deux pixels d'air : une caméra qui sautille ne le fait pas clignoter.
     const ceiling = this.ceiling();
     const step = this.fit(8) * 1.1 + 7; // la hauteur de sa boîte (`textBox`), plus un pixel
     const lowest = body.y1 + 1 + step;
-    if (lowest < ceiling - 2) this.gainHidden.add(r);
+    if (lowest < ceiling) this.gainHidden.add(r);
     else if (lowest >= ceiling + 2) this.gainHidden.delete(r);
     if (this.gainHidden.has(r)) return null;
     const under = r.h + 16; // le haut de sa boîte juste sous ses pieds
@@ -1087,7 +1088,9 @@ export class Renderer {
     const moved = this.gainMoved.get(r);
     let spot = (moved && free(moved) ? moved : null) ?? (free(home) ? home : null);
     if (!spot) {
-      spot = [{ dx: 0, dy: -step }, { dx: 0, dy: under }, { dx: 0, dy: under + step }].find(free) ?? moved ?? home;
+      spot = [{ dx: 0, dy: -step }, { dx: 0, dy: under }, { dx: 0, dy: under + step }, { dx: 0, dy: under + 2 * step }]
+        .find(free);
+      if (!spot) return null; // aucune place libre : pas de gain à cette image, plutôt que sur un autre texte
       this.gainMoved.set(r, spot);
     }
     this.boxes.push(at(spot));
