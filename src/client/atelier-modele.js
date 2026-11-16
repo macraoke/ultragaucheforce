@@ -301,6 +301,7 @@ export function proposal(repo, text, title) {
  */
 export const contributions = (repo) => [
   { text: 'Les propositions en cours', url: `${repo}/pulls` },
+  { text: 'Une idée de niveau', url: `${repo}/issues/new?template=niveau.yml` },
   { text: 'Proposer une pancarte', url: `${repo}/issues/new?template=blague-ou-pancarte.yml` },
   { text: 'Proposer un personnage', url: `${repo}/issues/new?template=personnage.yml` },
   { text: 'Une source à corriger', url: `${repo}/issues/new?template=source-a-corriger.yml` },

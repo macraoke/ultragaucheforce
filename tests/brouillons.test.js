@@ -299,6 +299,6 @@ test('les liens pour contribuer mènent aux vrais formulaires du dépôt', () =>
     if (file) assert.ok(existsSync(new URL(`../${file}`, import.meta.url)), `${text} : ${file}`);
   }
   const forms = links.map((l) => l.url.match(/template=([^&]+)/)?.[1]).filter(Boolean);
-  for (const form of ['blague-ou-pancarte.yml', 'personnage.yml', 'source-a-corriger.yml', 'bug.yml']) assert.ok(forms.includes(form), form);
+  for (const form of ['niveau.yml', 'blague-ou-pancarte.yml', 'personnage.yml', 'source-a-corriger.yml', 'bug.yml']) assert.ok(forms.includes(form), form);
   assert.ok(links.some((l) => l.url === `${REPO}/pulls`), 'les propositions ouvertes');
 });
