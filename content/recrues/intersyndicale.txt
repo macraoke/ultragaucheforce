@@ -3,6 +3,7 @@ apport: 150
 slogan: JUSQU'AU RETRAIT
 slogan: AUGMENTEZ LES SALAIRES !
 fiche: programme-smic
+fiche: smic
 auteur: UltraGauche Force
 --- image
 ....TTTT....kkkk....rrrr....GGGG....TTTT....

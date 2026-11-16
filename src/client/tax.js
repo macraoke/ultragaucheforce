@@ -1,7 +1,7 @@
-// La scène de taxation, après le boss. Il est assis sur sa fortune ; on avance d'un bouton à l'autre :
-// l'échelle (face à quelqu'un de très bien payé), ce que la fortune rapporte, les 2 %, qui paie combien,
-// ce que ça finance. Tous les nombres viennent des fiches sourcées de `content/fiches/` ; un temps dont
-// la fiche manque est sauté.
+// La scène de taxation, après le boss. Il est assis sur sa fortune ; on avance d'un bouton à l'autre.
+// D'abord l'échelle, face à quelqu'un de très bien payé. Puis les 2 %, en trois idées : pour lui ce n'est rien
+// (moins que ses dividendes de l'année), c'est juste (les autres paient déjà bien plus), et ça finance beaucoup.
+// Tous les nombres viennent des fiches sourcées de `content/fiches/` ; un temps dont la fiche manque est sauté.
 
 import { h, link, frenchNumber } from './dom.js';
 import { sprite } from './sprites.js';
@@ -126,39 +126,36 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null } =
     const rule = fiche('impot-plancher');
     const owner = boss.inspiration ? `la famille de ${boss.inspiration}` : boss.nom;
 
-    // Chaque temps : un grand nombre, une phrase, sa source, et le bouton qui y mène.
+    // Chaque temps : un grand titre, une phrase, ses sources, et le bouton qui y mène.
     const beats = [
       {
         title: `${billions(fortune)} milliards d’euros`,
-        line: `Un chirurgien gagne ${frenchNumber(wage.valeur)} € par an. Il lui faudrait ${thousands(fortune / wage.valeur)} ans.`,
-        source: [estimate, wage], more: [h('p', { className: 'qui' }, `La fortune de ${owner}.`), legend],
-      },
-      yearly && {
-        title: `+ ${billions(yearly)} milliards par an`,
-        line: 'Ce que cette fortune rapporte, rien qu’en dividendes.',
-        source: rent, more: legend, button: 'Et chaque année ?', enter: () => animate('rain', 1200),
+        line: `La fortune de ${owner} : ${thousands(fortune / wage.valeur)} ans de revenus d’un chirurgien.`,
+        source: [estimate, wage], more: legend,
       },
       {
-        title: `− ${billions(tax)} milliards par an`,
-        line: yearly > tax ? '2 % de la fortune : moins que ses dividendes.' : `2 % de la fortune. Il reste ${billions(fortune - tax)} milliards.`,
-        source: rule, more: legend, button: 'Taxer 2 %', enter: () => {
+        title: 'Pour lui : rien',
+        line: yearly > tax
+          ? `2 % : ${billions(tax)} milliards par an. Ses dividendes : ${billions(yearly)} milliards par an.`
+          : `2 % : ${billions(tax)} milliards par an. Il en reste ${billions(fortune - tax)}.`,
+        source: [rule, ...rent], button: 'Taxer 2 %', enter: () => {
           audio?.play('tampon');
           audio?.play('sauvetage');
-          animate('fly', 1400);
+          if (yearly) animate('rain', 1000);
+          setTimeout(() => animate('fly', 1300), yearly ? 900 : 0);
         },
       },
       most?.valeur && few?.valeur && {
-        title: 'Qui paie combien ?',
-        line: 'La part des revenus qui part en impôts et cotisations.',
-        source: most, button: 'Et nous ?', hideHeap: true,
+        title: 'Et c’est juste',
+        line: 'Impôts et cotisations, en part des revenus :',
+        source: most, button: 'Est-ce juste ?', hideHeap: true,
         more: h('div', { className: 'barres' }, bar('Presque tout le monde, chirurgien compris', most), bar('Les milliardaires', few)),
       },
       teacher?.valeur && {
         title: `${thousands(tax / teacher.valeur)} enseignants`,
         line: `Ce que paient ${billions(tax)} milliards, chaque année.`,
         source: teacher, button: 'Ça paie quoi ?', hideHeap: true,
-        more: [h('div', { className: 'services allumes' }, ['🏫', '🏥', '🚆'].map((icon) => h('span', {}, icon))),
-          rule && h('p', { className: 'vrai' }, rule.texte)],
+        more: h('div', { className: 'services allumes' }, ['🏫', '🏥', '🚆'].map((icon) => h('span', {}, icon))),
       },
     ].filter(Boolean);
 
