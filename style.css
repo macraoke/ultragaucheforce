@@ -450,8 +450,13 @@ html.bas .menu .mention { display: none; }
 .taxe .vrai { text-align: left; font-size: .82rem; background: var(--encre); border-left: 6px solid var(--or); padding: .6em .8em; }
 .taxe .pied { justify-content: center; }
 .taxe canvas[hidden] { display: none; }
-.taxe canvas.tas.reduit { max-height: calc(var(--vh, 1vh) * 20); }
-html.bas .taxe canvas.tas.reduit { display: none; }
+.taxe.faite canvas.tas { max-height: calc(var(--vh, 1vh) * 18); }
+.taxe.faite .montant { font-size: clamp(1.2rem, 4.5vmin, 2rem); color: var(--blanc); }
+.taxe.faite p.gros { font-size: .8rem; opacity: .85; }
+.taxe .resultat { font: 900 clamp(2rem, 9vmin, 4.4rem)/.9 var(--titre); text-transform: uppercase; color: var(--or); margin: .1em 0; }
+.taxe .detail[hidden] { display: none; }
+html.bas .taxe.faite canvas.tas, html.bas .taxe.faite p.gros { display: none; }
+html.bas .taxe .resultat { font-size: clamp(1.6rem, 9vmin, 2.4rem); }
 .taxe .choc { max-width: 620px; margin: .6em auto; text-align: left; background: var(--encre); border-left: 6px solid var(--or); padding: .5em .8em; }
 .taxe .choc b { display: block; font: 900 clamp(1rem, 3.2vmin, 1.4rem)/1.1 var(--titre); text-transform: uppercase; color: var(--or); }
 .taxe .choc p { margin: .2em 0 0; font-size: .88rem; line-height: 1.3; }

@@ -35,10 +35,14 @@ export function botActions(game, memory) {
   m.climb = Math.max(0, (m.climb ?? 0) - 1);
   if (m.climb > 0 || under) {
     const phase = m.t % 90;
-    if (phase < 40) return { ...act, up: true }; // quarante pas à tirer vers le haut, sans bouger
-    act.fire = false; // puis on grimpe sans abîmer la paroi
+    const col = Math.floor(cx / TILE);
+    const top = Math.floor(h.y / TILE);
+    let roof = false; // reste-t-il quelque chose à percer au-dessus de la tête ?
+    for (let k = 1; k <= 30 && !roof; k++) roof = game.world.solid(col, top - k);
+    if (roof && phase < 40) return { ...act, up: true }; // quarante pas à tirer vers le haut, sans bouger
+    act.fire = false; // puis on grimpe sans abîmer la paroi ; puits ouvert jusqu'au ciel : on ne s'arrête plus
     act[toward > 0 ? 'right' : 'left'] = true;
-    act.jump = phase % 9 < 6;
+    act.jump = m.t % 9 < 6;
     return act;
   }
 

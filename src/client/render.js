@@ -528,7 +528,7 @@ export class Renderer {
       this.ctx.fillRect(hand, y - 16, 1, 18);
       const sway = Math.round(Math.sin(this.clock * 5 + i) * 1);
       this.ctx.drawImage(cloth, m.facing < 0 ? hand - cloth.width : hand + 1, y - 16 + sway);
-    } else if (m.kind === 'pancarte') {
+    } else if (m.kind === 'pancarte' && m.label) { // mains vides tant qu'aucune pancarte n'est arrivée
       const top = y - 12 - (i % 2) * 14;
       const width = m.label.length > 45 ? 84 : m.label.length > 26 ? 64 : 44; // une longue pancarte est plus large, pas plus haute
       if (!this.reserve(m.label, hand, top, 4.6, width)) return; // elle reste baissée plutôt que d'en cacher une autre

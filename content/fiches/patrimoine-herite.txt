@@ -1,0 +1,10 @@
+titre: 60 % du patrimoine est hérité
+theme: richesses
+texte: En France, la fortune héritée représente 60 % du patrimoine total, contre 35 % au début des années 1970.
+portee: Part du patrimoine total issue d'héritages et de donations, estimation de chercheurs. Le CAE est placé auprès du Premier ministre mais ses notes n'engagent que leurs auteurs. Chiffre largement repris, pas de contestation relevée.
+periode: note de décembre 2021 ; la phrase dit « désormais » sans donner l'année
+choc: oui
+source.titre: Conseil d'analyse économique — Repenser l'héritage
+source.url: https://cae-eco.fr/static/pdf/cae-note069.pdf
+source.nature: officielle
+verifie: 2026-11-16

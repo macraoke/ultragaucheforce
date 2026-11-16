@@ -1,6 +1,6 @@
-// La scène de taxation, après le boss. Il est assis sur sa fortune. Deux écrans :
-// 1. la fortune, à l'échelle de quelqu'un, et ce qu'elle rapporte en un an ;
-// 2. ce que 2 % paieraient, et un fait frappant sur les inégalités.
+// La scène de taxation, après le boss. Il est assis sur sa fortune. Un seul écran :
+// la fortune, à l'échelle de quelqu'un, et ce qu'elle rapporte en un an ; puis le bouton « Taxer 2 % » fait
+// apparaître au même endroit ce que 2 % paieraient et un fait frappant sur les inégalités.
 // L'échelle, l'exemple et le fait se tirent au hasard dans les fiches sourcées de `content/fiches/` (clés `compare`,
 // `finance`, `choc`) : d'une partie à l'autre, ce ne sont pas les mêmes.
 
@@ -50,9 +50,17 @@ function draw(kind, list) {
   last[kind] = pick?.id;
   return pick;
 }
-/** La ligne des sources d'un temps : chaque nombre affiché renvoie à la page où il se lit. */
-const sourcesOf = (facts) => h('p', { className: 'source' }, facts.length > 1 ? 'Sources : ' : 'Source : ',
-  facts.map((fact, i) => [i > 0 && ' · ', link(fact.source.url, fact.source.titre.split(' — ')[0])]));
+/** La ligne des sources : chaque nombre affiché renvoie à la page où il se lit. Une adresse n'y figure qu'une fois. */
+function sourcesOf(facts) {
+  const seen = new Set();
+  const names = {};
+  const links = facts.filter((f) => f && !seen.has(f.source.url) && seen.add(f.source.url)).map((f) => {
+    const name = f.source.titre.split(' — ')[0];
+    names[name] = (names[name] || 0) + 1;
+    return link(f.source.url, names[name] > 1 ? `${name} (${names[name]})` : name); // deux rapports d'une même maison
+  });
+  return h('p', { className: 'source' }, links.length > 1 ? 'Sources : ' : 'Source : ', links.map((l, i) => [i > 0 && ' · ', l]));
+}
 
 /**
  * @returns {Promise<string[]>} les fiches à noter comme découvertes
@@ -139,62 +147,46 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pi
     const owner = boss.inspiration ? `la famille de ${boss.inspiration}` : boss.nom;
     const under = yearly > tax; // 2 % pèsent moins que ce que la fortune rapporte en un an
 
-    // Chaque écran : un grand titre, une phrase, toutes ses sources.
-    const beats = [
-      {
-        title: `${billions(fortune)} milliards d’euros`,
-        line: `La fortune de ${owner} : ${round(years)} ans de revenus d’${scale.compare}.`,
-        more: [yearly > 0 && h('p', { className: 'qui' }, `Rien qu’en dividendes, elle rapporte ${billions(yearly)} milliards par an.`), legend],
-        source: [estimate, scale, ...(yearly > 0 ? rent : [])],
-        enter: () => yearly && setTimeout(() => animate('rain', 1000), 500),
-      },
-      {
-        // Ce que 2 % paieraient. L'impôt est différentiel : c'est un maximum, la phrase le dit.
-        title: use ? `${round(tax / use.valeur)} ${use.finance}` : `Au plus ${billions(tax)} milliards par an`,
-        line: use
-          ? `Ce que paieraient 2 % de cette fortune${use.ponctuel ? ' en un an' : ', chaque année'} : au plus ${billions(tax)} milliards${under ? ', moins que ses dividendes' : ''}.`
-          : `2 % de cette fortune${under ? ' : moins que ses dividendes' : ''}.`,
-        more: shock && h('article', { className: 'choc' }, h('b', {}, shock.titre), h('p', {}, shock.texte)),
-        source: [use, estimate, rule, shock], button: 'Taxer 2 %', compact: true,
-        enter: () => {
-          audio?.play('tampon');
-          audio?.play('sauvetage');
-          state.rain = 1;
-          animate('fly', 1300);
-        },
-      },
-    ];
-
-    const title = h('p', { className: 'montant' });
-    const line = h('p', { className: 'gros' });
-    const more = h('div', { className: 'detail' });
-    const source = h('div', {});
-    const button = h('button', { type: 'button', className: 'gros' });
-    let at = 0;
-    const show = () => {
-      const beat = beats[at];
-      title.textContent = beat.title;
-      line.textContent = beat.line;
-      scene.classList.toggle('reduit', Boolean(beat.compact)); // deuxième écran : le tas se fait petit, le fait prend la place
-      more.replaceChildren(...[beat.more].flat().filter(Boolean));
-      const facts = [beat.source].flat().filter(Boolean);
-      source.replaceChildren(facts.length ? sourcesOf(facts) : '');
-      button.textContent = beats[at + 1]?.button || 'Continuer';
-      beat.enter?.();
-    };
+    // Avant de taxer : la fortune, son échelle, ce qu'elle rapporte.
+    const title = h('p', { className: 'montant' }, `${billions(fortune)} milliards d’euros`);
+    const line = h('p', { className: 'gros' }, `La fortune de ${owner} : ${round(years)} ans de revenus d’${scale.compare}.`);
+    const before = h('div', { className: 'detail' },
+      yearly > 0 && h('p', { className: 'qui' }, `Rien qu’en dividendes, elle rapporte ${billions(yearly)} milliards par an.`), legend);
+    // Après : ce que 2 % paieraient (au plus : l'impôt est différentiel), et un fait frappant.
+    const after = h('div', { className: 'detail apres', hidden: true },
+      h('p', { className: 'resultat' }, use ? `${round(tax / use.valeur)} ${use.finance}` : `Au plus ${billions(tax)} milliards par an`),
+      h('p', { className: 'qui' }, use
+        ? `Ce que paieraient 2 % de cette fortune${use.ponctuel ? ' en un an' : ', chaque année'} : au plus ${billions(tax)} milliards${under ? ', moins que ses dividendes' : ''}.`
+        : `2 % de cette fortune${under ? ' : moins que ses dividendes' : ''}.`),
+      shock && h('article', { className: 'choc' }, h('b', {}, shock.titre), h('p', {}, shock.texte)));
+    const source = h('div', {}, sourcesOf([estimate, scale, ...(yearly > 0 ? rent : [])]));
+    const button = h('button', { type: 'button', className: 'gros' }, 'Taxer 2 %');
+    const panel = h('section', { className: 'panneau taxe' }, title, line, scene, before, after, source, h('div', { className: 'pied' }, button));
+    let taxed = false;
     button.onclick = () => {
       audio?.play('clic');
-      if (++at < beats.length) return show();
-      root.replaceChildren();
-      root.hidden = true;
-      resolve(taxFiches(bundle, boss, [scale, use, shock].filter(Boolean)));
+      if (taxed) {
+        root.replaceChildren();
+        root.hidden = true;
+        return resolve(taxFiches(bundle, boss, [scale, use, shock].filter(Boolean)));
+      }
+      taxed = true;
+      audio?.play('tampon');
+      audio?.play('sauvetage');
+      state.rain = 1;
+      animate('fly', 1300);
+      panel.classList.add('faite'); // même écran : le tas se fait petit, le résultat prend la place
+      before.hidden = true;
+      after.hidden = false;
+      source.replaceChildren(sourcesOf([estimate, scale, ...(yearly > 0 ? rent : []), use, rule, shock]));
+      button.textContent = 'Continuer';
     };
 
-    root.replaceChildren(h('section', { className: 'panneau taxe' }, title, line, scene, more, source, h('div', { className: 'pied' }, button)));
+    root.replaceChildren(panel);
     document.body.dataset.ecran = 'taxe';
     root.hidden = false;
     draw();
-    show();
+    if (yearly) setTimeout(() => animate('rain', 1000), 500);
     button.focus({ preventScroll: true });
   });
 }

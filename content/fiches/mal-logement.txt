@@ -1,0 +1,10 @@
+titre: 4,2 millions de personnes mal logées
+theme: richesses
+texte: La Fondation pour le logement estime que 4,2 millions de personnes sont mal logées ou sans logement personnel, dont 350 000 sans domicile.
+portee: Estimation d'une fondation engagée, construite « essentiellement » sur l'enquête nationale Logement de l'Insee de 2013, les premiers résultats de celle de 2020 et des données administratives. Plusieurs composantes sont anciennes. Le nombre de 350 000 sans-domicile est une estimation propre à la Fondation (« Estimation FPL, 2024 »), pas un recensement de l'Insee.
+periode: rapport 2026 (31e) ; estimation des sans-domicile datée de 2024 ; sources de 2013, 2017 et 2020 selon les lignes
+choc: oui
+source.titre: Fondation pour le logement — Les chiffres du mal-logement
+source.url: https://www.fondationpourlelogement.fr/wp-content/uploads/2026/02/reml-2026-cahier-5-les-chiffres-du-mal-logement.pdf
+source.nature: associative
+verifie: 2026-11-16

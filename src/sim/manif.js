@@ -76,26 +76,25 @@ export function drawSign(game, pool, odds = ODDS) {
   return pool.find((p) => (roll -= odds[p.rarete] ?? 1) < 0) ?? pool.at(-1) ?? null;
 }
 
-/** Une pancarte arrive dans la manif, tirée parmi toutes celles du jeu : nouvelle ou déjà vue, c'est le hasard. */
-function carrySign(game) {
-  const sign = drawSign(game, game.bundle.pancartes || []);
-  if (!sign) return '';
-  game.stats.signs++;
-  game.emit('sign', { text: sign.texte, rarity: sign.rarete });
-  return sign.texte;
-}
-
 /**
- * Des gens rejoignent la manif : certains ont une pancarte. Un groupe de vingt en apporte une, une fois sur deux ;
- * un gros cortège, quatre au plus. Elle remplace celle d'un manifestant qu'on voit déjà.
+ * Des gens rejoignent la manif : parfois, l'un d'eux porte une pancarte. C'est la seule façon d'en voir arriver une.
+ * Une tranche de vingt personnes en apporte une, une fois sur deux (au moins une tranche, quatre au plus) ; elle est
+ * tirée parmi toutes celles du jeu : nouvelle ou déjà vue, c'est le hasard.
  */
 export function bringSigns(game, n) {
   const groups = Math.max(1, Math.min(4, Math.round(n / 20)));
   for (let i = 0; i < groups; i++) {
     if (game.rng.next() >= SIGN_CHANCE) continue;
-    const text = carrySign(game);
+    const sign = drawSign(game, game.bundle.pancartes || []);
+    if (!sign) return;
+    game.stats.signs++;
+    game.signs.push(sign.texte);
+    game.emit('sign', { text: sign.texte, rarity: sign.rarete });
+    // Dans le cortège qu'on voit : un porteur aux mains vides la prend, sinon elle remplace la plus ancienne.
     const carriers = game.cortege.filter((m) => m.kind === 'pancarte');
-    if (text && carriers.length) game.rng.pick(carriers).label = text;
+    const free = carriers.find((m) => !m.label);
+    if (free) free.label = sign.texte;
+    else if (carriers.length) carriers[game.stats.signs % carriers.length].label = sign.texte;
   }
 }
 
@@ -113,7 +112,8 @@ export function syncCortege(game) {
     const kind = KINDS[n % KINDS.length];
     const turn = Math.floor(n / KINDS.length);
     let label = INSTRUMENTS[turn % INSTRUMENTS.length];
-    if (kind === 'pancarte') label = carrySign(game);
+    // Un nouveau porteur prend une pancarte déjà arrivée dans la manif, s'il en reste une que personne ne montre.
+    if (kind === 'pancarte') label = game.signs.findLast((t) => !cortege.some((m) => m.label === t)) ?? '';
     if (kind === 'drapeau') label = flags.length ? flags[turn % flags.length] : '';
     cortege.push({
       x: hero.x + hero.w / 2, y: hero.y + hero.h, facing: hero.facing, kind, label, gassed: 0, pushed: 0, shove: 0,

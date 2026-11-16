@@ -1,0 +1,10 @@
+titre: 13 000 grands patrimoines sans impôt sur le revenu
+theme: richesses
+texte: Plus de 13 000 personnes dont le patrimoine dépasse 1,3 million d'euros ne paient aucun impôt sur le revenu.
+portee: Il s'agit des foyers soumis à l'impôt sur la fortune immobilière, donc d'un patrimoine immobilier net ; « millionnaires » est le mot de LCP (« foyers millionnaires en termes de patrimoine immobilier »), pas celui du dossier.
+periode: revenus de 2024 d'après LCP ; dossier daté du 13 juillet 2026
+choc: oui
+source.titre: Assemblée nationale — Rapport de la commission d'enquête relative à l'imposition des plus hauts patrimoines et des revenus les plus élevés et à leur contribution au finance
+source.url: https://questions.assemblee-nationale.fr/dyn/contenu/telechargement/1119933/file/DP_rapport_CE_Hauts_patrimoines.pdf
+source.nature: officielle
+verifie: 2026-11-16

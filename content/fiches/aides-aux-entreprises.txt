@@ -1,0 +1,10 @@
+titre: 211 milliards d'aides publiques aux entreprises
+theme: richesses
+texte: En 2023, les aides publiques aux entreprises atteignent au moins 211 milliards d'euros au sens large, selon une commission d'enquête du Sénat.
+portee: Le total additionne subventions de l'État, aides de Bpifrance, dépenses fiscales, dépenses fiscales « déclassées » et allègements de cotisations sociales. La synthèse dit que l'estimation « n'indique qu'un ordre de grandeur ».
+periode: 2023 (rapport déposé le 1er juillet 2025)
+choc: oui
+source.titre: Sénat — Transparence et évaluation des aides publiques aux entreprises : une attente démocratique, un gage d'efficacité économique
+source.url: https://www.senat.fr/rap/r24-808-1/r24-808-1-syn.pdf
+source.nature: officielle
+verifie: 2026-11-16

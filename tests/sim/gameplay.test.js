@@ -342,7 +342,7 @@ test('cortège : trois manifestants au départ, deux de plus par sauvetage, un p
   })));
   assert.equal(game.cortege.length, 3);
   assert.deepEqual(game.cortege.map((m) => m.kind), ['pancarte', 'drapeau', 'fanfare']);
-  assert.ok(['PANCARTE UN', 'PANCARTE DEUX'].includes(game.cortege[0].label));
+  assert.ok(['', 'PANCARTE UN', 'PANCARTE DEUX'].includes(game.cortege[0].label), 'une pancarte arrivée dans la manif, ou les mains vides');
   assert.equal(game.cortege[1].label, 'rouge');
   const events = run(game, 140, { right: true });
   assert.equal(game.cortege.length, 6);

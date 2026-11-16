@@ -324,12 +324,22 @@ test('pancartes : les manifestants qui arrivent en portent parfois une, tirée a
   assert.deepEqual([...texts].sort(), ['PANCARTE DEUX', 'PANCARTE UN'], 'avec ou sans source, toutes peuvent sortir');
 });
 
-test('cortège : toutes les pancartes peuvent être portées, les rares moins souvent', () => {
+test('pancartes : les rares sortent moins souvent, et le cortège ne montre que celles qui sont arrivées', () => {
   const bundle = { ...fixtureBundle(), pancartes: [{ texte: 'COMMUNE', credit: '', rarete: 0 }, { texte: 'LÉGENDAIRE', credit: 'vue — https://exemple.org', rarete: 3 }] };
   const seen = { COMMUNE: 0, LÉGENDAIRE: 0 };
-  for (let seed = 1; seed <= 200; seed++) {
+  let empty = 0;
+  for (let seed = 1; seed <= 400; seed++) {
     const game = play(flat({ cortege: true }), { bundle, seed });
-    seen[game.cortege.find((m) => m.kind === 'pancarte').label]++;
+    const carrier = game.cortege.find((m) => m.kind === 'pancarte');
+    assert.deepEqual(game.signs.length, game.stats.signs);
+    if (!game.signs.length) {
+      empty++;
+      assert.equal(carrier.label, '', 'aucune pancarte arrivée : le porteur a les mains vides');
+    } else {
+      assert.equal(carrier.label, game.signs.at(-1));
+      seen[carrier.label]++;
+    }
   }
+  assert.ok(empty > 120 && empty < 280, `une fois sur deux, le cortège de départ n'en a pas (${empty} sur 400)`);
   assert.ok(seen.LÉGENDAIRE > 0 && seen.COMMUNE > seen.LÉGENDAIRE * 4, JSON.stringify(seen));
 });

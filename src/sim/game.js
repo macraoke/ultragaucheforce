@@ -85,6 +85,7 @@ export class Game {
     this.props = [];
     this.decors = [];
     this.cortege = [];
+    this.signs = []; // les pancartes arrivées dans la manif pendant cette partie, dans l'ordre
     this.boss = null;
     this.crowd = 0; // la manif : nombre de manifestants
     this.recruits = [];
@@ -500,8 +501,8 @@ export class Game {
   addCrowd(n) {
     if (!(n > 0)) return;
     this.crowd += Math.round(n);
-    syncCortege(this);
     bringSigns(this, n);
+    syncCortege(this);
   }
 
   /**
