@@ -3,7 +3,6 @@ inspiration: Gabriel Zucman
 traitement: l'économiste en super-héros
 cri: JUSTICE FISCALE !
 citation: arnault-zucman
-pv: 2
 vitesse: 135
 saut: 3.4
 fiche: impot-plancher

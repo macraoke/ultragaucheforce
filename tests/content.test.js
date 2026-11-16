@@ -54,9 +54,9 @@ test('clé inconnue : le message nomme la clé et la ligne', () => {
 });
 
 test('nombre hors bornes : le message donne les bornes', () => {
-  const text = textOf('content/heros/tyrannogauchiste.txt').replace(/^pv: .*$/m, 'pv: 99');
+  const text = textOf('content/heros/tyrannogauchiste.txt').replace(/^saut: .*$/m, 'saut: 99');
   expectError(errorsOf('content/heros/casse.txt', text), {
-    line: lineOf(text, 'pv: 99'), message: /« pv » doit être entre 1 et 5 \(reçu : 99\)/,
+    line: lineOf(text, 'saut: 99'), message: /« saut » doit être entre 1,?\.?5 et 5 \(reçu : 99\)/,
   });
 });
 

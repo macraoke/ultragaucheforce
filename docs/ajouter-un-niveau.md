@@ -84,7 +84,6 @@ Le niveau devient une carte de la Collection, avec sa citation et ses fiches.
 | `S` | sortie : le camion-sono (au moins une ; il occupe la case du `S` et les deux à sa droite) |
 | `K` | camarade en garde à vue : le libérer donne une vie, change de héros et amène 20 personnes |
 | `Q` | piquet de grève : point de reprise, et 10 personnes de plus |
-| `E` | pancarte à ramasser : le jeu en tire une de `content/pancartes/`, d'abord une que le joueur n'a pas |
 | `Y` | boss |
 | `N` | nasse : deux lignes se referment quand le héros passe ici |
 | `1` à `9` | panneau |
@@ -157,7 +156,7 @@ Au même endroit, c'est toujours la même pancarte. Modèles : [`banderole`](../
 
 - **Du sol épais** : plusieurs rangées de terre, de pavé ou de pierre, et deux rangées de socle (`O`) tout en bas. On creuse partout, on ne tombe jamais dans le vide.
 - **Des étages et des sous-sols** : un bâtiment à planchers, une cave, une galerie. Le héros tire devant lui, et aussi vers le bas ou vers le haut quand il ne bouge pas : c'est ainsi qu'il creuse.
-- **Récompensez qui explore** : une pancarte (`E`), un camarade (`K`), une assemblée générale, sur un toit ou au fond d'une galerie.
+- **Récompensez qui explore** : des recrues, un camarade (`K`), une assemblée générale, sur un toit ou au fond d'une galerie. Plus de monde, c'est plus de pancartes.
 - **Un mur du fond derrière chaque cavité** : sans lui, on voit le ciel à travers le sol.
 - **Tout mur se grimpe** en sautant plusieurs fois contre lui. Évitez seulement un surplomb d'acier au-dessus d'un mur à escalader.
 - Pas de trou de plus de quatre cases de large.

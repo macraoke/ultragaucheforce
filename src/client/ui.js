@@ -78,6 +78,7 @@ export class Screens {
       return h('article', {},
         h('h3', {}, n ? `${n}. ` : '', lv.titre, this.save.termines[id] ? ' ✔' : ''),
         h('p', {}, lv.accroche),
+        this.save.records[id] ? h('p', {}, h('b', {}, `✊ ${this.save.records[id].toLocaleString('fr-FR')}`), ' : ta plus grande manif') : null,
         h('p', {}, h('small', {}, `par ${lv.auteur}`)),
         this.button('Jouer', () => this.go.play(id)));
     };
@@ -154,6 +155,7 @@ export class Screens {
       h('div', { className: 'pied' }, this.back(() => this.go.back()),
         this.button('Effacer ma progression', () => {
           this.save.termines = {};
+          this.save.records = {};
           this.save.decouvertes = [];
           this.save.vues = {};
           this.save.heros = '';
@@ -195,8 +197,9 @@ export class Screens {
    * Carton d'ouverture : PANIQUE TV ouvre sur une vraie déclaration, signée, datée et sourcée.
    * On y choisit aussi son héros de départ, parmi ceux déjà rencontrés.
    * @param {string} hero  identifiant du héros avec lequel la partie démarre
+   * @param {boolean} choose  faux dans l'Atelier : on essaie le niveau avec le héros de sa fiche
    */
-  intro(level, done, hero = '') {
+  intro(level, done, hero = '', choose = true) {
     const quote = this.bundle.citations[level.citation];
     const go = this.button('C’est parti', done, 'gros');
     const heroes = Object.values(this.bundle.heros).filter((x) => x.statut !== 'test');
@@ -214,7 +217,7 @@ export class Screens {
       quote && h('p', { className: 'signature' }, signature(quote)),
       h('h2', {}, level.titre),
       level.accroche && h('p', {}, level.accroche),
-      heroes.length > 1 && this.heroRow(heroes, mine, hero, pick),
+      choose && heroes.length > 1 && this.heroRow(heroes, mine, hero, pick),
       go);
     go.focus({ preventScroll: true }); // Entrée lance le niveau…
     this.root.firstChild.onkeydown = (e) => { // … ← et → changent de héros
@@ -245,7 +248,7 @@ export class Screens {
    * Fin de niveau, en un écran : la manif, le bilan des blessés tel qu'on l'annonce côté forces de l'ordre
    * avec ce qui le compose, un fait réel à ouvrir, les cartes gagnées.
    */
-  end({ level, stats, time, crowd, next, last, won = [] }) {
+  end({ level, stats, time, crowd, next, last, won = [], best = 0 }) {
     const fact = this.bundle.fiches[level.fiche?.[0]];
     const card = fact && allCards(this.bundle).find((c) => c.kind === 'fiches' && c.item === fact);
     const minutes = `${Math.floor(time / 60)} min ${String(Math.floor(time % 60)).padStart(2, '0')} s`;
@@ -262,7 +265,8 @@ export class Screens {
       h('div', { className: 'bilans' },
         h('article', {},
           h('p', { className: 'chiffre' }, `✊ ${n(crowd)}`),
-          h('p', {}, 'dans la manif')),
+          h('p', {}, 'dans la manif'),
+          h('p', { className: 'dont' }, crowd > best ? (best ? `Record battu (${n(best)})` : 'Premier record') : `Record : ${n(best)}`)),
         h('article', { className: 'annonce' },
           h('p', { className: 'chiffre' }, n(hurt)),
           h('p', {}, hurt > 1 ? 'blessés annoncés côté forces de l’ordre' : 'blessé annoncé côté forces de l’ordre'),
@@ -338,14 +342,17 @@ export class Hud {
 
   update(game) {
     const { hero, boss } = game;
-    const state = [hero.def.id, hero.hp, game.lives, hero.charges, game.panicLevel, Math.round(game.panic), game.crowd,
+    const state = [hero.def.id, game.stack.join(), hero.charges, game.panicLevel, Math.round(game.panic), game.crowd,
       boss?.active && boss.state !== 'gone' ? boss.hp : -1].join('|');
     if (state === this.last) return; // on ne touche au DOM que si quelque chose a changé
     this.last = state;
     this.q('hud-heros').textContent = hero.def.nom;
-    this.q('hud-coeurs').textContent = '♥'.repeat(Math.max(0, hero.hp)) + '♡'.repeat(Math.max(0, hero.def.pv - hero.hp));
     this.q('hud-vies').replaceChildren(livesStack(this.bundle, game));
-    this.q('hud-charges').textContent = hero.def.speciale ? '★'.repeat(hero.charges) + '☆'.repeat(Math.max(0, hero.def.speciale.charges - hero.charges)) : '';
+    // L'attaque spéciale, par son nom, et combien il en reste.
+    const special = hero.def.speciale;
+    const charges = this.q('hud-charges');
+    charges.textContent = special ? `${(special.nom || 'Spéciale').replace(/\s*!$/, '')} × ${hero.charges}` : '';
+    charges.classList.toggle('vide', Boolean(special) && hero.charges === 0);
     // La manif : combien on est. Le compteur sursaute quand elle grossit.
     const march = this.q('hud-manif');
     march.hidden = !game.crowd;

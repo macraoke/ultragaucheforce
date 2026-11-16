@@ -11,7 +11,7 @@ import { Screens, Hud } from './ui.js';
 import { showHeroCard } from './herocard.js';
 import { showTaxScene } from './tax.js';
 import { showAtelier } from './atelier.js';
-import { loadSave, storeSave, discover } from './save.js';
+import { loadSave, storeSave, discover, isFound } from './save.js';
 import { cardName, citationOfWord, rarityName } from './collection.js';
 import { registerServiceWorker } from './sw-register.js';
 
@@ -110,8 +110,8 @@ function collect(kind, id, quiet = false) {
   const item = lines ? bundle[kind].find((p) => p.texte === id) : bundle[kind]?.[id];
   if (!item || !discover(save, kind, id)) return;
   won.push(`${kind}:${id}`);
-  if (kind === 'pancartes') hud.toast(`Pancarte ${rarityName(item)} : « ${item.texte} »`, `rarete-${item.rarete}`);
-  else if (!quiet) hud.toast(`Nouvelle carte : ${cardName(item)}`);
+  if (kind === 'pancartes') hud.toast(`Pancarte ${rarityName(item)} débloquée : « ${item.texte} »`, `rarete-${item.rarete}`);
+  else if (!quiet) hud.toast(`Débloqué : ${cardName(item)}`);
   collect('citations', item.citation, true);
   for (const fiche of [item.fiche].flat()) collect('fiches', fiche, true);
   for (const slogan of item.slogan || []) collect('pancartes', slogan, true); // une recrue arrive avec ses slogans
@@ -135,15 +135,12 @@ function readSigns() {
   });
 }
 
-/** Les pancartes déjà dans la Collection : une pancarte ramassée en donne d'abord une autre. */
-const ownedSigns = () => save.decouvertes.filter((key) => key.startsWith('pancartes:')).map((key) => key.slice('pancartes:'.length));
-
 function start(id, level = null) {
   custom = level;
   const again = current?.id === (id ?? 'atelier'); // « Recommencer » : les cartes déjà gagnées dans ce niveau restent
   current = { id: id ?? 'atelier', level: level ?? bundle.niveaux[id] };
   // Dans l'Atelier, on essaie le niveau avec le héros que dit sa fiche, pas celui de la sauvegarde.
-  game = new Game(bundle, id, { seed: Math.floor(Math.random() * 1e9), level, hero: level ? '' : save.heros, owned: ownedSigns() });
+  game = new Game(bundle, id, { seed: Math.floor(Math.random() * 1e9), level, hero: level ? '' : save.heros });
   renderer.snap(game);
   hud.reset();
   if (!begin && !again) won = []; // un changement de héros sur le carton d'ouverture garde les cartes déjà gagnées
@@ -158,7 +155,7 @@ function start(id, level = null) {
     setMode('playing');
     radio.play(current.level.musique || current.id);
   };
-  screens.intro(current.level, () => begin?.(), game.hero.def.id);
+  screens.intro(current.level, () => begin?.(), game.hero.def.id, !level);
 }
 
 function openAtelier() {
@@ -187,12 +184,13 @@ async function win() {
   }
   for (const fiche of [level.fiche].flat()) collect('fiches', fiche, true);
   const index = bundle.campagne.indexOf(id);
-  if (index >= 0) {
-    save.termines[id] = true;
-    storeSave(save);
-  }
+  // Le score d'un niveau, c'est la taille de la manif à l'arrivée ; on garde le record.
+  const best = save.records[id] || 0;
+  if (!custom && game.crowd > best) save.records[id] = game.crowd;
+  if (index >= 0) save.termines[id] = true;
+  storeSave(save);
   screens.end({
-    level, stats: game.stats, time: game.time, crowd: game.crowd, won,
+    level, stats: game.stats, time: game.time, crowd: game.crowd, won, best,
     next: index >= 0 ? bundle.campagne[index + 1] : null,
     last: index === bundle.campagne.length - 1,
   });
@@ -222,13 +220,15 @@ function handle(events) {
     else if (e.type === 'sign') collect('pancartes', e.text);
     else if (e.type === 'heroCard') {
       const hero = bundle.heros[e.hero];
+      const fresh = !isFound(save, 'heros', hero.id);
       collect('heros', hero.id, true);
       collectCortege(); // les soutiens venus avec le camarade libéré
+      if (game.level.cortege) audio.play('slogan'); // le cortège salue le camarade libéré
+      if (!fresh) continue; // déjà débloqué : on le joue tout de suite, sans cérémonie
+      // Jamais rencontré : le grand carton de déblocage.
       setMode('card');
       showHeroCard(bundle, hero, { audio, reduced: save.options.sobre }).then(() => {
-        if (mode !== 'card') return;
-        setMode('playing');
-        if (game.level.cortege) audio.play('slogan'); // le cortège salue le camarade libéré
+        if (mode === 'card') setMode('playing');
       });
     } else if (e.type === 'won') win();
     else if (e.type === 'lost') {

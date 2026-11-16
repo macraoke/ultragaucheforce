@@ -17,7 +17,6 @@ export const MARKERS = {
   Q: 'piquet de grève (point de reprise)',
   Y: 'boss',
   N: 'nasse (les lignes se referment quand le héros passe ici)',
-  E: 'pancarte à ramasser',
 };
 
 /** Les raretés d'une pancarte ou d'un bandeau, de la plus courante à la plus rare. */
@@ -201,7 +200,7 @@ const HERO_WEAPONS = Object.fromEntries(Object.entries(WEAPONS).filter(([, w]) =
 function buildHero(f, ctx, report) {
   const spec = {
     nom: req(), inspiration: str(), traitement: str(), cri: str(), citation: str(),
-    pv: num(1, 5, 2), vitesse: num(60, 220, 140), saut: num(1.5, 5, 3.2),
+    vitesse: num(60, 220, 140), saut: num(1.5, 5, 3.2),
     largeur: num(6, 16, 10), hauteur: num(8, 24, 14), statut: pick(['jouable', 'test']), ...CARD, ...CREDITS,
   };
   const out = readFields(f, spec, report, under('arme', 'speciale'));
@@ -233,7 +232,7 @@ function buildEnemy(f, ctx, report) {
 
 /** Une recrue : quelqu'un (ou une assemblée) qui rejoint la manif quand le héros passe ou lui tend un tract. */
 function buildRecruit(f, ctx, report) {
-  // `soin` : points de vie rendus au héros quand la recrue le rejoint (un medic).
+  // `soin` : combien de personnages perdus la recrue relève quand elle rejoint la manif (une street medic).
   const spec = { nom: req(), apport: num(1, 500, 0), multiplie: num(1.5, 5, 0), soin: num(0, 3, 0), slogan: list(), ...CARD, ...CREDITS };
   const out = readFields(f, spec, report);
   if (f.has('apport') === f.has('multiplie')) {
@@ -337,9 +336,19 @@ function buildCitation(f, ctx, report) {
 
 function buildFact(f, ctx, report) {
   // `valeur` : le nombre brut, quand une scène du jeu calcule avec (exemple : le Smic net mensuel).
-  const spec = { titre: req(), theme: pick(THEMES), texte: req(), portee: str(), periode: str(), valeur: num(0, 1e15, 0), ...SOURCE };
+  // Le dictionnaire de la scène de taxe : une fiche qui porte `compare` sert d'échelle à une fortune (« N ans de revenus
+  // d'un chirurgien » ; `valeur` = son revenu, `par` an ou mois) ; une fiche qui porte `finance` dit ce que la taxe
+  // paierait (« N enseignants » ; `valeur` = le coût d'un seul, par an, ou une fois pour toutes si `ponctuel`).
+  const spec = {
+    titre: req(), theme: pick(THEMES), texte: req(), portee: str(), periode: str(), valeur: num(0, 1e15, 0),
+    compare: str(), finance: str(), par: pick(['an', 'mois']), ponctuel: bool(), ...SOURCE,
+  };
   noSections(f, report);
-  return readFields(f, spec, report);
+  const out = readFields(f, spec, report);
+  if ((out.compare || out.finance) && !(out.valeur > 0)) {
+    report(f.lineOf(out.compare ? 'compare' : 'finance'), 'Une comparaison a besoin de « valeur: … » : le revenu, ou le coût d’une unité, en euros.');
+  }
+  return out;
 }
 
 function buildSound(f, ctx, report) {

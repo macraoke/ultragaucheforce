@@ -263,8 +263,9 @@ html.pivote body {
 #hud .bloc { position: absolute; top: 8px; display: flex; flex-wrap: wrap; align-items: center; gap: .3em .8em; max-width: 48%; }
 #hud .gauche { left: 10px; }
 #hud .droite { right: 10px; justify-content: flex-end; }
-#hud-coeurs { color: var(--rouge); font-size: 1.3em; letter-spacing: .08em; }
-#hud-charges { color: var(--or); font-size: 1.2em; }
+#hud-charges { background: var(--or); color: var(--nuit); font: 900 1em/1 var(--titre); letter-spacing: .04em; text-transform: uppercase; padding: .3em .5em; }
+#hud-charges:empty { display: none; }
+#hud-charges.vide { opacity: .45; }
 #hud-manif { flex-basis: 100%; color: var(--or); font-size: 1.5em; transform-origin: left center; }
 #hud-manif[hidden] { display: none; }
 #hud-manif.grossit { animation: grossit .45s cubic-bezier(.2, 1.6, .4, 1); }

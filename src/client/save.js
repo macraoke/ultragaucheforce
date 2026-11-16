@@ -6,7 +6,8 @@ const KEY = 'ugf:sauvegarde:v1'; // préfixé : le domaine peut être partagé a
 
 const DEFAULTS = {
   termines: {}, // identifiant de niveau → vrai
-  decouvertes: [], // les cartes de la Collection déjà rencontrées : « rayon:identifiant »
+  records: {}, // identifiant de niveau → la plus grande manif à l'arrivée
+  decouvertes: [], // ce qui est débloqué dans la Collection : « rayon:identifiant »
   vues: {}, // rayon de la Collection → nombre de découvertes lors de sa dernière visite (badge « Nouveau »)
   heros: '', // le héros de départ choisi ; vide : celui que le niveau propose
   options: { son: true, musique: false, sobre: false }, // la musique (lecteur SoundCloud) ne se lance que sur demande

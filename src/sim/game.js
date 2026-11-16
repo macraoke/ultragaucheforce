@@ -32,14 +32,14 @@ import { updateProjectiles } from './projectile.js';
 import { updateBoss, hurtBoss } from './boss.js';
 import { loadLevel, toList, playable } from './level.js';
 import { updateProps } from './props.js';
-import { updateRecruits, updateCortege, syncCortege, updateKettle, drawSign } from './manif.js';
+import { updateRecruits, updateCortege, syncCortege, updateKettle, drawSign, bringSigns } from './manif.js';
 
 export const DT = 1 / 60;
 
 const PANIC_STEPS = [34, 67]; // seuils ALERTE puis HYSTÉRIE
 const MAX_REINFORCEMENTS = 4; // renforts bornés : la panique ne rend jamais un niveau infaisable
 const FUSE = 0.12; // délai entre la destruction d'un tonneau et son explosion (réaction en chaîne)
-const START_LIVES = 3; // trois fois le héros de départ
+export const START_LIVES = 5; // cinq fois le héros de départ : un coup coûte un personnage
 const RESPAWN_DELAY = 0.8;
 const TRAIL_LENGTH = 600;
 const MAX_EVENTS = 400;
@@ -49,10 +49,9 @@ export class Game {
   /**
    * @param {object} bundle   contenu assemblé par `buildContent`
    * @param {string} levelId  identifiant dans `bundle.niveaux`
-   * @param {{seed?: number, invincible?: boolean, level?: object, hero?: string, owned?: Iterable<string>}} opts
+   * @param {{seed?: number, invincible?: boolean, level?: object, hero?: string}} opts
    *        `level` remplace `bundle.niveaux[levelId]` (Atelier, tests) ;
-   *        `hero` : le héros de départ choisi par le joueur (sinon celui du niveau) ;
-   *        `owned` : les pancartes que le joueur a déjà (une pancarte ramassée en donne d'abord une autre)
+   *        `hero` : le héros de départ choisi par le joueur (sinon celui du niveau)
    */
   constructor(bundle, levelId, opts = {}) {
     const level = opts.level ?? bundle.niveaux?.[levelId];
@@ -63,7 +62,6 @@ export class Game {
     this.rng = makeRng(opts.seed ?? 1);
     this.invincible = Boolean(opts.invincible);
     this.choice = opts.hero ?? ''; // lu par loadLevel
-    this.owned = new Set(opts.owned ?? []);
 
     this.events = [];
     this.status = 'playing';
@@ -71,6 +69,7 @@ export class Game {
     // Les vies sont des personnages, empilés : on joue celui du dessus. Une garde à vue libérée en pose un de plus ;
     // quand il tombe, on repart avec le suivant.
     this.stack = [];
+    this.fallen = []; // les personnages perdus, dans l'ordre : une street medic peut en relever
     this.panic = 0;
     this.panicLevel = 0;
     this.sign = null;
@@ -254,11 +253,10 @@ export class Game {
   hurtHero(amount) {
     const { hero } = this;
     if (hero.dead || amount <= 0 || this.invincible || hero.invuln > 0) return;
-    hero.hp -= amount;
-    hero.invuln = 1.4;
+    // Un personnage est une vie : un coup, et c'est le suivant de la pile qui prend sa place.
     this.sfx('degat', hero.x);
     this.emit('shake', { force: 4 });
-    if (hero.hp <= 0) this.killHero();
+    this.killHero();
   }
 
   /** Un automate ne meurt pas : à zéro, il se met en grève ou tombe en panne. */
@@ -312,7 +310,7 @@ export class Game {
     this.disperse(0.15); // sans son héros, une partie de la manif se disperse
     this.emit('death', {});
     this.sfx('mort', hero.x);
-    if (!this.invincible) this.stack.pop();
+    if (!this.invincible) this.fallen.push(this.stack.pop());
     if (this.lives <= 0) {
       this.status = 'lost';
       this.emit('lost', {});
@@ -455,6 +453,7 @@ export class Game {
     if (!(n > 0)) return;
     this.crowd += Math.round(n);
     syncCortege(this);
+    bringSigns(this, n);
   }
 
   /**

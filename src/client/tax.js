@@ -5,10 +5,11 @@
 
 import { h, link, frenchNumber } from './dom.js';
 import { sprite } from './sprites.js';
-import { taxFiches } from './collection.js';
+import { taxFiches, taxScales, taxUses } from './collection.js';
 
 const RATE = 0.02; // l'impôt plancher discuté : 2 % par an
-const YEARS_PER_STACK = 1000; // une liasse dessinée = mille ans du revenu de référence
+const STACKS = 620; // le tas dessiné ne dépasse pas ce nombre de liasses
+const STACK_YEARS = [100, 200, 500, 1000, 2000, 5000, 1e4, 2e4, 5e4, 1e5, 2e5, 5e5, 1e6, 2e6, 5e6, 1e7]; // ce que vaut une liasse, en années de revenus
 const W = 400;
 const H = 190;
 const CELL = { w: 7, h: 4 };
@@ -35,7 +36,19 @@ function drawStack(ctx, x, y) {
 }
 
 const billions = (euros) => frenchNumber(euros / 1e9, 1);
-const thousands = (n) => frenchNumber(Math.floor(n / 1000) * 1000);
+/** Un grand nombre arrondi vers le bas à deux ou trois chiffres : 64 640 → « 64 000 », 247 → « 240 ». */
+const round = (n) => {
+  const step = 10 ** Math.max(0, Math.floor(Math.log10(Math.max(1, n))) - 1);
+  return frenchNumber(Math.floor(n / step) * step);
+};
+const last = {}; // la dernière comparaison montrée de chaque sorte : on en change à la partie suivante
+/** Tire une comparaison au hasard, autre que la précédente s'il y a le choix. */
+function draw(kind, list) {
+  const pool = list.length > 1 ? list.filter((f) => f.id !== last[kind]) : list;
+  const pick = pool[Math.floor(Math.random() * pool.length)];
+  last[kind] = pick?.id;
+  return pick;
+}
 /** La ligne des sources d'un temps : chaque nombre affiché renvoie à la page où il se lit. */
 const sourcesOf = (facts) => h('p', { className: 'source' }, facts.length > 1 ? 'Sources : ' : 'Source : ',
   facts.map((fact, i) => [i > 0 && ' · ', link(fact.source.url, fact.source.titre.split(' — ')[0])]));
@@ -43,13 +56,18 @@ const sourcesOf = (facts) => h('p', { className: 'source' }, facts.length > 1 ? 
 /**
  * @returns {Promise<string[]>} les fiches à noter comme découvertes
  */
-export function showTaxScene(root, bundle, boss, { audio = null, hero = null } = {}) {
+export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pick = draw } = {}) {
   return new Promise((resolve) => {
     const fiche = (id) => bundle.fiches[id];
     const fortune = boss.fortune.montant * 1e9;
-    const wage = fiche('revenu-chirurgien'); // quelqu'un de très bien payé : le repère de l'échelle
-    if (!fortune || !wage?.valeur) return resolve([]);
-    const unit = wage.valeur * YEARS_PER_STACK;
+    // Le dictionnaire : à qui comparer la fortune, et ce que la taxe paierait. Tirés au hasard à chaque partie.
+    const scale = pick('compare', taxScales(bundle));
+    const use = pick('finance', taxUses(bundle));
+    if (!fortune || !scale) return resolve([]);
+    const income = scale.valeur * (scale.par === 'mois' ? 12 : 1); // revenu d'une année
+    const years = fortune / income;
+    const stackYears = STACK_YEARS.find((y) => years / y <= STACKS) ?? STACK_YEARS.at(-1);
+    const unit = income * stackYears;
     const estimate = fiche(boss.fortune.fiche); // d'où vient le montant de la fortune
     // Ce que la fortune rapporte en un an : un dividende par action multiplié par un nombre d'actions, chacun avec sa source.
     const rent = boss.fortune.rente.map(fiche);
@@ -116,46 +134,44 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null } =
     };
 
     const legend = h('p', { className: 'legende' },
-      h('i', { className: 'liasse' }), ` une liasse : ${frenchNumber(YEARS_PER_STACK)} ans de revenus d’un chirurgien`,
+      h('i', { className: 'liasse' }), ` une liasse : ${frenchNumber(stackYears)} ans de revenus d’${scale.compare}`,
       h('i', { className: 'point' }), ' le point rouge : toute sa carrière');
     const bar = (label, fact) => h('div', {},
       h('p', {}, label), h('span', {}, h('i', { style: `--part: ${fact.valeur}` }), h('b', {}, `${frenchNumber(fact.valeur)} %`)));
     const most = fiche('prelevements-52');
     const few = fiche('prelevements-27');
-    const teacher = fiche('enseignants-cout');
     const rule = fiche('impot-plancher');
     const owner = boss.inspiration ? `la famille de ${boss.inspiration}` : boss.nom;
+    const fly = () => {
+      audio?.play('tampon');
+      audio?.play('sauvetage');
+      if (yearly) animate('rain', 1000);
+      setTimeout(() => animate('fly', 1300), yearly ? 900 : 0);
+    };
 
-    // Chaque temps : un grand titre, une phrase, ses sources, et le bouton qui y mène.
+    // Chaque temps : un grand titre, une phrase, toutes ses sources, et le bouton qui y mène.
     const beats = [
       {
         title: `${billions(fortune)} milliards d’euros`,
-        line: `La fortune de ${owner} : ${thousands(fortune / wage.valeur)} ans de revenus d’un chirurgien.`,
-        source: [estimate, wage], more: legend,
+        line: `La fortune de ${owner} : ${round(years)} ans de revenus d’${scale.compare}.`,
+        source: [estimate, scale], more: legend,
       },
-      {
-        title: 'Pour lui : rien',
-        line: yearly > tax
-          ? `2 % : ${billions(tax)} milliards par an. Ses dividendes : ${billions(yearly)} milliards par an.`
-          : `2 % : ${billions(tax)} milliards par an. Il en reste ${billions(fortune - tax)}.`,
-        source: [rule, ...rent], button: 'Taxer 2 %', enter: () => {
-          audio?.play('tampon');
-          audio?.play('sauvetage');
-          if (yearly) animate('rain', 1000);
-          setTimeout(() => animate('fly', 1300), yearly ? 900 : 0);
-        },
+      use ? {
+        // Ce que 2 % paieraient. L'impôt est différentiel : c'est un maximum, la phrase le dit.
+        title: `${round(tax / use.valeur)} ${use.finance}`,
+        line: `Ce que paieraient 2 % de cette fortune${use.ponctuel ? ' en un an' : ', chaque année'} : au plus ${billions(tax)} milliards.`,
+        more: yearly > tax && h('p', { className: 'qui' }, `Moins que les dividendes du groupe familial : ${billions(yearly)} milliards par an.`),
+        source: [use, estimate, rule, ...(yearly > tax ? rent : [])], button: 'Taxer 2 %', enter: fly,
+      } : {
+        title: `Au plus ${billions(tax)} milliards par an`,
+        line: yearly > tax ? `2 % de cette fortune : moins que les dividendes du groupe familial (${billions(yearly)} milliards).` : '2 % de cette fortune.',
+        source: [estimate, rule, ...(yearly > tax ? rent : [])], button: 'Taxer 2 %', enter: fly,
       },
       most?.valeur && few?.valeur && {
         title: 'Et c’est juste',
-        line: 'Impôts et cotisations, en part des revenus :',
+        line: `Impôts et cotisations, en part des revenus (${most.periode.split(',')[0]}) :`,
         source: most, button: 'Est-ce juste ?', hideHeap: true,
-        more: h('div', { className: 'barres' }, bar('Presque tout le monde, chirurgien compris', most), bar('Les milliardaires', few)),
-      },
-      teacher?.valeur && {
-        title: `${thousands(tax / teacher.valeur)} enseignants`,
-        line: `Ce que paient ${billions(tax)} milliards, chaque année.`,
-        source: teacher, button: 'Ça paie quoi ?', hideHeap: true,
-        more: h('div', { className: 'services allumes' }, ['🏫', '🏥', '🚆'].map((icon) => h('span', {}, icon))),
+        more: h('div', { className: 'barres' }, bar('Presque tout le monde', most), bar('Les milliardaires', few)),
       },
     ].filter(Boolean);
 
@@ -181,7 +197,7 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null } =
       if (++at < beats.length) return show();
       root.replaceChildren();
       root.hidden = true;
-      resolve(taxFiches(bundle, boss));
+      resolve(taxFiches(bundle, boss, [scale, use].filter(Boolean)));
     };
 
     root.replaceChildren(h('section', { className: 'panneau taxe' }, title, line, scene, more, source, h('div', { className: 'pied' }, button)));

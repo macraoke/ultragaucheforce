@@ -6,16 +6,16 @@ Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les platea
 
 | | |
 |---|---|
-| ![La nasse se referme ; dessous, le métro](docs/captures/nasse.jpg) | ![On creuse : une pancarte attend sous le panneau](docs/captures/millevaches-creuser.jpg) |
+| ![La nasse se referme ; dessous, le métro](docs/captures/nasse.jpg) | ![On creuse : une paysanne attend sous le panneau](docs/captures/millevaches-creuser.jpg) |
 | ![Le métro, sous le boulevard](docs/captures/metro.jpg) | ![Un immeuble, étage par étage](docs/captures/immeuble.jpg) |
 | ![Le barrage cède à 200](docs/captures/barrage.jpg) | ![Le boss, assis sur sa fortune](docs/captures/boss-assis.jpg) |
 
 - **Faire grossir la manif.** Une soignante, un cheminot, une intersyndicale : chaque recrue compte, une assemblée générale double tout.
 - **Déborder.** Un barrage ne se casse pas : il cède devant le nombre.
 - **Creuser, grimper.** Tout le décor se détruit. Sous la rue, le métro, les catacombes, la salle des coffres ; au-dessus, six étages et les toits.
-- **Libérer.** Chaque camarade sorti de garde à vue rejoint l'équipe : une vie de plus, un personnage de plus.
-- **Collectionner.** Personnages, paroles, faits, et surtout les pancartes : communes, rares, épiques, légendaires. Toutes ont été vues en manif.
-- **Taxer.** Le boss est assis sur sa fortune. On en prend 2 % : rien pour lui, juste pour les autres, et de quoi payer 64 000 enseignants.
+- **Libérer.** Chaque camarade sorti de garde à vue rejoint l'équipe et se joue tout de suite. Un coup, et on repart avec le précédent.
+- **Débloquer.** Les gens qui rejoignent la manif portent parfois une pancarte : commune, rare, épique ou légendaire. Toutes ont été vues en manif.
+- **Taxer.** Le boss est assis sur sa fortune. On en prend 2 % : de quoi payer, par exemple, 64 000 enseignants. Les comparaisons changent à chaque partie.
 
 <details>
 <summary>Plus de captures</summary>
@@ -32,11 +32,11 @@ Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les platea
 | ![Le duplex de BFM-TV](docs/captures/duplex-bfm.jpg) | ![PANIQUE TV](docs/captures/panique-bandeau.jpg) |
 | ![Le menu](docs/captures/menu.jpg) | ![L'ouverture d'un niveau](docs/captures/ouverture.jpg) |
 | ![Un camarade libéré](docs/captures/carton-heros.jpg) | ![Fin de niveau](docs/captures/fin-de-niveau.jpg) |
-| ![La fortune](docs/captures/taxe-fortune.jpg) | ![Pour lui : rien](docs/captures/taxe-rien-pour-lui.jpg) |
-| ![Et c'est juste](docs/captures/taxe-juste.jpg) | ![64 000 enseignants](docs/captures/taxe-enseignants.jpg) |
-| ![La Collection : les pancartes et leur rareté](docs/captures/collection-grille.jpg) | ![Une carte](docs/captures/collection-carte.jpg) |
-| ![L'appel au vote](docs/captures/appel-au-vote.jpg) | ![L'Atelier : on dessine son niveau](docs/captures/atelier.jpg) |
-| ![Sur téléphone](docs/captures/mobile-paysage.jpg) | ![Fin de niveau sur téléphone](docs/captures/mobile-fin-de-niveau.jpg) |
+| ![La fortune, à l'échelle](docs/captures/taxe-fortune.jpg) | ![Ce que 2 % paieraient](docs/captures/taxe-ce-que-ca-paie.jpg) |
+| ![Et c'est juste](docs/captures/taxe-juste.jpg) | ![La Collection : les pancartes débloquées et leur rareté](docs/captures/collection-grille.jpg) |
+| ![Une pancarte débloquée](docs/captures/collection-carte.jpg) | ![L'appel au vote](docs/captures/appel-au-vote.jpg) |
+| ![L'Atelier : on dessine son niveau](docs/captures/atelier.jpg) | ![Sur téléphone](docs/captures/mobile-paysage.jpg) |
+| ![Fin de niveau sur téléphone](docs/captures/mobile-fin-de-niveau.jpg) | |
 
 ![Téléphone tenu debout : le jeu pivote](docs/captures/mobile-tenu-debout.jpg)
 
@@ -78,7 +78,7 @@ Tout le contenu est en fichiers texte, modifiables depuis GitHub sans rien insta
 | une mécanique | [une fonction](docs/ajouter-une-mecanique.md) |
 | une idée | [une issue](https://github.com/macraoke/ultragaucheforce/issues/new/choose) |
 
-Tout ce qu'on dépose devient une carte de la Collection. Le mode d'emploi : [CONTRIBUTING.md](CONTRIBUTING.md). Ce qui entre dans le jeu : [la charte](CHARTE.md).
+Tout ce qu'on dépose se débloque en jouant, et se retrouve dans la Collection. Le mode d'emploi : [CONTRIBUTING.md](CONTRIBUTING.md). Ce qui entre dans le jeu : [la charte](CHARTE.md).
 
 ## Sous le capot
 

@@ -38,8 +38,7 @@ test('collection : chaque carte se gagne quelque part en jouant', () => {
   assert.deepEqual(lost, [], 'cartes sans aucun chemin : attache-les à un personnage, un niveau, une scène');
   const hint = (kind, id) => whereToFind(bundle, kind, kind === 'pancartes' ? bundle.pancartes.find((p) => p.texte === id) : bundle[kind][id]);
   assert.deepEqual(hint('pancartes', 'MACRON, RENDS-NOUS LE POGNON !'), ['La retraitée'], 'un slogan arrive avec sa recrue');
-  assert.deepEqual(hint('pancartes', 'TAXEZ LES RICHES'), ['à ramasser dans un niveau']);
-  assert.ok(bundle.campagne.some((id) => bundle.niveaux[id].carte.some((row) => row.includes('E'))), 'aucune pancarte à ramasser dans la campagne');
+  assert.deepEqual(hint('pancartes', 'TAXEZ LES RICHES'), ['dans la manif']);
   assert.deepEqual(hint('citations', 'melenchon-bruit-et-fureur'), ["L'Ingénieur du chaos"], 'les mots du héros viennent de sa citation');
   assert.deepEqual(hint('fiches', 'procuration'), ['à la fin de la campagne']);
   assert.deepEqual(hint('fiches', 'patrimoine-moitie'), ['en taxant une fortune']);

@@ -1,5 +1,4 @@
 nom: Bêta
-pv: 2
 vitesse: 120
 saut: 3
 arme.type: tir

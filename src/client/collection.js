@@ -74,10 +74,20 @@ export const rarityName = (item) => (item.rarete === undefined ? '' : RARITIES[i
 export const VOTE_FICHES = ['presidentielle-dates', 'inscription-listes', 'procuration'];
 
 /** Les fiches que la scène de taxe apprend au joueur. */
-export const taxFiches = (bundle, boss) =>
-  [boss.fortune.fiche, ...boss.fortune.rente, 'revenu-chirurgien', 'prelevements-52', 'prelevements-27', 'enseignants-cout',
-    'impot-plancher', 'impot-plancher-rendement', 'impot-plancher-parcours', 'patrimoine-moitie', 'patrimoine-top10']
-    .filter((id) => bundle.fiches[id]);
+/** Les fiches que la scène de taxe apprend à chaque fois, en plus des comparaisons qu'elle tire au hasard. */
+const TAX_ALWAYS = ['prelevements-52', 'prelevements-27', 'impot-plancher', 'impot-plancher-rendement', 'impot-plancher-parcours',
+  'patrimoine-moitie', 'patrimoine-top10'];
+
+/** Le dictionnaire de la scène de taxe : à qui comparer une fortune, et ce que la taxe paierait. */
+export const taxScales = (bundle) => Object.values(bundle.fiches).filter((f) => f.compare && f.valeur > 0);
+export const taxUses = (bundle) => Object.values(bundle.fiches).filter((f) => f.finance && f.valeur > 0);
+
+/**
+ * Les fiches que la scène de taxe peut apprendre au joueur. `shown` : les comparaisons tirées cette fois-ci
+ * (sans lui : toutes, pour savoir où une carte se débloque).
+ */
+export const taxFiches = (bundle, boss, shown = [...taxScales(bundle), ...taxUses(bundle)]) =>
+  [boss.fortune.fiche, ...boss.fortune.rente, ...shown.map((f) => f.id), ...TAX_ALWAYS].filter((id) => bundle.fiches[id]);
 
 /** La citation dont vient un mot crié en jeu (« ÉCOTERRORISME ! ») : son mot-clé, sinon ses propres mots. */
 export function citationOfWord(bundle, word) {
@@ -116,7 +126,7 @@ export function whereToFind(bundle, kind, item) {
     case 'manchettes': return ['PANIQUE TV'];
     case 'pancartes': {
       const carriers = Object.values(bundle.recrues || {}).filter((r) => r.slogan.includes(item.texte)).map((r) => r.nom);
-      return carriers.length ? carriers : ['à ramasser dans un niveau'];
+      return carriers.length ? carriers : ['dans la manif'];
     }
     case 'citations': {
       if (item.categorie !== 'gauche') return ['PANIQUE TV'];
@@ -200,7 +210,7 @@ function references(bundle, item) {
 
 function facts(kind, item) {
   if (kind === 'heros') {
-    return [[hearts(item.pv), `  vitesse ${bar(item.vitesse, 200)}  saut ${bar(item.saut, 4.5)}`],
+    return [`vitesse ${bar(item.vitesse, 200)}  saut ${bar(item.saut, 4.5)}`,
       item.speciale?.nom && `Spéciale : ${item.speciale.nom}`];
   }
   if (kind === 'ennemis') {

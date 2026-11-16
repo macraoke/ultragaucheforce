@@ -4,6 +4,7 @@ texte: En 2021, les chirurgiens libéraux ont déclaré en moyenne 180 000 euros
 portee: Études et Résultats n° 1322 (décembre 2024) : chirurgiens ayant une activité libérale, revenu annuel une fois les charges professionnelles déduites, avant impôt sur le revenu. L'étude détaillée donne 178 300 euros. 2021 est la dernière année publiée.
 periode: revenus de 2021, étude parue le 20 décembre 2024
 valeur: 180000
+compare: un chirurgien
 source.titre: DREES — Revenu des médecins libéraux : une légère hausse entre 2017 et 2021
 source.url: https://drees.solidarites-sante.gouv.fr/publications-communique-de-presse/etudes-et-resultats/241220_ER_revenu-des-medecins-liberaux
 source.nature: officielle

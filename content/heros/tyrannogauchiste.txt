@@ -1,7 +1,6 @@
 nom: Le TyrannoGauchiste
 traitement: l'ultragauche telle que la télé l'imagine
 cri: TAXEZ LES RICHES !
-pv: 3
 vitesse: 125
 saut: 3
 largeur: 12

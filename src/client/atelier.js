@@ -17,7 +17,7 @@ const MARGIN = 2 * TILE; // ce qu'on peut voir au-delà des bords de la carte
 const ICON = 68; // côté d'une icône de la palette, en pixels de dessin (affichée deux fois plus petite)
 const SIDES = [['haut', 'Haut'], ['bas', 'Bas'], ['gauche', 'Gauche'], ['droite', 'Droite']];
 const BACKDROP_NAMES = { campagne: 'Campagne', ville: 'Ville', citadelle: 'Citadelle' };
-const PROPS = { S: 'sortie', K: 'cage', Q: 'piquet', E: 'pancarte' }; // les repères qui se dessinent avec un décor
+const PROPS = { S: 'sortie', K: 'cage', Q: 'piquet' }; // les repères qui se dessinent avec un décor
 const has = (obj, key) => Object.hasOwn(obj, key);
 /** La fiche qui porte cet identifiant, ou rien : un identifiant tapé à la main peut être n'importe quoi. */
 const own = (table, id) => (has(table, id) ? table[id] : null);
@@ -77,7 +77,6 @@ export function showAtelier(root, { bundle, save, test, back }) {
       item('Sortie', image(bundle.decors.sortie), { type: 'repere', char: 'S' }),
       item('Garde à vue', image(bundle.decors.cage), { type: 'repere', char: 'K' }),
       item('Piquet de grève', image(bundle.decors.piquet), { type: 'repere', char: 'Q' }),
-      item('Pancarte à ramasser', image(bundle.decors.pancarte), { type: 'repere', char: 'E' }),
       item('Boss', image(own(bundle.boss, defaults.boss)), { type: 'repere', char: 'Y' }),
       item('Nasse', image(own(bundle.ennemis, defaults.nasse)), { type: 'repere', char: 'N' }),
       item('Panneau', image(bundle.decors.panneau), { type: 'panneau' }),

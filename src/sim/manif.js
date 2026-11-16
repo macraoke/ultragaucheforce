@@ -53,11 +53,10 @@ export function joinRecruit(game, r) {
   const x = r.x + r.w / 2;
   game.stats.recruits++;
   game.addCrowd(n);
-  // Un medic soigne : il rend des points de vie au héros, sans dépasser son maximum.
-  const { hero } = game;
-  const healed = def.soin > 0 && !hero.dead ? Math.min(def.soin, hero.def.pv - hero.hp) : 0;
-  hero.hp += healed;
-  game.emit('recruit', { id: def.id, n, crowd: game.crowd, x, y: r.y, healed });
+  // Une street medic relève des camarades tombés : ils reprennent place au bas de la pile.
+  const back = def.soin > 0 ? game.fallen.splice(-def.soin).filter(Boolean) : [];
+  game.stack.unshift(...back);
+  game.emit('recruit', { id: def.id, n, crowd: game.crowd, x, y: r.y, healed: back.length });
   if (def.slogan.length) game.emit('bubble', { x, y: r.y - 6, text: def.slogan[(game.stats.recruits - 1) % def.slogan.length] });
   game.sfx('recrue', x);
   game.discover('recrue', def.id);
@@ -67,40 +66,36 @@ export function joinRecruit(game, r) {
 // ---------------------------------------------------------------- cortège
 
 /** Combien de manifestants on dessine pour une foule donnée : jamais plus qu'il n'y en a, quarante au plus. */
-const CARRIED = 26; // au-delà, une pancarte ne se lit plus au-dessus d'une tête
-const CORTEGE_ODDS = [12, 5, 2, 1]; // dans le cortège : une légendaire pour douze communes
-const PICKUP_ODDS = [3, 3, 2, 2]; // ramassée dans un niveau : les rares sortent presque autant
+const ODDS = [12, 5, 2, 1]; // une légendaire sort douze fois moins qu'une commune
+const SIGN_CHANCE = 0.5; // un groupe qui arrive porte une pancarte une fois sur deux
 
 /** Tire une ligne au sort, les plus rares moins souvent (`odds` : le poids de chaque rareté). */
-export function drawSign(game, pool, odds = CORTEGE_ODDS) {
+export function drawSign(game, pool, odds = ODDS) {
   let roll = game.rng.next() * pool.reduce((sum, p) => sum + (odds[p.rarete] ?? 1), 0);
   return pool.find((p) => (roll -= odds[p.rarete] ?? 1) < 0) ?? pool.at(-1) ?? null;
 }
 
-/** Les pancartes assez courtes pour être portées, sans celles que le cortège porte déjà. */
-function carriable(bundle, cortege) {
-  const short = (bundle.pancartes || []).filter((p) => p.texte.length <= CARRIED);
-  const fresh = short.filter((p) => !cortege.some((m) => m.label === p.texte));
-  return fresh.length ? fresh : short;
+/** Une pancarte arrive dans la manif, tirée parmi toutes celles du jeu : nouvelle ou déjà vue, c'est le hasard. */
+function carrySign(game) {
+  const sign = drawSign(game, game.bundle.pancartes || []);
+  if (!sign) return '';
+  game.stats.signs++;
+  game.emit('sign', { text: sign.texte, rarity: sign.rarete });
+  return sign.texte;
 }
 
 /**
- * Une pancarte ramassée dans le niveau : d'abord une que le joueur n'a pas encore. Elle entre dans la manif,
- * et dans le cortège si elle est assez courte.
+ * Des gens rejoignent la manif : certains ont une pancarte. Un groupe de vingt en apporte une, une fois sur deux ;
+ * un gros cortège, quatre au plus. Elle remplace celle d'un manifestant qu'on voit déjà.
  */
-export function pickUpSign(game, prop) {
-  prop.on = true;
-  const all = game.bundle.pancartes || [];
-  const fresh = all.filter((p) => !game.owned.has(p.texte));
-  const sign = drawSign(game, fresh.length ? fresh : all, PICKUP_ODDS);
-  if (!sign) return;
-  game.owned.add(sign.texte);
-  game.stats.signs++;
-  const carrier = sign.texte.length <= CARRIED && game.cortege.find((m) => m.kind === 'pancarte');
-  if (carrier) carrier.label = sign.texte;
-  game.addCrowd(5);
-  game.sfx('recrue', prop.x);
-  game.emit('sign', { text: sign.texte, rarity: sign.rarete, x: prop.x + prop.w / 2, y: prop.y });
+export function bringSigns(game, n) {
+  const groups = Math.max(1, Math.min(4, Math.round(n / 20)));
+  for (let i = 0; i < groups; i++) {
+    if (game.rng.next() >= SIGN_CHANCE) continue;
+    const text = carrySign(game);
+    const carriers = game.cortege.filter((m) => m.kind === 'pancarte');
+    if (text && carriers.length) game.rng.pick(carriers).label = text;
+  }
 }
 
 export const visibleCortege = (crowd) => Math.max(0, Math.min(crowd, MAX_CORTEGE, 2 + Math.ceil(crowd / 10)));
@@ -117,7 +112,7 @@ export function syncCortege(game) {
     const kind = KINDS[n % KINDS.length];
     const turn = Math.floor(n / KINDS.length);
     let label = INSTRUMENTS[turn % INSTRUMENTS.length];
-    if (kind === 'pancarte') label = drawSign(game, carriable(bundle, cortege))?.texte ?? '';
+    if (kind === 'pancarte') label = carrySign(game);
     if (kind === 'drapeau') label = flags.length ? flags[turn % flags.length] : '';
     cortege.push({
       x: hero.x + hero.w / 2, y: hero.y + hero.h, facing: hero.facing, kind, label, gassed: 0, pushed: 0, shove: 0,

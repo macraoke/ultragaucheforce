@@ -94,15 +94,16 @@ Le public visé est autant la classe moyenne que les jeunes.
 - **Les blessés, détaillés** : plus de compteur pendant la partie ; à la fin, le nombre annoncé côté forces de l'ordre, et ce qui le compose.
 - **La nasse revient d'elle-même**, sans être annoncée.
 - **On choisit son héros** parmi ceux de la Collection ; chaque camarade libéré vaut une vie de plus.
-- **La Collection se joue** : cartes à retourner, « Nouveau », progression par rayon, cartes gagnées en fin de niveau.
+- **La Collection se joue** : cartes à retourner, « Nouveau », progression par rayon, ce qu'on a débloqué, en fin de niveau.
 
 ## Itération 4
 
 - **Des niveaux en hauteur et en profondeur** : sol épais qu'on creuse partout, galeries, caves, métro, immeubles à étages. Le héros tire aussi vers le bas et vers le haut.
-- **Les pancartes se collectionnent** : toutes se valent, avec ou sans source ; chacune a une rareté tirée de son texte ; on en ramasse dans les niveaux.
-- **Les vies sont des personnages** : chaque camarade libéré rejoint la pile ; quand le héros tombe, le suivant prend sa place.
+- **Les pancartes se débloquent** : toutes se valent, avec ou sans source ; chacune a une rareté tirée de son texte ; les gens qui rejoignent la manif en portent parfois une, tirée au hasard.
+- **Un personnage, une vie** : pas de points de vie. Un coup, et le personnage est perdu ; le précédent prend sa place. Chaque camarade libéré rejoint la pile ; son carton de déblocage ne joue que la première fois.
+- **Le score, c'est la manif** : sa taille à l'arrivée, avec un record par niveau.
+- **La taxe, par un dictionnaire** : à qui comparer la fortune, ce que 2 % paieraient ; des fiches sourcées, tirées au hasard à chaque partie.
 - **Des écrans courts** : un écran, une idée ; ce qui précise se déplie. Une citation est simplement signée, et sa signature mène à la source.
-- **Les 2 % en trois idées** : rien pour lui, juste par rapport aux autres, de quoi financer beaucoup.
 - **L'Atelier se dessine** : une palette d'images, on peint, on essaie.
 
 ## Hors-ligne : seulement dans la version construite

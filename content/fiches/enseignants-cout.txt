@@ -4,6 +4,7 @@ texte: 75 millions d'euros : c'est « le coût de 2 000 emplois » d'enseignants
 portee: Rapport général n° 139 (2025-2026), tome III, annexe 13, sur le projet de loi de finances pour 2026, déposé le 24 novembre 2025. Coût budgétaire pour l'État, avancé à l'appui d'un amendement d'économie ; le rapport ne dit pas si les pensions sont comprises. La division est la nôtre.
 periode: projet de loi de finances pour 2026
 valeur: 37500
+finance: enseignants
 source.titre: Sénat — Projet de loi de finances pour 2026 : Enseignement scolaire (rapport général n° 139, annexe 13)
 source.url: https://www.senat.fr/rap/l25-139-313/l25-139-313_mono.html
 source.nature: officielle
