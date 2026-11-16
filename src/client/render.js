@@ -180,7 +180,11 @@ export class Renderer {
     for (const f of this.floaters) {
       this.label(f.text, f.x - cx, f.y - cy, { size: f.size || 7, color: f.color, alpha: Math.min(1, f.t * 2), width: 150 });
     }
-    if (game.sign && !this.demo) this.board(game.sign, this.viewW / 2, 30);
+    if (game.sign && !this.demo) {
+      // Un panneau peut dire la même chose au clavier et au pouce : « au clavier // au pouce ».
+      const [keys, thumbs] = game.sign.split(' // ');
+      this.board(thumbs && document.body.classList.contains('tactile') ? thumbs : keys, this.viewW / 2, 30);
+    }
   }
 
   background(kind, cx, cy) {

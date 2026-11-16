@@ -9,7 +9,8 @@
     "start": "node tools/dev.mjs",
     "test": "node --test \"tests/**/*.test.js\"",
     "verifier": "node tools/validate.mjs",
-    "build": "node tools/build.mjs"
+    "build": "node tools/build.mjs",
+    "robot": "node tools/robot.mjs"
   },
   "engines": {
     "node": ">=22"

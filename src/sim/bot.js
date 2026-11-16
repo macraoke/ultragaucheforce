@@ -42,7 +42,10 @@ export function botActions(game, memory) {
     if (roof && phase < 40) return { ...act, up: true }; // quarante pas à tirer vers le haut, sans bouger
     act.fire = false; // puis on grimpe sans abîmer la paroi ; puits ouvert jusqu'au ciel : on ne s'arrête plus
     act[toward > 0 ? 'right' : 'left'] = true;
-    act.jump = m.t % 9 < 6;
+    // Du fond : un vrai saut, tenu jusqu'au bout. En l'air contre la paroi : de petits bonds répétés.
+    if (h.onGround && m.hold === 0) m.hold = 22;
+    else if (!h.onGround && wallAt(game.world, h, toward) && m.hold === 0 && m.t % 9 === 0) m.hold = 6;
+    act.jump = m.hold > 0;
     return act;
   }
 

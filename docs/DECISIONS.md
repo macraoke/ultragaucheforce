@@ -76,10 +76,10 @@ Chaque fiche de `content/` devient une carte, trouvée en la croisant dans le je
 
 ## La fortune, assise
 
-Chaque niveau finit devant un ultra-riche, assis sur sa fortune : un tas de liasses à l'échelle. Lequel ? Le hasard le dit à chaque partie. Puis on le taxe, en deux écrans :
+Chaque niveau finit devant un ultra-riche, assis sur sa fortune : un tas de liasses à l'échelle. Lequel ? Le hasard le dit à chaque partie. Puis on le taxe, sur un seul écran :
 
 - **La fortune, à l'échelle de quelqu'un** (« 670 000 ans de revenus d'un chirurgien ») et ce qu'elle rapporte en un an, pour répondre d'avance à « flux et stocks ».
-- **Ce que 2 % paieraient** (« 64 000 enseignants »), au plus, puisque l'impôt est différentiel ; et un fait frappant sur les inégalités.
+- Le bouton « Taxer 2 % » fait apparaître au même endroit **ce que 2 % paieraient** (« 64 000 enseignants »), au plus, puisque l'impôt est différentiel ; et un fait frappant sur les inégalités.
 
 L'échelle, l'exemple et le fait se tirent au hasard dans un dictionnaire de fiches sourcées (`compare`, `finance`, `choc`). Le public visé est autant la classe moyenne que les jeunes : c'est une manif virtuelle, elle doit apprendre quelque chose à chacun.
 
@@ -96,11 +96,12 @@ L'échelle, l'exemple et le fait se tirent au hasard dans un dictionnaire de fic
 ## Itération 4
 
 - **Des niveaux en hauteur et en profondeur** : sol épais qu'on creuse partout, galeries, caves, métro, immeubles à étages. Le héros tire aussi vers le bas et vers le haut.
-- **Les pancartes se débloquent** : toutes se valent, avec ou sans source ; chacune a une rareté tirée de son texte ; les gens qui rejoignent la manif en portent parfois une, tirée au hasard.
+- **Les pancartes se débloquent** : toutes se valent, avec ou sans source ; chacune a une rareté tirée de son texte. Une seule façon d'en voir arriver une : une tranche de vingt personnes qui rejoint la manif en apporte une, une fois sur deux, tirée au hasard. Le cortège ne montre que celles qui sont arrivées.
 - **Une pile de personnages** : on part avec un seul, tiré au hasard la première fois, choisi ensuite. Chacun encaisse quelques coups : une barre de vie sous la pile, pas de cœurs. Quand il tombe, le précédent prend sa place ; pile vide, niveau perdu. Chaque camarade libéré rejoint la pile, avec son grand carton.
 - **Le score, c'est la manif** : sa taille à l'arrivée, avec un record par niveau.
 - **Le hasard partout** : le boss, le personnage de départ, les camarades libérés, les pancartes, et dans la scène de taxe l'échelle, l'exemple et le fait choc.
 - **Un plan de campagne** : une seule liste d'étapes ; un niveau déposé est une étape comme une autre.
+- **PANIQUE TV filme les poubelles** : quand la panique franchit un palier, une poubelle prend feu et une équipe télé vient la filmer, elle, pas la manif. Le bandeau est celui d'une chaîne d'info : logo, trois crans de panique, un fil qui défile.
 - **Des écrans courts** : un écran, une idée ; ce qui précise se déplie. Une citation est simplement signée, et sa signature mène à la source.
 - **L'Atelier se dessine** : une palette d'images, on peint, on essaie.
 

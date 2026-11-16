@@ -58,7 +58,7 @@ Déposé dans `content/niveaux/`, il devient une étape du plan de campagne, à 
 | `fond` | `campagne`, `ville` ou `citadelle` |
 | `cortege` | `oui` : la manif suit le héros |
 | `manif` | combien de manifestants au départ (10 avec un cortège, sauf indication ; 5000 au plus) |
-| `panneau.1` à `panneau.9` | le texte du panneau placé par le chiffre correspondant sur la carte |
+| `panneau.1` à `panneau.9` | le texte du panneau placé par le chiffre correspondant sur la carte. Pour parler aussi au pouce : `au clavier // au pouce`, par exemple `J : lancer des tracts // TIR : lancer des tracts` |
 | un signe de légende | `b: bac` place une unité, une recrue ou un décor à chaque `b` de la carte |
 | `heros` | le héros avec lequel on essaie le niveau dans l'Atelier. En jeu, le joueur choisit parmi ceux qu'il a débloqués ; la première fois, le hasard choisit |
 | `camarades` | l'ordre des héros libérés, séparés par une barre verticale : `melenchotron \| zuc-man` (sinon au hasard) |

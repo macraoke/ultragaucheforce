@@ -60,3 +60,17 @@ test('une vraie partie démarre avec un seul personnage : le perdre, c’est per
   game.killHero();
   assert.equal(game.status, 'lost');
 });
+
+test('le boss est tiré au hasard à chaque partie, sauf si le niveau en impose un', () => {
+  const base = fixtureBundle();
+  const [first] = Object.values(base.boss);
+  const second = { ...first, id: 'autre', nom: 'Un autre' };
+  const bundle = { ...base, boss: { [first.id]: first, autre: second } };
+  const arena = flat({ draw: (put, ground) => put(ground, 30, 'Y') });
+  const met = new Set();
+  for (let seed = 1; seed <= 40; seed++) met.add(play(arena, { bundle, seed }).boss.def.id);
+  assert.deepEqual([...met].sort(), [first.id, 'autre'].sort(), 'd’une partie à l’autre, ce n’est pas le même');
+  for (let seed = 1; seed <= 10; seed++) assert.equal(play({ ...arena, boss: 'autre' }, { bundle, seed }).boss.def.id, 'autre');
+  assert.equal(play(flat(), { bundle }).boss, null, 'pas de repère « Y » : pas de boss');
+});
+

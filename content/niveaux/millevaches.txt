@@ -9,14 +9,14 @@ cortege: oui
 manif: 3
 heros: tyrannogauchiste
 
-panneau.1: ← → avancer · ESPACE sauter
-panneau.2: J : lancer des tracts
+panneau.1: ← → avancer · ESPACE sauter // Pouce gauche : avancer · SAUT : sauter
+panneau.2: J : lancer des tracts // TIR : lancer des tracts
 panneau.3: Touche-la : elle rejoint la manif
-panneau.4: K : spéciale
+panneau.4: K : spéciale // SPÉ : spéciale
 panneau.5: Contre un mur : saute, saute, saute
 panneau.6: Assez nombreux, le blindé cède
 panneau.7: PARIS →
-panneau.8: ↓ + J : creuser
+panneau.8: ↓ + J : creuser // Pouce gauche vers le bas + TIR : creuser
 
 g: gendarme-mobile
 q: quad

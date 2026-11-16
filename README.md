@@ -14,8 +14,9 @@ Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les platea
 - **Déborder.** Un barrage ne se casse pas : il cède devant le nombre.
 - **Creuser, grimper.** Tout le décor se détruit. Sous la rue, le métro, les catacombes, la salle des coffres ; au-dessus, six étages et les toits.
 - **Libérer.** On part avec un seul personnage, tiré au hasard la première fois. Chaque camarade sorti de garde à vue rejoint l'équipe et se joue tout de suite ; quand il tombe, on repart avec le précédent.
-- **Débloquer.** Les gens qui rejoignent la manif portent parfois une pancarte : commune, rare, épique ou légendaire. Toutes ont été vues en manif.
+- **Débloquer.** Les gens qui rejoignent la manif portent parfois une pancarte : commune, rare, épique ou légendaire. Il y en a 344, toutes relevées en manif.
 - **Taxer.** Au bout de chaque niveau, un ultra-riche est assis sur sa fortune : lequel, le hasard le dit. On en prend 2 % : de quoi payer, par exemple, 64 000 enseignants. Les comparaisons et les faits changent à chaque partie.
+- **PANIQUE TV.** Un bandeau de chaîne d'info fait défiler de vraies déclarations. Quand la panique monte, une équipe télé vient filmer la poubelle qui brûle, pas la manif.
 
 <details>
 <summary>Plus de captures</summary>
@@ -96,6 +97,7 @@ tools/         serveur local, vérification, build — zéro dépendance
 | `npm run verifier` | contrôle le contenu, en français, fichier et ligne |
 | `npm test` | les tests ; un robot traverse chaque niveau de la campagne |
 | `npm run build` | la version à héberger, dans `dist/` |
+| `npm run robot` | quarante parties par niveau jouées par le robot : un repère de difficulté |
 
 Le pourquoi : [docs/DECISIONS.md](docs/DECISIONS.md).
 
