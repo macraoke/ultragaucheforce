@@ -33,7 +33,7 @@ test('collection : toute pancarte, tout bandeau devient une carte, avec ou sans 
   assert.equal(allCards(bundle).filter((c) => c.kind === 'manchettes').length, bundle.manchettes.length);
 });
 
-test('collection : chaque carte se gagne quelque part en jouant', () => {
+test('collection : chaque carte se débloque quelque part en jouant', () => {
   const lost = cards.filter((c) => whereToFind(bundle, c.kind, c.item).length === 0).map((c) => `${c.kind}:${cardId(c.item)}`);
   assert.deepEqual(lost, [], 'cartes sans aucun chemin : attache-les à un personnage, un niveau, une scène');
   const hint = (kind, id) => whereToFind(bundle, kind, kind === 'pancartes' ? bundle.pancartes.find((p) => p.texte === id) : bundle[kind][id]);

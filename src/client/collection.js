@@ -119,7 +119,7 @@ function unitsOf(bundle, level) {
 }
 
 /**
- * Où gagne-t-on cette carte ? L'indice affiché sous une silhouette, puis « Vu dans » sur la carte trouvée.
+ * Où débloque-t-on cette carte ? L'indice affiché sous une silhouette, puis « Vu dans » sur la carte trouvée.
  * Une liste vide voudrait dire qu'aucun chemin n'y mène : un test l'interdit.
  */
 export function whereToFind(bundle, kind, item) {
@@ -337,11 +337,11 @@ export function shelfGrid(bundle, shelf, save = null, actionsFor = () => []) {
 }
 
 /**
- * Les cartes gagnées pendant un niveau, en rangée : elles se retournent une à une.
+ * Ce qui a été débloqué pendant un niveau, en rangée : elles se retournent une à une.
  * @param {string[]} keys  clés de sauvegarde, « rayon:identifiant »
  */
 export function wonCards(bundle, keys) {
-  return h('div', { className: 'cartes-gagnees' }, cardsByKeys(bundle, keys).map((c, i) => {
+  return h('div', { className: 'debloquees' }, cardsByKeys(bundle, keys).map((c, i) => {
     const mini = miniCard(bundle, c, { onOpen: () => openCard(bundle, c) });
     mini.style.animationDelay = `${Math.min(i, 30) * 70}ms`;
     return mini;

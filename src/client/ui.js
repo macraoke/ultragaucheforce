@@ -247,7 +247,7 @@ export class Screens {
 
   /**
    * Fin de niveau, en un écran : la manif, le bilan des blessés tel qu'on l'annonce côté forces de l'ordre
-   * avec ce qui le compose, un fait réel à ouvrir, les cartes gagnées.
+   * avec ce qui le compose, un fait réel à ouvrir, ce qui a été débloqué.
    */
   end({ level, stats, time, crowd, next, last, won = [], best = 0 }) {
     const fact = this.bundle.fiches[level.fiche?.[0]];

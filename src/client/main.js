@@ -31,7 +31,7 @@ let current = null; // { id, level } du niveau en cours
 let custom = null; // niveau de l'Atelier en cours de test
 let begin = null; // le carton d'ouverture attend : fonction qui lance vraiment le niveau
 let bot = {};
-let won = []; // clés des cartes gagnées depuis le début du niveau : la rangée de l'écran de fin
+let won = []; // clés de ce qui a été débloqué depuis le début du niveau : la rangée de l'écran de fin
 let acc = 0;
 let last = performance.now();
 
@@ -134,13 +134,13 @@ function startingHero() {
 
 function start(id, level = null) {
   custom = level;
-  const again = current?.id === (id ?? 'atelier'); // « Recommencer » : les cartes déjà gagnées dans ce niveau restent
+  const again = current?.id === (id ?? 'atelier'); // « Recommencer » : ce qui a déjà été débloqué dans ce niveau reste
   current = { id: id ?? 'atelier', level: level ?? bundle.niveaux[id] };
   // Dans l'Atelier, on essaie le niveau avec le héros que dit sa fiche, pas celui de la sauvegarde.
   game = new Game(bundle, id, { seed: Math.floor(Math.random() * 1e9), level, hero: level ? '' : startingHero() });
   renderer.snap(game);
   hud.reset();
-  if (!begin && !again) won = []; // un changement de héros sur le carton d'ouverture garde les cartes déjà gagnées
+  if (!begin && !again) won = []; // un changement de héros sur le carton d'ouverture garde ce qui a déjà été débloqué
   if (id) collect('niveaux', id, true);
   collect('citations', current.level.citation, true);
   collect('heros', game.hero.def.id, true);

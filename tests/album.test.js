@@ -1,4 +1,4 @@
-// L'album côté joueur : les cartes gagnées dans un niveau, le badge « Nouveau », la pile de vies.
+// L'album côté joueur : ce qui a été débloqué dans un niveau, le badge « Nouveau », la pile de vies.
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -10,7 +10,7 @@ const { bundle } = loadContent();
 const cards = allCards(bundle);
 const card = (kind, id) => cards.find((c) => c.kind === kind && (c.item.id ?? c.item.texte) === id);
 
-test('cartes gagnées : les clés de sauvegarde retrouvent leurs cartes, dans l’ordre de l’album', () => {
+test('débloqué dans le niveau : les clés de sauvegarde retrouvent leurs cartes, dans l’ordre de l’album', () => {
   const sign = bundle.pancartes.find((p) => p.credit && p.texte.includes(':')) || bundle.pancartes.find((p) => p.credit);
   const keys = [`pancartes:${sign.texte}`, 'ennemis:crs', 'heros:zuc-man', 'heros:inconnu', 'fiches:smic'];
   const found = cardsByKeys(bundle, keys);
