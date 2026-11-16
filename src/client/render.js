@@ -4,8 +4,10 @@
 // et `textCanvas` en pleine résolution pour les textes du monde (pancartes, mots, bulles).
 
 import { sprite } from './sprites.js';
+import { withKeys } from './input.js';
 
 const TILE = 16;
+const SIGN_LINGER = 1.6; // secondes pendant lesquelles un panneau dépassé reste lisible, en s'effaçant
 const FONT = "Impact, Haettenschweiler, 'Arial Narrow Bold', 'HelveticaNeue-CondensedBlack', 'Roboto Condensed', sans-serif";
 export const SKIES = {
   campagne: ['#6fc4ee', '#d5f0f7'],
@@ -33,6 +35,8 @@ export class Renderer {
     this.reduced = false;
     this.anchor = 0.62; // hauteur des pieds du héros à l'écran (0 = haut, 1 = bas) : on voit ce qu'il y a sous terre
     this.demo = false; // démo du menu : pas de panneaux par-dessus le titre
+    this.device = 'clavier'; // l'appareil dont les panneaux disent les touches : clavier, manette ou pouce
+    this.sign = { text: '', t: 0 }; // le dernier panneau lu, et combien de temps il reste à l'écran
     this.clock = 0;
   }
 
@@ -61,6 +65,7 @@ export class Renderer {
     this.particles = [];
     this.floaters = [];
     this.shake = 0;
+    this.sign = { text: '', t: 0 };
     const t = this.target(game);
     this.cam.x = t.x;
     this.cam.y = t.y;
@@ -104,6 +109,11 @@ export class Renderer {
       } else if (e.type === 'overrun') {
         this.floaters.push({ x: e.x, y: e.y - 12, text: 'ON EST LÀ !', t: 1.8, color: '#f6c21c', size: 10 }); // « On est là, même si Macron le veut pas »
         this.burst(e.x, e.y, '#94b0c2', 10, 70);
+      } else if (e.type === 'checkpoint') {
+        // Le piquet de grève rejoint la manif, et c'est d'ici qu'on repartira.
+        this.floaters.push({ x: e.x + TILE / 2, y: e.y - 14, text: '+ 10', t: 1.8, color: '#f6c21c', size: 11 });
+        this.floaters.push({ x: e.x + TILE / 2, y: e.y - 28, text: 'ON REPART D’ICI', t: 2.2, color: '#f4f4f4', size: 8 });
+        this.burst(e.x + TILE / 2, e.y, '#f6c21c', 10, 70);
       }
     }
   }
@@ -180,10 +190,14 @@ export class Renderer {
     for (const f of this.floaters) {
       this.label(f.text, f.x - cx, f.y - cy, { size: f.size || 7, color: f.color, alpha: Math.min(1, f.t * 2), width: 150 });
     }
-    if (game.sign && !this.demo) {
-      // Un panneau peut dire la même chose au clavier et au pouce : « au clavier // au pouce ».
-      const [keys, thumbs] = game.sign.split(' // ');
-      this.board(thumbs && document.body.classList.contains('tactile') ? thumbs : keys, this.viewW / 2, 30);
+    // Le panneau devant lequel on passe, avec les touches de l'appareil en cours ; dépassé, il reste lisible un instant.
+    if (game.sign) this.sign = { text: game.sign, t: SIGN_LINGER };
+    else this.sign.t = Math.max(0, this.sign.t - dt);
+    if (this.sign.t > 0 && !this.demo) {
+      // Un panneau long passe à la ligne vers le bas : il ne monte jamais sur le HUD.
+      const text = withKeys(this.sign.text, this.device);
+      const lines = this.wrap(text, 7, 190).length;
+      this.board(text, this.viewW / 2, 30 + (lines - 1) * 7 * 1.1, { alpha: Math.min(1, this.sign.t * 2) });
     }
   }
 
@@ -451,6 +465,7 @@ export class Renderer {
       if (p.on !== false) this.label('SORTIE ▶', x + img.width / 2, y - 9, { size: 6, color: '#1a1c2c', bg: '#f6c21c' });
     }
     if (p.kind === 'cage' && !p.on) this.label('GARDE À VUE', x + 8, y - 8, { size: 4.5, color: '#f4f4f4', bg: '#333c57' });
+    if (p.kind === 'piquet' && !p.on) this.label('PIQUET DE GRÈVE', x + img.width / 2, y - 8, { size: 4.5, color: '#1a1c2c', bg: '#f6c21c' });
   }
 
   decor(d) {
@@ -634,7 +649,7 @@ export class Renderer {
   }
 
   /** Pancarte ou panneau : fond papier, bord sombre, texte qui passe à la ligne. */
-  board(text, x, y, { size = 7, width = 190 } = {}) {
-    this.label(text, x, y, { size, color: '#1a1c2c', bg: '#efe6cf', width });
+  board(text, x, y, { size = 7, width = 190, alpha = 1 } = {}) {
+    this.label(text, x, y, { size, color: '#1a1c2c', bg: '#efe6cf', width, alpha });
   }
 }

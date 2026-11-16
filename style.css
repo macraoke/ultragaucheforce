@@ -266,6 +266,14 @@ html.pivote body {
 #hud-charges { background: var(--or); color: var(--nuit); text-shadow: none; font: 900 1em/1 var(--titre); letter-spacing: .04em; text-transform: uppercase; padding: .3em .5em; }
 #hud-charges:empty { display: none; }
 #hud-charges.vide { opacity: .45; }
+/* La touche de la spéciale, sur cet appareil ; quand un panneau la demande, la puce clignote. */
+#hud-charges kbd { font: inherit; background: var(--nuit); color: var(--or); padding: .1em .35em; margin-right: .15em; border-radius: 3px; }
+#hud-charges.demande { animation: demande .5s steps(2) infinite; }
+#tactile b.demande { animation: demande-bouton .5s steps(2) infinite; } /* sans `transform` : il place le bouton */
+@keyframes demande { 50% { box-shadow: 0 0 0 4px var(--blanc); transform: scale(1.08); } }
+@keyframes demande-bouton { 50% { box-shadow: 0 0 0 5px var(--blanc); background: rgb(246 194 28 / .6); color: var(--nuit); } }
+body.sobre #hud-charges.demande, body.sobre #tactile b.demande { animation: none; box-shadow: 0 0 0 4px var(--blanc); }
+@media (prefers-reduced-motion: reduce) { #hud-charges.demande, #tactile b.demande { animation: none; box-shadow: 0 0 0 4px var(--blanc); } }
 #hud-manif { flex-basis: 100%; color: var(--or); font-size: 1.5em; transform-origin: left center; }
 #hud-manif[hidden] { display: none; }
 #hud-manif.grossit { animation: grossit .45s cubic-bezier(.2, 1.6, .4, 1); }
@@ -331,7 +339,11 @@ body.tactile.en-jeu #tactile { display: block; position: absolute; inset: 0; z-i
 #tactile b { width: 21vmin; height: 21vmin; display: grid; place-items: center; font: 900 clamp(.7rem, 3.6vmin, 1rem)/1 var(--titre); letter-spacing: .04em; color: rgb(244 244 244 / .75); background: rgb(26 28 44 / .22); border: 2px solid rgb(244 244 244 / .4); }
 #tactile b[data-action='special'] { width: 15vmin; height: 15vmin; color: rgb(246 194 28 / .9); border-color: rgb(246 194 28 / .55); }
 #tactile b.appuye { background: rgb(246 194 28 / .6); color: var(--nuit); border-color: var(--nuit); }
-#tactile .manche { width: 26vmin; height: 26vmin; background: rgb(26 28 44 / .16); border: 2px solid rgb(244 244 244 / .3); }
+/* Combien de spéciales il reste, sous SPÉ. */
+#tactile b[data-nombre]::after { content: attr(data-nombre); position: absolute; top: 100%; left: 50%; transform: translate(-50%, .3em); white-space: nowrap; font-size: .85em; color: var(--or); text-shadow: 0 1px 0 var(--nuit), 1px 0 0 var(--nuit), -1px 0 0 var(--nuit), 0 -1px 0 var(--nuit); }
+#tactile b.vide { opacity: .45; }
+/* Le manche : quatre flèches sur son anneau disent qu'il se pousse dans tous les sens. */
+#tactile .manche { width: 26vmin; height: 26vmin; background: rgb(26 28 44 / .16) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='%23f4f4f4' fill-opacity='.6'%3E%3Cpath d='M50 4l8 9H42zM50 96l8-9H42zM4 50l9-8v16zM96 50l-9-8v16z'/%3E%3C/svg%3E") center / 100% no-repeat; border: 2px solid rgb(244 244 244 / .3); }
 #tactile .manche i { position: absolute; left: 50%; top: 50%; width: 11vmin; height: 11vmin; border-radius: 50%; background: rgb(244 244 244 / .4); transform: translate(calc(-50% + var(--dx, 0px)), calc(-50% + var(--dy, 0px))); }
 #tactile .manche.appuye { border-color: rgb(244 244 244 / .6); }
 #tactile .manche.appuye i { background: rgb(246 194 28 / .8); }
@@ -369,6 +381,14 @@ html.pivote body.tactile #hud .droite { right: max(10px, env(safe-area-inset-bot
 .panneau td, .panneau th { padding: .25em .6em; border-bottom: 1px solid var(--encre); text-align: left; }
 .panneau .case { display: block; padding: .4em 0; cursor: pointer; }
 .panneau .case input { width: 1.2em; height: 1.2em; vertical-align: -.2em; accent-color: var(--rouge); }
+/* Les commandes de l'appareil en cours, en une ligne (carton d'ouverture, pause). */
+.panneau .touches { display: flex; flex-wrap: wrap; justify-content: center; gap: .3em .9em; margin: .6em 0; font-size: .8rem; line-height: 1.6; }
+.panneau .touches span { white-space: nowrap; }
+.panneau kbd { font: 900 .95em/1 var(--titre); letter-spacing: .03em; background: var(--blanc); color: var(--nuit); border-radius: 3px; padding: .15em .4em; box-shadow: 0 2px 0 var(--encre); }
+.commandes th.ici, .commandes td.ici { background: var(--encre); }
+.commandes th.ici { color: var(--or); }
+.panneau .pied button.effacer { margin-left: auto; font-size: .8em; opacity: .75; } /* à l'écart, en bas des Options du menu */
+.pause .touches { margin: 0; }
 .panneau .onglets { display: flex; flex-wrap: wrap; gap: 8px; margin: .8em 0; }
 .panneau .contenu { font-size: .9rem; }
 
@@ -437,6 +457,17 @@ html.bas .menu .troupe { display: none; }
 html.bas .menu nav { gap: 6px; margin: 6px 0; }
 html.bas .menu nav > * { min-height: 40px; padding-block: .3em; }
 html.bas .menu .mention { display: none; }
+/* Pause sur un écran bas : deux colonnes de boutons, tout tient sans défiler. */
+html.bas .panneau.pause { width: min(100%, 560px); grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px 16px; }
+html.bas .pause > h2, html.bas .pause > .touches, html.bas .pause > button.gros { grid-column: 1 / -1; }
+html.bas .pause h2 { margin: 0; font-size: 1.4rem; }
+html.bas .pause button { padding: .5em .6em; }
+html.bas .pause button.gros { font-size: 1.15rem; }
+html.bas .intro .touches { margin: .3em 0 .5em; }
+html.bas .panneau.commandes { padding: 10px 14px; }
+html.bas .commandes h2 { font-size: 1.3rem; margin: 0 0 .3em; }
+html.bas .commandes table { font-size: .7rem; line-height: 1.25; }
+html.bas .commandes .pied { margin-top: .6em; }
 
 /* scène de taxation */
 .panneau.taxe { text-align: center; width: min(100%, 860px); }

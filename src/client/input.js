@@ -14,6 +14,47 @@ const PAUSE_KEYS = ['Escape', 'KeyP'];
 export const ACTIONS = ['left', 'right', 'up', 'down', 'jump', 'fire', 'special'];
 
 /**
+ * Le nom court de chaque commande, tel qu'il est à l'écran sur chaque appareil. Les panneaux s'en servent :
+ * « [tirer] : lancer des tracts » devient « J : lancer des tracts » au clavier, « TIR : … » au pouce.
+ */
+export const KEY_NAMES = {
+  clavier: { avancer: '← →', sauter: 'ESPACE', tirer: 'J', bas: '↓', haut: '↑', speciale: 'K', pause: 'Échap' },
+  manette: { avancer: 'Croix', sauter: 'A', tirer: 'X', bas: '↓', haut: '↑', speciale: 'B', pause: 'Start' },
+  pouce: { avancer: 'Pouce gauche', sauter: 'SAUT', tirer: 'TIR', bas: 'Pouce ↓', haut: 'Pouce ↑', speciale: 'SPÉ', pause: 'II' },
+};
+
+/** Le tableau complet des commandes (écran Commandes, README) : toutes les touches qui marchent. */
+export const CONTROLS = [
+  ['Avancer', '← → ou Q D', 'croix ou stick', 'moitié gauche : glisser le pouce'],
+  ['Sauter, grimper', 'Espace, ↑ ou Z', 'A', 'SAUT, ou pouce gauche vers le haut'],
+  ['Tirer (maintenir)', 'J, X ou Entrée', 'X ou gâchette droite', 'TIR'],
+  ['Creuser, viser en haut', '↓ ou ↑ sans avancer, puis tirer', 'bas ou haut, puis tirer', 'pouce gauche vers le bas ou le haut, puis TIR'],
+  ['Spéciale', 'K, C ou Maj', 'B ou gâchette gauche', 'SPÉ'],
+  ['Pause', 'Échap ou P', 'Start', 'II'],
+];
+
+/** Les commandes en une ligne, pour le carton d'ouverture et la pause : [touche, ce qu'elle fait]. */
+export const brief = (device) => {
+  const k = KEY_NAMES[device] || KEY_NAMES.clavier;
+  return [[k.avancer, 'avancer'], [k.sauter, 'sauter'], [k.tirer, 'tirer'], [`${k.bas} + ${k.tirer}`, 'creuser'], [k.speciale, 'spéciale']];
+};
+
+const plain = (s) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+/**
+ * Le texte d'un panneau pour cet appareil. `[tirer]`, `[sauter]`, `[avancer]`, `[bas]`, `[haut]`, `[spéciale]`, `[pause]`
+ * deviennent la touche de l'appareil ; un mot inconnu entre crochets reste tel quel.
+ * L'ancienne forme « au clavier // au pouce » marche encore.
+ */
+export function withKeys(text, device = 'clavier') {
+  if (!text) return '';
+  const [keys, thumbs] = text.split(' // ');
+  const chosen = thumbs && device === 'pouce' ? thumbs : keys;
+  const names = KEY_NAMES[device] || KEY_NAMES.clavier;
+  return chosen.replace(/\[([^\]]+)\]/g, (all, word) => names[plain(word.trim())] ?? all);
+}
+
+/**
  * Les zones tactiles, en fractions de l'écran tenu en paysage. Pas de boutons à viser : tout l'écran répond.
  * Moitié gauche : un manche flottant, là où le pouce se pose. Moitié droite : trois cibles, la plus proche gagne.
  */
@@ -95,9 +136,13 @@ export class Input {
     this.active = false; // vrai seulement en pleine partie : ailleurs, le clavier sert aux menus
     this.onPause = () => {};
     this.onAny = () => {}; // premier geste : sert à débloquer le son
+    this.onDevice = () => {}; // le joueur a changé d'appareil : les écrans ouverts redisent les touches
+    // L'appareil dont on montre les touches : le dernier qui a servi.
+    this.device = document.body.classList.contains('tactile') ? 'pouce' : 'clavier';
 
     addEventListener('keydown', (e) => {
       this.onAny();
+      this.use('clavier');
       if (e.repeat) return;
       if (PAUSE_KEYS.includes(e.code)) return this.onPause();
       const action = KEYS[e.code];
@@ -129,6 +174,7 @@ export class Input {
       this.pointers.delete(e.pointerId);
       this.refreshTouch();
     };
+    addEventListener('pointerdown', (e) => e.pointerType === 'touch' && this.use('pouce'), true);
     pad.addEventListener('pointerdown', (e) => {
       try {
         pad.setPointerCapture(e.pointerId); // le doigt reste suivi même s'il sort de la zone
@@ -183,9 +229,23 @@ export class Input {
     this.refreshTouch();
   }
 
+  /** Note l'appareil qui vient de servir ; s'il change, les touches affichées changent avec lui. */
+  use(device) {
+    if (device === this.device) return;
+    this.device = device;
+    this.onDevice(device);
+  }
+
+  /** La manette branchée, s'il y en a une ; on la note comme appareil en cours dès qu'on y touche. */
+  findPad() {
+    const pad = [...(navigator.getGamepads?.() || [])].find(Boolean);
+    if (pad && (pad.buttons.some((x) => x?.pressed) || pad.axes.some((a) => Math.abs(a) > 0.5))) this.use('manette');
+    return pad;
+  }
+
   /** Manette standard : croix ou stick, A = saut, X ou gâchette droite = tir, B ou gâchette gauche = spéciale. */
   gamepad() {
-    const pad = [...(navigator.getGamepads?.() || [])].find(Boolean);
+    const pad = this.findPad();
     if (!pad) return {};
     const b = (i) => Boolean(pad.buttons[i]?.pressed);
     if (b(9)) {
@@ -205,7 +265,7 @@ export class Input {
 
   /** Manette hors partie : croix ou stick pour changer de bouton, A pour valider, Start pour reprendre. */
   pollMenu() {
-    const pad = [...(navigator.getGamepads?.() || [])].find(Boolean);
+    const pad = this.findPad();
     if (!pad) return;
     const b = (i) => Boolean(pad.buttons[i]?.pressed);
     const now = {

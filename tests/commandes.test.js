@@ -1,0 +1,145 @@
+// Les commandes : chaque appareil lit ses propres touches sur les panneaux ; l'écran Commandes et la pause
+// les montrent ; effacer sa progression ne se fait que depuis le menu, après confirmation.
+
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { withKeys, KEY_NAMES, brief } from '../src/client/input.js';
+import { loadContent } from '../tools/content.mjs';
+
+test('panneau : une touche entre crochets devient celle de l’appareil', () => {
+  assert.equal(withKeys('[tirer] : lancer des tracts', 'clavier'), 'J : lancer des tracts');
+  assert.equal(withKeys('[tirer] : lancer des tracts', 'manette'), 'X : lancer des tracts');
+  assert.equal(withKeys('[tirer] : lancer des tracts', 'pouce'), 'TIR : lancer des tracts');
+  assert.equal(withKeys('[bas] + [tirer] : creuser', 'pouce'), 'Pouce ↓ + TIR : creuser');
+  assert.equal(withKeys('[Spéciale] ou [speciale]', 'clavier'), 'K ou K', 'majuscule ou accent oublié : même touche');
+  assert.equal(withKeys('Va [ailleurs]', 'clavier'), 'Va [ailleurs]', 'un mot inconnu reste tel quel');
+  assert.equal(withKeys('J : tracts // TIR : tracts', 'pouce'), 'TIR : tracts', 'l’ancienne forme « clavier // pouce » marche encore');
+  assert.equal(withKeys('J : tracts // TIR : tracts', 'manette'), 'J : tracts');
+});
+
+test('chaque appareil a toutes ses touches, et une ligne de commandes', () => {
+  const actions = Object.keys(KEY_NAMES.clavier);
+  for (const device of ['clavier', 'manette', 'pouce']) {
+    assert.deepEqual(Object.keys(KEY_NAMES[device]), actions, device);
+    assert.equal(brief(device).length, 5, device);
+  }
+});
+
+test('Millevaches apprend chaque action, avec des touches que chaque appareil connaît', () => {
+  const { bundle } = loadContent();
+  const signs = Object.values(bundle.niveaux.millevaches.panneaux);
+  for (const device of ['clavier', 'manette', 'pouce']) {
+    for (const text of signs) assert.doesNotMatch(withKeys(text, device), /\[/, `${device} : ${text}`);
+  }
+  const all = signs.join(' ');
+  for (const word of ['[avancer]', '[sauter]', '[tirer]', 'manif', 'mur', '[bas]', '[haut]', '[spéciale]', 'cage', 'Assez nombreux']) {
+    assert.ok(all.includes(word), `un panneau parle de « ${word} »`);
+  }
+});
+
+// ---------------------------------------------------------------------- les écrans, sans navigateur
+
+/** Juste assez de DOM pour construire les écrans et cliquer leurs boutons. */
+class Text {
+  constructor(text) { this.textContent = String(text); }
+}
+class Element {
+  constructor(tag) {
+    this.tagName = tag.toUpperCase();
+    this.children = [];
+    this.dataset = {};
+    this.className = '';
+    this.hidden = false;
+  }
+  append(...nodes) {
+    for (const n of nodes) {
+      const node = n instanceof Element || n instanceof Text ? n : new Text(n);
+      node.parent = this;
+      this.children.push(node);
+    }
+  }
+  replaceChildren(...nodes) {
+    this.children = [];
+    this.append(...nodes);
+  }
+  replaceWith(node) {
+    node.parent = this.parent;
+    this.parent.children[this.parent.children.indexOf(this)] = node;
+  }
+  get firstChild() { return this.children[0]; }
+  get textContent() { return this.children.map((c) => c.textContent).join(''); }
+  focus() { globalThis.document.activeElement = this; }
+  click() { this.onclick?.(); }
+  * nodes() {
+    for (const c of this.children) {
+      if (!(c instanceof Element)) continue;
+      yield c;
+      yield* c.nodes();
+    }
+  }
+  matches(selectors) {
+    return selectors.split(',').some((s) => {
+      const [tag, ...classes] = s.trim().split('.');
+      return (!tag || this.tagName === tag.toUpperCase()) && classes.every((c) => this.className.split(' ').includes(c));
+    });
+  }
+  querySelectorAll(selectors) { return [...this.nodes()].filter((n) => n.matches(selectors)); }
+  querySelector(selectors) { return this.querySelectorAll(selectors)[0] || null; }
+}
+
+async function screens({ paused = false, device = 'clavier' } = {}) {
+  globalThis.document = { createElement: (tag) => new Element(tag), body: new Element('body'), activeElement: null };
+  const { Screens } = await import('../src/client/ui.js');
+  const save = { termines: { millevaches: true }, records: { millevaches: 120 }, decouvertes: ['heros:zucman'], vues: {}, heros: 'zucman', options: { son: true, musique: false, sobre: false } };
+  const root = new Element('div');
+  const went = [];
+  const go = new Proxy({ playing: () => paused, device: () => device }, { get: (o, k) => o[k] || (() => went.push(k)) });
+  const ui = new Screens(root, { bundle: { heros: {}, citations: {} }, save, audio: { play() {} }, go });
+  const buttons = () => root.querySelectorAll('button').map((b) => b.textContent);
+  const press = (label) => root.querySelectorAll('button').find((b) => b.textContent === label).click();
+  return { ui, root, save, went, buttons, press };
+}
+
+test('Options en pleine partie : pas de quoi effacer sa progression', async () => {
+  const { ui, buttons } = await screens({ paused: true });
+  ui.options();
+  assert.ok(!buttons().includes('Effacer ma progression'));
+  ui.pause();
+  assert.ok(buttons().includes('Commandes'), 'les commandes depuis la pause');
+  assert.ok(!buttons().some((b) => /Effacer/.test(b)));
+});
+
+test('Options du menu : effacer demande confirmation, et Annuler a la main', async () => {
+  const { ui, root, save, buttons, press } = await screens();
+  ui.options();
+  assert.ok(buttons().includes('Effacer ma progression'));
+  press('Effacer ma progression');
+  assert.match(root.textContent, /Tout ce que tu as débloqué et tes records seront perdus\./);
+  assert.deepEqual(buttons(), ['Annuler', 'Effacer']);
+  assert.equal(globalThis.document.activeElement.textContent, 'Annuler', 'Entrée annule');
+  press('Annuler');
+  assert.deepEqual(save.records, { millevaches: 120 }, 'annuler ne touche à rien');
+  assert.deepEqual(save.decouvertes, ['heros:zucman']);
+  press('Effacer ma progression');
+  press('Effacer');
+  assert.deepEqual([save.termines, save.records, save.decouvertes, save.heros], [{}, {}, [], '']);
+  assert.deepEqual(save.options, { son: true, musique: false, sobre: false }, 'les options restent');
+  assert.match(root.textContent, /Progression effacée/);
+});
+
+test('Commandes : le tableau, depuis le menu, sans rien de dangereux à côté', async () => {
+  const { ui, root, buttons } = await screens({ device: 'pouce' });
+  ui.menu = () => {};
+  ui.controls();
+  assert.deepEqual(buttons(), ['← Retour']);
+  assert.equal(root.querySelector('th.ici').textContent, 'Tactile', 'la colonne de l’appareil en main ressort');
+  assert.match(root.textContent, /SAUT/);
+});
+
+test('pause : les touches de l’appareil en main, en une ligne', async () => {
+  const { ui, root } = await screens({ paused: true, device: 'manette' });
+  ui.pause();
+  const line = root.querySelector('.touches').textContent;
+  assert.match(line, /Croix avancer/);
+  assert.match(line, /B spéciale/);
+});

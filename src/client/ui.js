@@ -7,6 +7,7 @@ import { REPO, VERSION, REFERENCES, ANALYTICS } from './config.js';
 import { storeSave, eraseProgress, isFound, isReadOnly } from './save.js';
 import { SHELVES, VOTE_FICHES, allCards, collectionCount, isFresh, levelOrder, markSeen, openCard, progress, rarityCounts, shelfGrid, wonCards } from './collection.js';
 import { livesStack } from './lives.js';
+import { KEY_NAMES, CONTROLS, brief } from './input.js';
 import { PANIC_STEPS } from '../sim/game.js';
 
 const MENTION = 'Satire citoyenne, libre et collaborative.';
@@ -50,6 +51,22 @@ export class Screens {
     return this.button('← Retour', action, 'discret');
   }
 
+  /** L'appareil dont on montre les touches : clavier, manette ou pouce. */
+  get device() {
+    return this.go.device?.() || 'clavier';
+  }
+
+  /** Les commandes de l'appareil en cours, en une ligne. */
+  keys() {
+    return h('p', { className: 'touches' }, brief(this.device).map(([key, verb]) => h('span', {}, h('kbd', {}, key), ` ${verb}`)));
+  }
+
+  /** Le joueur a changé d'appareil : les lignes de commandes à l'écran suivent. */
+  refreshKeys() {
+    for (const line of this.root.querySelectorAll('.touches')) line.replaceWith(this.keys());
+    if (this.root.querySelector('.commandes')) this.controls();
+  }
+
   // ------------------------------------------------------------------ menu
 
   menu() {
@@ -64,6 +81,7 @@ export class Screens {
         this.button(`Collection ${collectionCount(this.bundle, this.save).found}/${collectionCount(this.bundle).total}`, () => this.collection()),
         this.button('Atelier', () => this.go.atelier()),
         h('a', { className: 'bouton', href: 'galerie.html' }, 'Galerie'),
+        this.button('Commandes', () => this.controls()),
         this.button('Options', () => this.options()),
         this.button('À propos', () => this.about()),
         this.update && this.button('Mettre à jour', this.update)),
@@ -134,9 +152,22 @@ export class Screens {
     this.go.play(this.nextLevel());
   }
 
-  // ------------------------------------------------------------------ options, à propos
+  // ------------------------------------------------------------------ commandes, options, à propos
 
-  options() {
+  /** Toutes les commandes, depuis le menu ou la pause. La colonne de l'appareil en cours ressort. */
+  controls() {
+    const here = ['clavier', 'manette', 'pouce'].indexOf(this.device) + 1;
+    const cell = (tag, text, i) => h(tag, { className: i === here ? 'ici' : '' }, text);
+    this.show('liste commandes',
+      h('h2', {}, 'Commandes'),
+      h('table', {},
+        h('tr', {}, ['', 'Clavier', 'Manette', 'Tactile'].map((c, i) => cell('th', c, i))),
+        CONTROLS.map((row) => h('tr', {}, row.map((c, i) => cell('td', c, i))))),
+      h('div', { className: 'pied' }, this.back(() => this.go.back())));
+  }
+
+  /** Les réglages. Effacer sa progression ne se fait que depuis le menu, jamais en pleine partie. */
+  options(note = '') {
     const toggle = (key, label) => {
       const box = h('input', { type: 'checkbox', checked: this.save.options[key] });
       box.onchange = () => {
@@ -146,24 +177,27 @@ export class Screens {
       };
       return h('label', { className: 'case' }, box, ' ', label);
     };
+    const inGame = this.go.playing();
     this.show('liste',
       h('h2', {}, 'Options'),
       toggle('son', 'Bruitages'),
       toggle('musique', 'Radio Manif (musique, par SoundCloud)'),
       toggle('sobre', 'Effets réduits'),
-      h('h3', {}, 'Commandes'),
-      h('table', {},
-        h('tr', {}, h('th', {}, ''), h('th', {}, 'Clavier'), h('th', {}, 'Manette'), h('th', {}, 'Tactile')),
-        [['Avancer', '← → ou Q D', 'croix / stick', 'pouce gauche'], ['Sauter, grimper', 'Espace, ↑ ou Z', 'A', 'SAUT'],
-          ['Tirer (maintenir)', 'J, X ou Entrée', 'X / gâchette droite', 'TIR'],
-          ['Creuser, viser en haut', '↓ ou ↑, puis tirer', 'bas ou haut, puis tirer', 'pouce gauche vers le bas ou le haut'],
-          ['Spéciale', 'K, C ou Maj', 'B / gâchette gauche', 'SPÉ'],
-          ['Pause', 'Échap ou P', 'Start', 'II']].map((row) => h('tr', {}, row.map((c) => h('td', {}, c))))),
+      note && h('p', { className: 'mention' }, note),
       h('div', { className: 'pied' }, this.back(() => this.go.back()),
-        this.button('Effacer ma progression', () => {
-          eraseProgress(this.save);
-          this.options();
-        }, 'discret')));
+        !inGame && this.button('Effacer ma progression', () => this.confirmErase(), 'discret effacer')));
+  }
+
+  /** Effacer demande confirmation, et dit ce qui sera perdu. « Annuler » a la main. */
+  confirmErase() {
+    this.show('liste etroit',
+      h('h2', {}, 'Effacer ma progression ?'),
+      h('p', {}, 'Tout ce que tu as débloqué et tes records seront perdus.'),
+      this.button('Annuler', () => this.options(), 'gros'),
+      this.button('Effacer', () => {
+        eraseProgress(this.save);
+        this.options('Progression effacée.');
+      }, 'discret effacer'));
   }
 
   about() {
@@ -187,11 +221,13 @@ export class Screens {
   // ------------------------------------------------------------------ en partie
 
   pause() {
-    this.show('liste etroit',
+    this.show('liste etroit pause',
       h('h2', {}, 'Pause'),
+      this.keys(),
       this.button('Reprendre', () => this.go.resume(), 'gros'),
       this.button('Retour au piquet de grève', () => this.go.checkpoint()),
       this.button('Recommencer le niveau', () => this.go.restart()),
+      this.button('Commandes', () => this.controls()),
       this.button('Collection', () => this.collection()),
       this.button('Options', () => this.options()),
       this.button('Quitter', () => this.go.quit(), 'discret'));
@@ -222,6 +258,7 @@ export class Screens {
       h('h2', {}, level.titre),
       level.accroche && h('p', {}, level.accroche),
       choose && heroes.length > 1 && this.heroRow(heroes, mine, hero, pick),
+      this.keys(),
       go);
     go.focus({ preventScroll: true }); // Entrée lance le niveau…
     this.root.firstChild.onkeydown = (e) => { // … ← et → changent de héros
@@ -317,6 +354,8 @@ export class Hud {
     this.airtime = AIRTIME; // secondes d'antenne de la ligne affichée
     this.turn = 0;
     this.onQuote = () => {}; // une vraie citation passe à l'antenne : la Collection la note
+    this.device = 'clavier'; // l'appareil dont la puce de la spéciale montre la touche
+    this.ask = null; // un panneau demande la spéciale : la puce et le bouton SPÉ clignotent jusqu'au premier usage
     // Le fil permanent de PANIQUE TV : de vraies déclarations, datées et signées.
     this.quotes = Object.values(bundle.citations).filter((c) => c.categorie !== 'gauche');
   }
@@ -325,6 +364,7 @@ export class Hud {
   reset() {
     this.last = '';
     this.crowd = 0;
+    this.ask = null;
     clearTimeout(this.bannerTimer);
     delete this.q('bandeau').dataset.alerte; // une alerte interrompue ne fige pas le fil de la partie suivante
     this.q('toasts').replaceChildren();
@@ -354,17 +394,29 @@ export class Hud {
 
   update(game) {
     const { hero, boss } = game;
+    const special = hero.def.speciale;
+    // Un panneau demande la spéciale : on la montre jusqu'à ce qu'elle serve (huit secondes au plus).
+    if (special && hero.charges > 0 && /\[sp[ée]ciale\]/i.test(game.sign || '')) this.ask = { hero: hero.def.id, charges: hero.charges, until: game.time + 8 };
+    const asking = Boolean(this.ask && this.ask.hero === hero.def.id && this.ask.charges === hero.charges && game.time < this.ask.until);
     const state = [hero.def.id, hero.hp, game.stack.join(), hero.charges, game.panicLevel, Math.round(game.panic), game.crowd,
-      boss?.active && boss.state !== 'gone' ? boss.hp : -1].join('|');
+      boss?.active && boss.state !== 'gone' ? boss.hp : -1, this.device, asking].join('|');
     if (state === this.last) return; // on ne touche au DOM que si quelque chose a changé
     this.last = state;
     this.q('hud-heros').textContent = hero.def.nom;
     this.q('hud-vies').replaceChildren(livesStack(this.bundle, game));
-    // L'attaque spéciale, par son nom, et combien il en reste.
-    const special = hero.def.speciale;
+    // L'attaque spéciale : sa touche sur cet appareil, son nom, et combien il en reste.
     const charges = this.q('hud-charges');
-    charges.textContent = special ? `${(special.nom || 'Spéciale').replace(/\s*!$/, '')} × ${hero.charges}` : '';
+    if (special) charges.replaceChildren(h('kbd', {}, KEY_NAMES[this.device].speciale), ` ${(special.nom || 'Spéciale').replace(/\s*!$/, '')} × ${hero.charges}`);
+    else charges.replaceChildren();
     charges.classList.toggle('vide', Boolean(special) && hero.charges === 0);
+    charges.classList.toggle('demande', asking);
+    // Au pouce, le bouton SPÉ porte le même nombre, et clignote avec la puce.
+    const button = document.querySelector('#tactile [data-action="special"]');
+    if (button) {
+      button.dataset.nombre = special ? `× ${hero.charges}` : '';
+      button.classList.toggle('vide', Boolean(special) && hero.charges === 0);
+      button.classList.toggle('demande', asking);
+    }
     // La manif : combien on est. Le compteur sursaute quand elle grossit.
     const march = this.q('hud-manif');
     march.hidden = !game.crowd;
