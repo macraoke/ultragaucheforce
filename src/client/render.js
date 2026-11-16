@@ -31,7 +31,7 @@ const SIGN_UP = 1; // une pancarte levée le reste au moins une seconde…
 const SIGN_DOWN = 0.5; // … et une pancarte baissée attend une demi-seconde avant de se relever
 const NEAR_HERO = 14; // un manifestant plus près que cela du héros passe en transparence
 const REC = '● REC'; // le cadre de la caméra l'affiche déjà : pas de bulle en double
-const SAFE_TOP = 100; // pixels CSS en haut de l'écran pris par le HUD (et le bandeau, au pouce), barre de vie du boss comprise
+const SAFE_TOP = 100; // pixels CSS en haut de l'écran laissés au HUD, au moins (bandeau au pouce, barre de vie du boss) ; plus s'il descend plus bas
 
 export class Renderer {
   constructor(canvas, textCanvas, bundle) {
@@ -47,6 +47,7 @@ export class Renderer {
     this.viewH = 216;
     this.scale = 2;
     this.ratio = 3; // pixels CSS par pixel du monde (3 sur ordinateur, 5/3 sur téléphone)
+    this.hudBottom = 0; // où descend le HUD, en pixels CSS depuis le haut (main.js le mesure)
     this.held = new WeakMap(); // porteur de pancarte du cortège → { up, since, label } : levée ou baissée, depuis quand
     this.raised = new Set(); // les porteurs dont la pancarte est levée à cette image
     this.particles = [];
@@ -807,7 +808,7 @@ export class Renderer {
     const { text } = b.bubble;
     const base = this.textBox(text, 0, 0, 7, 150);
     const half = (base.x1 - base.x0) / 2;
-    const top = SAFE_TOP / this.ratio - base.y0;
+    const top = this.ceiling() - base.y0;
     const left = this.heroBox.x + this.heroBox.w / 2 < b.x + b.w / 2;
     const beside = (side) => (side < 0 ? b.x - this.cx - half - 2 : b.x + b.w - this.cx + half + 2);
     const above = b.y - 14 - this.cy;
@@ -1035,6 +1036,11 @@ export class Renderer {
     return lines;
   }
 
+  /** Le haut de l'image qui reste au HUD, en pixels du jeu : SAFE_TOP au moins, et tout le HUD mesuré (`hudBottom`). */
+  ceiling() {
+    return Math.max(SAFE_TOP, this.hudBottom + 4) / this.ratio;
+  }
+
   /** La taille d'un texte du monde, relevée pour qu'il fasse au moins MIN_TEXT pixels à l'écran (téléphone). */
   fit(size) {
     return Math.max(size, MIN_TEXT / this.ratio);
@@ -1074,7 +1080,7 @@ export class Renderer {
    */
   placeFloaters(fixed) {
     const placed = [...fixed];
-    const ceiling = SAFE_TOP / this.ratio; // jamais sous la bande du HUD : un texte qui y arriverait s'arrête au plafond
+    const ceiling = this.ceiling(); // jamais sous la bande du HUD : un texte qui y arriverait s'arrête au plafond
     const shift = (f, box, dy) => {
       f.y += dy;
       box.y0 += dy;

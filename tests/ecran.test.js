@@ -230,6 +230,23 @@ test('un texte flottant ne monte jamais sous la bande du HUD', () => {
   assert.ok(!overlap(a, b), 'au plafond, le second passe dessous');
 });
 
+test('quand le HUD descend plus bas (puce passée à la ligne), le plafond descend avec lui', () => {
+  const r = renderer(5 / 3); // 667×375 couché : HUD sur trois lignes, jusqu'à 118 px
+  r.hudBottom = 118;
+  const below = (box) => box.y0 >= (118 + 4) / r.ratio - 1e-9;
+  r.float({ x: 40, y: 30, text: '+1', t: 2.4, size: 20, gain: true });
+  r.float({ x: 60, y: 10, text: 'ON EST LÀ !', rise: 0, t: 2.2, size: 12, keep: true });
+  r.placeFloaters([]);
+  for (const f of r.floaters) assert.ok(below(r.textBox(f.text, f.x, f.y, f.size, 150)), f.text);
+  const def = Object.values(bundle.boss)[0];
+  r.heroBox = { x: 100, w: 12, h: 18, y: 150 };
+  r.boxes = [];
+  const say = r.bossBubble({ def, x: 200, y: 10, w: 40, h: 60, state: 'idle', flash: 0, bubble: { text: 'QUAND LES TARIFS DE FRET' } });
+  assert.ok(below(say.box), 'la bulle du boss aussi');
+  r.hudBottom = 0;
+  assert.equal(r.ceiling(), 100 / r.ratio, 'sinon, SAFE_TOP au moins');
+});
+
 test('un gain (« + 20 », « +1 », « SOIGNÉ ») n’est jamais évincé avant un slogan', () => {
   const r = renderer();
   // Une recrue rejoint : son « + 20 » naît avant son slogan ; puis d'autres slogans arrivent.

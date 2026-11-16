@@ -546,6 +546,7 @@ export class Hud {
   /** Nouvelle partie : le fil repart, sans alerte ni notification de la précédente. */
   reset() {
     this.last = '';
+    this.shape = '';
     this.pile = '';
     this.crowd = 0;
     this.ask = null;
@@ -564,7 +565,7 @@ export class Hud {
   setVisible(on) {
     const el = this.q('bandeau');
     const shown = !el.hidden;
-    this.row = 0;
+    this.marks = null; // affiché ou masqué : à remesurer
     this.el.hidden = !on;
     el.hidden = !on;
     clearTimeout(this.rotation);
@@ -604,7 +605,6 @@ export class Hud {
     // La pile ne se redessine que si elle change : un coup reçu la fait sursauter, sans qu'une autre mise à jour l'interrompe.
     const pile = [hero.def.id, hero.hp, game.stack.join()].join('|');
     if (pile !== this.pile) {
-      this.row = 0; // la première ligne a changé : à remesurer (`rowBottom`)
       const hurt = this.pile && hero.def.id === this.hero && (hero.hp < this.hp || game.stack.length < this.height);
       const stack = livesStack(this.bundle, game);
       if (hurt) stack.classList.add('touche');
@@ -658,6 +658,13 @@ export class Hud {
     } else if (line) {
       bar.querySelector('b').textContent = line.nom;
       bar.querySelector('i').style.width = `${line.part * 100}%`;
+    }
+    // Ce qui change la hauteur du HUD (la pile, la puce et son nom, le compteur affiché ou non, la barre de vie du boss
+    // ou d'une ligne, et son nom) : ses mesures sont à refaire (`measures`).
+    const shape = [pile, charges.textContent, march.hidden, bar.hidden || bar.querySelector('b').textContent].join('|');
+    if (shape !== this.shape) {
+      this.shape = shape;
+      this.marks = null;
     }
   }
 
@@ -724,20 +731,38 @@ export class Hud {
   }
 
   /**
-   * Jusqu'où descend la première ligne du HUD (nom, pile, puce de la spéciale, pause), en pixels CSS depuis le haut de
-   * la scène ; 0 tant qu'il est masqué. Mesuré dans la mise en page, pas à l'écran : juste aussi quand tout pivote.
+   * Jusqu'où descend le HUD, en pixels CSS depuis le haut de la scène : `row`, sa première ligne (nom, pile, puce de la
+   * spéciale, pause) ; `band`, tout le HUD (la puce passée à la ligne, le compteur de la manif, la barre du boss).
+   * 0 tant qu'il est masqué. Mesuré dans la mise en page, pas à l'écran (juste aussi quand tout pivote), une seule fois :
+   * remesuré seulement quand sa forme change (voir `update`, `setVisible`, et `main.js` au redimensionnement).
    */
-  rowBottom() {
-    if (this.row) return this.row;
+  measures() {
+    if (this.marks) return this.marks;
     const scene = this.el.offsetParent;
+    if (!scene) return (this.marks = { row: 0, band: 0 }); // masqué : rien à laisser, et rien à remesurer avant qu'il revienne
     const bottom = (el) => {
       if (!el?.offsetHeight) return 0;
       let y = el.offsetHeight;
       for (let e = el; e && e !== scene; e = e.offsetParent) y += e.offsetTop;
       return y;
     };
-    this.row = Math.max(...['hud-heros', 'hud-vies', 'hud-charges', 'edition', 'pause'].map((id) => bottom(this.q(id))));
-    return this.row;
+    const ids = (list) => Math.max(...list.map((id) => bottom(this.q(id))));
+    // Le texte lui-même peut dépasser sa boîte (le ✊ du compteur, en emoji, est plus haut que sa ligne) : on le mesure
+    // à l'écran, ramené dans le repère du jeu (au pivot, son haut est à droite de l'écran).
+    const turned = document.documentElement.classList.contains('pivote');
+    const frame = scene.getBoundingClientRect();
+    const ink = (el) => {
+      if (!el?.offsetHeight) return 0;
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      const r = range.getBoundingClientRect();
+      return turned ? frame.right - r.left : r.bottom - frame.top;
+    };
+    const row = ids(['hud-heros', 'hud-vies', 'hud-charges', 'edition', 'pause']);
+    const band = Math.max(row, ids(['hud-manif', 'hud-boss']), ink(this.q('hud-manif')), ink(this.q('hud-heros')),
+      ...[...this.el.querySelectorAll('.bloc')].map(bottom));
+    this.marks = { row, band };
+    return this.marks;
   }
 
   /**
