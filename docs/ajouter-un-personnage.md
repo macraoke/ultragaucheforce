@@ -243,7 +243,7 @@ Modèle : [`helicoptere`](../content/ennemis/helicoptere.txt).
 
 ## Un boss
 
-Le modèle : [`content/boss/arnault.txt`](../content/boss/arnault.txt). À zéro point de vie, la machine s'arrête et son pilote s'éjecte (dessin `ejecte`).
+Le modèle : [`content/boss/arnault.txt`](../content/boss/arnault.txt). À zéro point de vie, la machine s'arrête et son pilote s'éjecte (dessin `ejecte`). En face, plus personne n'attaque : les unités restent où elles sont, et ce qui volait encore ne blesse plus ni le héros ni le cortège.
 
 | Clé | Rôle | Bornes |
 |---|---|---|

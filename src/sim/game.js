@@ -25,6 +25,7 @@
 //   power()      multiplicateur des dégâts des projectiles du héros : le nombre fait la force
 //   kettle       null | { x, t, limit, x0, x1 } : nasse en cours (x0, x1 = bords intérieurs des lignes)
 //   lines        les lignes qui tiennent au début du pas (débordement, nasse) : elles arrêtent les deux camps
+//   truce        le boss est vaincu : en face, plus personne n'attaque, et ce qui vole encore ne blesse plus
 //   Ennemis : blocking, aim, jet, beam, rush, rope (voir enemy.js) · boss.seated (voir boss.js)
 //
 // Repères : tout est en pixels, tuile = 16. Les boîtes (héros, ennemis, projectiles, accessoires, boss)
@@ -162,6 +163,11 @@ export class Game {
     if (this.events.length > MAX_EVENTS) this.events.splice(0, this.events.length - MAX_EVENTS);
   }
 
+  /** Le boss vaincu (il s'éjecte, puis disparaît), l'ordre cesse le feu jusqu'à la fin du niveau. */
+  get truce() {
+    return Boolean(this.boss && (this.boss.state === 'ejecting' || this.boss.state === 'gone'));
+  }
+
   emit(type, data = {}) {
     this.events.push({ type, ...data });
   }
@@ -224,7 +230,8 @@ export class Game {
       }
     }
     if (team !== 'ordre' && this.boss && near(this.boss)) this.hurtBoss(damage);
-    if (team !== 'luttes' && !hero.dead && near(hero)) this.hurtHero(1, { x, kind: 'explosion' });
+    const harmless = team === 'ordre' && this.truce; // une grenade encore en l'air au cessez-le-feu
+    if (team !== 'luttes' && !harmless && !hero.dead && near(hero)) this.hurtHero(1, { x, kind: 'explosion' });
     if (team !== 'ordre') {
       for (const cage of this.props) {
         if (cage.kind !== 'cage' || cage.on || !near(cage)) continue;
@@ -238,7 +245,7 @@ export class Game {
     const { hero } = this;
     for (const c of this.clouds) c.t -= DT;
     this.clouds = this.clouds.filter((c) => c.t > 0);
-    const inGas = (b) => this.clouds.some((c) => Math.hypot(c.x - (b.x + b.w / 2), c.y - (b.y + b.h / 2)) < c.r);
+    const inGas = (b, clouds = this.clouds) => clouds.some((c) => Math.hypot(c.x - (b.x + b.w / 2), c.y - (b.y + b.h / 2)) < c.r);
     // Le gaz ne choisit pas son camp : il étourdit aussi ceux qui l'ont lancé.
     for (const e of this.enemies) {
       if (e.state === 'done' || e.state === 'sleep' || sturdy(e) || !inGas(e)) continue;
@@ -246,7 +253,7 @@ export class Game {
       e.stun = Math.max(e.stun, 1);
       e.daze = 'gaz'; // gazé par ses propres grenades : il pleure et tousse, il ne fait plus rien
     }
-    if (!hero.dead && inGas(hero)) {
+    if (!hero.dead && inGas(hero, this.harmfulClouds())) {
       hero.gasTime += DT;
       if (hero.gasTime >= 1) {
         hero.gasTime = 0;
@@ -255,6 +262,11 @@ export class Game {
     } else {
       hero.gasTime = Math.max(0, hero.gasTime - DT);
     }
+  }
+
+  /** Les nuages qui gazent encore le héros et le cortège : au cessez-le-feu, plus ceux de l'ordre. */
+  harmfulClouds() {
+    return this.truce ? this.clouds.filter((c) => c.team !== 'ordre') : this.clouds;
   }
 
   /** Y a-t-il un personnage dans ce rectangle ? (pour ne jamais faire pousser un mur sur quelqu'un) */

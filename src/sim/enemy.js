@@ -173,6 +173,9 @@ export function updateEnemy(game, e, dt) {
     return;
   }
 
+  // Le boss vaincu, l'ordre cesse le feu : chacun reste où il est, sans attaquer ni rien dire de plus.
+  if (game.truce) return standBy(game, e, dt);
+
   // Une équipe télé venue pour un feu de poubelle : c'est lui qu'elle filme, pas la manif.
   if (e.film) return film(game, e, dt);
 
@@ -273,6 +276,18 @@ export function updateEnemy(game, e, dt) {
     e.stun = Math.max(e.stun, 1.6);
     e.daze = 'choc';
   }
+}
+
+/**
+ * Cessez-le-feu : ni tir, ni visée, ni jet, ni charge, ni contact, ni interpellation, ni dépose de renforts, ni réplique.
+ * L'unité reste sur place ; au sol, elle finit son recul et tombe si le sol se dérobe.
+ */
+function standBy(game, e, dt) {
+  Object.assign(e, { state: 'patrol', aim: null, rush: null, framing: false }); // plus en alerte : ni « ! », ni caméra qui tourne
+  if (e.def.deplacement === 'vol') return;
+  e.vx = e.kick;
+  e.kick = Math.abs(e.kick) < 1 ? 0 : e.kick * 0.85;
+  fall(game, e, dt);
 }
 
 /**

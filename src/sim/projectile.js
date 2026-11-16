@@ -89,7 +89,7 @@ function burst(game, p, quiet = false) {
     game.sfx('impact', cx);
   }
   if (p.gas > 0) {
-    game.clouds.push({ x: cx, y: cy, r: 26, t: p.gas });
+    game.clouds.push({ x: cx, y: cy, r: 26, t: p.gas, team: p.team });
     game.sfx('gaz', cx);
   }
 }
@@ -140,6 +140,8 @@ function touchActors(game, p) {
       if (!p.pierce) return burst(game, p, true);
     }
   }
+  // Le boss vaincu, ce qui vole encore ne blesse plus ni le héros ni le cortège : il file jusqu'au décor.
+  if (game.truce) return;
   // Puis il vise le héros… et, pour les grenades « fratricides », touche aussi les collègues.
   if (!game.hero.dead && overlap(p, game.hero)) {
     game.hurtHero(p.damage, { dir: Math.sign(p.vx), x: p.x + p.w / 2, kind: p.explosion > 0 ? 'explosion' : 'tir' });
