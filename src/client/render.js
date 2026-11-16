@@ -53,6 +53,9 @@ const covers = (box, art) => Math.min(box.x1 - 1, art.x1) - Math.max(box.x0 + 1,
 const GROUP = { x: 40, y: 24 }; // des unités identiques aussi proches font un groupe : un seul « ! », un seul « KOF ! »
 const SAFE_TOP = 100; // pixels CSS en haut de l'écran laissés au HUD, au moins (bandeau au pouce, barre de vie du boss) ; plus s'il descend plus bas
 const FOLLOW = { x: 9 / 60, y: 7 / 60 }; // part du chemin vers le héros que la caméra fait à chaque pas de simulation
+// Valentin, 16 novembre 2026 : « Le gain d'abord : les gains, « +1 », « ON REPART D'ICI » et les noms de spéciale passent
+// toujours : la pancarte qu'ils touchent se baisse un instant. Les slogans, eux, laissent la pancarte levée. »
+const leads = (f) => Boolean(f.gain || f.lead);
 
 export class Renderer {
   constructor(canvas, textCanvas, bundle) {
@@ -170,7 +173,8 @@ export class Renderer {
         const slogan = prev?.type === 'recruit' && prev.x === e.x;
         if (!slogan || this.clock - this.lastSlogan >= SLOGAN_GAP) {
           if (slogan) this.lastSlogan = this.clock;
-          this.float({ x: e.x, y: e.y, text: e.text, t: 1.6, color: e.color || '#f4f4f4' });
+          // Ce qui n'est pas le slogan d'une recrue est le nom d'une spéciale : il passe avant les pancartes.
+          this.float({ x: e.x, y: e.y, text: e.text, t: 1.6, color: e.color || '#f4f4f4', lead: !slogan });
         }
       }
       else if (e.type === 'recruit') {
@@ -195,7 +199,7 @@ export class Renderer {
       } else if (e.type === 'checkpoint') {
         // Le piquet de grève rejoint la manif, et c'est d'ici qu'on repartira.
         this.float({ x: e.x + TILE / 2, y: e.y - 14, text: '+ 10', t: 1.8, color: '#f6c21c', size: 11, gain: true });
-        this.float({ x: e.x + TILE / 2, y: e.y - 28, text: 'ON REPART D’ICI', t: 2.2, color: '#f4f4f4', size: 8 });
+        this.float({ x: e.x + TILE / 2, y: e.y - 28, text: 'ON REPART D’ICI', t: 2.2, color: '#f4f4f4', size: 8, lead: true });
         this.burst(e.x + TILE / 2, e.y, '#f6c21c', 10, 70);
       } else if (e.type === 'respawn') {
         this.hurt = null;
@@ -237,9 +241,10 @@ export class Renderer {
 
   /**
    * Un texte flottant naît : deux gains au même endroit font un seul nombre, un texte déjà là ne se répète pas
-   * (il dure un peu plus), et il n'en reste jamais plus de MAX_FLOATERS à la fois : le plus ancien s'efface.
+   * (il dure un peu plus), et au-delà de MAX_FLOATERS à la fois, le plus ancien slogan s'efface.
    * Un texte `keep` (ce que dit un coup, une ligne qui cède) n'est jamais évincé, et garde la place qu'on lui a donnée.
-   * La place des autres se règle au dessin (`placeFloaters`).
+   * Un gain (`gain`), « ON REPART D'ICI » ou le nom d'une spéciale (`lead`) passent toujours : jamais évincés, ils
+   * passent aussi avant les pancartes du cortège. La place de chacun se règle au dessin (`placeTexts`).
    */
   float(f) {
     f.size ??= 7;
@@ -262,8 +267,8 @@ export class Renderer {
     this.floaters.push(f);
     const alive = this.floaters.filter((g) => g.t > FADE);
     const loose = alive.filter((g) => !g.keep);
-    // Un gain (« + 20 », « +1 », « SOIGNÉ ») passe après un slogan ou un nom de spéciale : on le lit en premier.
-    const out = loose.find((g) => !g.gain) ?? loose[0];
+    // Seul un slogan s'efface pour faire de la place : un gain (« + 20 », « +1 », « SOIGNÉ ») ou un nom de spéciale se lit jusqu'au bout.
+    const out = loose.find((g) => !leads(g));
     if (alive.length > MAX_FLOATERS && out) out.t = FADE;
   }
 
@@ -365,14 +370,7 @@ export class Renderer {
       const { camX, camY } = this;
       this.boxes.push({ x0: hero.x - 3 - camX, x1: hero.x + hero.w + 3 - camX, y0: hero.y - 8 - camY, y1: hero.y + hero.h - camY });
     }
-    // Les textes qui ont leur place (un coup, une ligne qui cède) d'abord : les pancartes s'effacent devant eux.
-    // Les autres textes flottants, posés dans le monde, dérivent à l'écran quand on marche : ils ne font pas baisser
-    // une pancarte levée, ils passent au-dessus d'elle (et une pancarte baissée attend qu'ils soient passés).
-    const placed = [...fixed];
-    this.placeKept(placed);
-    const drifting = this.floaters.filter((f) => !f.keep && f.t > FADE).map((f) => this.textBox(f.text, f.x - cx, f.y - cy, f.size, 150));
-    const signs = this.raiseSigns(game.cortege, drifting);
-    this.placeLoose([...placed, ...signs], signs);
+    this.placeTexts(fixed, game.cortege);
     game.cortege.forEach((m, i) => this.marcher(m, i));
     // La manif autour de lui : le repère au-dessus du héros apparaît, puis s'efface quand il en sort.
     const crowd = !hero.dead && game.cortege.some((m) => Math.abs(m.x - (hero.x + hero.w / 2)) < 3 * NEAR_HERO && Math.abs(m.y - (hero.y + hero.h)) < 24);
@@ -392,6 +390,7 @@ export class Renderer {
 
     for (const f of this.floaters) {
       this.label(f.text, f.x - cx, f.y - cy, { size: f.size || 7, color: f.color, bg: f.bg, alpha: Math.min(1, f.t * 2), width: 150 });
+      f.seen = true; // déjà montré : s'il perd sa place, il s'effacera en fondu
     }
     if (board) this.board(board.text, this.viewW / 2, board.y, { alpha: Math.min(1, this.sign.t * 2) });
   }
@@ -1362,14 +1361,21 @@ export class Renderer {
   }
 
   /**
-   * Les textes flottants ne s'empilent pas : chacun monte juste au-dessus de ceux déjà là et des textes fixes
-   * (la voix d'en face, les gains des recrues). Une fois écartés, ils montent ensemble, à la même vitesse.
-   * Au dessin, les pancartes levées se placent entre les deux temps (voir `draw`) : `placeKept`, puis `placeLoose`.
+   * Les textes flottants et les pancartes du cortège, dans l'ordre où ils se cèdent la place. Les textes flottants
+   * ne s'empilent pas : chacun monte juste au-dessus de ceux déjà là et des textes fixes (`fixed` : la voix d'en face,
+   * les gains des recrues). Une fois écartés, ils montent ensemble, à la même vitesse.
+   * 1. Ceux qui ont leur place (un coup, une ligne qui cède) ; 2. les gains, « ON REPART D'ICI », les noms de spéciale :
+   * une pancarte qu'ils touchent se baisse, et se relève quand ils sont passés ; 3. les pancartes levées ;
+   * 4. les slogans, qui passent autour d'elles sans les faire baisser.
    */
-  placeFloaters(fixed) {
+  placeTexts(fixed, cortege = []) {
     const placed = [...fixed];
     this.placeKept(placed);
-    this.placeLoose(placed);
+    this.placeLoose(placed, [], this.floaters.filter((f) => !f.keep && leads(f)));
+    const slogans = this.floaters.filter((f) => !f.keep && !leads(f));
+    const drifting = slogans.filter((f) => f.t > FADE).map((f) => this.textBox(f.text, f.x - this.cx, f.y - this.cy, f.size, 150));
+    const signs = this.raiseSigns(cortege, drifting);
+    this.placeLoose([...placed, ...signs], signs, slogans);
   }
 
   /** Un texte flottant déplacé de `dy`, avec sa boîte. */
@@ -1407,30 +1413,41 @@ export class Renderer {
   }
 
   /**
-   * Les autres passent autour de ce qui est déjà placé (`placed`), pancartes levées comprises : au-dessus, sinon,
-   * au plafond, en dessous. Une pancarte levée reste lisible, et le cortège sous elle aussi : un texte qui n'a pas
-   * de place au-dessus de l'une d'elles (`signs`) s'efface, au lieu de passer dessous.
+   * Les textes `list` passent autour de ce qui est déjà placé (`placed`) : au-dessus, sinon, au plafond, en dessous.
+   * Les gains et noms de spéciale (`leads`) sont réservés tant qu'ils sont là : aucune pancarte ne se lève sous eux.
+   * Un slogan qui n'a pas de place au-dessus des pancartes levées (`signs`) ne se pose pas sur elles : jamais montré, il
+   * ne s'affiche pas ; déjà montré, il s'efface en fondu, en passant dessous le temps de disparaître.
    */
-  placeLoose(placed, signs = []) {
+  placeLoose(placed, signs, list) {
     const ceiling = this.ceiling();
     const shift = (f, box, dy) => this.shiftFloater(f, box, dy);
     const over = (box, b) => box.x0 < b.x1 && box.x1 > b.x0 && box.y0 < b.y1 && box.y1 > b.y0;
-    for (const f of this.floaters.filter((g) => !g.keep)) {
+    const unseen = [];
+    for (const f of list) {
       const box = this.textBox(f.text, f.x - this.cx, f.y - this.cy, f.size, 150);
       const hit = () => placed.find((b) => over(box, b));
       for (let k = 0, other; k < 8 && (other = hit()); k++) shift(f, box, other.y0 - 1 - box.y1);
-      // Trop haut : il s'arrête au plafond, et passe sous ce qui le gêne encore (une pancarte levée : il s'efface).
+      // Trop haut : il s'arrête au plafond, et passe sous ce qui le gêne encore (une pancarte levée : il n'a pas de place).
       if (box.y0 < ceiling) {
         shift(f, box, ceiling - box.y0);
         for (let k = 0, other; k < 8 && (other = hit()) && !signs.includes(other); k++) shift(f, box, other.y1 + 1 - box.y0);
       }
       if (signs.some((b) => over(box, b))) {
-        f.t = 0;
-        continue;
+        if (!f.seen) {
+          unseen.push(f);
+          continue;
+        }
+        f.t = Math.min(f.t, FADE);
+        for (let k = 0, other; k < 8 && (other = hit()); k++) shift(f, box, other.y1 + 1 - box.y0);
+        if (signs.some((b) => over(box, b))) {
+          unseen.push(f); // coincé entre deux pancartes : à demi effacé déjà, il part
+          continue;
+        }
       }
       placed.push(box);
-      if (f.t > FADE) this.boxes.push(box);
+      if (f.t > FADE || leads(f)) this.boxes.push(box);
     }
+    if (unseen.length) this.floaters = this.floaters.filter((f) => !unseen.includes(f));
   }
 
   /** Texte centré en (x, y) : contour sombre, ou fond plein si `bg` est donné. */
