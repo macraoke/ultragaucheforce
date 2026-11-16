@@ -3,7 +3,7 @@
 // Deux calques superposés : `canvas` en basse résolution (pixels nets, agrandis en CSS)
 // et `textCanvas` en pleine résolution pour les textes du monde (pancartes, mots, bulles).
 
-import { sprite } from './sprites.js';
+import { crown, hand, seated, sprite } from './sprites.js';
 import { withKeys } from './input.js';
 
 const TILE = 16;
@@ -23,7 +23,7 @@ const LOSS_WORDS = {
   interpelle: ['interpellé', 'interpellés'], touche: ['touché', 'touchés'],
 };
 const WARNS = new Set(['tire', 'fonce', 'charge', 'projecteur']); // les réactions qui annoncent un danger par un « ! »
-const ECRITEAU = 6; // secondes pendant lesquelles une unité hors service montre son écriteau (après « EN GRÈVE ! »)
+const BLOOM = 0.3; // secondes pour que la fleur d'une unité hors service pousse
 const MAX_FLOATERS = 4; // textes flottants à l'écran en même temps, au plus : le plus ancien s'efface
 const FADE = 0.25; // secondes pour qu'un texte flottant évincé s'efface
 const MIN_TEXT = 11; // taille d'un texte du monde à l'écran, en pixels CSS, au moins : lisible sur téléphone
@@ -36,7 +36,7 @@ const SIGN_FRESH = 3; // secondes pendant lesquelles une pancarte qui vient d'ar
 const SIGN_SHARE = 2; // … un tour sur deux chacun : la moitié des pancartes levées à la fois, toutes à leur tour
 const SLOGAN_GAP = 3; // secondes entre deux slogans de recrues : les autres recrues rejoignent sans crier
 const PROP_FLOOR = 7 * TILE; // « GARDE À VUE », « PIQUET DE GRÈVE » : écrits pour un accessoire à l'étage du héros (à 7 tuiles près)
-const GROUP = { x: 40, y: 24 }; // des unités identiques aussi proches font un groupe : un seul écriteau, une seule bulle, un seul « ! »
+const GROUP = { x: 40, y: 24 }; // des unités identiques aussi proches font un groupe : un seul « ! », un seul « KOF ! »
 const SAFE_TOP = 100; // pixels CSS en haut de l'écran laissés au HUD, au moins (bandeau au pouce, barre de vie du boss) ; plus s'il descend plus bas
 
 export class Renderer {
@@ -55,7 +55,6 @@ export class Renderer {
     this.ratio = 3; // pixels CSS par pixel du monde (3 sur ordinateur, 5/3 sur téléphone)
     this.hudBottom = 0; // où descend le HUD, en pixels CSS depuis le haut (main.js le mesure)
     this.groups = new Map(); // à chaque image, où chaque genre de texte a déjà été écrit pour un groupe d'unités (`first`)
-    this.loud = new Set(); // les unités hors service dont la bulle se lit (une par groupe)
     this.lastSlogan = -Infinity;
     this.propSay = new WeakMap(); // accessoire en entier dans l'image → son étiquette est-elle écrite (muette → écrite, jamais l'inverse)
     this.held = new WeakMap(); // porteur de pancarte du cortège → { up, since, label } : levée ou baissée, depuis quand
@@ -64,6 +63,7 @@ export class Renderer {
     this.floaters = [];
     this.runners = []; // manifestants qui quittent la manif en courant (dispersés, interpellés)
     this.rings = []; // le « pop » d'une unité qui passe hors service
+    this.flowers = []; // [x, y, poussée] : la fleur de chaque unité hors service à cette image
     this.hurt = null; // { t, hp, max } : le héros vient d'être touché (ce qu'il lui reste s'affiche au-dessus de lui)
     this.edge = 0; // liseré rouge autour de l'image quand le héros est touché
     this.lastParry = -1;
@@ -333,7 +333,7 @@ export class Renderer {
       ctx.fillStyle = p.color;
       ctx.fillRect(Math.round(p.x - cx), Math.round(p.y - cy), p.s, p.s);
     }
-    this.combatAfter(); // larmes par-dessus le gaz, « pop » des unités hors service, liseré du coup reçu
+    this.combatAfter(); // larmes par-dessus le gaz, fleurs et « pop » des unités hors service, liseré du coup reçu
     for (const d of game.decors) if (this.bundle.decors[d.id]?.devant) this.decor(d);
 
     for (const f of this.floaters) {
@@ -358,6 +358,7 @@ export class Renderer {
     const { hero } = game;
     this.thumbs = document.body.classList.contains('tactile');
     this.weepers = []; // les gazés : leurs larmes passent par-dessus le nuage (voir `combatAfter`)
+    this.flowers = []; // les fleurs des unités hors service : par-dessus leur fumée (voir `combatAfter`)
     // Une perte hors de l'image : son texte se pose au bord, du côté où elle a eu lieu, avec une flèche.
     for (const f of this.floaters) {
       if (!f.edge) continue;
@@ -371,14 +372,6 @@ export class Renderer {
     }
     for (const f of this.floaters) if (f.keep) this.reserve(f.text, f.x - cx, f.y - cy, f.size || 7, 150);
     if (this.hurt && !hero.dead) this.reserve('■ ■ ■', hero.x + hero.w / 2 - cx, hero.y - 14 - cy, 7, 0);
-    // « EN GRÈVE ! », « EN PANNE » : le temps qu'on les lise ; une bulle pour un groupe d'unités identiques qui cèdent ensemble.
-    this.loud.clear();
-    for (const e of game.enemies) {
-      if (e.state !== 'done' || !e.bubble || !this.first('fin', e, e.bubble.text)) continue; // « EN GRÈVE ! » ×5 : un seul
-      this.loud.add(e);
-      const rows = e.def.sprites.fin || e.def.sprites.repos;
-      this.reserve(e.bubble.text, e.x + e.w / 2 - cx, e.y + e.h - rows.length - cy - 9, 6, 0);
-    }
   }
 
   /** Après les unités : les manifestants qui s'en vont ou accourent. */
@@ -389,6 +382,7 @@ export class Renderer {
   /** Par-dessus tout le reste du monde. */
   combatAfter() {
     for (const [e, x, top] of this.weepers) this.tears(e, x, top);
+    for (const [x, y, grown] of this.flowers) this.flower(x, y, grown);
     for (const r of this.rings) this.ring(r);
     if (this.edge > 0) this.redEdge();
   }
@@ -494,16 +488,20 @@ export class Renderer {
     }
   }
 
-  /** Dessine un sprite posé au sol, centré sur la boîte de collision de son acteur. */
+  /**
+   * Dessine un sprite posé au sol, centré sur la boîte de collision de son acteur. `dim` : assombri (vrai), ou apaisé
+   * (`'calm'`). Rend le coin haut gauche du dessin à l'écran, ou null s'il est hors de l'image.
+   */
   actor(a, rows, { flip = a.facing < 0, flash = false, alpha = 1, dx = 0, dy = 0, dim = false } = {}) {
-    if (!rows) return;
-    const img = sprite(rows, this.palette, flip, flash, dim && !flash);
+    if (!rows) return null;
+    const img = sprite(rows, this.palette, flip, flash, flash ? false : dim);
     const x = Math.round(a.x + a.w / 2 - img.width / 2 - this.cx + dx);
     const y = Math.round(a.y + a.h - img.height - this.cy + dy);
-    if (x > this.viewW || y > this.viewH || x + img.width < 0 || y + img.height < 0) return;
+    if (x > this.viewW || y > this.viewH || x + img.width < 0 || y + img.height < 0) return null;
     if (alpha !== 1) this.ctx.globalAlpha = alpha;
     this.ctx.drawImage(img, x, y);
     if (alpha !== 1) this.ctx.globalAlpha = 1;
+    return { x, y };
   }
 
   frames(sprites, moving, time, rate = 9) {
@@ -551,24 +549,13 @@ export class Renderer {
     const s = e.def.sprites;
     const cx = e.x + e.w / 2 - this.cx;
     if (e.state === 'done') {
-      // Hors service : son dessin de fin, sinon le sien éteint ; « EN GRÈVE ! » ou « EN PANNE » le temps de le lire, puis son écriteau.
-      const rows = s.fin || s.repos;
-      if (e.overrun) this.opening(e, rows);
-      else this.actor(e, rows, { flash: e.flash > 0, dim: !s.fin });
-      const top = e.y + e.h - rows.length - this.cy;
-      const seen = this.watch.get(e) ?? { state: e.state, at: -9 };
-      seen.down ??= this.clock;
-      this.watch.set(e, seen);
-      const since = this.clock - seen.down;
-      if (e.bubble) {
-        const pop = Math.max(0, e.bubble.t - 2.3) * 12; // il claque, puis se pose
-        const strike = e.def.fin === 'greve';
-        if (this.loud.has(e)) this.label(e.bubble.text, cx, top - 9, { size: 6 + pop, color: '#1a1c2c', bg: strike ? '#f6c21c' : '#94b0c2' });
-      } else if (e.def.ecriteau && !e.overrun && since < ECRITEAU && this.first('écriteau', e)) {
-        // Son écriteau, un moment, puis il s'efface : l'écran ne se remplit pas d'unités à l'arrêt.
-        this.label(e.def.ecriteau, cx, e.y - 9 - this.cy, { size: 5, color: '#1a1c2c', bg: '#f4f4f4', alpha: Math.min(1, ECRITEAU - since) });
+      // Une ligne cassée s'ouvre (voir `opening`) ; les autres posent les armes (voir `down`).
+      if (e.overrun) {
+        this.opening(e, s.fin || s.repos);
+        return;
       }
-      if (e.def.fin === 'panne' && !e.overrun && Math.floor(this.clock * 3 + e.x) % 3 === 0) this.burst(e.x + e.w / 2, e.y, '#94b0c2', 1, 12);
+      this.down(e);
+      if (e.def.fin === 'panne' && Math.floor(this.clock * 3 + e.x) % 3 === 0) this.burst(e.x + e.w / 2, e.y, '#94b0c2', 1, 12);
       return;
     }
     const moving = e.state === 'patrol' || e.state === 'alert' || e.def.deplacement === 'vol';
@@ -597,6 +584,43 @@ export class Renderer {
     else this.warn(e, cx, top);
     if (e.def.reaction === 'cadre' && e.state === 'alert' && (!e.film || e.framing)) this.viewfinder(e);
     if (speaks) this.label(e.bubble.text, cx, e.y - 10 - this.cy, { size: 5.5, color: '#1a1c2c', bg: '#f4f4f4', width: 80 });
+  }
+
+  /**
+   * Une unité hors service : rien d'écrit au-dessus d'elle, le dessin suffit. Son dessin de fin, sinon le sien, apaisé,
+   * presque gris ; en grève, elle s'assoit en tailleur ; et une petite fleur pousse : assise, dans sa main ; sinon,
+   * plantée sur elle.
+   */
+  down(e) {
+    const s = e.def.sprites;
+    const rows = s.fin || s.repos;
+    const sit = e.def.fin === 'greve' ? seated(rows) : null;
+    const drawn = sit || rows;
+    // Un plateau de télé ne se retourne pas, hors service non plus : son enseigne resterait à l'envers.
+    const flip = e.def.deplacement === 'fixe' && e.def.reaction === 'cadre' ? false : e.facing < 0;
+    const at = this.actor(e, drawn, { flip, flash: e.flash > 0, dim: !s.fin && 'calm' });
+    const seen = this.watch.get(e) ?? { state: e.state, at: -9 };
+    seen.down ??= this.clock;
+    this.watch.set(e, seen);
+    if (!at) return;
+    const spot = (sit && hand(drawn)) || crown(drawn);
+    const x = flip ? drawn[0].length - 1 - spot.x : spot.x;
+    this.flowers.push([at.x + x, at.y + spot.y - 1, this.reduced ? 1 : (this.clock - seen.down) / BLOOM]);
+  }
+
+  /** Une marguerite de cinq pixels de haut, le pied de la tige en (x, y) : la tige d'abord, puis la corolle (`grown` de 0 à 1). */
+  flower(x, y, grown = 1) {
+    const { ctx } = this;
+    if (grown <= 0) return;
+    ctx.fillStyle = '#38b764';
+    ctx.fillRect(x, y - 1, 1, 2);
+    if (grown < 1) return;
+    ctx.fillRect(x + 1, y, 1, 1); // une feuille
+    ctx.fillStyle = '#f4f4f4';
+    ctx.fillRect(x - 1, y - 3, 3, 1);
+    ctx.fillRect(x, y - 4, 1, 3);
+    ctx.fillStyle = '#f6c21c';
+    ctx.fillRect(x, y - 3, 1, 1);
   }
 
   /**
@@ -731,11 +755,10 @@ export class Renderer {
 
   /**
    * Faux si un texte de ce genre (`kind`) est déjà écrit à cette image pour une unité identique et voisine : des unités
-   * côte à côte font un groupe, qui n'a qu'un écriteau, qu'une bulle, qu'un « ! ». De proche en proche : toute la ligne.
-   * `same` dit ce qui fait le groupe : l'unité par défaut ; le texte pour « EN GRÈVE ! », quelles que soient les unités.
+   * côte à côte font un groupe, qui n'a qu'un « ! », qu'un « KOF ! ». De proche en proche : toute la ligne.
    */
-  first(kind, e, same = e.def.id) {
-    const key = `${kind}:${same}`;
+  first(kind, e) {
+    const key = `${kind}:${e.def.id}`;
     const seen = this.groups.get(key) ?? [];
     const x = e.x + e.w / 2;
     const y = e.y + e.h;

@@ -125,7 +125,7 @@ test('un tract qui explose sur un bouclier n’est pas « paré » : le souffle 
   assert.equal(still.enemies[0].hp, still.enemies[0].def.pv);
 });
 
-test('hors service : « EN GRÈVE ! » au-dessus de l’unité, et un événement pour le client', () => {
+test('hors service : la simulation note « EN GRÈVE ! » (le rendu ne l’écrit pas, voir tests/ecran.test.js), et un événement pour le client', () => {
   const game = settle(play(flat({ legende: { a: enemy('agent') }, draw: (put, ground) => put(ground, 8, 'a') })));
   const events = run(game, 120, { fire: true });
   const unit = game.enemies[0];
