@@ -71,7 +71,7 @@ Déposé dans `content/niveaux/`, il devient une étape du plan de campagne, à 
 | `nasse.rythme` | la nasse revient d'elle-même autour du héros, toutes les tant de secondes (0 à 600 ; 0, par défaut : seulement aux repères `N`) |
 | `manchette` | une alerte de PANIQUE TV propre au niveau ; répétable |
 | `intro` | le texte du carton d'ouverture, quand il n'y a pas de `citation` |
-| `musique` | une piste de `content/musiques/`, jouée la première fois qu'on entre dans le niveau ; ensuite, les pistes tournent |
+| `musique` | une piste de `content/musiques/`, jouée à chaque entrée dans le niveau ; si des pistes ont aussi `ou` : ce niveau, l'entrée tire au hasard entre elles et celle-ci. Ensuite, les pistes tournent |
 
 Un signe de légende est une minuscule, ou l'un de ceux-ci : `+ * @ & % $ ! ? = ~ ^ < > _ , ;`.
 

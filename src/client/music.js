@@ -69,16 +69,26 @@ export function levelTracks(tracks, slot, named = null, failed = new Set()) {
 }
 
 /**
- * La prochaine piste d'un niveau. Ses pistes à lui passent d'abord, la première fois seulement (`played` : déjà
- * entendues pendant cette visite). Ensuite, un sac : toutes celles qu'il peut jouer, au hasard, sans en rejouer
- * une (`heard`) avant d'avoir entendu les autres ; jamais celle qu'on entend déjà (`avoid`), s'il y en a une autre.
+ * L'entrée dans un niveau : sa piste à lui (`ou` : le niveau, ou celle que nomme sa clé `musique`). S'il en a
+ * plusieurs, une autre que celle de la visite d'avant (`last`) quand c'est possible ; jamais celle qu'on entend déjà
+ * (`avoid`). Sans piste à lui : rien, le sac commence.
  */
-export function nextLevelTrack(tracks, { slot, named = null, failed = new Set(), heard = new Set(), played = new Set(), avoid = null, random = Math.random }) {
-  const { own, all } = levelTracks(tracks, slot, named, failed);
+export function openingTrack(tracks, { slot, named = null, failed = new Set(), last = null, avoid = null, random = Math.random }) {
+  const own = levelTracks(tracks, slot, named, failed).own.filter((t) => t !== avoid);
+  const fresh = own.filter((t) => t.id !== last);
+  const from = fresh.length ? fresh : own;
+  return from.length ? from[Math.floor(random() * from.length)] : null;
+}
+
+/**
+ * La piste suivante d'un niveau : un sac. Toutes celles qu'il peut jouer (les siennes et celles de tous les
+ * niveaux), au hasard, sans en rejouer une (`heard`) avant d'avoir entendu les autres ; jamais celle qu'on vient
+ * d'entendre (`avoid`), s'il y en a une autre.
+ */
+export function nextLevelTrack(tracks, { slot, named = null, failed = new Set(), heard = new Set(), avoid = null, random = Math.random }) {
+  const { all } = levelTracks(tracks, slot, named, failed);
   if (!all.length) return null;
   const pick = (list) => list[Math.floor(random() * list.length)];
-  const firstTime = own.filter((t) => !played.has(t.id) && t !== avoid);
-  if (firstTime.length) return pick(firstTime);
   const bag = all.filter((t) => !heard.has(t.id) && t !== avoid);
   if (bag.length) return pick(bag);
   const others = all.filter((t) => t !== avoid); // le sac est vide : un nouveau tour
@@ -120,13 +130,18 @@ export class Radio {
     this.status = 'off'; // off | loading | playing | paused | blocked (refusée, attend un geste) | unreachable (lecteur injoignable)
     this.widget = null;
     this.connecting = null;
+    this.pending = null; // un chargement demandé au lecteur, qui n'a pas encore rappelé : { track, timer }
     this.current = null; // la piste chargée (ou en train de l'être)
     this.slot = 'menu';
     this.named = null;
     this.chosenFor = null; // le moment pour lequel `current` a été choisie
-    // En partie, les pistes tournent : `heard`, celles du tour en cours (le sac) ; `played`, toutes celles entendues.
+    this.visit = null; // la visite du niveau en cours : { key, track }, la piste de niveau qu'on y entend
+    // En partie, les pistes tournent : `heard`, celles du tour en cours (le sac) ; `opened`, la piste à lui par
+    // laquelle chaque niveau a commencé la dernière fois.
     this.heard = new Set();
-    this.played = new Set();
+    this.opened = new Map();
+    this.lastHeard = new Map(); // la dernière piste vraiment entendue, par moment (les niveaux partagent la leur)
+    this.lastShared = null; // la dernière piste de tous les niveaux (`jeu`, `partout`) vraiment entendue
     this.failed = new Set(); // pistes qui n'ont pas voulu jouer ; le retour du réseau leur rend leur chance
     this.attempt = null; // une lecture demandée, pas encore confirmée : { track, loaded, refused, retried, waits }
     this.timer = null;
@@ -145,43 +160,95 @@ export class Radio {
       this.status = 'off';
     }
     this.render(possible);
-    if (this.enabled && !was) this.play(this.slot, this.named);
+    if (this.enabled && !was) this.tune();
   }
 
   /**
    * Lance la musique d'un moment du jeu : « menu », « boss », ou l'identifiant d'un niveau,
    * avec la piste que nomme le niveau s'il en nomme une.
+   * @param {{ restart?: boolean }} [how]  `restart` : « Recommencer » ; la visite du niveau continue, sa musique avec.
+   *   Sinon, chaque arrivée dans un niveau en commence une nouvelle visite (« Rejouer » après une victoire aussi).
    */
-  play(slot, named = null) {
-    const again = this.chosenFor === `${slot}|${named}`;
+  play(slot, named = null, { restart = false } = {}) {
+    const key = `${slot}|${named}`;
+    const level = !NOT_A_LEVEL.has(slot);
+    const back = level && restart && this.visit?.key === key;
+    if (level && !back) this.visit = { key, track: null };
     this.slot = slot;
     this.named = named;
     if (!this.enabled) return;
     if (this.status === 'unreachable') return; // le bouton ou le retour du réseau réessaieront
+    if (back) return this.comeBack();
+    this.tune();
+  }
+
+  /**
+   * La musique du moment présent. Une visite de niveau commence par sa piste à lui, s'il en a une ; ensuite (et sans
+   * piste à lui), le sac ; jamais celle qu'on entend déjà en y entrant. Le menu et le boss tirent au hasard.
+   */
+  tune() {
+    const key = `${this.slot}|${this.named}`;
+    const level = !NOT_A_LEVEL.has(this.slot);
     const live = this.status === 'playing' || this.status === 'loading';
-    if (again && live) return; // « Recommencer » : la même musique continue
-    // Chaque niveau change de piste : jamais celle qu'on entend déjà en y entrant.
-    const track = this.choose(NOT_A_LEVEL.has(slot) ? null : this.current);
+    if (!level && this.chosenFor === key && live) return; // toujours le même moment (le menu) : la musique continue
+    const track = (level && !this.visit?.track && this.open()) || this.choose(level ? this.current : null);
     if (!track) return this.unreachable(); // plus aucune piste ne joue
-    this.chosenFor = `${slot}|${named}`;
+    this.chosenFor = key;
     if (track !== this.current) return this.start(track);
     if (!live) this.resume();
+  }
+
+  /**
+   * « Recommencer » : la piste de niveau de cette visite continue, ou revient après une mort au boss.
+   * Une musique mise en pause, ou refusée par le navigateur, le reste, sur la même piste.
+   */
+  comeBack() {
+    this.chosenFor = `${this.slot}|${this.named}`;
+    if (this.status !== 'playing' && this.status !== 'loading') return;
+    const track = this.visit.track;
+    if (!track || this.failed.has(track.id)) return this.tune();
+    if (track !== this.current) this.start(track);
   }
 
   choose(avoid = null) {
     const base = { slot: this.slot, named: this.named, failed: this.failed, avoid, random: this.env.random };
     if (NOT_A_LEVEL.has(this.slot)) return chooseTrack(this.tracks, base);
     // En partie : le sac des pistes du niveau ; s'il ne reste rien, n'importe laquelle plutôt que le silence.
-    return nextLevelTrack(this.tracks, { ...base, heard: this.heard, played: this.played }) ?? chooseTrack(this.tracks, base);
+    return nextLevelTrack(this.tracks, { ...base, heard: this.heard }) ?? chooseTrack(this.tracks, base);
   }
 
-  /** Une piste de niveau joue vraiment : elle sort du sac. Quand il est vide, un nouveau tour commence (sans elle). */
+  /** L'entrée dans un niveau : sa piste à lui, une autre que la fois d'avant s'il en a plusieurs. */
+  open() {
+    const track = openingTrack(this.tracks, {
+      slot: this.slot, named: this.named, failed: this.failed, last: this.opened.get(this.slot), avoid: this.current, random: this.env.random,
+    });
+    if (track) this.opened.set(this.slot, track.id);
+    return track;
+  }
+
+  /** Une piste de niveau joue vraiment : elle sort du sac. */
   heardNow(track) {
     if (NOT_A_LEVEL.has(this.slot)) return;
     this.heard.add(track.id);
-    this.played.add(track.id);
+    if (track.ou === 'jeu' || track.ou === 'partout') this.lastShared = track;
+    this.refill();
+  }
+
+  /**
+   * Le sac du niveau est vide (tout entendu, ou la dernière piste a échoué) : un nouveau tour. Il garde, déjà
+   * comptées, la dernière piste entendue, quel que soit son niveau, et la dernière des pistes de tous les niveaux
+   * (`jeu`, `partout`) : des pistes à eux entendues entre-temps ne la font pas revenir en tête du tour.
+   */
+  refill() {
     const { all } = levelTracks(this.tracks, this.slot, this.named, this.failed);
-    if (all.every((t) => this.heard.has(t.id))) for (const t of all) if (t !== track) this.heard.delete(t.id);
+    if (!all.every((t) => this.heard.has(t.id))) return;
+    const keep = [this.lastHeard.get('niveau'), this.lastShared];
+    for (const t of all) if (!keep.includes(t)) this.heard.delete(t.id);
+  }
+
+  /** Le moment du jeu, pour la dernière piste entendue : le menu, le boss, ou les niveaux (un seul sac). */
+  moment() {
+    return NOT_A_LEVEL.has(this.slot) ? this.slot : 'niveau';
   }
 
   /** La piste qui suit celle-ci (clé `puis`), si elle peut jouer. */
@@ -193,12 +260,13 @@ export class Radio {
   /** Charge une piste ; le lecteur n'est créé qu'à la première. */
   start(track) {
     this.current = track;
+    if (!NOT_A_LEVEL.has(this.slot) && this.visit) this.visit.track = track;
     this.status = 'loading';
     this.ownPause = false;
     // Tant que le lecteur n'a pas fini de charger cette piste, ce qu'il annonce vient de la précédente.
     this.watch(track, { loaded: false });
     this.render();
-    if (this.widget) return this.widget.load(track.url, { ...OPTIONS, callback: () => this.loaded(track) });
+    if (this.widget) return this.load(track);
     if (this.connecting) return; // le lecteur arrive : il prendra la piste courante une fois prêt
     const pending = this.env.connect(track, (name, data) => this.event(name, data), this.view);
     this.connecting = pending;
@@ -213,6 +281,36 @@ export class Radio {
     }, () => {
       if (this.connecting === pending) this.unreachable();
     });
+  }
+
+  /**
+   * Demande une piste au lecteur, jamais par-dessus un chargement en cours : `widget.load()` remet le lecteur à zéro
+   * et remplace l'attente du précédent. Si le « prêt » de l'ancien arrive entre les deux, le rappel part trop tôt et
+   * le nouveau lecteur n'envoie plus rien. La piste demandée entre-temps (`current`) se charge au rappel.
+   */
+  load(track) {
+    if (this.pending) return;
+    const request = { track, timer: null };
+    this.pending = request;
+    this.widget.load(track.url, { ...OPTIONS, callback: () => this.called(request) });
+  }
+
+  /** Un chargement a rappelé. Une autre piste a été demandée entre-temps : c'est son tour. */
+  called(request) {
+    if (this.pending !== request) return; // oublié : le lecteur a été déclaré injoignable entre-temps
+    this.forget();
+    if (!this.enabled) {
+      // Musique coupée pendant le chargement : la piste chargée partirait d'elle-même.
+      this.ownPause = true;
+      return this.widget.pause();
+    }
+    if (this.current !== request.track) return this.load(this.current);
+    this.loaded(request.track);
+  }
+
+  forget() {
+    if (this.pending?.timer) this.env.cancel(this.pending.timer);
+    this.pending = null;
   }
 
   /** Le lecteur a chargé la piste demandée : à partir de maintenant, on attend qu'elle parte. */
@@ -307,7 +405,9 @@ export class Radio {
    */
   fail(track) {
     this.failed.add(track.id);
-    const next = this.following(track) ?? this.choose();
+    // Jamais la dernière piste entendue à ce moment-là, même quand la piste en échec était la dernière du sac.
+    if (!NOT_A_LEVEL.has(this.slot)) this.refill(); // l'échec a pu finir le tour
+    const next = this.following(track) ?? this.choose(this.lastHeard.get(this.moment()) ?? null);
     if (next) this.start(next);
     else this.unreachable();
   }
@@ -321,6 +421,7 @@ export class Radio {
   /** Le lecteur ne répond pas, ou plus aucune piste ne joue : on joue sans musique. Le bouton, ou le retour du réseau, réessaieront. */
   unreachable() {
     this.cancelWatch();
+    this.forget(); // un chargement qui n'a jamais rappelé ne bloque pas le prochain essai
     if (!this.widget) {
       this.connecting = null;
       this.view.unmount();
@@ -355,12 +456,24 @@ export class Radio {
     this.start(track);
   }
 
-  /** Le réseau revient : les pistes écartées retrouvent leur chance, et un chargement resté en plan repart. */
+  /**
+   * Le réseau revient : les pistes écartées retrouvent leur chance, et un chargement resté en plan repart.
+   * Pas par-dessus celui en cours : il a encore le temps de rappeler ; sinon, on recharge.
+   */
   reconnected() {
     this.failed.clear();
     if (!this.enabled) return;
     if (this.status === 'unreachable') return this.retry();
-    if (this.status === 'loading' && this.widget && !this.attempt?.loaded) this.start(this.current);
+    if (this.status !== 'loading' || !this.widget || this.attempt?.loaded) return;
+    const request = this.pending;
+    if (!request) return this.start(this.current);
+    if (request.timer) this.env.cancel(request.timer);
+    request.timer = this.env.later(() => {
+      request.timer = null;
+      if (this.pending !== request || !this.enabled) return;
+      this.forget();
+      this.start(this.current);
+    }, START_TIMEOUT);
   }
 
   /** Ce que le lecteur SoundCloud annonce. */
@@ -381,6 +494,7 @@ export class Radio {
     }
     // Une lecture demandée avance : elle joue vraiment. (Sans demande en cours, un reste d'avant une pause.)
     if (name === 'PLAY_PROGRESS' && data.currentPosition > 0 && this.attempt && !this.ownPause) {
+      this.lastHeard.set(this.moment(), this.attempt.track);
       this.heardNow(this.attempt.track); // entendue pour de bon : elle sort du sac
       this.cancelWatch();
       this.status = 'playing';

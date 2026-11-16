@@ -35,6 +35,7 @@ let custom = null; // niveau de l'Atelier en cours de test
 let begin = null; // le carton d'ouverture attend : fonction qui lance vraiment le niveau
 let bot = {};
 let won = []; // clés de ce qui a été débloqué depuis le début du niveau : la rangée de l'écran de fin
+let visited = null; // le niveau lancé, tant qu'il n'est ni gagné ni quitté : « Recommencer » y garde sa musique
 // Le temps d'écran pas encore joué. Il repart d'un quart de pas, jamais de zéro : à 60 Hz, une image dure un pas,
 // et un reste nul laisserait le moindre écart d'horloge jouer tantôt zéro pas, tantôt deux (le décor saute).
 const PHASE = DT / 4;
@@ -128,6 +129,7 @@ function toMenu() {
   begin = null;
   custom = null;
   current = null;
+  visited = null;
   showEditButton(false);
   setMode('menu');
   attract();
@@ -190,7 +192,9 @@ function start(id, level = null) {
     begin = null;
     if (id) measure('niveau lancé', { niveau: id }); // chaque vraie partie, rejouée ou non ; pas un changement de héros sur le carton
     setMode('playing');
-    radio.play(current.id, current.level.musique);
+    // « Recommencer » (pause, « Plus de vies ») : la même visite, sa piste continue ou revient après le boss.
+    radio.play(current.id, current.level.musique, { restart: visited === current.id });
+    visited = current.id;
   };
   screens.intro(current.level, () => begin?.(), game.hero.def.id, !level);
 }
@@ -251,6 +255,7 @@ function back() {
 
 async function win() {
   begin = null;
+  visited = null; // « Rejouer » après une victoire : une nouvelle entrée dans le niveau
   setMode('over');
   audio.play('victoire');
   const { level, id } = current;
