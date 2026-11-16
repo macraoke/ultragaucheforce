@@ -1,7 +1,6 @@
 // Réglages du client qui ne sont pas du contenu.
 
 export const REPO = 'https://github.com/macraoke/ultragaucheforce';
-export const VERSION = '0.1.0';
 
 /**
  * La mesure d'audience (`mesure.js`) : le projet PostHog où partent les compteurs de parties.

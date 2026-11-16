@@ -3,7 +3,7 @@
 
 import { h, link, quoted, signature } from './dom.js';
 import { spriteElement } from './sprites.js';
-import { REPO, VERSION, REFERENCES, ANALYTICS } from './config.js';
+import { REPO, REFERENCES, ANALYTICS } from './config.js';
 import { storeSave, eraseProgress, isFound, isReadOnly } from './save.js';
 import { SHELVES, VOTE_FICHES, allCards, collectionCount, isFresh, levelOrder, markSeen, openCard, progress, rarityCounts, shelfGrid, wonCards } from './collection.js';
 import { livesStack } from './lives.js';
@@ -117,7 +117,7 @@ export class Screens {
         this.button('À propos', () => this.about()),
         this.update && this.button('Mettre à jour', this.update)),
       isReadOnly(this.save) && h('p', { className: 'mention' }, 'Cette sauvegarde vient d’une version plus récente du jeu. Mets le jeu à jour : d’ici là, rien n’est enregistré.'),
-      h('p', { className: 'mention' }, MENTION, ` v${VERSION}`));
+      h('p', { className: 'mention' }, MENTION, ' ', link(REPO, 'Open source.')));
   }
 
   nextLevel() {
