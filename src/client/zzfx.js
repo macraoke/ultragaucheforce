@@ -4,7 +4,8 @@
 
   Seule la fonction de synthèse est reprise ici (sans lecture audio ni contexte global),
   pour que les bruitages du jeu soient réglables dans l'outil web de ZzFX puis collés
-  dans une fiche `content/sons/*.txt`.
+  dans une fiche `content/sons/*.txt`. Elle peut se faire par morceaux (`synthesize`) :
+  le jeu prépare ainsi ses bruitages dans le temps libre, sans à-coup.
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -26,9 +27,25 @@
 */
 
 export const SAMPLE_RATE = 44100;
+const CHUNK = 2048; // échantillons calculés entre deux pauses de `synthesize` (une puissance de deux)
 
 /** Construit les échantillons d'un bruitage à partir de ses 21 réglages ZzFX. */
-export function buildSamples(
+export function buildSamples(...params) {
+  return finish(synthesize(...params));
+}
+
+/** Termine d'un coup une synthèse commencée par `synthesize`, et rend ses échantillons. */
+export function finish(steps) {
+  let step;
+  do step = steps.next(); while (!step.done);
+  return step.value;
+}
+
+/**
+ * La même synthèse, par morceaux : chaque `next()` calcule au plus `CHUNK` échantillons,
+ * et le dernier rend le tableau entier.
+ */
+export function* synthesize(
   volume = 1, randomness = .05, frequency = 220, attack = 0, sustain = 0, release = .1,
   shape = 0, shapeCurve = 1, slide = 0, deltaSlide = 0, pitchJump = 0, pitchJumpTime = 0,
   repeatTime = 0, noise = 0, modulation = 0, bitCrush = 0, delay = 0, sustainVolume = 1,
@@ -86,6 +103,7 @@ export function buildSamples(
 
   // generate waveform
   for (; i < length; b[i++] = s * volume) {
+    if (!(i & (CHUNK - 1)) && i) yield i;
     if (!(++crush % ((bitCrush * 100) | 0))) {
       // wave shape : 0 sin, 1 triangle, 2 saw, 3 tan, 4 noise, 5 square duty
       s = shape
