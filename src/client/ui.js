@@ -103,7 +103,7 @@ export class Screens {
   collection(tab = SHELVES[0].id) {
     const { bundle, save } = this;
     const all = collectionCount(bundle, save);
-    const fresh = new Set(allCards(bundle).filter((c) => isFound(save, c.kind, c.item.id ?? c.item.texte) && isFresh(save, c)).map((c) => c.shelf));
+    const fresh = new Set(allCards(bundle).filter((c) => isFound(save, c.kind, c.item.id) && isFresh(save, c)).map((c) => c.shelf));
     // Un héros déjà rencontré se joue depuis sa carte ; pas en pleine partie, où ce serait l'abandonner.
     const actionsFor = (card) => (card.kind === 'heros' && !this.go.playing() ? [this.button('Jouer avec', () => this.playAs(card.item.id), 'gros')] : []);
     this.show('biblio',

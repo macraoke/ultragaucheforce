@@ -51,7 +51,7 @@ source: https://adresse-de-la-page-d-origine
 
 Le jeu n'a pas de voix off pour l'instant : le carton de déblocage joue un roulement de tambour, des cuivres et une cymbale.
 
-Une vraie voix d'annonceur est la bienvenue : masculine, grave, dynamique, façon bande-annonce télé. Déposez-la dans `content/voix/<identifiant-du-personnage>.mp3` (par exemple `content/voix/zuc-man.mp3`) : le jeu la joue au déblocage du héros, ou à l'entrée du boss.
+Une vraie voix d'annonceur est la bienvenue : masculine, grave, dynamique, façon bande-annonce télé. Déposez-la dans `content/voix/<identifiant-du-personnage>.mp3` (par exemple `content/voix/zucman.mp3`) : le jeu la joue au déblocage du héros, ou à l'entrée du boss.
 
 - Deux à trois secondes, mono, moins de 100 Ko.
 - Votre propre voix, sous licence libre, avec votre nom pour les crédits. Pas d'imitation d'une personne réelle.

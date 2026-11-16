@@ -29,6 +29,16 @@ Une ligne du jeu :
 TU NOUS METS 64 ANS, ON TE MAI 68 | vue à Paris, mars 2023 — https://www.carenews.com/news/reforme-des-retraites-a-la-manifestation-du-7-mars-les-jeunes-interrogent-la-place-du-travail
 ```
 
+## Corriger une ligne
+
+Une faute dans un texte déjà dans le jeu : corrigez-la, et gardez l'ancien texte au bout de la ligne.
+
+```text
+LE TEXTE CORRIGÉ | vue à Lyon, janv. 2023 — https://adresse-de-l-article | était: LE TEXTE D'AVANT
+```
+
+Les joueurs qui l'avaient débloquée la gardent, et sa rareté ne change pas.
+
 ## Une pancarte, un slogan
 
 <!-- fichier: content/pancartes/camille.txt -->

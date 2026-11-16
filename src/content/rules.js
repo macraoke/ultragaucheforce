@@ -542,12 +542,17 @@ export function buildContent(files) {
     const report = reporter(file.path);
     if (LINE_FOLDERS.includes(dir)) {
       for (const { text, line } of parseLines(file.text)) {
-        const [texte, credit = ''] = text.split('|').map((s) => s.trim());
+        const [texte, credit = '', more = ''] = text.split('|').map((s) => s.trim());
         const address = credit.split(' — ')[1]; // crédit : « où et quand — adresse de la source »
         if (address !== undefined && !/^https:\/\/\S+$/.test(address)) {
           report(line, 'Après « — », il faut l’adresse de la source : elle commence par https://');
         }
-        bundle[dir].push({ texte, credit, rarete: rarityOf(texte) });
+        // Un texte corrigé garde son identifiant : celui de sa première écriture, noté « était: … ».
+        // Le déblocage des joueurs et la rareté le suivent.
+        const was = more.match(/^était\s*:\s*(.+)$/)?.[1];
+        if (more && !was) report(line, 'Après la deuxième barre, on écrit « était: » puis l’ancien texte de la ligne.');
+        const id = was ?? texte;
+        bundle[dir].push({ id, texte, credit, rarete: rarityOf(id) });
       }
       continue;
     }

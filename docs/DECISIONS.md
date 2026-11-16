@@ -105,6 +105,15 @@ L'échelle, l'exemple et le fait se tirent au hasard dans un dictionnaire de fic
 - **Des écrans courts** : un écran, une idée ; ce qui précise se déplie. Une citation est simplement signée, et sa signature mène à la source.
 - **L'Atelier se dessine** : une palette d'images, on peint, on essaie.
 
+## Une sauvegarde qui survit aux mises à jour
+
+Tout est sur l'appareil du joueur ; une mise à jour ne lui fait rien perdre.
+
+- **Un numéro de version** dans la sauvegarde. Changer son format, c'est ajouter une fonction de passage dans `src/client/save.js` et une vraie sauvegarde de l'ancienne version dans `tests/fixtures/sauvegardes/`.
+- **Un identifiant ne change pas.** Le nom du fichier est l'identifiant, et il dit la personne ou l'étiquette (`melenchon`, `arnault`) ; le nom affiché, lui, peut changer.
+- **Une pancarte corrigée garde son déblocage** : l'ancien texte reste au bout de la ligne, après `était:`. Sa rareté ne bouge pas.
+- **Rien n'est retiré** : ce qu'une version du jeu ne connaît pas reste dans la sauvegarde.
+
 ## Hors-ligne : seulement dans la version construite
 
 `npm run build` ajoute le service worker, les icônes et le contenu assemblé. En développement, aucun cache.

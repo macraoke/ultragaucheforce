@@ -43,7 +43,7 @@ export function allCards(bundle) {
 export const cardName = (item) => item.nom || item.titre || item.auteur || item.texte;
 
 /** L'identifiant d'une carte : celui de sa fiche ; une pancarte n'a que son texte. */
-export const cardId = (item) => item.id ?? item.texte;
+export const cardId = (item) => item.id;
 
 /** La clé d'une carte dans la sauvegarde : « rayon:identifiant ». */
 export const cardKey = (card) => `${card.kind}:${cardId(card.item)}`;

@@ -110,8 +110,8 @@ const short = (text, max = 44) => (text.length > max ? `${text.slice(0, max - 1)
 function collect(kind, id, quiet = false) {
   const lines = kind === 'pancartes' || kind === 'manchettes'; // sans fiche : identifiées par leur texte
   const item = lines ? bundle[kind].find((p) => p.texte === id) : bundle[kind]?.[id];
-  if (!item || !discover(save, kind, id)) return;
-  won.push(`${kind}:${id}`);
+  if (!item || !discover(save, kind, item.id)) return;
+  won.push(`${kind}:${item.id}`);
   if (kind === 'pancartes') hud.toast(`Pancarte ${rarityName(item)} débloquée : « ${short(item.texte)} »`, `rarete-${item.rarete}`);
   else if (!quiet) hud.toast(`Débloqué : ${cardName(item)}`);
   collect('citations', item.citation, true);
