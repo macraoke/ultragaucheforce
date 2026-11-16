@@ -5,7 +5,6 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { fixtureBundle, flat, play, run, settle } from './helpers.js';
 import { FEEL } from '../../src/sim/hero.js';
-import { spawnProjectile } from '../../src/sim/projectile.js';
 
 const enemy = (id) => ({ type: 'ennemi', id });
 const of = (events, type) => events.filter((e) => e.type === type);
@@ -96,6 +95,31 @@ test('ligne qui tient : un tract qui s’y écrase est paré, comme sur un boucl
   assert.equal(line.flash, 0);
 });
 
+test('un tract qui explose sur un bouclier n’est pas « paré » : le souffle passe, et seulement lui', () => {
+  const blasting = structuredClone(fixtureBundle());
+  Object.assign(blasting.heros.alpha.arme, { explosion: 20, cadence: 2, blindage: 0, perce: 0 });
+  const game = settle(play(flat({ legende: { s: enemy('statue') }, draw: (put, ground) => put(ground, 8, 's') }), { bundle: blasting }));
+  const unit = game.enemies[0];
+  let both = 0;
+  const events = [];
+  for (let i = 0; i < 120 && unit.state !== 'done'; i++) {
+    const seen = run(game, 1, { fire: true });
+    events.push(...seen);
+    if (of(seen, 'parry').length && unit.flash > 0) both++;
+  }
+  assert.equal(both, 0, 'jamais « paré » et touché par le même tract');
+  assert.equal(of(events, 'parry').length, 0, 'le souffle n’est pas arrêté : rien n’est paré');
+  assert.ok(unit.hp < unit.def.pv, 'le souffle l’atteint, comme avant');
+
+  // Le même tract, sans explosion : paré, aucun dégât.
+  const plain = structuredClone(blasting);
+  plain.heros.alpha.arme.explosion = 0;
+  const still = settle(play(flat({ legende: { s: enemy('statue') }, draw: (put, ground) => put(ground, 8, 's') }), { bundle: plain }));
+  const seen = run(still, 120, { fire: true });
+  assert.ok(of(seen, 'parry').length > 0);
+  assert.equal(still.enemies[0].hp, still.enemies[0].def.pv);
+});
+
 test('hors service : « EN GRÈVE ! » au-dessus de l’unité, et un événement pour le client', () => {
   const game = settle(play(flat({ legende: { a: enemy('agent') }, draw: (put, ground) => put(ground, 8, 'a') })));
   const events = run(game, 120, { fire: true });
@@ -146,24 +170,37 @@ test('interpellations : une unité qui atteint le cortège emmène trois manifes
   for (let k = 1; k < at.length; k++) assert.ok(at[k] - at[k - 1] >= 150, 'pas plus d’une fois toutes les deux secondes et demie');
 });
 
-test('touchés : un tir de l’ordre qui file dans le cortège (« arme.touche ») en fait partir quelques-uns', () => {
+test('touchés : le tir du viseur file dans le cortège (« arme.touche ») et en fait partir deux', () => {
   assert.equal(fixtureBundle().ennemis.viseur.arme.touche, 2, 'lu dans la fiche');
-  const shooter = settle(play(flat({ legende: { v: enemy('viseur') }, draw: (put, ground) => put(ground, 14, 'v') }), { invincible: true }));
-  let carried = false;
-  for (let i = 0; i < 120 && !carried; i++) {
-    run(shooter, 1);
-    carried = shooter.projectiles.some((p) => p.team === 'ordre' && p.touche === 2);
-  }
-  assert.ok(carried, 'le projectile le porte');
+  // Le viseur attend à gauche ; le héros part à droite : le cortège s'étire entre eux, et c'est lui que le tir atteint.
+  const game = settle(play(flat({
+    width: 60, cortege: true, manif: 100, legende: { v: enemy('viseur') },
+    draw: (put, ground) => {
+      put(ground, 2, '.');
+      put(ground, 3, 'v');
+      put(ground, 10, 'D');
+    },
+  })));
+  const { hero } = game;
+  const events = run(game, 50, { right: true });
+  for (let i = 0; i < 300 && !of(events, 'dispersed').length; i++) events.push(...run(game, 1));
+  const [loss] = of(events, 'dispersed');
+  assert.ok(loss, 'un tir atteint le cortège');
+  assert.deepEqual({ n: loss.n, reason: loss.reason, crowd: loss.crowd }, { n: 2, reason: 'touche', crowd: 98 });
+  assert.ok(loss.x < hero.x, 'dans le cortège, derrière le héros');
+  assert.equal(hero.hp, hero.def.pv, 'le tir s’est arrêté dans le cortège : le héros n’a rien');
+});
 
-  const game = settle(play(flat({ width: 80, cortege: true, manif: 100 })));
-  run(game, 60, { right: true });
-  const last = game.cortege.at(-1);
-  game.events.length = 0;
-  const p = spawnProjectile(game, { team: 'ordre', x: last.x - 2, y: last.y - 10, w: 4, h: 4, vx: 60, touche: 2 });
-  const [loss] = of(run(game, 1), 'dispersed');
-  assert.ok(p.dead, 'il s’arrête dans le cortège');
-  assert.deepEqual({ n: loss.n, reason: loss.reason, crowd: game.crowd }, { n: 2, reason: 'touche', crowd: 98 });
+test('une unité sonnée n’interpelle personne', () => {
+  const game = settle(play(flat({ width: 80, cortege: true, manif: 100, legende: { a: enemy('agent') }, draw: (put, ground) => put(ground, 12, 'a') })));
+  const unit = game.enemies[0];
+  const events = [];
+  for (let i = 0; i < 400; i++) {
+    Object.assign(unit, { state: 'stunned', stun: 1, daze: 'choc' }); // sonnée tout du long
+    events.push(...run(game, 1, { right: true }));
+  }
+  assert.ok(game.cortege.some((m) => m.x > unit.x + unit.w), 'le cortège est passé sur elle');
+  assert.equal(of(events, 'dispersed').length, 0, 'personne d’interpellé');
 });
 
 // ---------------------------------------------------------------- jamais d'impasse
