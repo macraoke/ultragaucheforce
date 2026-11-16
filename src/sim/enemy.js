@@ -7,7 +7,8 @@
 //   parry     secondes pendant lesquelles un coup arrêté par le bouclier ou la ligne se voit
 //   daze      pendant l'étourdissement : 'choc' (onde, bousculade) ou 'gaz' (ses propres lacrymogènes)
 //   blocking  la ligne tient : infranchissable pour le héros et les unités au sol d'en face, sur LINE_REACH pixels
-//             au-dessus d'elle ; les tirs qui la touchent s'y écrasent, les grenades en cloche passent par-dessus
+//             au-dessus d'elle (une ligne de nasse : sur son étage, KETTLE_FLOOR) ; les tirs qui la touchent s'y
+//             écrasent, les grenades en cloche passent par-dessus
 //   push      une ligne (`ligne.vie`) que la manif pousse : les points de vie qu'elle perd par seconde (0 sinon) ;
 //             `hp` est sa vie, sur `def.ligne.vie`
 //   aim       { x, y, t } pendant une visée (LBD) : le tir part vers ce point dans t secondes
@@ -27,6 +28,7 @@ const WAKE_X = 300; // distances FIXES de réveil : jamais la taille de l'écran
 const WAKE_Y = 170; // pour que la partie soit la même sur tous les appareils
 const FRAME_RANGE = 70; // portée du cadrage du drone
 export const LINE_REACH = 112; // hauteur du barrage au-dessus d'une ligne qui tient : aucun saut ne passe
+export const KETTLE_FLOOR = 4 * TILE; // une nasse ne tient que l'étage de ses lignes : de leur sol à un étage au-dessus
 const PUSH_RANGE = 72; // la manif pousse une ligne quand le héros arrive à cette distance
 const PASS = 200; // une moto dépasse le héros d'autant avant de faire demi-tour
 const SOMMATION = 1; // secondes par sommation
@@ -92,8 +94,14 @@ function fall(game, e, dt) {
   stopAtLines(game, e, x0);
 }
 
-/** La zone qu'une ligne qui tient barre : sa largeur, de son pied à LINE_REACH pixels au-dessus d'elle. */
-const barred = (l, y, h) => y < l.y + l.h && y + h > l.y - LINE_REACH;
+/**
+ * Le haut du barrage d'une ligne qui tient : LINE_REACH pixels au-dessus d'elle. Une ligne de nasse ne barre que
+ * son étage (KETTLE_FLOOR depuis son sol) : à l'étage au-dessus, on passe.
+ */
+export const barrierTop = (l) => (l.kettle ? l.y + l.h - KETTLE_FLOOR : l.y - LINE_REACH);
+
+/** La zone qu'une ligne qui tient barre : sa largeur, de son pied au haut de son barrage. */
+const barred = (l, y, h) => y < l.y + l.h && y + h > barrierTop(l);
 
 /**
  * Une ligne qui tient arrête les unités au sol d'en face comme le héros (voir `Game.blockHero`) : charge, ruée,
@@ -124,7 +132,7 @@ function stopAtLines(game, e, x0) {
 function pushes(game, e, dx) {
   const { hero, world } = game;
   const feet = hero.y + hero.h;
-  if (hero.dead || Math.abs(dx) >= PUSH_RANGE || feet > e.y + e.h + TILE || feet < e.y - LINE_REACH) return false;
+  if (hero.dead || Math.abs(dx) >= PUSH_RANGE || feet > e.y + e.h + TILE || feet < barrierTop(e)) return false;
   const ox = hero.x + hero.w / 2;
   const oy = hero.y + hero.h / 2;
   const tx = e.x + e.w / 2;
