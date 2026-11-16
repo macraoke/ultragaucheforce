@@ -16,6 +16,7 @@ test('à propos : les licences s’écrivent toutes de la même façon', () => {
   for (const s of Object.values(bundle.sons).filter((x) => x.licence)) assert.doesNotMatch(licenceName(s.licence), /^CC-|\d-\d/, s.id);
 });
 
-test('les guillemets ne laissent jamais « » seul en bout de ligne', () => {
+test('les guillemets ne laissent jamais « », « ! » ou « ? » seul en bout de ligne', () => {
   assert.equal(quoted('Allez'), '« Allez »');
+  assert.equal(quoted('Désobéissons ! Taxez ?'), '« Désobéissons ! Taxez ? »');
 });
