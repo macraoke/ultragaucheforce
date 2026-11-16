@@ -392,7 +392,9 @@ class RadioPanel {
   mount(frame) {
     this.frame = frame;
     this.caption = h('p', {});
-    this.retry = h('button', { type: 'button', className: 'relance', hidden: true, onclick: () => this.onRetry() }, '▶ Relancer', h('span', {}, ' la musique'));
+    // Le texte se raccourcit selon la place : « ▶ Relancer la musique », « ▶ Relancer », ou « ▶♪ » sous le bouton pause.
+    this.retry = h('button', { type: 'button', className: 'relance', hidden: true, title: 'Relancer la musique', onclick: () => this.onRetry() },
+      '▶', h('span', { className: 'mot' }, ' Relancer'), h('span', { className: 'suite' }, ' la musique'), h('span', { className: 'note' }, '♪'));
     this.box.replaceChildren(h('strong', {}, 'Radio Manif'), frame, this.caption, this.retry);
   }
 
@@ -423,37 +425,47 @@ class RadioPanel {
   }
 
   /**
-   * En pause, où poser le lecteur bloqué sans rien recouvrir : dans la marge à droite de l'écran de
-   * pause s'il y tient ; sinon son seul bouton, à côté de la pause, s'il reste de la place au-dessus ;
-   * sinon nulle part (le prochain toucher relance la musique quand même).
+   * Où poser le lecteur bloqué sans rien recouvrir.
+   * En pause : dans la marge à droite de l'écran de pause s'il y tient ; sinon (au clavier) son seul
+   * bouton à côté de la pause, s'il reste de la place au-dessus ; sinon nulle part (le prochain toucher
+   * relance la musique quand même). En partie, au pouce : sous le bouton pause, à sa taille.
+   * Tout se mesure dans le sens du jeu : pivoté, le haut du jeu est à droite du téléphone, et sa droite en bas.
    */
   fit() {
+    const pivoted = document.documentElement.classList.contains('pivote');
+    const thumbs = document.body.classList.contains('tactile');
+    const game = (r) => (pivoted
+      ? { top: innerWidth - r.right, bottom: innerWidth - r.left, right: innerHeight - r.bottom }
+      : { top: r.top, bottom: r.bottom, right: innerWidth - r.right });
+    const shown = (el) => (el && !el.hidden && el.getClientRects().length ? el.getBoundingClientRect() : null);
+    const pauseRect = shown(document.getElementById('pause'));
+    const pause = pauseRect && pauseRect.width ? game(pauseRect) : null;
+    const bandRect = shown(document.getElementById('bandeau'));
+    const gameHeight = pivoted ? innerWidth : innerHeight;
+    const band = bandRect && game(bandRect).bottom < gameHeight / 2 ? game(bandRect).bottom : 0; // au pouce, le bandeau est en haut
     const panel = document.querySelector('#ecran > .pause');
     let place = '';
     let width = 0;
     let top = TOP;
     if (panel) {
-      const pivoted = document.documentElement.classList.contains('pivote');
-      const p = panel.getBoundingClientRect();
+      const p = game(panel.getBoundingClientRect());
       const inset = getComputedStyle(this.probe);
       const safe = parseFloat(pivoted ? inset.paddingBottom : inset.paddingRight) || 0;
-      // Dans le sens du jeu : pivoté, le haut du jeu est à droite du téléphone, et sa droite en bas.
-      width = (pivoted ? innerHeight - p.bottom : innerWidth - p.right) - SHADOW - GAP - Math.max(10, safe);
-      const above = pivoted ? innerWidth - p.right : p.top;
+      width = p.right - SHADOW - GAP - Math.max(10, safe);
       if (width >= ROOM) place = 'en-marge';
-      else if (above >= BUTTON) place = 'en-haut';
-      // Au pouce, le bandeau de PANIQUE TV passe en haut : le lecteur se pose dessous.
-      const band = document.getElementById('bandeau');
-      const b = band && !band.hidden ? band.getBoundingClientRect() : null;
-      const bandBottom = b ? (pivoted ? innerWidth - b.left : b.bottom) : 0;
-      const gameHeight = pivoted ? innerWidth : innerHeight;
-      top = bandBottom && bandBottom < gameHeight / 2 ? Math.max(TOP, Math.ceil(bandBottom + 6)) : TOP;
+      else if (!thumbs && p.top >= BUTTON) place = 'en-haut';
+      top = Math.ceil(Math.max(TOP, band ? band + 6 : 0, pause ? pause.bottom + 6 : 0));
     }
     this.box.classList.toggle('en-marge', place === 'en-marge');
     this.box.classList.toggle('en-haut', place === 'en-haut');
     this.box.classList.toggle('serre', place === 'en-marge' && width < 170); // « ▶ Relancer », sans « la musique »
     this.box.style.setProperty('--radio-place', `${Math.floor(Math.min(320, Math.max(width, 0)))}px`);
     this.box.style.setProperty('--radio-haut', `${top}px`);
+    if (pause) {
+      this.box.style.setProperty('--radio-sous-pause', `${Math.ceil(pause.bottom + 6)}px`);
+      this.box.style.setProperty('--radio-droite', `${Math.floor(pause.right)}px`);
+      this.box.style.setProperty('--radio-police', getComputedStyle(document.getElementById('pause')).fontSize);
+    }
   }
 
   setVisible(on, inGame) {
