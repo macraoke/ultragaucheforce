@@ -135,13 +135,17 @@ export class Renderer {
     this.cam.y = t.y;
   }
 
+  /**
+   * Où la caméra veut aller. Ses décalages sont des pixels entiers : posée sur un héros au sol, elle tombe sur un pixel
+   * entier, jamais sur une moitié (225 × 0,58 = 130,5), où ce qu'elle suit et le décor s'arrondiraient chacun de leur côté.
+   */
   target(game) {
     const { hero, world } = game;
     const maxX = Math.max(0, world.w * TILE - this.viewW);
     const maxY = world.h * TILE - this.viewH;
-    const x = hero.x + hero.w / 2 - this.viewW / 2 + hero.facing * 28;
+    const x = hero.x + Math.round(hero.w / 2 - this.viewW / 2) + hero.facing * 28;
     // Quand le héros vise en haut ou en bas, la vue se décale du même côté : on voit où l'on creuse.
-    const y = hero.y + hero.h - this.viewH * this.anchor + (hero.aim || 0) * this.viewH * 0.22;
+    const y = hero.y + hero.h - Math.round(this.viewH * this.anchor) + Math.round((hero.aim || 0) * this.viewH * 0.22);
     return { x: Math.min(maxX, Math.max(0, x)), y: maxY < 0 ? maxY : Math.min(maxY, Math.max(0, y)) };
   }
 

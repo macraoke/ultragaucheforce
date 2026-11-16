@@ -605,9 +605,9 @@ test('un texte hors de la vue n’est ni mesuré ni écrit', () => {
 // ---------------------------------------------------------------- en mouvement
 
 /** Une longue rue plate, une manif de 250 personnes et ses pancartes derrière le héros. */
-function march() {
+function march(height = 12, depth = 0) {
   const width = 200;
-  const rows = Array.from({ length: 12 }, (_, y) => (y === 11 ? 'T'.repeat(width) : y === 10 ? `..D${'.'.repeat(width - 3)}` : '.'.repeat(width)));
+  const rows = Array.from({ length: height + depth }, (_, y) => (y >= height - 1 ? 'T'.repeat(width) : y === height - 2 ? `..D${'.'.repeat(width - 3)}` : '.'.repeat(width)));
   const level = { titre: 'rue', manchette: [], panneaux: {}, legende: {}, boss: '', heros: 'zucman', cortege: true, manif: 10, fond: 'ville', carte: rows };
   const game = new Game(bundle, 'rue', { level, seed: 3, invincible: true });
   for (let k = 0; k < 12; k++) game.addCrowd(20); // des recrues une à une : la plupart apportent une pancarte
@@ -681,6 +681,31 @@ test('en marche, le héros, sa manif et ses pancartes ne tremblent pas à l’é
     assert.ok(where.has('héros') && [...where.keys()].some((k) => k.startsWith('«')), `${cadence} : le héros et des pancartes levées`);
     for (const [who, xs] of where) assert.equal(xs.size, 1, `${cadence} : ${who} dessiné à ${[...xs].join(', ')}`);
   }
+});
+
+test('caméra posée sur le héros : ses pieds et ceux du cortège sur le sol, même quand la vue tombe à un demi-pixel (225 × 0,58)', () => {
+  const { game, r } = march(20, 12); // une rue, du ciel au-dessus et de la terre en dessous : la caméra n'est pas au bord de la carte
+  for (let k = 0; k < 30; k++) game.step({});
+  game.events.length = 0;
+  assert.ok(game.hero.onGround);
+  Object.assign(r, { viewH: 225, anchor: 0.58 }); // 812×375 à dpr 3, au pouce : 225 × 0,58 = 130,5
+  r.snap(game);
+  const ground = 19 * 16; // le haut de la rangée du sol, dans le monde
+  assert.ok(r.cam.y > 0 && r.cam.y < 32 * 16 - 225, 'la caméra suit le héros, sans buter au bord');
+  let feet = null;
+  const actor = r.actor.bind(r);
+  r.actor = (a, rows, opts) => {
+    const at = actor(a, rows, opts);
+    if (a === game.hero && at) feet = at.y + rows.length;
+    return at;
+  };
+  r.draw(game, DT);
+  r.actor = actor;
+  assert.equal(feet, ground - r.cy, 'le héros, sur le sol');
+  game.cortege.forEach((m, i) => {
+    const s = r.spot(m, i);
+    assert.equal(s.y + s.img.height, ground - r.cy, `manifestant ${i}, sur le sol`);
+  });
 });
 
 test('en marche, un texte flottant ne fait baisser aucune pancarte levée : il passe au-dessus d’elle', () => {
