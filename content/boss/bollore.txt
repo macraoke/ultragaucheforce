@@ -8,12 +8,12 @@ hauteur: 40
 vitesse: 30
 citation: bollore-paratonnerre
 fiche: dividende-exceptionnel-bollore
-# Assis sur sa fortune tant que sa vie n'est pas passée sous les trois quarts : il se lève tôt.
+# Assis sur sa fortune tant que sa vie n'est pas passée sous les six dixièmes : il se lève tôt.
 assis: oui
 leve: 0.6
 # Ses répliques sont ses propres mots (voir content/citations/bollore-*.txt).
+# Pas « je plonge dans le menu des pizzas » : ce « je » est celui d'Alberto, le restaurateur qu'il fait parler.
 replique: JE SUIS LE PARATONNERRE, LE BOUC ÉMISSAIRE.
-replique: SI LE TITRE BAISSE, JE PLONGE DANS LE MENU DES PIZZAS.
 replique: EN RÉALITÉ, LE GÉANT VIVENDI EST UN NAIN.
 replique: POUR MA PART, JE SUIS TOUT DOUX ET DÉBONNAIRE – PAS DU TOUT UN ATTILA !
 replique: NOUS AURONS CONNU TROIS ROIS, UN EMPEREUR, 26 PRÉSIDENTS DE LA RÉPUBLIQUE.
