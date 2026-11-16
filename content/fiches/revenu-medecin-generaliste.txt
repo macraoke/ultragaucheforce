@@ -1,0 +1,11 @@
+titre: 98 000 euros par an
+theme: richesses
+texte: En 2021, les médecins omnipraticiens libéraux ont déclaré en moyenne 98 000 euros de revenu d'activité par an, selon la DREES.
+portee: Études et Résultats n° 1322 (décembre 2024, mis à jour le 23 juillet 2025) : médecins de 70 ans ou moins en activité libérale ou libérale et salariée, revenu d'activité annuel déclaré. Ne couvre pas les généralistes seulement salariés. 2021 est la dernière année publiée.
+periode: revenus de 2021
+valeur: 98000
+compare: un médecin généraliste libéral
+source.titre: DREES — Revenu des médecins libéraux : une légère hausse entre 2017 et 2021
+source.url: https://drees.solidarites-sante.gouv.fr/publications-communique-de-presse/etudes-et-resultats/241220_ER_revenu-des-medecins-liberaux
+source.nature: officielle
+verifie: 2026-11-16

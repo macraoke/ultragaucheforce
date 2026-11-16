@@ -1,0 +1,12 @@
+titre: 2 050 euros par mois
+theme: richesses
+texte: En 2024, les non-salariés agricoles au régime réel retirent en moyenne 2 050 euros par mois de leur activité, selon l'Insee ; 22 % déclarent un revenu nul ou déficitaire.
+portee: Insee Première n° 2114 (30 juin 2026) : revenu d'activité après cotisations sociales mais avant CSG et CRDS ; hors micro-bénéfice agricole (780 euros par mois en moyenne).
+periode: 2024
+valeur: 2050
+par: mois
+compare: un agriculteur au régime réel
+source.titre: Insee — Les revenus d'activité des non-salariés en 2024 (agriculture)
+source.url: https://www.insee.fr/fr/statistiques/9013403
+source.nature: officielle
+verifie: 2026-11-16

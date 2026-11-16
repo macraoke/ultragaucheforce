@@ -1,0 +1,12 @@
+titre: 2 238 euros net par mois
+theme: richesses
+texte: En 2025, la moitié des salariés du secteur privé gagne moins de 2 238 euros net par mois en équivalent temps plein, selon l'Insee.
+portee: Insee Première n° 2132 (22 octobre 2026) : c'est la médiane, pas la moyenne (2 797 euros). Salaire net de cotisations, en équivalent temps plein ; salariés du privé, hors agriculture et particuliers employeurs, hors fonction publique.
+periode: 2025
+valeur: 2238
+par: mois
+compare: un salarié du privé au salaire médian
+source.titre: Insee — Les salaires dans le secteur privé en 2025 (médiane)
+source.url: https://www.insee.fr/fr/statistiques/9087193
+source.nature: officielle
+verifie: 2026-11-16

@@ -1,0 +1,12 @@
+titre: 2 950 euros net par mois
+theme: richesses
+texte: En 2024, un professeur des écoles fonctionnaire à temps complet gagne en moyenne 2 950 euros nets par mois, selon la DEPP (ministère de l'Éducation nationale).
+portee: Note d'Information n° 26.36 (août 2026), figure 1 : salaire net mensuel moyen des professeurs des écoles à temps complet, primes et indemnités comprises ; fonctionnaires ou assimilés, public et privé sous contrat, hors contractuels. Tous temps de travail confondus : 2 850 euros ; temps partiel ou incomplet : 2 090 euros.
+periode: 2024
+valeur: 2950
+par: mois
+compare: un professeur des écoles
+source.titre: Éducation nationale (DEPP) — L'évolution du salaire des enseignants fonctionnaires ou assimilés entre 2023 et 2024
+source.url: https://www.education.gouv.fr/sites/default/files/document/depp-ni-2026-36pdf-519727.pdf
+source.nature: officielle
+verifie: 2026-11-16

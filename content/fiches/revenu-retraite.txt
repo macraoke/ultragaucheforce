@@ -1,0 +1,12 @@
+titre: 1 626 euros de pension
+theme: richesses
+texte: Fin 2024, un retraité vivant en France touche en moyenne 1 626 euros par mois de pension de droit direct, après prélèvements sociaux (1 752 euros bruts), selon la DREES.
+portee: Moyenne tous régimes, retraités résidant en France, pension de droit direct seule : sans la réversion (1 785 euros avec) ni d'autres revenus. Chiffre lu sur la page de présentation du rapport « Les retraités et les retraites » (édition 2026) sur Vie publique ; le rapport complet n'a pas été ouvert.
+periode: fin 2024, rapport remis le 19 octobre 2026
+valeur: 1626
+par: mois
+compare: un retraité
+source.titre: Vie publique — Les retraités et les retraites, édition 2026 (DREES)
+source.url: https://www.vie-publique.fr/rapport/305111-les-retraites-et-les-retraites-edition-2026
+source.nature: officielle
+verifie: 2026-11-16

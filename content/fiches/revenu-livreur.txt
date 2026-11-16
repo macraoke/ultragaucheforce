@@ -1,0 +1,12 @@
+titre: 130 euros par mois
+theme: richesses
+texte: En 2024, les micro-entrepreneurs de la livraison à domicile ont gagné en moyenne 130 euros par mois, selon l'Insee.
+portee: Insee Première n° 2114 (30 juin 2026) : revenu d'activité non salariée moyen, après cotisations sociales mais avant CSG et CRDS. Il ne compte pas les autres revenus (salaire, prestations).
+periode: 2024
+valeur: 130
+par: mois
+compare: un livreur à domicile micro-entrepreneur
+source.titre: Insee — Les revenus d'activité des non-salariés en 2024
+source.url: https://www.insee.fr/fr/statistiques/9013403
+source.nature: officielle
+verifie: 2026-11-16

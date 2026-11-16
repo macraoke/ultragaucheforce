@@ -1,0 +1,12 @@
+titre: 651,69 euros par mois
+theme: richesses
+texte: Le RSA d'une personne seule est de 651,69 euros par mois, selon Service-Public.gouv.fr.
+portee: Montant forfaitaire pour une personne seule, vivant seule ; c'est une prestation, ni brute ni nette. Il ne tient pas compte des ressources du foyer, qui le réduisent, ni du forfait logement, ni des autres aides. Page vérifiée par Service-Public le 1er avril 2026 ; la date d'effet du montant n'y figure pas.
+periode: montant affiché en 2026
+valeur: 651.69
+par: mois
+compare: un bénéficiaire du RSA
+source.titre: Service-Public.gouv.fr — RSA : demandeur de 25 ans et plus
+source.url: https://www.service-public.gouv.fr/particuliers/vosdroits/F19778
+source.nature: officielle
+verifie: 2026-11-16
