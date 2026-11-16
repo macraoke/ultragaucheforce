@@ -257,7 +257,7 @@ test('des pertes pour la même raison, au même endroit, font un seul texte qui 
   assert.deepEqual(r.floaters.map((f) => f.text), ['− 19 gazés', '− 3 interpellés']);
 });
 
-test('« GARDE À VUE » : écrit pour une cage à l’étage du héros, et sans clignoter tant qu’elle reste à l’écran', () => {
+test('« GARDE À VUE » : écrit pour une cage à l’étage du héros, et jamais effacé tant qu’elle reste à l’écran', () => {
   const r = renderer();
   const said = [];
   r.label = (text) => said.push(text);
@@ -277,8 +277,14 @@ test('« GARDE À VUE » : écrit pour une cage à l’étage du héros, et sans
   r.cx = 0;
   r.heroBox = { x: 40, y: 150 + 9 * 16, w: 12, h: 18 };
   assert.ok(!show());
+  assert.ok(!show(), 'elle reste muette tant qu’il est en bas');
+  // Il remonte à son étage (le métro, le puits) : elle s'écrit, une fois, et ne s'efface plus, même s'il redescend.
   r.heroBox = { x: 300, y: 148, w: 12, h: 18 };
-  assert.ok(!show(), 'et ne s’allume pas en cours de route');
+  assert.ok(show(), 'le héros arrive à côté : elle s’écrit');
+  for (const y of [150 + 9 * 16, 60, 148]) {
+    r.heroBox = { x: 40, y, w: 12, h: 18 };
+    assert.ok(show(), `héros à ${y} : toujours écrite`);
+  }
 });
 
 test('des unités identiques côte à côte n’ont qu’un écriteau ; une autre, plus loin ou différente, a le sien', () => {

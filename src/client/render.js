@@ -57,7 +57,7 @@ export class Renderer {
     this.groups = new Map(); // à chaque image, où chaque genre de texte a déjà été écrit pour un groupe d'unités (`first`)
     this.loud = new Set(); // les unités hors service dont la bulle se lit (une par groupe)
     this.lastSlogan = -Infinity;
-    this.propSay = new WeakMap(); // accessoire → son étiquette s'écrit-elle, décidé quand il entre en entier dans l'image
+    this.propSay = new WeakMap(); // accessoire en entier dans l'image → son étiquette est-elle écrite (muette → écrite, jamais l'inverse)
     this.held = new WeakMap(); // porteur de pancarte du cortège → { up, since, label } : levée ou baissée, depuis quand
     this.raised = new Set(); // les porteurs dont la pancarte est levée à cette image
     this.particles = [];
@@ -885,8 +885,8 @@ export class Renderer {
       if (p.on !== false) this.label('SORTIE ▶', x + img.width / 2, y - 9, { size: 6, color: '#1a1c2c', bg: '#f6c21c' });
     }
     // « GARDE À VUE », « PIQUET DE GRÈVE » : écrits pour un accessoire à l'étage du héros ; plus haut ou plus bas, le dessin
-    // suffit. Décidé quand il entre en entier dans l'image, et gardé tant qu'il y reste : un saut ou un pas ne le fait
-    // ni apparaître ni disparaître.
+    // suffit. Muette, l'étiquette s'écrit dès que le héros arrive à son étage ; écrite, elle le reste tant que l'accessoire
+    // est en entier dans l'image : un saut ou un pas ne la fait jamais disparaître.
     if (!(p.kind === 'cage' || p.kind === 'piquet') || p.on) return;
     const whole = x >= 0 && y >= 0 && x + img.width <= this.viewW && y + img.height <= this.viewH;
     if (!whole) {
@@ -894,7 +894,7 @@ export class Renderer {
       return;
     }
     const h = this.heroBox;
-    if (!this.propSay.has(p)) this.propSay.set(p, Boolean(h) && Math.abs(p.y + p.h - (h.y + h.h)) <= PROP_FLOOR);
+    if (!this.propSay.get(p)) this.propSay.set(p, Boolean(h) && Math.abs(p.y + p.h - (h.y + h.h)) <= PROP_FLOOR);
     if (!this.propSay.get(p)) return;
     if (p.kind === 'cage' && !p.on) this.label('GARDE À VUE', x + 8, y - 8, { size: 4.5, color: '#f4f4f4', bg: '#333c57' });
     if (p.kind === 'piquet' && !p.on) this.label('PIQUET DE GRÈVE', x + img.width / 2, y - 8, { size: 4.5, color: '#1a1c2c', bg: '#f6c21c' });
