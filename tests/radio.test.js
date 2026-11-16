@@ -425,3 +425,34 @@ test('toutes les pistes échouent (API de SoundCloud en panne) : injoignable ; a
   assert.equal(s.radio.status, 'loading');
   assert.equal(s.widget.loads.length, loads + 1);
 });
+
+test('au boss : l’extrait de Monarch d’abord, puis la version entière de Ryukken', async () => {
+  const monarch = bundle.musiques['abattez-la-citadelle'];
+  const ryukken = bundle.musiques['abattez-la-citadelle-ryukken'];
+  assert.equal(monarch.puis, ryukken.id);
+  for (const random of randoms) {
+    assert.equal(chooseTrack(real, { slot: 'boss', random, first: true }), monarch); // en arrivant au boss
+    assert.notEqual(chooseTrack(real, { slot: 'boss', random }), ryukken); // jamais tirée au hasard
+  }
+  const s = setup({ list: real });
+  await s.on();
+  s.radio.play('boss');
+  assert.equal(s.lastUrl(), monarch.url);
+  s.ready();
+  s.playing();
+  s.emit('FINISH'); // l'extrait de 30 s est fini
+  assert.equal(s.lastUrl(), ryukken.url);
+  s.ready();
+  s.playing();
+  s.emit('FINISH');
+  assert.notEqual(s.lastUrl(), ryukken.url);
+  assert.equal(s.radio.current.ou, 'boss');
+});
+
+test('l’extrait de Monarch ne se charge pas : la version de Ryukken prend sa place', async () => {
+  const s = setup({ list: real });
+  await s.on();
+  s.radio.play('boss');
+  s.emit('ERROR');
+  assert.equal(s.lastUrl(), bundle.musiques['abattez-la-citadelle-ryukken'].url);
+});

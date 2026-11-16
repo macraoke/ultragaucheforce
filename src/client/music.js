@@ -36,13 +36,21 @@ export function poolsFor(tracks, slot, named = null) {
     .filter((pool) => pool.length);
 }
 
-/** Une piste au hasard dans la première liste qui en a une qui marche ; `avoid` (celle qui vient de finir) en dernier. */
-export function chooseTrack(tracks, { slot, named = null, failed = new Set(), avoid = null, random = Math.random }) {
+/**
+ * Une piste au hasard dans la première liste qui en a une qui marche ; `avoid` (celle qui vient de finir) en dernier.
+ * Une piste qui en suit une autre (clé `puis`) ne se tire pas au hasard : elle vient après celle-là.
+ * `first` (on arrive à ce moment du jeu) : une piste qui ouvre une suite passe la première.
+ */
+export function chooseTrack(tracks, { slot, named = null, failed = new Set(), avoid = null, random = Math.random, first = false }) {
+  const following = new Set(tracks.map((t) => t.puis).filter(Boolean));
   for (const pool of poolsFor(tracks, slot, named)) {
     const ok = pool.filter((t) => !failed.has(t.id));
     if (!ok.length) continue;
-    const fresh = ok.filter((t) => t !== avoid);
-    const from = fresh.length ? fresh : ok;
+    const drawn = ok.filter((t) => !following.has(t.id) || t.id === named);
+    const base = drawn.length ? drawn : ok;
+    const fresh = base.filter((t) => t !== avoid);
+    const openers = first ? fresh.filter((t) => t.puis) : [];
+    const from = openers.length ? openers : fresh.length ? fresh : base;
     return from[Math.floor(random() * from.length)];
   }
   return null;
@@ -120,15 +128,21 @@ export class Radio {
     if (this.status === 'unreachable') return; // le bouton ou le retour du réseau réessaieront
     const live = this.status === 'playing' || this.status === 'loading';
     if (again && live) return; // « Recommencer » : la même musique continue
-    const track = this.choose();
+    const track = this.choose(null, true);
     if (!track) return this.unreachable(); // plus aucune piste ne joue
     this.chosenFor = `${slot}|${named}`;
     if (track !== this.current) return this.start(track);
     if (!live) this.resume();
   }
 
-  choose(avoid = null) {
-    return chooseTrack(this.tracks, { slot: this.slot, named: this.named, failed: this.failed, avoid, random: this.env.random });
+  choose(avoid = null, first = false) {
+    return chooseTrack(this.tracks, { slot: this.slot, named: this.named, failed: this.failed, avoid, random: this.env.random, first });
+  }
+
+  /** La piste qui suit celle-ci (clé `puis`), si elle peut jouer. */
+  following(track) {
+    const next = track?.puis && this.tracks.find((t) => t.id === track.puis);
+    return next && !this.failed.has(next.id) ? next : null;
   }
 
   /** Charge une piste ; le lecteur n'est créé qu'à la première. */
@@ -248,7 +262,7 @@ export class Radio {
    */
   fail(track) {
     this.failed.add(track.id);
-    const next = this.choose();
+    const next = this.following(track) ?? this.choose();
     if (next) this.start(next);
     else this.unreachable();
   }
@@ -290,7 +304,7 @@ export class Radio {
     if (this.status !== 'unreachable') return;
     if (!this.choose()) this.failed.clear(); // plus rien ne jouait : on retente tout
     // La musique du moment présent (le jeu a pu avancer entre-temps), chargée à neuf.
-    const track = this.choose();
+    const track = this.choose(null, true);
     if (!track) return;
     this.chosenFor = `${this.slot}|${this.named}`;
     this.start(track);
@@ -312,7 +326,7 @@ export class Radio {
     if (name === 'ERROR') return this.attempt && this.fail(this.attempt.track);
     if (this.attempt && !this.attempt.loaded) return; // encore la piste d'avant
     if (name === 'FINISH') {
-      const next = this.choose(this.current);
+      const next = this.following(this.current) ?? this.choose(this.current);
       return next ? this.start(next) : this.unreachable();
     }
     if (name === 'PLAY') {
