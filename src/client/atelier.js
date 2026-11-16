@@ -16,6 +16,11 @@ import { Drafts, freeName, nameOf, when } from './atelier-brouillons.js';
 /** Les brouillons, partagés par chaque ouverture de l'Atelier : refusés par le navigateur, ils tiennent en mémoire. */
 let shared = null;
 const store = () => (shared ??= new Drafts());
+/**
+ * Où l'on en était en quittant l'Atelier : le brouillon, la vue, l'outil, l'historique. Un retour d'essai
+ * reprend tout cela, pour ce même brouillon.
+ */
+let kept = null;
 const SAVE_DELAY = 600; // millisecondes après le dernier geste ; l'onglet caché ou fermé enregistre tout de suite
 const WARNINGS = {
   refus: 'Ton navigateur refuse d’enregistrer : tes brouillons tiennent jusqu’à la fermeture de l’onglet.',
@@ -48,10 +53,12 @@ function ring(ctx, x, y, radius, width) {
 
 /**
  * @param {HTMLElement} root
- * @param {{bundle: object, save: object, test: (level: object) => void, back: () => void}} ctx
+ * @param {{bundle: object, save: object, test: (level: object) => void, back: () => void, resume?: boolean}} ctx
+ *        `resume` : retour d'un essai, on reprend l'édition là où on l'avait laissée. Sinon, avec des brouillons
+ *        enregistrés, l'Atelier s'ouvre sur « Mes niveaux ».
  * @returns {() => void} ce que fait Échap
  */
-export function showAtelier(root, { bundle, save, test, back }) {
+export function showAtelier(root, { bundle, save, test, back, resume = false }) {
   const { palette } = bundle;
   const bySymbol = Object.fromEntries(Object.values(bundle.tuiles).map((t) => [t.symbole, t]));
   const image = (def) => def?.sprites && (def.sprites.image || def.sprites.repos || Object.values(def.sprites)[0]);
@@ -71,6 +78,7 @@ export function showAtelier(root, { bundle, save, test, back }) {
   let said = 'ok'; // le dernier état du stockage qu'on a dit
   let renaming = ''; // le brouillon dont on écrit le nouveau nom
   let removing = ''; // le brouillon dont on confirme la suppression
+  let entry = false; // « Mes niveaux » est l'écran d'arrivée : Échap y ramène au menu
   let typing = null; // les frappes dans un même champ ne font qu'un pas d'annulation
   let report = { level: null, errors: [] };
   let flaw = null; // la case de la première erreur
@@ -203,7 +211,7 @@ export function showAtelier(root, { bundle, save, test, back }) {
 
   // ---------------------------------------------------------------- les brouillons
 
-  const shelf = h('div', { className: 'reglages brouillons', hidden: true });
+  const shelf = h('div', { className: 'niveaux', hidden: true });
   const savedNote = h('span', { className: 'sauve' });
 
   /** Enregistre tout de suite ce qui attend ; un niveau neuf devient un brouillon. */
@@ -252,17 +260,22 @@ export function showAtelier(root, { bundle, save, test, back }) {
     typing = null;
     sign = null;
     zoom = 0;
-    renaming = removing = '';
     closePanels();
+    showList(false);
     changed(false);
     stored();
   };
   const openDraft = (id) => {
-    if (id === current) return togglePanel('brouillons');
+    if (id === current) return showList(false); // celui qu'on dessinait : on y retourne tel quel
     flush();
     const next = readLevel(drafts.get(id)?.texte);
     if (!next) return say('Ce brouillon n’a plus de carte.');
     return load(id, next);
+  };
+  /** Essayer un brouillon de la liste : il s'ouvre, puis se lance ; une erreur reste à l'écran, sa case montrée. */
+  const testDraft = (id) => {
+    openDraft(id);
+    if (id === current && shelf.hidden) launch();
   };
   const fresh = () => {
     flush();
@@ -293,7 +306,7 @@ export function showAtelier(root, { bundle, save, test, back }) {
       // Le niveau à l'écran part avec son brouillon : le plus récent prend sa place, ou un niveau neuf.
       const next = drafts.list().find((d) => readLevel(d.texte));
       load(next?.id || '', readLevel(next?.texte || TEMPLATE));
-      togglePanel('brouillons');
+      showList(true);
     }
     stored();
     say(WARNINGS[drafts.status] || 'Brouillon supprimé.');
@@ -315,10 +328,7 @@ export function showAtelier(root, { bundle, save, test, back }) {
           renderShelf();
         })));
     }
-    const mine = draft.id === current;
-    const name = h('button', { type: 'button', className: 'nom discret', onclick: () => openDraft(draft.id) },
-      h('span', {}, draft.nom), h('small', {}, [mine && 'ouvert', when(draft.modifie)].filter(Boolean).join(' · ')));
-    name.setAttribute('aria-pressed', String(mine));
+    const mine = !entry && draft.id === current; // celui qui attend dans l'éditeur
     const ask = (which) => () => {
       renaming = which === 'nom' ? draft.id : '';
       removing = which === 'suppression' ? draft.id : '';
@@ -326,16 +336,19 @@ export function showAtelier(root, { bundle, save, test, back }) {
     };
     const actions = draft.id === removing
       ? [h('span', {}, 'Le supprimer pour de bon ?'), small('Supprimer', () => remove(draft.id), 'danger'), small('Garder', ask(''))]
-      : [small('Renommer', ask('nom')), small('Dupliquer', () => duplicate(draft.id)), small('Supprimer', ask('suppression'))];
-    return h('li', {}, name, h('div', { className: 'actions' }, actions));
+      : [small('Ouvrir', () => openDraft(draft.id), ''), small('Tester', () => testDraft(draft.id), ''),
+        small('Renommer', ask('nom')), small('Dupliquer', () => duplicate(draft.id)), small('Supprimer', ask('suppression'))];
+    return h('li', { className: mine ? 'ouvert' : '' },
+      h('div', { className: 'nom' }, h('b', {}, draft.nom), h('small', {}, [mine && 'ouvert', when(draft.modifie)].filter(Boolean).join(' · '))),
+      h('div', { className: 'actions' }, actions));
   };
   function renderShelf() {
     const list = drafts.list();
     const warning = WARNINGS[drafts.status];
     shelf.replaceChildren(...[
-      h('h3', {}, 'Mes brouillons'),
+      h('h3', {}, 'Mes niveaux'),
       warning && h('p', { className: 'alerte' }, warning),
-      h('div', { className: 'ligne' }, small('Nouveau', fresh), small('Enregistrer', saveNow)),
+      h('div', { className: 'ligne' }, small('Nouveau niveau', fresh, ''), small('Enregistrer', saveNow)),
       list.length ? h('ul', {}, list.map(row)) : h('p', {}, 'Rien encore : dessine, ça s’enregistre tout seul.'),
     ].filter(Boolean));
     const input = shelf.querySelector('input');
@@ -351,12 +364,11 @@ export function showAtelier(root, { bundle, save, test, back }) {
 
   // ---------------------------------------------------------------- les panneaux par-dessus l'établi
 
-  const panels = { reglages: settings, brouillons: shelf, github: links };
+  const panels = { reglages: settings, github: links };
   /** Referme le panneau ouvert ; vrai s'il y en avait un. */
   const closePanels = () => {
     const open = Object.values(panels).some((el) => !el.hidden);
     for (const el of Object.values(panels)) el.hidden = true;
-    renaming = removing = '';
     return open;
   };
   /** Ouvre un panneau, ou le referme : un seul à la fois, et jamais sous la fiche. */
@@ -364,13 +376,19 @@ export function showAtelier(root, { bundle, save, test, back }) {
     if (!closeText()) return;
     const opening = panels[name].hidden;
     closePanels();
-    if (opening) {
-      panels[name].hidden = false;
-      if (name === 'brouillons') {
-        flush();
-        renderShelf();
-      }
-    }
+    panels[name].hidden = !opening;
+    refresh();
+  }
+  /** « Mes niveaux » couvre l'établi ; le refermer ramène à l'édition du brouillon ouvert. */
+  function showList(on) {
+    if (on && !closeText()) return;
+    if (on) flush();
+    else entry = false;
+    renaming = removing = '';
+    closePanels();
+    shelf.hidden = !on;
+    panel.classList.toggle('accueil', on);
+    if (on) renderShelf();
     refresh();
   }
 
@@ -420,13 +438,19 @@ export function showAtelier(root, { bundle, save, test, back }) {
 
   // ---------------------------------------------------------------- la barre et le pied
 
-  const leave = (then) => {
+  /** `trying` : on part essayer le niveau ; un niveau neuf devient alors un brouillon, pour y revenir. */
+  const leave = (then, trying = false) => {
     closeText();
+    if (trying && !current) unsaved = true;
     flush();
+    // La palette est refaite à chaque ouverture : on garde la place du choix, pas l'objet.
+    const g = groups.findIndex(([, items]) => items.includes(picked));
+    kept = { id: current, history, cam: { ...cam }, zoom, tool, rect, behind, shown, picked: [g, groups[g]?.[1].indexOf(picked)] };
     live.abort();
     then();
   };
   const ready = () => closeText() && !report.errors.length;
+  const launch = () => ready() && leave(() => test(report.level), true);
   const propose = async () => {
     if (!ready()) return;
     flush();
@@ -443,13 +467,15 @@ export function showAtelier(root, { bundle, save, test, back }) {
     changed();
   };
   const settingsButton = h('button', { type: 'button', className: 'discret', onclick: () => togglePanel('reglages') }, 'Réglages');
-  const shelfButton = h('button', { type: 'button', className: 'discret', onclick: () => togglePanel('brouillons') }, 'Brouillons');
+  const shelfButton = h('button', { type: 'button', className: 'discret', onclick: () => showList(shelf.hidden) }, 'Mes niveaux');
   const linksButton = h('button', { type: 'button', className: 'discret', onclick: () => togglePanel('github') }, 'GitHub');
   const undoButton = h('button', { type: 'button', className: 'discret', title: 'Annuler', onclick: () => travel('undo') }, '↶');
   const redoButton = h('button', { type: 'button', className: 'discret', title: 'Rétablir', onclick: () => travel('redo') }, '↷');
   const textButton = h('button', { type: 'button', className: 'discret', onclick: () => (sheet.hidden ? openText() : closeText()) }, 'Texte');
-  const testButton = h('button', { type: 'button', onclick: () => ready() && leave(() => test(report.level)) }, 'Tester');
+  const testButton = h('button', { type: 'button', onclick: launch }, 'Tester');
   const proposeButton = h('button', { type: 'button', onclick: propose }, 'Proposer');
+  // Ce qui ne sert qu'à dessiner : caché tant que « Mes niveaux » couvre l'établi.
+  for (const button of [settingsButton, undoButton, redoButton, textButton, testButton, proposeButton]) button.classList.add('edition');
 
   const toolName = h('span', { className: 'outil' });
   const message = h('div', { className: 'message' });
@@ -858,14 +884,28 @@ export function showAtelier(root, { bundle, save, test, back }) {
       plan, settings, shelf, links),
     h('div', { className: 'etat' }, toolName, message, savedNote));
 
+  // Retour d'un essai : le même brouillon, la même vue, le même outil, et l'annulation intacte.
+  const restored = resume && kept?.id === current ? kept : null;
+  if (restored) {
+    ({ history, tool, rect, behind, shown, zoom } = restored);
+    Object.assign(cam, restored.cam);
+    behindBox.checked = behind;
+    picked = groups[restored.picked[0]]?.[1][restored.picked[1]] || picked;
+  }
+
   root.replaceChildren(panel);
   root.hidden = false;
   new ResizeObserver(() => draw()).observe(canvas);
   changed(false);
   stored();
+  // Des brouillons enregistrés : on arrive sur « Mes niveaux ». Sinon, on dessine tout de suite.
+  if (!resume && drafts.list().length) {
+    entry = true;
+    showList(true);
+  }
 
   // Échap referme d'abord ce qui est ouvert par-dessus la carte (le texte d'un panneau, un nom en cours,
-  // un panneau, la fiche), puis ramène à l'écran d'avant, en enregistrant le brouillon.
+  // un panneau, la fiche, « Mes niveaux » ouvert depuis l'édition), puis ramène à l'écran d'avant.
   return () => {
     if (!panel.isConnected) return;
     if (sign) closeSign();
@@ -874,6 +914,7 @@ export function showAtelier(root, { bundle, save, test, back }) {
       renderShelf();
     } else if (closePanels()) refresh();
     else if (!sheet.hidden) closeText();
+    else if (!shelf.hidden && !entry) showList(false);
     else leave(back);
   };
 }

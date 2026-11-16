@@ -83,6 +83,11 @@ export class Screens {
     return this.button('← Retour', action, 'discret');
   }
 
+  /** En essai depuis l'Atelier : revenir à l'édition du même niveau. Hors essai : rien. */
+  editButton(className = '') {
+    return this.go.testing?.() ? this.button('← Retour à l’édition', () => this.go.edit(), className) : null;
+  }
+
   /** L'appareil dont on montre les touches : clavier, manette ou pouce. */
   get device() {
     return this.go.device?.() || 'clavier';
@@ -310,6 +315,7 @@ export class Screens {
       h('h2', {}, 'Pause'),
       this.keys(),
       this.button('Reprendre', () => this.go.resume(), 'gros'),
+      this.editButton(),
       this.button('Retour au piquet de grève', () => this.go.checkpoint()),
       this.button('Recommencer le niveau', () => this.go.restart()),
       this.button('Commandes', () => this.controls()),
@@ -337,15 +343,17 @@ export class Screens {
       storeSave(this.save);
       this.go.restart(); // la partie repart avec ce héros, et ce carton se réaffiche
     };
-    // « ← Retour », comme Échap, ne lance pas le niveau : il ramène là d'où l'on vient, le plan, l'Atelier ou le menu.
+    // « ← Retour », comme Échap, ne lance pas le niveau : il ramène là d'où l'on vient, le plan ou le menu ;
+    // en essai depuis l'Atelier, à l'édition (le bouton dit alors « ← Retour à l'édition »).
     // Un changement de héros réaffiche ce carton : l'écran d'avant reste le même.
     const before = this.root.firstElementChild?.classList;
     if (!before?.contains('intro')) {
-      const from = ['plan', 'atelier'].find((name) => before?.contains(name));
+      const from = before?.contains('plan') ? 'plan' : '';
       this.introBack = () => {
+        if (this.go.testing?.()) return this.go.edit();
         this.go.quit();
         if (from === 'plan') this.levels();
-        if (from === 'atelier') this.go.atelier();
+        return undefined;
       };
     }
     this.show('intro',
@@ -356,7 +364,8 @@ export class Screens {
       level.accroche && h('p', { className: 'accroche' }, level.accroche),
       choose && heroes.length > 1 && this.heroRow(heroes, mine, hero, pick),
       // Écran bas : les commandes à côté des boutons, pas au-dessus. « C'est parti » reste le bouton principal.
-      h('div', { className: 'depart' }, this.keys(), h('div', { className: 'boutons' }, this.back(() => this.introBack()), go)));
+      // En essai, un seul retour : celui qui ramène à l'édition.
+      h('div', { className: 'depart' }, this.keys(), h('div', { className: 'boutons' }, this.editButton() || this.back(() => this.introBack()), go)));
     this.escape = this.introBack;
     this.fitHeroNames();
     // Une longue déclaration sur un écran bas : la manchette rapetisse jusqu'à ce que le carton tienne sans défiler.
@@ -396,6 +405,7 @@ export class Screens {
       h('h2', {}, 'Plus de vies'),
       h('p', {}, 'La lutte continue : on recommence.'),
       this.button('Recommencer', () => this.go.restart(), 'gros'),
+      this.editButton(),
       this.button('Menu', () => this.go.quit(), 'discret'));
   }
 
@@ -429,6 +439,7 @@ export class Screens {
         truths.map((card) => h('button', { type: 'button', onclick: () => openCard(this.bundle, card) }, card.item.titre))) : null,
       won.length ? wonCards(this.bundle, won) : null,
       h('div', { className: 'pied' },
+        this.editButton('gros'), // en essai, la suite, c'est l'édition
         next && this.button('Niveau suivant', () => this.go.play(next), 'gros'),
         last && this.button('La suite', () => this.final(), 'gros'),
         share && this.button('Partager', share, 'discret'),
@@ -682,7 +693,7 @@ export class Hud {
       for (let e = el; e && e !== scene; e = e.offsetParent) y += e.offsetTop;
       return y;
     };
-    this.row = Math.max(...['hud-heros', 'hud-vies', 'hud-charges', 'pause'].map((id) => bottom(this.q(id))));
+    this.row = Math.max(...['hud-heros', 'hud-vies', 'hud-charges', 'edition', 'pause'].map((id) => bottom(this.q(id))));
     return this.row;
   }
 
