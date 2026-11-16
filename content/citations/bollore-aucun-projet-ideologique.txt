@@ -1,0 +1,11 @@
+texte: Je n'ai aucun projet idéologique
+auteur: Vincent Bolloré
+fonction: homme d'affaires
+date: 2024-03-13
+contexte: Audition devant la commission d'enquête de l'Assemblée nationale sur la TNT, à propos de l'idéologie que certains l'accusent de promouvoir dans ses médias.
+categorie: puissants
+note: Dans le même passage : « je suis tout doux et débonnaire, pas du tout un Attila ».
+source.titre: LCP — Commission d'enquête sur la TNT : « Je n'ai aucun projet idéologique », affirme Vincent Bolloré à l'Assemblée nationale
+source.url: https://lcp.fr/actualites/commission-d-enquete-sur-la-tnt-je-n-ai-aucun-projet-ideologique-affirme-vincent-bollore
+source.nature: presse
+verifie: 2026-11-16
