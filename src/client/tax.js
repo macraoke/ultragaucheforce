@@ -3,7 +3,7 @@
 //   1. sa fortune, à l'échelle de quelqu'un (et ce qu'elle rapporte en un an) ;
 //   2. « Taxer les riches » : 2 % par an, combien ça fait ; la part des 2 % quitte le tas ;
 //   3. ce que ça paierait ;
-//   4. ce que chacun paie déjà : 52 % pour presque tout le monde, 27 % pour les milliardaires, toujours ensemble.
+//   4. ce que chacun paie déjà : autour de 52 % pour presque tout le monde, 27 % pour les milliardaires, ensemble.
 // L'échelle et l'exemple se tirent au hasard dans les fiches sourcées de `content/fiches/` (clés `compare` et
 // `finance`) : d'une partie à l'autre, ce ne sont pas les mêmes. Le bouton suivant reprend un slogan scandé en manif.
 
@@ -12,7 +12,7 @@ import { sprite } from './sprites.js';
 import { TAX_RATES, taxFiches, taxScales, taxUses } from './collection.js';
 
 const RATE = 0.02; // l'impôt plancher discuté : 2 % par an
-/** Un exemple n'est tiré que si 2 % de la fortune en paient au moins dix : « 2 Canadair » ne dit rien. */
+/** Choix proposé, à valider : un exemple n'est tiré que si 2 % de la fortune en paient au moins dix (« 2 Canadair » ne dit rien). */
 export const MIN_COUNT = 10;
 const STACKS = 380; // le tas compte entre 285 et 380 liasses, quelle que soit la fortune : il remplit toujours son cadre
 const STEPS = [1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 6, 8]; // ce que vaut une liasse : un de ces nombres × 10ⁿ années de revenus
@@ -21,6 +21,7 @@ const SEAT = 8; // largeur du sommet du tas, en liasses : de quoi asseoir le bos
 const SIDE = 22; // de chaque côté du tas : le héros à gauche, la caisse commune à droite
 const GROUND = 8;
 const SINK = 8; // le boss s'enfonce un peu dans son tas
+const GUARD = 450; // ms pendant lesquelles le bouton n'écoute pas, à l'ouverture et après un appui
 
 /**
  * Le bouton qui mène au bilan du niveau : un slogan tiré au hasard. « On lâche rien ! », et des slogans courts
@@ -186,19 +187,28 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pi
         ctx.fillRect(chest.x + 2, chest.y + 2, chest.w - 4, 2);
       }
     };
+    const runs = { rain: 0, fly: 0 }; // le numéro de l'animation en cours de chaque sorte : une plus récente l'arrête
     /** Fait passer `key` de 0 à 1 ; arrive à l'image finale même si l'onglet est en arrière-plan. */
     const animate = (key, ms) => {
+      const run = ++runs[key];
       const start = performance.now();
       const frame = (now) => {
+        if (run !== runs[key]) return;
         state[key] = Math.min(1, (now - start) / ms);
         paint();
         if (state[key] < 1) requestAnimationFrame(frame);
       };
       requestAnimationFrame(frame);
       setTimeout(() => {
+        if (run !== runs[key]) return;
         state[key] = 1;
         paint();
       }, ms + 200);
+    };
+    /** Arrête `key` sur son image finale. */
+    const finish = (key) => {
+      runs[key]++;
+      state[key] = 1;
     };
 
     const owner = boss.inspiration ? `la famille ${de(boss.inspiration)}` : boss.nom;
@@ -225,10 +235,11 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pi
     const third = use && step('paie', 'Ce que ça paierait', h('p', { className: 'nombre' }, h('b', {}, round(count)), ` ${use.finance}`),
       `${use.ponctuel ? 'En un an' : 'Chaque année'}, au plus.`, [use]);
     // 4. Ce que chacun paie déjà : les deux taux, côte à côte.
-    const bar = (label, fact) => h('p', { className: 'barre' }, h('span', {}, label),
-      h('i', { style: `--part: ${fact.valeur}` }), h('b', {}, `${fact.valeur} %`));
+    // « ≈ 52 % » : le rapport dit « close to » 52 % ; les 27 % des milliardaires, eux, sont fermes (« only pay 27% »).
+    const bar = (label, fact, about = '') => h('p', { className: 'barre' }, h('span', {}, label),
+      h('i', { style: `--part: ${fact.valeur}` }), h('b', {}, `${about}${fact.valeur} %`));
     const fourth = most && billionaires && step('juste', 'Ce que chacun paie déjà',
-      h('div', { className: 'barres' }, bar('Presque tout le monde', most), bar('Les milliardaires', billionaires)),
+      h('div', { className: 'barres' }, bar('Presque tout le monde', most, '≈ '), bar('Les milliardaires', billionaires)),
       'Tous impôts et cotisations compris, en part du revenu, en 2016.', [most, billionaires]);
     const after = [second, third, fourth].filter(Boolean);
     after.forEach((li, i) => {
@@ -239,10 +250,15 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pi
     // L'image à partager garde la réserve de l'écran : « jusqu'à », puisque l'impôt est différentiel.
     const said = { result, caption: use ? `2 % de la fortune ${de(owner)}, ${use.ponctuel ? 'en un an' : 'chaque année'}, c’est jusqu’à :` : `2 % de la fortune ${de(owner)} :` };
     const button = h('button', { type: 'button', className: 'gros' }, 'Taxer les riches');
-    const story = h('div', { className: 'recit' }, h('ol', { className: 'etapes' }, first, after), h('div', { className: 'pied' }, button));
-    const panel = h('section', { className: 'panneau taxe' }, figure, story);
+    const story = h('ol', { className: 'etapes recit' }, first, after);
+    const panel = h('section', { className: 'panneau taxe' }, figure, story, h('div', { className: 'pied' }, button));
     let taxed = false;
+    // Le bouton a la main dès l'ouverture : un appui sur Entrée (la touche de tir) juste après la chute du boss, ou
+    // la touche gardée enfoncée, ne doit ni taxer ni passer le résultat sans qu'on l'ait vu. Même délai que le carton.
+    let ready = performance.now() + GUARD;
     button.onclick = () => {
+      if (performance.now() < ready) return;
+      ready = performance.now() + GUARD;
       audio?.play('clic');
       if (taxed) {
         root.replaceChildren();
@@ -252,7 +268,8 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pi
       taxed = true;
       audio?.play('tampon');
       audio?.play('sauvetage');
-      state.rain = 1;
+      clearTimeout(rainTimer); // les dividendes sont tombés, ou ne tombent plus : ils ne retombent pas pendant l'envol
+      finish('rain');
       animate('fly', 1300);
       panel.classList.add('faite'); // même écran : le récit continue sous la fortune
       after.forEach((li) => { li.hidden = false; });
@@ -268,7 +285,7 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pi
     document.body.dataset.ecran = 'taxe';
     root.hidden = false;
     paint();
-    if (yearly) setTimeout(() => animate('rain', 1000), 500);
+    const rainTimer = yearly ? setTimeout(() => animate('rain', 1000), 500) : 0;
     button.focus({ preventScroll: true });
   });
 }

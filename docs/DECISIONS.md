@@ -81,15 +81,15 @@ Chaque niveau finit devant un ultra-riche, assis sur sa fortune : un tas de lias
 1. **Sa fortune, à l'échelle de quelqu'un** (« 670 000 ans de revenus d'un chirurgien ») et ce qu'elle rapporte en un an, pour répondre d'avance à « flux et stocks ».
 2. Le bouton « Taxer les riches » : **2 % par an**, au plus, puisque l'impôt est différentiel. La part des 2 % quitte le tas.
 3. **Ce que ça paierait** (« 64 000 enseignants »).
-4. **Ce que chacun paie déjà** : 52 % pour presque tout le monde, 27 % pour les milliardaires. Les deux nombres toujours ensemble.
+4. **Ce que chacun paie déjà** : autour de 52 % pour presque tout le monde, 27 % pour les milliardaires. Les deux nombres toujours ensemble.
 
 Chaque étape porte ses sources, en petit. Le bouton suivant mène au bilan du niveau avec un slogan scandé en manif, tiré au hasard (« On lâche rien ! »).
 
-L'échelle et l'exemple se tirent au hasard dans un dictionnaire de fiches sourcées (`compare`, `finance`). **Un exemple n'est tiré que si 2 % de la fortune en paient au moins dix** : « 2 Canadair » ne dit rien. Les faits frappants sur les inégalités (`choc`) se comprennent seuls : l'un d'eux, tiré au hasard, passe à l'écran de fin, dans « Et en vrai ? ». Le public visé est autant la classe moyenne que les jeunes : c'est une manif virtuelle, elle doit apprendre quelque chose à chacun.
+L'échelle et l'exemple se tirent au hasard dans un dictionnaire de fiches sourcées (`compare`, `finance`). Choix proposé, à valider par Valentin : un exemple n'est pas tiré quand 2 % de la fortune en paient moins de dix (« 2 Canadair » ne dit rien) ; il reste au tirage des fortunes plus grosses. Les faits frappants sur les inégalités (`choc`) se comprennent seuls : l'un d'eux, tiré au hasard, passe à l'écran de fin, dans « Et en vrai ? ». Le public visé est autant la classe moyenne que les jeunes : c'est une manif virtuelle, elle doit apprendre quelque chose à chacun.
 
 ## Les blessés annoncés, répartis comme en vrai
 
-L'écran de fin donne le nombre de blessés que la partie annonce côté forces de l'ordre, réparti comme les 1 233 CRS blessés en octobre 2026 dans le fichier interne de leur direction : légers, arrêts de travail, où, acouphènes, blessés sans ambiguïté par un tiers. Chaque part est arrondie vers le bas à deux chiffres : elle ne dit jamais plus que la source, et 3 blessés donnent « 2,8 légers », pas « 2 » ni « 3 ». La fiche est dans « Et en vrai ? ».
+L'écran de fin donne le nombre de blessés que la partie annonce côté forces de l'ordre, réparti comme les 1 233 CRS blessés en octobre 2026 dans le fichier interne de leur direction : blessés légers, arrêts de travail, où, acouphènes, blessés sans ambiguïté par un tiers parmi ceux dont l'origine est connue. Chaque part est arrondie vers le bas à deux chiffres : elle ne dit jamais plus que la source, et 3 blessés donnent « 2,8 blessés légers », pas « 2 » ni « 3 ». La fiche est dans « Et en vrai ? ».
 
 ## Itération 3
 

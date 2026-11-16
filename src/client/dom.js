@@ -34,8 +34,11 @@ export const floorTwo = (n) => {
 /** 64 640 → « 64 000 » : `floorTwo`, écrit en français. */
 export const round = (n) => frenchNumber(floorTwo(n));
 
-/** Des milliards d'euros donnés tels quels (une fortune) : « 121,2 milliards », « 1,5 milliard ». */
-export const billions = (value) => `${frenchNumber(value, value % 1 ? 1 : 0)} ${plural(value, 'milliard', 'milliards')}`;
+/** Des milliards d'euros, à une décimale arrondie vers le bas : « 121,2 milliards », « 1,5 milliard », 14,25 → « 14,2 ». */
+export const billions = (value) => {
+  const shown = Math.floor(value * 10 + 1e-9) / 10;
+  return `${frenchNumber(shown, shown % 1 ? 1 : 0)} ${plural(shown, 'milliard', 'milliards')}`;
+};
 
 /** Une somme en euros, arrondie vers le bas : « 2,4 milliards », « 1,3 milliard », « 210 millions », « 1 million ». */
 export function money(euros) {

@@ -73,17 +73,14 @@ verifie: 2026-11-15
 | `valeur` | facultatif : le nombre brut, quand une scène du jeu calcule avec |
 | `compare` | facultatif : la fiche sert d'échelle dans la scène de taxe. `compare: un chirurgien` donne « 670 000 ans de revenus d'un chirurgien » ; `valeur` est son revenu, en euros |
 | `par` | avec `compare` : `an` (par défaut) ou `mois`, selon ce que dit la source |
-| `finance` | facultatif : la fiche dit ce que la taxe paierait. `finance: enseignants` donne « 64 000 enseignants » ; `valeur` est le coût d'un seul, en euros. Tirée seulement si 2 % de la fortune en paient au moins dix |
+| `finance` | facultatif : la fiche dit ce que la taxe paierait. `finance: enseignants` donne « 64 000 enseignants » ; `valeur` est le coût d'un seul, en euros |
 | `ponctuel` | avec `finance` : `oui` si le coût se paie une fois (une construction), et non chaque année |
-| `choc` | facultatif : `oui` pour un fait frappant sur les inégalités, qui se comprend seul. Après la taxe, l'écran de fin en propose un, tiré au hasard, dans « Et en vrai ? » |
+| `choc` | facultatif : `oui` pour un fait frappant sur les inégalités. Après la taxe, l'écran de fin en propose un, tiré au hasard, dans « Et en vrai ? » |
 | `source.…`, `verifie` | comme pour une citation |
 
 ## Une comparaison pour la scène de taxe
 
 À chaque partie, la scène de taxe tire au hasard à qui comparer la fortune et ce que 2 % paieraient ; l'écran de fin, un fait frappant. Ajouter une fiche avec `compare`, `finance` ou `choc`, c'est en ajouter un au tirage : rien d'autre à toucher.
-
-- Un exemple (`finance`) n'est tiré que si 2 % de la fortune du boss en paient au moins dix. Un exemple trop cher pour toutes les fortunes du jeu fait échouer les tests.
-- Un fait `choc` se lit seul, sans autre fiche à côté. Deux nombres qui ne se comprennent qu'ensemble (27 % pour les milliardaires, 52 % pour les autres) ne sont pas `choc` : la scène de taxe les montre côte à côte, à chaque partie.
 
 ## Pièges
 

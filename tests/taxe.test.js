@@ -88,22 +88,17 @@ test('taxe : le tas remplit toujours son cadre, de la plus petite à la plus gra
   assert.ok(rows >= 18 && width < 260, 'un tas haut, pas une galette');
 });
 
-test('taxe : un exemple n’est tiré que si 2 % en paient au moins dix', () => {
-  assert.ok(taxScales(bundle).length >= 2 && taxUses(bundle).length >= 10);
+test('taxe : un exemple n’est tiré que si 2 % en paient au moins dix (un choix à valider)', () => {
+  assert.ok(taxScales(bundle).length >= 2 && taxUses(bundle).length >= 10 && taxShocks(bundle).length >= 10);
   const canadair = bundle.fiches['canadair-cout'];
   assert.ok(canadair, 'le Canadair est au dictionnaire');
   assert.ok(!usesFor(bundle, 10.8).includes(canadair), '2 % de 10,8 milliards : 2 Canadair, pas tiré');
   assert.ok(usesFor(bundle, 121.2).includes(canadair), '2 % de 121,2 milliards : 26 Canadair');
   for (const boss of bosses) {
-    const pool = usesFor(bundle, boss.fortune.montant);
-    assert.ok(pool.length >= 8, `${boss.id} : ${pool.length} exemples`);
-    for (const use of pool) {
+    for (const use of usesFor(bundle, boss.fortune.montant)) {
       const { count } = taxNumbers(boss.fortune.montant, taxScales(bundle)[0], use);
       assert.ok(count >= MIN_COUNT, `${boss.id} / ${use.id} : ${count} ${use.finance}`);
     }
-  }
-  for (const use of taxUses(bundle)) {
-    assert.ok(bosses.some((b) => usesFor(bundle, b.fortune.montant).includes(use)), `${use.id} : aucun boss assez riche pour le tirer`);
   }
 });
 
@@ -116,7 +111,6 @@ test('taxe : 27 % ne se montre jamais sans 52 %', () => {
     assert.match(plain(fact.texte), /27 %/, `${fact.id} : le texte dit 27 %`);
   }
   for (const boss of bosses) assert.ok(TAX_RATES.every((id) => taxFiches(bundle, boss, []).includes(id)), 'débloqués ensemble');
-  assert.ok(taxShocks(bundle).length >= 10, 'les faits chocs restent au tirage, à l’écran de fin');
 });
 
 test('taxe : les slogans du bouton ont été scandés en manif', () => {

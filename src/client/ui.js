@@ -300,8 +300,9 @@ export class Screens {
     const crs = CRS_OCTOBRE_2026;
     this.show('fin',
       h('h2', {}, 'Niveau terminé ', h('small', {}, `${level.titre} · ${minutes}`)),
+      // La manif et « Et en vrai ? » à gauche, les blessés à droite : sur un petit téléphone, tout tient sans défiler.
       h('div', { className: 'bilans' },
-        h('article', {},
+        h('article', { className: 'manif' },
           h('p', { className: 'chiffre' }, `✊ ${n(crowd)}`),
           h('p', {}, 'dans la manif'),
           best === null ? null : h('p', { className: 'dont' }, crowd > best ? (best ? `Record battu (${n(best)})` : 'Premier record') : `Record : ${n(best)}`)),
@@ -309,9 +310,9 @@ export class Screens {
           h('p', { className: 'chiffre' }, n(hurt)),
           h('p', {}, hurt > 1 ? 'blessés annoncés côté forces de l’ordre' : 'blessé annoncé côté forces de l’ordre'),
           parts.length ? h('p', { className: 'dont' },
-            `${hurt > 1 ? 'Répartis' : 'Réparti'} comme les ${n(crs.blesses)} CRS blessés en octobre 2026 : ${parts.join(', ')}.`) : null)),
-      truths.length ? h('div', { className: 'vrai' }, h('span', {}, 'Et en vrai ?'),
-        truths.map((card) => h('button', { type: 'button', onclick: () => openCard(this.bundle, card) }, card.item.titre))) : null,
+            `${hurt > 1 ? 'Répartis' : 'Réparti'} comme les ${n(crs.blesses)} CRS blessés en octobre 2026 : ${parts.join(', ')}.`) : null),
+        truths.length ? h('div', { className: 'vrai' }, h('span', {}, 'Et en vrai ?'),
+          truths.map((card) => h('button', { type: 'button', onclick: () => openCard(this.bundle, card) }, card.item.titre))) : null),
       won.length ? wonCards(this.bundle, won) : null,
       h('div', { className: 'pied' },
         next && this.button('Niveau suivant', () => this.go.play(next), 'gros'),

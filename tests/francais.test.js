@@ -50,6 +50,8 @@ test('français : le pluriel commence à 2, partout où le jeu écrit des millia
   assert.equal(plain(billions(1.9)), '1,9 milliard');
   assert.equal(plain(billions(121.2)), '121,2 milliards');
   assert.equal(plain(billions(14)), '14 milliards');
+  assert.equal(plain(billions(14.25)), '14,2 milliards', 'arrondi vers le bas, pas 14,3');
+  assert.equal(plain(billions(1.99)), '1,9 milliard', 'pas « 2,0 milliards »');
   assert.equal(plain(money(1.394e9)), '1,3 milliard');
   assert.equal(plain(money(2.424e9)), '2,4 milliards');
   assert.equal(plain(money(0.2e9)), '200 millions', 'sous le milliard, en millions');

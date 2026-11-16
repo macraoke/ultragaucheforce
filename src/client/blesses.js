@@ -13,6 +13,7 @@ export const CRS_OCTOBRE_2026 = {
   jambes: 737, // blessures aux membres inférieurs (un agent peut en déclarer plusieurs)
   bras: 451, // blessures aux membres supérieurs
   acouphenes: 117, // agents qui mentionnent un acouphène
+  origine: 20, // « une vingtaine » d'agents indiquent l'origine de leur blessure : écrit « environ »
   tiers: 12, // blessure causée sans ambiguïté par un tiers
 };
 
@@ -34,16 +35,19 @@ export const frenchShare = (x) => x.toLocaleString('fr-FR', { maximumFractionDig
  * Les `n` blessés annoncés, répartis comme les CRS blessés en octobre 2026. Chaque part est arrondie vers le bas à deux
  * chiffres : elle ne dit jamais plus que la source, et une petite part reste écrite (0,38 plutôt que 0).
  * @param {number} n  le nombre de blessés annoncés par la partie
- * @returns {{legers: number, arrets: number, jambes: number, bras: number, acouphenes: number, tiers: number} | null}
+ * @returns {{legers: number, arrets: number, jambes: number, bras: number, acouphenes: number, origine: number, tiers: number} | null}
  */
 export function injuries(n) {
   if (!(n > 0)) return null;
   const share = (count) => floor2((n * count) / CRS_OCTOBRE_2026.blesses);
-  const { legers, arrets, jambes, bras, acouphenes, tiers } = CRS_OCTOBRE_2026;
-  return { legers: share(legers), arrets: share(arrets), jambes: share(jambes), bras: share(bras), acouphenes: share(acouphenes), tiers: share(tiers) };
+  const { legers, arrets, jambes, bras, acouphenes, origine, tiers } = CRS_OCTOBRE_2026;
+  return {
+    legers: share(legers), arrets: share(arrets), jambes: share(jambes), bras: share(bras), acouphenes: share(acouphenes),
+    origine: share(origine), tiers: share(tiers),
+  };
 }
 
-/** Le singulier jusqu'à 2 exclu, comme on l'écrit en français : « 1,7 blessure », « 2,8 légers ». */
+/** Le singulier jusqu'à 2 exclu, comme on l'écrit en français : « 1,7 blessure », « 2,8 blessés légers ». */
 const word = (x, one, many) => `${frenchShare(x)} ${plural(x, one, many)}`;
 
 /**
@@ -54,10 +58,11 @@ export function injuryParts(n) {
   const parts = injuries(n);
   if (!parts) return [];
   return [
-    word(parts.legers, 'léger', 'légers'),
+    word(parts.legers, 'blessé léger', 'blessés légers'),
     word(parts.arrets, 'arrêt de travail', 'arrêts de travail'),
     `${word(parts.jambes, 'blessure aux jambes ou aux pieds', 'blessures aux jambes ou aux pieds')} et ${frenchShare(parts.bras)} aux bras ou aux mains`,
-    word(parts.acouphenes, 'acouphène', 'acouphènes'),
-    `${word(parts.tiers, 'blessé', 'blessés')} par un tiers, sans ambiguïté`,
+    `${frenchShare(parts.acouphenes)} avec un acouphène`,
+    // L'origine n'est indiquée que pour une vingtaine d'agents sur 1 233 : le tiers se compte parmi eux.
+    `${word(parts.tiers, 'blessé', 'blessés')} sans ambiguïté par un tiers, sur environ ${frenchShare(parts.origine)} dont l’origine est connue`,
   ];
 }
