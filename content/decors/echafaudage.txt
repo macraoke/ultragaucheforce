@@ -1,4 +1,4 @@
-nom: L'échafaudage
+nom: Échafaudage
 auteur: UltraGauche Force
 --- image
 ..Hh........................................Hh..

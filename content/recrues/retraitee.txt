@@ -1,4 +1,4 @@
-nom: La retraitée
+nom: Retraitée
 apport: 20
 slogan: MACRON, RENDS-NOUS LE POGNON !
 slogan: LA RETRAITE AVANT L'ARTHRITE

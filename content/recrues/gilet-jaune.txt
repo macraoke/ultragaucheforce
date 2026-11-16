@@ -1,4 +1,4 @@
-nom: Le gilet jaune
+nom: Gilet jaune
 apport: 25
 slogan: ON EST LÀ, MÊME SI MACRON LE VEUT PAS
 slogan: J'AI FAILLI NE PAS VENIR FAIRE LA RÉVOLUTION, JE N'AVAIS PLUS D'ESSENCE

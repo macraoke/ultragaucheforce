@@ -1,5 +1,5 @@
 # Une ligne : elle a une vie. Les tracts l'entament, la manif la pousse, d'autant plus fort qu'elle est nombreuse.
-nom: Le barrage
+nom: Barrage
 pv: 3
 vitesse: 0
 deplacement: fixe

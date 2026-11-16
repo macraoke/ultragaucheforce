@@ -1,4 +1,4 @@
-nom: Le cheminot
+nom: Cheminot
 apport: 30
 slogan: GRÈVE, BLOCAGE, MANIF SAUVAGE
 fiche: programme-train

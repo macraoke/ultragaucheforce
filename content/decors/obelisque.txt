@@ -1,4 +1,4 @@
-nom: L'obélisque de la Concorde
+nom: Obélisque de la Concorde
 auteur: UltraGauche Force
 --- image
 ...............yy...............

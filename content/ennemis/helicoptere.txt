@@ -1,5 +1,5 @@
 # Son projecteur balaie le sol ; si le héros reste dedans, des gendarmes descendent à la corde.
-nom: L'hélicoptère
+nom: Hélicoptère
 pv: 10
 vitesse: 55
 deplacement: vol

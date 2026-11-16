@@ -1,5 +1,5 @@
 # Une ligne : elle a une vie. Les tracts l'entament, la manif la pousse, d'autant plus fort qu'elle est nombreuse.
-nom: La grille de la Citadelle
+nom: Grille de la Citadelle
 pv: 3
 vitesse: 0
 deplacement: fixe

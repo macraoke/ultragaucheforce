@@ -1,4 +1,4 @@
-nom: Le RAID
+nom: RAID
 pv: 5
 vitesse: 60
 deplacement: marche

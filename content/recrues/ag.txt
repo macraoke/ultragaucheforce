@@ -1,4 +1,4 @@
-nom: L'assemblée générale
+nom: AG
 multiplie: 2
 slogan: NOUS AUSSI, ON VA PASSER EN FORCE
 fiche: droit-de-manifester

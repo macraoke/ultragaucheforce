@@ -1,5 +1,5 @@
 # Son jet repousse le héros et le cortège, sans blesser.
-nom: Le canon à eau
+nom: Canon à eau
 pv: 14
 vitesse: 12
 deplacement: vehicule

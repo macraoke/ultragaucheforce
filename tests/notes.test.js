@@ -62,23 +62,23 @@ function hud(thumbs) {
 
 test('une note reste le temps d’être lue, en temps de jeu : une pause la fige', () => {
   const h = hud(false);
-  h.toast('Débloqué : La BAC', '', 'cartes');
+  h.toast('Débloqué : BAC', '', 'cartes');
   h.toast('Pancarte commune débloquée : « ON EST LÀ »', 'rarete-0', 'pancartes');
   h.pump(10);
-  assert.deepEqual(shown(), ['Débloqué : La BAC'], 'une note à la fois');
+  assert.deepEqual(shown(), ['Débloqué : BAC'], 'une note à la fois');
   for (let k = 0; k < 600; k++) h.pump(10); // en pause, le temps de jeu ne bouge pas
-  assert.deepEqual(shown(), ['Débloqué : La BAC'], 'figée pendant la pause');
-  h.pump(10 + readTime('Débloqué : La BAC') - 0.01);
-  assert.deepEqual(shown(), ['Débloqué : La BAC']);
-  h.pump(10 + readTime('Débloqué : La BAC'));
+  assert.deepEqual(shown(), ['Débloqué : BAC'], 'figée pendant la pause');
+  h.pump(10 + readTime('Débloqué : BAC') - 0.01);
+  assert.deepEqual(shown(), ['Débloqué : BAC']);
+  h.pump(10 + readTime('Débloqué : BAC'));
   assert.deepEqual(shown(), ['Pancarte commune débloquée : « ON EST LÀ »'], 'puis la suivante');
 });
 
 test('au pouce, une note attend qu’un panneau d’aide soit passé, et son temps de lecture ne court pas', () => {
   const h = hud(true);
-  h.toast('Débloqué : La BAC', '', 'cartes');
+  h.toast('Débloqué : BAC', '', 'cartes');
   h.pump(0);
-  assert.deepEqual(shown(), ['Débloqué : La BAC']);
+  assert.deepEqual(shown(), ['Débloqué : BAC']);
   // Un panneau s'affiche une seconde et demie après : la note s'efface tant qu'il est là, et un peu après.
   h.pump(1.5);
   h.pump(1.5, true);
@@ -89,17 +89,17 @@ test('au pouce, une note attend qu’un panneau d’aide soit passé, et son tem
   h.pump(4 + SIGN_LINGER);
   assert.ok(!waiting(), 'le panneau passé, elle revient');
   // Elle avait été vue 1,5 s : il lui reste le reste de son temps de lecture.
-  const left = readTime('Débloqué : La BAC') - 1.5;
+  const left = readTime('Débloqué : BAC') - 1.5;
   h.pump(4 + SIGN_LINGER + left - 0.05);
-  assert.deepEqual(shown(), ['Débloqué : La BAC']);
+  assert.deepEqual(shown(), ['Débloqué : BAC']);
   h.pump(4 + SIGN_LINGER + left + 0.05);
   assert.deepEqual(shown(), []);
 });
 
 test('au clavier, un panneau d’aide ne retient pas les notes (elles ne sont pas au même endroit)', () => {
   const h = hud(false);
-  h.toast('Débloqué : La BAC', '', 'cartes');
+  h.toast('Débloqué : BAC', '', 'cartes');
   h.pump(0, true);
   assert.ok(!waiting());
-  assert.deepEqual(shown(), ['Débloqué : La BAC']);
+  assert.deepEqual(shown(), ['Débloqué : BAC']);
 });

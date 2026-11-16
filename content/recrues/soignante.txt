@@ -1,4 +1,4 @@
-nom: La soignante
+nom: Soignante
 apport: 20
 slogan: DE L'ARGENT POUR L'HÔPITAL, PAS POUR LE CAPITAL
 fiche: programme-hopital

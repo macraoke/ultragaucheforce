@@ -12,7 +12,7 @@ nasse.nombre: 3
 nasse.vitesse: 20
 
 panneau.1: GARDE À VUE : un camarade est à l'étage
-panneau.2: PONT : par le dessus, ou par la galerie dessous
+panneau.2: PONT : dessus, ou la galerie dessous
 panneau.3: Tracts et manif : le blindé cède
 
 g: gendarme-mobile
