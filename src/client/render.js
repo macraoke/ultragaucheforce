@@ -985,10 +985,10 @@ export class Renderer {
   }
 
   /**
-   * Les étiquettes des accessoires : aucune ne recouvre une autre, ni le panneau lu, ni l'écriture d'un décor. Chacune
-   * s'écrit à sa place dans le niveau (voir `tagLayout`). Si le panneau lu ou une écriture la gêne, elle se pose sous
-   * les pieds de son accessoire (un cran plus bas s'il le faut, jamais sous la bande du HUD), et y reste tant qu'il est
-   * à l'écran : elle ne revient pas d'un saut quand la gêne s'en va. Rien ne la cache jamais.
+   * Les étiquettes des accessoires : aucune ne recouvre une autre, ni le panneau lu, ni l'écriture d'un décor, ni ne passe
+   * sous la bande du HUD. Chacune s'écrit à sa place dans le niveau (voir `tagLayout`) ; trop haute, elle s'arrête sous le
+   * HUD. Si quelque chose la gêne, elle se pose sous les pieds de son accessoire (un cran plus bas s'il le faut), et y
+   * reste tant qu'il est à l'écran : elle ne revient pas d'un saut quand la gêne s'en va. Rien ne la cache jamais.
    */
   placeTags(tags, props) {
     const layout = this.tagLayout(props);
@@ -996,24 +996,37 @@ export class Renderer {
     tags.sort((a, b) => a.x - b.x || a.y - b.y);
     for (const t of tags) {
       const base = this.textBox(t.text, t.x, t.y, t.opts.size, 0);
-      const at = (s) => ({ x0: base.x0 + s.dx, x1: base.x1 + s.dx, y0: base.y0 + s.dy, y1: base.y1 + s.dy });
-      const free = (s) => {
-        const box = at(s);
-        return !this.boxes.some((b) => box.x0 < b.x1 && box.x1 > b.x0 && box.y0 < b.y1 && box.y1 > b.y0);
+      // Jamais sous la bande du HUD : trop haute, elle s'arrête au plafond des textes flottants, comme eux.
+      const at = (s) => {
+        const dy = s.dy + Math.max(0, ceiling - (base.y0 + s.dy));
+        return { x0: base.x0 + s.dx, x1: base.x1 + s.dx, y0: base.y0 + dy, y1: base.y1 + dy, dy };
       };
+      const hit = (box) => this.boxes.find((b) => box.x0 < b.x1 && box.x1 > b.x0 && box.y0 < b.y1 && box.y1 > b.y0);
+      const free = (s) => !hit(at(s));
       const home = layout.get(t.p) ?? { dx: 0, dy: 0 };
       const moved = this.propSpot.get(t.p);
       let spot = moved && free(moved) ? moved : null;
       if (!spot && free(home)) spot = home;
       if (!spot) {
+        const inside = (s) => {
+          const box = at(s);
+          return box.x0 >= 0 && box.x1 <= this.viewW && free(s);
+        };
+        // Sous ses pieds, un cran plus bas s'il le faut ; sinon juste à côté de ce qui la gêne (d'au plus sa largeur).
+        const width = base.x1 - base.x0;
         const step = base.y1 - base.y0 + 1;
         const under = t.below - t.y;
-        const fits = (s) => at(s).y0 >= ceiling && free(s);
-        spot = [{ dx: 0, dy: under }, { dx: 0, dy: under + step }, { dx: 0, dy: under + 2 * step }].find(fits) ?? moved ?? home;
+        const box = at(home);
+        const other = hit(box);
+        const sides = other ? [other.x1 + 1 - box.x0, other.x0 - 1 - box.x1].filter((d) => Math.abs(d) <= width) : [];
+        const spots = [...[0, 1, 2, 3, 4].map((k) => ({ dx: home.dx, dy: under + k * step })),
+          ...sides.map((d) => ({ dx: home.dx + d, dy: home.dy }))];
+        spot = spots.find(inside) ?? moved ?? home; // nulle part de libre : écrite quand même, là où elle était
         if (spot !== home) this.propSpot.set(t.p, spot);
       }
-      this.boxes.push(at(spot));
-      this.label(t.text, t.x + spot.dx, t.y + spot.dy, t.opts);
+      const box = at(spot);
+      this.boxes.push(box);
+      this.label(t.text, t.x + spot.dx, t.y + box.dy, t.opts);
     }
   }
 

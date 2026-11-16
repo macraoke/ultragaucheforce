@@ -331,6 +331,22 @@ test('une cage et un piquet côte à côte, sous le panneau lu : leurs étiquett
   assert.deepEqual(both, alone, 'le piquet ne bouge pas quand la cage s’écrit');
 });
 
+test('une étiquette d’accessoire ne passe pas sous la bande du HUD (la barre de vie d’une ligne en haut)', () => {
+  const r = renderer(5 / 3);
+  r.hudBottom = 120; // la barre « LA GRILLE DE LA CITADELLE » descend jusque-là, en pixels CSS
+  r.heroBox = { x: 20, y: 60, w: 12, h: 18 };
+  const cage = { kind: 'cage', x: 150, y: 62, w: 16, h: 16, on: false }; // une cage de l'étage, juste sous le haut de l'image
+  const placed = [];
+  r.label = (text, x, y, opts) => placed.push(r.textBox(text, x, y, opts.size, 0));
+  for (let k = 0; k < 3; k++) {
+    r.boxes = [];
+    r.placeTags([r.prop(cage)].filter(Boolean), [cage]);
+  }
+  assert.equal(placed.length, 3, 'elle s’écrit à chaque image');
+  assert.ok(placed.every((b) => b.y0 >= r.ceiling()), 'sous le HUD, jamais dessous');
+  assert.ok(placed.every((b) => b.y0 === placed[0].y0), 'et sans bouger');
+});
+
 test('des unités identiques côte à côte n’ont qu’un « ! » ; une autre, plus loin ou différente, a le sien', () => {
   const r = renderer();
   const unit = (id, x) => ({ def: { id }, x, y: 150, w: 12, h: 18 });
