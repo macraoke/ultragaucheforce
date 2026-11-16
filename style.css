@@ -529,9 +529,19 @@ html.bas .commandes .pied { margin-top: .6em; }
 .taxe .barre b { font: 900 1.35rem/1 var(--titre); color: var(--or); text-align: right; white-space: nowrap; }
 .taxe .pied { grid-area: pied; align-self: start; margin: 0; }
 .taxe .pied button.gros { max-width: 100%; line-height: 1.05; text-align: left; }
-/* « Taxer les riches » : la suite du récit arrive étape par étape */
-.taxe.faite .etapes li:not(.fortune) { animation: etape .35s ease-out both; animation-delay: calc(var(--rang, 0) * .35s + .25s); }
+/* Après la taxe, le titre : ce que ça paierait, aussi gros que l'était la fortune. D'où vient l'argent, en petit, sur une ligne. */
+.taxe .titre .nombre { font: 900 clamp(1.7rem, 6.4vmin, 3.1rem)/.95 var(--titre); color: var(--or); }
+.taxe .paie.titre .nombre { font-size: clamp(1.1rem, 4.1vmin, 2rem); color: var(--blanc); }
+.taxe .paie.titre .nombre b { display: block; font-size: 1.55em; line-height: 1; }
+.taxe .impot:not(.titre) :is(.etiquette, .nombre) { display: inline; margin-right: .4em; }
+.taxe .impot:not(.titre) .nombre { font-size: clamp(1rem, 3vmin, 1.35rem); }
+/* « Taxer les riches » : la fortune s'efface du récit, ce que ça paierait prend sa place, puis le reste */
+.taxe .etapes li.part { animation: etape-part .26s ease-in both; }
+@keyframes etape-part { to { opacity: 0; transform: translateY(-8px); } }
+.taxe.faite .etapes li:not(.fortune) { animation: etape .35s ease-out both; animation-delay: calc(var(--rang, 0) * .3s); }
+.taxe.faite .etapes li.titre { animation-name: etape-titre; transform-origin: 0 50%; }
 @keyframes etape { from { opacity: 0; transform: translateY(8px); } }
+@keyframes etape-titre { from { opacity: 0; transform: scale(.9); } }
 body.sobre .taxe .etapes li { animation: none !important; }
 @media (prefers-reduced-motion: reduce) { .taxe .etapes li { animation: none !important; } }
 /* Une fenêtre étroite et debout (pas un téléphone, qui pivote en paysage) : le tas au-dessus du récit. */
@@ -551,7 +561,8 @@ html.bas .taxe .nombre { font-size: 1rem; }
 html.bas .taxe .phrase { margin-top: .1em; font-size: 11px; line-height: 1.2; }
 html.bas .taxe .phrase .source { font-size: 11px; }
 html.bas .taxe .barres { gap: .15em .5em; margin: .1em 0 0; font-size: 11px; }
-html.bas .taxe :is(.impot, .paie) :is(.etiquette, .nombre) { display: inline; margin-right: .4em; }
+html.bas .taxe .titre .nombre { font-size: 1.55rem; }
+html.bas .taxe .paie.titre .nombre { font-size: 1.15rem; }
 html.bas .taxe .barre i { height: .85em; box-shadow: 2px 2px 0 var(--rouge); }
 html.bas .taxe .barre b { font-size: .95rem; }
 html.bas .taxe .pied button.gros { font-size: 1rem; padding: .5em .8em; }

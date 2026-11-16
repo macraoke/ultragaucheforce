@@ -88,7 +88,7 @@ test('taxe : le tas remplit toujours son cadre, de la plus petite à la plus gra
   assert.ok(rows >= 18 && width < 260, 'un tas haut, pas une galette');
 });
 
-test('taxe : un exemple n’est tiré que si 2 % en paient au moins dix (un choix à valider)', () => {
+test('taxe : un exemple n’est tiré que si 2 % en paient au moins dix (un choix confirmé)', () => {
   assert.ok(taxScales(bundle).length >= 2 && taxUses(bundle).length >= 10 && taxShocks(bundle).length >= 10);
   const canadair = bundle.fiches['canadair-cout'];
   assert.ok(canadair, 'le Canadair est au dictionnaire');
