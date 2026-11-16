@@ -1,7 +1,7 @@
 titre: 6,5 millions d'euros par an
 theme: richesses
 texte: Pour l'exercice 2024, la rémunération totale moyenne des présidents exécutifs du CAC 40 est de 6,5 millions d'euros, selon Proxinvest.
-portee: Communiqué de Proxinvest, cabinet de conseil aux actionnaires (18-19 novembre 2025) : toutes formes de rémunération attribuées au titre de 2024 (fixe, bonus, jetons, avantages, stock-options et actions de performance valorisées à l'attribution). Ne compte pas les dividendes perçus comme actionnaire. Source privée, non officielle.
+portee: Communiqué de Proxinvest, cabinet de conseil aux actionnaires (Paris, 18 novembre 2025) : toutes formes de rémunération attribuées au titre de 2024 (fixe, bonus annuel, jetons, avantages en nature, stock-options et actions gratuites de performance valorisées à leur date d'attribution, intéressement en numéraire et autres formes indirectes de rémunération). Source privée, non officielle.
 periode: exercice 2024
 valeur: 6500000
 compare: un président exécutif du CAC 40

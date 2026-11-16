@@ -1,7 +1,7 @@
 titre: 4 euros par action
 theme: richesses
 texte: Au titre de 2025, Kering verse 4 euros de dividende par action : 3 euros de dividende ordinaire et 1 euro de dividende exceptionnel.
-portee: Dividende adopté par l'assemblée générale du 28 mai 2026 ; l'euro exceptionnel est lié à la cession de Kering Beauté à L'Oréal. Multiplié par les actions du groupe Artémis, cela fait environ 209 millions d'euros en un an, versés à une société holding, pas directement à des personnes. Pour 2024, le dividende était de 6 euros ; pour 2022 et 2023, de 14 euros.
+portee: Dividende adopté par l'assemblée générale du 28 mai 2026 ; l'euro exceptionnel est lié à la cession de Kering Beauté à L'Oréal. Multiplié par les 52 251 576 actions que détient le groupe Artémis selon le document d'enregistrement universel de Kering, cela fait environ 209 millions d'euros en un an, versés à une société holding, pas directement à des personnes : le calcul est le nôtre, la page ne le donne pas. Pour 2024, le dividende était de 6 euros ; pour 2022 et 2023, de 14 euros.
 periode: dividende de l'exercice 2025
 valeur: 4
 source.titre: Kering — Kering en bourse : cours de l'action, dividendes, capital (mis à jour le 28/05/2026)

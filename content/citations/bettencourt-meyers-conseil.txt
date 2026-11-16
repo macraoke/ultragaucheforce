@@ -5,7 +5,7 @@ date: 2025-04-28
 contexte: Déclaration à l'AFP, la veille de l'assemblée générale de L'Oréal où elle cède son siège d'administratrice à la holding familiale Téthys.
 categorie: puissants
 mot: CONSEIL D'ADMINISTRATION
-note: Phrase complète dans la dépêche : « Je ne quitte pas L'Oréal, mais son conseil d'administration, où je serai restée près de 30 ans. » Page lue sur La Gazette France, qui reprend la dépêche de l'AFP ; la déclaration originale n'a pas été relue.
+note: Dans la dépêche : « Je ne quitte pas L'Oréal, mais son conseil d'administration », dit-elle dans une déclaration lundi à l'AFP. Page lue sur La Gazette France, qui reprend la dépêche de l'AFP (publiée le 28 avril 2025 à 13 h 46) ; la déclaration originale n'a pas été relue.
 source.titre: La Gazette France (dépêche AFP) — Françoise Bettencourt Meyers, l'héritière discrète de L'Oréal
 source.url: https://www.lagazettefrance.fr/article/francoise-bettencourt-meyers-l-heritiere-discrete-de-l-oreal
 source.nature: presse
