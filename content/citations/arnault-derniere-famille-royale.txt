@@ -1,0 +1,12 @@
+texte: En 1984, on m'appelait Terminator, je préfère la dernière famille royale, c'est plus élégant et c'est meilleur pour les ventes chez Dior.
+auteur: Bernard Arnault
+fonction: PDG de LVMH
+date: 2026-07-26
+contexte: Réponse à une enquête du Monde sur sa succession, publiée le 24 juillet 2026.
+categorie: puissants
+mot: DERNIÈRE FAMILLE ROYALE
+note: Lu dans la reprise de Presse-citron (27 juillet 2026), qui renvoie à un message du compte LVMH_Presse du 26 juillet 2026 ; ni ce message ni l'enquête du Monde n'ont été relus. Le boss lui doit son nom.
+source.titre: Presse-citron — Bernard Arnault répond à l'enquête du Monde
+source.url: https://www.presse-citron.net/1984-terminator-prefere-derniere-famille-royale-mieux-pour-ventes-dior-bernard-arnault-repond/
+source.nature: presse
+verifie: 2026-11-16

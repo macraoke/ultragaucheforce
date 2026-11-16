@@ -1,0 +1,12 @@
+texte: ingénieurs du chaos
+auteur: Franz-Olivier Giesbert
+fonction: éditorialiste au Point
+date: 2025-09-11
+contexte: Dans Le Point, après la mobilisation « Bloquons tout » du 10 septembre 2025 : il qualifie les insoumis de « prophètes de bistrots » et d'« ingénieurs du chaos ».
+categorie: diabolisation
+mot: INGÉNIEURS DU CHAOS
+note: Lu dans la reprise d'Acrimed (17 septembre 2025), qui date le texte du « 11/09 » ; l'article du Point n'a pas été relu. Le héros L'Ingénieur du chaos lui doit son nom.
+source.titre: Acrimed — « Bloquons tout » : haro sur les « ingénieurs du chaos »
+source.url: https://www.acrimed.org/Bloquons-tout-haro-sur-les-ingenieurs-du-chaos
+source.nature: associative
+verifie: 2026-11-16

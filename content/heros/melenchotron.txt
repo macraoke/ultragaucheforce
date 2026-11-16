@@ -1,4 +1,5 @@
-nom: Le Mélenchotron
+nom: L'Ingénieur du chaos
+origine: Franz-Olivier Giesbert traite les insoumis d'« ingénieurs du chaos », dans Le Point, en septembre 2025.
 inspiration: Jean-Luc Mélenchon
 traitement: le tribun, en plus fort
 cri: LA RÉPUBLIQUE, C'EST MOI !

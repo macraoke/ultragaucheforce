@@ -1,17 +1,18 @@
 # Un boss = une fortune documentée aux commandes d'une machine. Le dessin « ejecte » sert à sa sortie.
-nom: L'Arnault-Armure du Luxe
+nom: La Dernière Famille royale
 inspiration: Bernard Arnault
 traitement: une armure de malles ; le pilote s'éjecte en parachute doré
 pv: 70
 largeur: 30
 hauteur: 40
 vitesse: 30
-citation: arnault-premier-contribuable
+citation: arnault-derniere-famille-royale
 fiche: impots-milliardaires
 # Assis sur sa fortune tant que sa vie n'est pas passée sous la moitié.
 assis: oui
 leve: 0.5
 # Ses répliques sont ses propres mots (voir content/citations/arnault-*.txt).
+replique: JE PRÉFÈRE LA DERNIÈRE FAMILLE ROYALE.
 replique: JE SUIS CERTAINEMENT LE TOUT PREMIER CONTRIBUABLE À TITRE PERSONNEL.
 replique: IL EST D'ABORD UN MILITANT D'EXTRÊME GAUCHE.
 replique: POUR POUSSER À LA DÉLOCALISATION, C'EST IDÉAL !
