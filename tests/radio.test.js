@@ -1,0 +1,328 @@
+// Radio Manif sans réseau : le choix de la piste à chaque moment du jeu, et ce que fait la Radio
+// quand le lecteur SoundCloud (ici simulé) refuse de jouer, se tait ou tombe en erreur.
+
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { loadContent } from '../tools/content.mjs';
+import { Radio, chooseTrack, poolsFor, START_TIMEOUT } from '../src/client/music.js';
+
+const { bundle } = loadContent();
+const real = Object.values(bundle.musiques);
+const randoms = [0, 0.34, 0.67, 0.999].map((r) => () => r); // le hasard, figé : du premier au dernier choix
+
+test('chaque niveau de la campagne a sa musique : la sienne, sinon celle de tous les niveaux', () => {
+  assert.ok(bundle.campagne.length >= 6);
+  for (const id of bundle.campagne) {
+    const level = bundle.niveaux[id];
+    const own = real.filter((t) => t.ou === id);
+    for (const random of randoms) {
+      const track = chooseTrack(real, { slot: id, named: level.musique, random });
+      assert.ok(track, `${id} : aucune piste`);
+      if (level.musique) assert.equal(track.id, level.musique, id);
+      else assert.equal(track.ou, own.length ? id : 'jeu', `${id} : ${track.id}`);
+    }
+  }
+});
+
+test('le menu et le boss ont leurs pistes ; un niveau de l’Atelier prend celles de tous les niveaux', () => {
+  for (const random of randoms) {
+    assert.equal(chooseTrack(real, { slot: 'menu', random }).ou, 'menu');
+    assert.equal(chooseTrack(real, { slot: 'boss', random }).ou, 'boss');
+    assert.equal(chooseTrack(real, { slot: 'atelier', random }).ou, 'jeu');
+  }
+});
+
+const T = (id, ou) => ({ id, ou, url: `https://soundcloud.com/x/${id}`, titre: id, artiste: 'x' });
+const tracks = [T('menu-a', 'menu'), T('menu-b', 'menu'), T('seule', 'chaine-info'), T('jeu-a', 'jeu'), T('jeu-b', 'jeu'), T('boss-a', 'boss'), T('nommee', 'boss')];
+
+test('la piste nommée par le niveau passe d’abord ; une piste qui a échoué cède la place à la liste suivante', () => {
+  assert.equal(chooseTrack(tracks, { slot: 'chaine-info', named: 'nommee' }).id, 'nommee');
+  assert.equal(chooseTrack(tracks, { slot: 'chaine-info' }).id, 'seule');
+  assert.equal(chooseTrack(tracks, { slot: 'chaine-info', failed: new Set(['seule']) }).ou, 'jeu');
+  assert.equal(chooseTrack(tracks, { slot: 'menu', failed: new Set(['menu-a', 'menu-b']), random: () => 0 }).id, 'seule'); // dernier recours : n'importe laquelle
+  assert.equal(chooseTrack(tracks, { slot: 'menu', failed: new Set(tracks.map((t) => t.id)) }), null);
+  assert.deepEqual(poolsFor(tracks, 'menu').map((p) => p.length), [2, tracks.length]); // au menu, pas de piste « jeu » avant le dernier recours
+});
+
+test('en fin de piste, une autre de la même liste si possible', () => {
+  const [a, b] = tracks.filter((t) => t.ou === 'jeu');
+  for (const random of randoms) assert.equal(chooseTrack(tracks, { slot: 'rond-point', avoid: a, random }), b);
+  assert.equal(chooseTrack(tracks, { slot: 'chaine-info', avoid: tracks[2] }), tracks[2]); // seule de sa liste : elle reprend
+});
+
+/** Une Radio branchée sur un faux lecteur SoundCloud, une fausse horloge et un faux panneau. */
+function setup({ activated = true, connect = 'ok', list = tracks, instant = true } = {}) {
+  const timers = [];
+  let now = 0;
+  let emit = () => {};
+  const widget = {
+    loads: [], plays: 0, pauses: 0,
+    // `instant` : la nouvelle piste est prête aussitôt ; sinon, le test appelle `ready()` quand il veut.
+    load(url, opts) { this.loads.push(url); this.ready = () => opts?.callback?.(); if (instant) this.ready(); },
+    play() { this.plays++; },
+    pause() { this.pauses++; },
+    setVolume() {},
+  };
+  const ctx = { widget, connects: [], activated, now: () => now };
+  const view = { show(state) { ctx.shown = state; }, mount() {}, unmount() { ctx.unmounted = true; }, setVisible() {} };
+  const radio = new Radio({ musiques: Object.fromEntries(list.map((t) => [t.id, t])) }, null, {
+    random: () => 0,
+    later(fn, ms) { const t = { at: now + ms, fn }; timers.push(t); return t; },
+    cancel(t) { const i = timers.indexOf(t); if (i >= 0) timers.splice(i, 1); },
+    online: () => true,
+    activated: () => ctx.activated,
+    connect(track, onEvent) {
+      ctx.connects.push(track.id);
+      emit = onEvent;
+      return connect === 'ok' ? Promise.resolve(widget) : Promise.reject(new Error('hors ligne'));
+    },
+    view,
+  });
+  ctx.radio = radio;
+  ctx.emit = (name, data) => emit(name, data);
+  ctx.playing = () => emit('PLAY_PROGRESS', { currentPosition: 300 });
+  ctx.advance = (ms) => {
+    now += ms;
+    for (const t of [...timers].sort((x, y) => x.at - y.at)) {
+      if (t.at > now || !timers.includes(t)) continue;
+      timers.splice(timers.indexOf(t), 1);
+      t.fn();
+    }
+  };
+  ctx.flush = () => new Promise((resolve) => setImmediate(resolve));
+  /** L'adresse de la dernière piste demandée au lecteur. */
+  ctx.lastUrl = () => widget.loads.at(-1);
+  return ctx;
+}
+
+test('une piste en erreur pendant le chargement : la Radio passe à une autre, sans se taire', async () => {
+  const s = setup();
+  s.radio.play('menu');
+  s.radio.setEnabled(true);
+  await s.flush();
+  assert.deepEqual(s.connects, ['menu-a']);
+  s.emit('ERROR');
+  assert.equal(s.radio.current.id, 'menu-b');
+  assert.equal(s.lastUrl(), tracks[1].url);
+  s.playing();
+  assert.equal(s.radio.status, 'playing');
+  assert.ok(s.radio.failed.has('menu-a'));
+});
+
+test('une piste qui ne démarre jamais (chiffrée, sans module de lecture) : au bout du délai, une autre', async () => {
+  const s = setup();
+  s.radio.setEnabled(true);
+  await s.flush();
+  s.playing();
+  s.radio.play('chaine-info');
+  assert.equal(s.lastUrl(), tracks[2].url);
+  s.advance(START_TIMEOUT - 1);
+  assert.equal(s.radio.current.id, 'seule');
+  s.advance(1);
+  assert.equal(s.radio.current.ou, 'jeu'); // la seule piste du niveau a échoué : celles de tous les niveaux
+  s.playing();
+  assert.equal(s.radio.status, 'playing');
+  // « Recommencer » : la piste morte n'est pas redemandée, la musique continue.
+  const loads = s.widget.loads.length;
+  s.radio.play('chaine-info');
+  assert.equal(s.widget.loads.length, loads);
+});
+
+test('lecture refusée sans geste : le bouton le montre, et un toucher la relance', async () => {
+  const s = setup({ activated: false }); // musique activée lors d'une visite précédente, page rechargée
+  s.radio.setEnabled(true);
+  await s.flush();
+  s.emit('PAUSE'); // le navigateur refuse la lecture automatique
+  assert.equal(s.radio.status, 'blocked');
+  assert.equal(s.shown.status, 'blocked');
+  assert.equal(s.widget.plays, 0);
+  s.activated = true;
+  s.radio.unblock();
+  assert.equal(s.widget.plays, 1);
+  s.playing();
+  assert.equal(s.radio.status, 'playing');
+  assert.equal(s.shown.status, 'playing');
+  s.radio.unblock(); // un autre toucher ne relance rien
+  assert.equal(s.widget.plays, 1);
+});
+
+test('lecture refusée après un geste : un nouvel essai tout seul, puis le bouton', async () => {
+  const s = setup();
+  s.radio.setEnabled(true);
+  await s.flush();
+  s.playing();
+  s.radio.play('boss');
+  s.emit('PLAY');
+  s.emit('PAUSE'); // le changement de piste n'a pas eu le droit de jouer (Safari)
+  assert.equal(s.widget.plays, 1);
+  s.emit('PAUSE');
+  assert.equal(s.radio.status, 'blocked');
+  s.radio.unblock();
+  assert.equal(s.widget.plays, 2);
+  s.playing();
+  assert.equal(s.radio.status, 'playing');
+  assert.equal(s.radio.current.ou, 'boss');
+  assert.equal(s.radio.failed.size, 0); // refusée n'est pas morte
+});
+
+test('un délai écoulé sans geste du joueur n’enterre pas la piste : il montre le bouton', async () => {
+  const s = setup({ activated: false });
+  s.radio.setEnabled(true);
+  await s.flush();
+  s.advance(START_TIMEOUT);
+  assert.equal(s.radio.status, 'blocked');
+  assert.equal(s.radio.failed.size, 0);
+});
+
+test('menu, niveau, boss, « Recommencer », niveau suivant, retour au menu : la bonne piste à chaque fois', async () => {
+  const s = setup();
+  s.radio.setEnabled(true);
+  await s.flush();
+  s.playing();
+  s.radio.play('rond-point');
+  assert.equal(s.lastUrl(), tracks[3].url);
+  s.playing();
+  s.radio.play('rond-point'); // « Recommencer » avant le boss : la musique continue
+  assert.equal(s.widget.loads.length, 1);
+  s.radio.play('boss');
+  assert.equal(s.lastUrl(), tracks[5].url);
+  s.playing();
+  s.radio.play('rond-point'); // « Rejouer » après le boss
+  assert.equal(s.lastUrl(), tracks[3].url);
+  s.playing();
+  s.radio.play('raffinerie'); // niveau suivant, même liste : la piste continue
+  assert.equal(s.widget.loads.length, 3);
+  s.radio.play('menu');
+  assert.equal(s.lastUrl(), tracks[0].url);
+  s.emit('FINISH');
+  assert.equal(s.lastUrl(), tracks[1].url); // fin de piste : l'autre piste du menu
+});
+
+test('couper puis remettre la musique la relance, même si le hasard retombe sur la même piste', async () => {
+  const s = setup();
+  s.radio.setEnabled(true);
+  await s.flush();
+  s.playing();
+  s.radio.setEnabled(false);
+  assert.equal(s.widget.pauses, 1);
+  s.emit('PAUSE'); // notre propre pause n'est pas un refus
+  assert.equal(s.radio.status, 'off');
+  s.radio.setEnabled(true);
+  assert.equal(s.widget.plays, 1);
+  assert.equal(s.widget.loads.length, 0);
+  s.playing();
+  assert.equal(s.radio.status, 'playing');
+});
+
+test('onglet caché : la musique continue ; arrêtée par le système pendant ce temps, elle reprend au retour', async () => {
+  const s = setup();
+  s.radio.setEnabled(true);
+  await s.flush();
+  s.radio.play('rond-point');
+  s.playing();
+  s.radio.setHidden(true);
+  assert.equal(s.widget.pauses, 0);
+  s.emit('PAUSE'); // téléphone verrouillé : le système coupe le son
+  s.playing(); // un dernier « ça avance » parti avant la pause
+  assert.equal(s.radio.status, 'paused');
+  s.radio.setHidden(false);
+  assert.equal(s.widget.plays, 1);
+  s.playing();
+  assert.equal(s.radio.status, 'playing');
+  s.radio.setHidden(true);
+  s.radio.setHidden(false); // rien n'a été coupé : rien à relancer
+  assert.equal(s.widget.plays, 1);
+});
+
+test('onglet caché pendant un changement de piste : le délai ne condamne pas la piste', async () => {
+  const s = setup();
+  s.radio.setEnabled(true);
+  await s.flush();
+  s.playing();
+  s.radio.setHidden(true);
+  s.emit('FINISH'); // la piste suivante ne démarre pas tant que l'onglet est caché
+  s.advance(START_TIMEOUT * 3);
+  assert.equal(s.radio.failed.size, 0);
+  s.radio.setHidden(false);
+  assert.equal(s.widget.plays, 1);
+  s.playing();
+  assert.equal(s.radio.status, 'playing');
+});
+
+test('le joueur met le lecteur en pause : rien ne le relance de force, le niveau suivant si', async () => {
+  const s = setup();
+  s.radio.setEnabled(true);
+  await s.flush();
+  s.playing();
+  s.emit('PAUSE');
+  assert.equal(s.radio.status, 'paused');
+  s.radio.unblock();
+  assert.equal(s.widget.plays, 0);
+  s.radio.play('chaine-info');
+  assert.equal(s.lastUrl(), tracks[2].url);
+});
+
+test('lecteur injoignable (hors ligne, bloqueur) : le bouton réessaie', async () => {
+  const s = setup({ connect: 'non' });
+  s.radio.setEnabled(true);
+  await s.flush();
+  assert.equal(s.radio.status, 'blocked');
+  assert.ok(s.unmounted);
+  s.radio.unblock();
+  assert.deepEqual(s.connects, ['menu-a', 'menu-a']);
+});
+
+test('toutes les pistes ont échoué : le bouton, puis un toucher retente tout', async () => {
+  const s = setup({ list: [T('a', 'menu'), T('b', 'boss')] });
+  s.radio.setEnabled(true);
+  await s.flush();
+  s.emit('ERROR');
+  s.emit('ERROR');
+  assert.equal(s.radio.status, 'blocked');
+  s.radio.unblock();
+  assert.equal(s.radio.failed.size, 0);
+  assert.equal(s.radio.status, 'loading');
+});
+
+test('après un changement de piste, ce que le lecteur annonce encore de l’ancienne ne compte pas', async () => {
+  const s = setup({ instant: false });
+  s.radio.setEnabled(true);
+  await s.flush();
+  s.playing();
+  s.radio.play('chaine-info');
+  s.playing(); // l'ancienne piste joue encore le temps que la nouvelle se charge
+  s.emit('PAUSE');
+  s.emit('FINISH');
+  assert.equal(s.radio.status, 'loading');
+  assert.equal(s.widget.plays, 0);
+  assert.equal(s.widget.loads.length, 1);
+  s.widget.ready();
+  s.advance(START_TIMEOUT); // la nouvelle ne démarre jamais (chiffrée, sans module de lecture)
+  assert.ok(s.radio.failed.has('seule'));
+  assert.equal(s.radio.current.ou, 'jeu');
+});
+
+test('le joueur relance lui-même le lecteur (son bouton, dans le menu) : la Radio le suit', async () => {
+  const s = setup();
+  s.radio.setEnabled(true);
+  await s.flush();
+  s.playing();
+  s.emit('PAUSE');
+  assert.equal(s.radio.status, 'paused');
+  s.emit('PLAY');
+  s.playing();
+  assert.equal(s.radio.status, 'playing');
+  assert.equal(s.widget.plays, 0);
+});
+
+test('musique coupée puis remise avant que le lecteur soit prêt : la piste n’est pas condamnée', async () => {
+  const s = setup();
+  s.radio.setEnabled(true);
+  s.radio.setEnabled(false);
+  s.radio.setEnabled(true); // double clic sur l'option, le lecteur se charge encore
+  await s.flush();
+  assert.deepEqual(s.connects, ['menu-a']);
+  s.playing();
+  assert.equal(s.radio.status, 'playing');
+  assert.equal(s.radio.failed.size, 0);
+});

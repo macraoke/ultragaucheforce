@@ -610,6 +610,14 @@ body.tactile .atelier input[type='text'], body.tactile .atelier select, body.tac
 #radio strong { font: 900 .85rem/1 var(--titre); text-transform: uppercase; letter-spacing: .05em; color: var(--or); }
 #radio iframe { display: block; width: 100%; height: 76px; border: 0; margin: 4px 0; }
 #radio p { margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Lecture refusée par le navigateur : le panneau se réduit à son bouton de relance ; hors du menu, il passe à côté de la pause. */
+#radio .relance { display: block; font-size: .8rem; padding: .5em .8em; }
+#radio .relance[hidden] { display: none; }
+#radio.bloquee { width: auto; padding: 0; background: none; border: 0; box-shadow: none; }
+#radio.bloquee > :not(.relance) { position: absolute; left: -9999px; }
+#radio.bloquee.cache, body:not([data-ecran='menu']) #radio.bloquee { left: auto; right: calc(max(10px, env(safe-area-inset-right)) + 44px); top: 8px; bottom: auto; }
+#radio.bloquee.cache .relance, body:not([data-ecran='menu']) #radio.bloquee .relance { font-size: .7rem; padding: .45em .7em; }
+html.pivote #radio.bloquee.cache, html.pivote body:not([data-ecran='menu']) #radio.bloquee { right: calc(max(10px, env(safe-area-inset-bottom)) + 44px); }
 
 .fin .pancarte { margin-top: 12px; padding: .6em .8em; background: var(--papier); color: var(--nuit); transform: rotate(-1deg); font-family: var(--titre); text-transform: uppercase; }
 .fin .pancarte small { font: 400 .75rem var(--texte); text-transform: none; }
