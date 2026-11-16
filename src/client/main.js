@@ -62,7 +62,7 @@ const screens = new Screens(screenRoot, {
       setMode('playing');
     },
     quit: () => toMenu(),
-    atelier: () => openAtelier(),
+    atelier: (button) => openAtelier(button),
     options: () => applyOptions(),
     learn: (ids) => ids.forEach((id) => collect('fiches', id, true)),
     back: () => (mode === 'paused' ? screens.pause() : screens.menu()),
@@ -161,11 +161,21 @@ function start(id, level = null) {
   screens.intro(current.level, () => begin?.(), game.hero.def.id, !level);
 }
 
-async function openAtelier() {
-  const { showAtelier } = await import('./atelier.js'); // chargé à la demande : le menu n'en a pas besoin
+let atelier = null; // le module de l'Atelier, chargé à sa première ouverture : le menu n'en a pas besoin
+
+/** Ouvre l'Atelier. La première fois, il se charge : le bouton qui l'ouvre le dit, et dit s'il manque le réseau. */
+async function openAtelier(button = null) {
+  if (!atelier) {
+    const label = button?.textContent;
+    const slow = button && setTimeout(() => (button.textContent = 'Chargement…'), 150);
+    atelier = await import('./atelier.js').catch(() => null);
+    clearTimeout(slow);
+    if (button) button.textContent = atelier ? label : 'Atelier : pas de réseau';
+    if (!atelier || (button && !button.isConnected)) return; // pas de réseau, ou le joueur est passé à un autre écran
+  }
   setMode('menu');
   document.body.dataset.ecran = 'atelier';
-  screens.escape = showAtelier(screenRoot, { bundle, save, test: (level) => start(null, level), back: () => toMenu() });
+  screens.escape = atelier.showAtelier(screenRoot, { bundle, save, test: (level) => start(null, level), back: () => toMenu() });
 }
 
 function togglePause() {
