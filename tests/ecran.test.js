@@ -602,6 +602,112 @@ test('un gain (« + 20 », « +1 », « SOIGNÉ ») n’est jamais évincé avan
   assert.ok(r.floaters.filter((f) => f.t > 0.25).length <= 4);
 });
 
+// ---------------------------------------------------------------- décompte de la nasse
+
+/**
+ * Une nasse de CRS telle que le rendu la lit : deux lignes de deux, posées sur le sol `ground`, à `gap` pixels
+ * du milieu (x = 200). Rend la partie et la boîte du dessin de chaque unité, dans le monde.
+ */
+function kettleScene(t, { ground = 150, gap = 40 } = {}) {
+  const def = bundle.ennemis.crs;
+  const rows = def.sprites.repos;
+  const unit = (x, side) => ({ def, x, y: ground - def.hauteur, w: def.largeur, h: def.hauteur, kettle: side, state: 'alert' });
+  const units = [
+    unit(200 - gap - def.largeur, -1), unit(200 - gap - 2 * def.largeur - 2, -1),
+    unit(200 + gap, 1), unit(200 + gap + def.largeur + 2, 1),
+  ];
+  const art = units.map((e) => {
+    const x0 = e.x + e.w / 2 - rows[0].length / 2;
+    return { x0, x1: x0 + rows[0].length, y0: e.y + e.h - rows.length, y1: e.y + e.h };
+  });
+  const game = { kettle: { x: 200, y: ground, t, limit: 20, x0: 200 - gap, x1: 200 + gap, units }, hero: { x: 194, y: ground - 16, w: 12, h: 16 } };
+  return { game, art };
+}
+
+test('le décompte de la nasse dit les secondes qui restent avant qu’elle soit levée, les dernières en or', () => {
+  const r = renderer();
+  const at = (t) => r.kettleClock(kettleScene(t).game);
+  assert.equal(at(0).text, '20');
+  assert.equal(at(4.2).text, '16');
+  assert.equal(at(19.5).text, '1', 'jamais « 0 » : à zéro, la nasse est déjà levée');
+  assert.equal(at(14).last, false);
+  assert.equal(at(15.5).last, true);
+  assert.equal(r.kettleClock({ kettle: null }), null, 'sans nasse, pas de décompte');
+});
+
+test('le décompte se pose au milieu de la nasse, sur le haut de sa zone : jamais sur ses lignes, jamais sous le HUD', async () => {
+  const { KETTLE_FLOOR } = await import('../src/sim/enemy.js');
+  for (const ratio of [3, 5 / 3]) {
+    // Le sol de la nasse à l'écran : bas, au milieu, puis tout en haut (la vue décalée vers le bas, quand on vise en bas).
+    for (const ground of [190, 150, 90]) {
+      const r = renderer(ratio);
+      r.hudBottom = 90;
+      const { game, art } = kettleScene(3, { ground });
+      const clock = r.kettleClock(game);
+      const where = `${ratio === 3 ? 'ordinateur' : 'téléphone'}, sol à ${ground}`;
+      assert.ok(clock.box.y0 >= r.ceiling() - 1e-9, `${where} : sous la bande du HUD`);
+      for (const a of art) assert.ok(!overlap(clock.box, a), `${where} : sur aucune unité de ses lignes`);
+      assert.ok(clock.box.x0 > game.kettle.x0 && clock.box.x1 < game.kettle.x1, `${where} : entre les deux lignes`);
+      if (ground - KETTLE_FLOOR - (clock.box.y1 - clock.box.y0) >= r.ceiling()) {
+        assert.ok(Math.abs(clock.box.y1 - (ground - KETTLE_FLOOR)) < 1e-9, `${where} : posé sur le haut de la zone`);
+      }
+    }
+  }
+});
+
+test('le décompte de la nasse passe au-dessus de la voix d’en face ; textes flottants et pancartes passent autour de lui', () => {
+  const r = renderer();
+  const { game } = kettleScene(3);
+  const free = r.kettleClock(game);
+  r.boxes = [{ ...free.box }]; // une sommation à cette place
+  const clock = r.kettleClock(game);
+  assert.ok(!overlap(clock.box, free.box) && clock.box.y1 <= free.box.y0, 'il monte au-dessus d’elle');
+  r.boxes = [clock.box];
+  r.float({ x: clock.x, y: clock.y + 2, text: 'ON EST LÀ', t: 1.6 });
+  place(r, [clock.box]);
+  const [f] = r.floaters;
+  assert.ok(!overlap(r.textBox(f.text, f.x, f.y, f.size, 150), clock.box), 'le slogan passe autour');
+});
+
+test('dans le vrai jeu, une nasse de CRS affiche son décompte, qui suit la nasse jusqu’à ce qu’elle soit levée', () => {
+  const width = 120;
+  const rows = Array.from({ length: 14 }, (_, y) => {
+    if (y >= 12) return 'T'.repeat(width);
+    if (y === 11) return `..D${'.'.repeat(27)}N${'.'.repeat(width - 31)}`;
+    return '.'.repeat(width);
+  });
+  const level = { titre: 'nasse', manchette: [], panneaux: {}, legende: {}, boss: '', heros: 'zucman', cortege: true, manif: 10, fond: 'ville', carte: rows, nasse: { ennemi: 'crs', nombre: 3, vitesse: 20, rythme: 0 } };
+  const game = new Game(bundle, 'nasse', { level, seed: 3, invincible: true });
+  const r = renderer();
+  r.snap(game);
+  const written = [];
+  const label = r.label.bind(r);
+  r.label = (text, x, y, opts) => {
+    if (opts?.size === 10 && /^\d+$/.test(text)) written.push(text); // le décompte (le « ! » d'alerte a la même taille)
+    return label(text, x, y, opts);
+  };
+  for (let i = 0; i < 400 && !game.kettle; i++) game.step({ right: !game.kettle });
+  assert.ok(game.kettle, 'la nasse s’est formée');
+  const seen = new Set();
+  for (let i = 0; i < 60 * 25 && game.kettle; i++) {
+    game.step({});
+    game.events.length = 0;
+    r.follow(game);
+    written.length = 0;
+    r.tick(DT);
+    r.draw(game, DT);
+    if (game.kettle) {
+      assert.deepEqual(written, [String(Math.ceil(game.kettle.limit - game.kettle.t))], 'un décompte, le bon');
+      seen.add(written[0]);
+    }
+  }
+  assert.equal(game.kettle, null, 'la nasse est levée');
+  assert.ok(seen.has('20') && seen.has('1') && seen.size === 20, `il a compté de 20 à 1 : ${[...seen].join(' ')}`);
+  written.length = 0;
+  r.draw(game, DT);
+  assert.deepEqual(written, [], 'levée, plus de décompte');
+});
+
 // ---------------------------------------------------------------- lisibilité et travail inutile
 
 test('sur téléphone, un petit texte du monde grandit jusqu’à onze pixels à l’écran', () => {

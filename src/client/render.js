@@ -5,6 +5,7 @@
 
 import { crown, hand, seated, sprite } from './sprites.js';
 import { withKeys } from './input.js';
+import { KETTLE_FLOOR } from '../sim/enemy.js';
 
 const TILE = 16;
 export const SIGN_LINGER = 1.6; // secondes pendant lesquelles un panneau dépassé reste lisible, en s'effaçant
@@ -53,6 +54,9 @@ const covers = (box, art) => Math.min(box.x1 - 1, art.x1) - Math.max(box.x0 + 1,
 const GROUP = { x: 40, y: 24 }; // des unités identiques aussi proches font un groupe : un seul « ! », un seul « KOF ! »
 const SAFE_TOP = 100; // pixels CSS en haut de l'écran laissés au HUD, au moins (bandeau au pouce, barre de vie du boss) ; plus s'il descend plus bas
 const FOLLOW = { x: 9 / 60, y: 7 / 60 }; // part du chemin vers le héros que la caméra fait à chaque pas de simulation
+const KETTLE_SIZE = 10; // le décompte de la nasse, en pixels du jeu : il se lit de loin
+const KETTLE_LAST = 5; // les dernières secondes du décompte passent à l'or
+const overlaps = (a, b) => a.x0 < b.x1 && a.x1 > b.x0 && a.y0 < b.y1 && a.y1 > b.y0;
 // Valentin, 16 novembre 2026 : « Le gain d'abord : les gains, « +1 », « ON REPART D'ICI » et les noms de spéciale passent
 // toujours : la pancarte qu'ils touchent se baisse un instant. Les slogans, eux, laissent la pancarte levée. »
 const leads = (f) => Boolean(f.gain || f.lead);
@@ -361,15 +365,17 @@ export class Renderer {
     // La bulle du boss a sa place avant les textes flottants et les pancartes : ils passent autour d'elle.
     this.bossSay = this.bossBubble(game.boss);
     if (this.bossSay) this.boxes.push(this.bossSay.box);
+    // Le décompte de la nasse aussi : textes flottants et pancartes passent autour de lui.
+    const countdown = this.kettleClock(game);
+    if (countdown) this.boxes.push(countdown.box);
     const fixed = this.boxes.slice(gains); // gains des recrues, voix, coups : les textes flottants passent autour
     if (board) fixed.push(board.box); // et autour du panneau lu
     // Le héros se lit au premier coup d'œil : aucune pancarte ne se lève devant lui ni juste au-dessus de sa tête.
     const { hero } = game;
     // Sa place se compte comme il est dessiné : par rapport à la caméra qui le suit (`camX`, `camY`).
-    if (!hero.dead) {
-      const { camX, camY } = this;
-      this.boxes.push({ x0: hero.x - 3 - camX, x1: hero.x + hero.w + 3 - camX, y0: hero.y - 8 - camY, y1: hero.y + hero.h - camY });
-    }
+    const heroBox = hero.dead ? null
+      : { x0: hero.x - 3 - this.camX, x1: hero.x + hero.w + 3 - this.camX, y0: hero.y - 8 - this.camY, y1: hero.y + hero.h - this.camY };
+    if (heroBox) this.boxes.push(heroBox);
     this.placeTexts(fixed, game.cortege);
     game.cortege.forEach((m, i) => this.marcher(m, i));
     // La manif autour de lui : le repère au-dessus du héros apparaît, puis s'efface quand il en sort.
@@ -393,6 +399,39 @@ export class Renderer {
       f.seen = true; // déjà montré : s'il perd sa place, il s'effacera en fondu
     }
     if (board) this.board(board.text, this.viewW / 2, board.y, { alpha: Math.min(1, this.sign.t * 2) });
+    if (countdown) {
+      // Le héros qui saute dessous reste visible : le décompte pâlit le temps qu'il passe.
+      const behind = heroBox && overlaps(countdown.box, heroBox);
+      this.label(countdown.text, countdown.x, countdown.y, {
+        size: KETTLE_SIZE, color: countdown.last ? '#f6c21c' : '#f4f4f4', alpha: behind ? 0.45 : 1,
+      });
+    }
+  }
+
+  /**
+   * Le décompte de la nasse : les secondes qui restent avant qu'elle soit levée, quoi qu'il arrive. Il se pose au
+   * milieu de la nasse, sur le haut de sa zone (un étage au-dessus du sol de ses lignes) : jamais sur ses lignes,
+   * jamais sous la bande du HUD. Un texte déjà là (la voix d'en face, un panneau) le fait monter au-dessus de lui ;
+   * monté jusqu'au plafond, il s'y arrête et passe dessous. Rend { text, x, y, box, last } à l'écran, ou null.
+   */
+  kettleClock(game) {
+    const k = game.kettle;
+    if (!k || this.demo) return null;
+    const left = Math.max(0, k.limit - k.t);
+    const text = String(Math.max(1, Math.ceil(left)));
+    const base = this.textBox(text, 0, 0, KETTLE_SIZE, 0);
+    const half = (base.x1 - base.x0) / 2;
+    const x = Math.min(this.viewW - half, Math.max(half, (k.x0 + k.x1) / 2 - this.cx));
+    let y = k.y - KETTLE_FLOOR - this.cy - base.y1; // le bas de sa boîte sur le haut de la zone
+    const box = () => ({ x0: x + base.x0, x1: x + base.x1, y0: y + base.y0, y1: y + base.y1 });
+    const hit = () => this.boxes.find((b) => overlaps(box(), b));
+    for (let n = 0, b; n < 8 && (b = hit()); n++) y = b.y0 - 1 - base.y1;
+    const top = this.ceiling() - base.y0;
+    if (y < top) {
+      y = top;
+      for (let n = 0, b; n < 8 && (b = hit()); n++) y = b.y1 + 1 - base.y0;
+    }
+    return { text, x, y, box: box(), last: left <= KETTLE_LAST };
   }
 
   /**
