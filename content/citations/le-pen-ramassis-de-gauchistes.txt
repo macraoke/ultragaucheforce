@@ -1,0 +1,12 @@
+texte: Ramassis de gauchistes.
+auteur: Marine Le Pen
+fonction: présidente du groupe Rassemblement national à l'Assemblée nationale, candidate à l'élection présidentielle
+date: 2026-11-16
+contexte: Débat de LCI entre cinq candidats, dans un entrepôt des Restos du Cœur. C'est ainsi qu'elle qualifie la Ligue des droits de l'Homme, quand elle défend la fin des subventions aux associations jugées « politisées ».
+categorie: diabolisation
+mot: RAMASSIS DE GAUCHISTES
+note: Sur les associations : « Si elles veulent faire de la politique, c'est tout à fait leur liberté. Mais à ce moment-là, il faut qu'elles se constituent un parti politique. » Pressée de citer les associations visées, elle n'en nomme aucune. L'AFP rapporte les mêmes mots.
+source.titre: Public Sénat — Présidentielle 2027 : pauvreté, pouvoir d'achat, logement… Le Pen, Melenchon, Glucksmann, Retailleau, Attal confrontent leurs visions de la solidarité aux Restos du Cœur
+source.url: https://www.publicsenat.fr/actualites/politique/presidentielle-2027-pauvrete-pouvoir-dachat-logement-le-pen-melenchon-glucksmann-retailleau-attal-confrontent-leurs-visions-de-la-solidarite-aux-restos
+source.nature: presse
+verifie: 2026-11-17

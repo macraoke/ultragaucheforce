@@ -1,0 +1,12 @@
+texte: Les blocages de lycées révèlent le vrai visage de LFI : le culte du désordre et l'obsession de la violence.
+auteur: Gabriel Attal
+fonction: président du groupe Ensemble pour la République à l'Assemblée nationale, candidat à l'élection présidentielle
+date: 2026-09
+contexte: Réponse à Jean-Luc Mélenchon, qui appelait les élus et militants insoumis à « s'interposer » entre les lycéens et les forces de l'ordre pendant les blocages de lycées.
+categorie: diabolisation
+mot: CULTE DU DÉSORDRE
+note: Dans la même réponse : « Cette manipulation et instrumentalisation de notre jeunesse est inacceptable. Elle doit être dénoncée. » LCP rapporte le propos dans un article du 28 septembre 2026, mis à jour le 8 octobre, sans dater la réponse au jour près.
+source.titre: LCP — Blocus de lycées: Jean-Luc Mélenchon demande aux insoumis de "s'interposer" entre les lycéens et les forces de l'ordre
+source.url: https://lcp.fr/actualites/blocus-de-lycees-jean-luc-melenchon-demande-aux-insoumis-de-s-interposer-entre-les
+source.nature: presse
+verifie: 2026-11-17

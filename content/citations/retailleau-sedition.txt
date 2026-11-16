@@ -1,0 +1,12 @@
+texte: On a un parti qui est fasciné par la violence, qui appelle à la sédition et même qui essaie d'organiser l'insurrection.
+auteur: Bruno Retailleau
+fonction: président des Républicains, sénateur de la Vendée, candidat à l'élection présidentielle
+date: 2026-10-01
+contexte: Sur BFMTV et RMC, à propos de La France insoumise et du mouvement de blocage des lycées.
+categorie: diabolisation
+mot: SÉDITION
+note: Suite : « Ce qui se passe aujourd'hui devant les lycées, c'est la répétition générale de ce qui pourrait se passer en 2027 si Mme Le Pen gagnait. » Il lance alors « la question de l'interdiction de LFI », qu'il dit « difficile en droit ». Un autre article de Public Sénat du même jour donne « On a un parti fasciné par la violence » et relève qu'il ne s'est pas exprimé sur les revendications des lycéens.
+source.titre: Public Sénat — Colère lycéenne : Bruno Retailleau suggère de dissoudre LFI. Est-ce possible ?
+source.url: https://www.publicsenat.fr/actualites/politique/colere-lyceenne-bruno-retailleau-suggere-de-dissoudre-lfi-est-ce-possible
+source.nature: presse
+verifie: 2026-11-17
