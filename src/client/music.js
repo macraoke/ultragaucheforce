@@ -141,6 +141,7 @@ export class Radio {
     this.heard = new Set();
     this.opened = new Map();
     this.lastHeard = new Map(); // la dernière piste vraiment entendue, par moment (les niveaux partagent la leur)
+    this.lastShared = null; // la dernière piste de tous les niveaux (`jeu`, `partout`) vraiment entendue
     this.failed = new Set(); // pistes qui n'ont pas voulu jouer ; le retour du réseau leur rend leur chance
     this.attempt = null; // une lecture demandée, pas encore confirmée : { track, loaded, refused, retried, waits }
     this.timer = null;
@@ -225,12 +226,24 @@ export class Radio {
     return track;
   }
 
-  /** Une piste de niveau joue vraiment : elle sort du sac. Quand il est vide, un nouveau tour commence (sans elle). */
+  /** Une piste de niveau joue vraiment : elle sort du sac. */
   heardNow(track) {
     if (NOT_A_LEVEL.has(this.slot)) return;
     this.heard.add(track.id);
+    if (track.ou === 'jeu' || track.ou === 'partout') this.lastShared = track;
+    this.refill();
+  }
+
+  /**
+   * Le sac du niveau est vide (tout entendu, ou la dernière piste a échoué) : un nouveau tour. Il garde, déjà
+   * comptées, la dernière piste entendue, quel que soit son niveau, et la dernière des pistes de tous les niveaux
+   * (`jeu`, `partout`) : des pistes à eux entendues entre-temps ne la font pas revenir en tête du tour.
+   */
+  refill() {
     const { all } = levelTracks(this.tracks, this.slot, this.named, this.failed);
-    if (all.every((t) => this.heard.has(t.id))) for (const t of all) if (t !== track) this.heard.delete(t.id);
+    if (!all.every((t) => this.heard.has(t.id))) return;
+    const keep = [this.lastHeard.get('niveau'), this.lastShared];
+    for (const t of all) if (!keep.includes(t)) this.heard.delete(t.id);
   }
 
   /** Le moment du jeu, pour la dernière piste entendue : le menu, le boss, ou les niveaux (un seul sac). */
@@ -393,13 +406,8 @@ export class Radio {
   fail(track) {
     this.failed.add(track.id);
     // Jamais la dernière piste entendue à ce moment-là, même quand la piste en échec était la dernière du sac.
-    const last = this.lastHeard.get(this.moment()) ?? null;
-    if (!NOT_A_LEVEL.has(this.slot)) {
-      // L'échec a pu finir le tour : le suivant commence, la dernière entendue déjà comptée.
-      const { all } = levelTracks(this.tracks, this.slot, this.named, this.failed);
-      if (all.every((t) => this.heard.has(t.id))) for (const t of all) if (t !== last) this.heard.delete(t.id);
-    }
-    const next = this.following(track) ?? this.choose(last);
+    if (!NOT_A_LEVEL.has(this.slot)) this.refill(); // l'échec a pu finir le tour
+    const next = this.following(track) ?? this.choose(this.lastHeard.get(this.moment()) ?? null);
     if (next) this.start(next);
     else this.unreachable();
   }
@@ -486,8 +494,8 @@ export class Radio {
     }
     // Une lecture demandée avance : elle joue vraiment. (Sans demande en cours, un reste d'avant une pause.)
     if (name === 'PLAY_PROGRESS' && data.currentPosition > 0 && this.attempt && !this.ownPause) {
-      this.heardNow(this.attempt.track); // entendue pour de bon : elle sort du sac
       this.lastHeard.set(this.moment(), this.attempt.track);
+      this.heardNow(this.attempt.track); // entendue pour de bon : elle sort du sac
       this.cancelWatch();
       this.status = 'playing';
       this.render();

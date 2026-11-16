@@ -887,6 +887,48 @@ test('la dernière piste du tour échoue : celle qu’on vient d’entendre ne r
   assert.deepEqual([...next].sort(), ['jeu-a', 'jeu-b']);
 });
 
+test('un nouveau tour ne commence ni par la dernière piste entendue, ni par la dernière du sac partagé', async () => {
+  // Relecture, graine 167 : « sketogan », deux pistes à elles (Soir du 49-3, Millevaches), la dernière du tour échoue
+  // au Rond-point, et « sketogan » revenait aussitôt : la dernière entendue était une piste d'un autre niveau.
+  const values = [0, 0, 0, 0, 0]; // le menu, « jeu-a », « jeu-b », la piste du Soir, « jeu-c »
+  let n = 0;
+  const list = [...tracks, T('jeu-c', 'jeu'), T('propre-soir', 'soir-du-49-3')];
+  const s = setup({ list, random: () => values[n++] ?? 0.999 });
+  await s.on();
+  s.radio.play('rond-point');
+  s.ready();
+  s.playing();
+  s.emit('FINISH');
+  s.ready();
+  s.playing();
+  s.radio.play('soir-du-49-3'); // sa piste à lui
+  s.ready();
+  s.playing();
+  s.radio.play('rond-point');
+  assert.deepEqual(s.widget.loads.map((u) => u.split('/').pop()), ['jeu-a', 'jeu-b', 'propre-soir', 'jeu-c']);
+  s.emit('ERROR'); // « jeu-c », la dernière du tour, ne joue pas
+  assert.notEqual(s.radio.current.id, 'jeu-b', '« jeu-b », la dernière du sac entendue, revient aussitôt');
+  assert.equal(s.radio.current.id, 'jeu-a');
+  // Le tour finit sur une piste à lui du niveau : la dernière du sac partagé attend aussi.
+  const steps = [0, 0, 0.34, 0.5, 0]; // le menu, « propre-1 », « jeu-a », « jeu-b », « propre-2 »
+  let m = 0;
+  const own = [...tracks, T('propre-1', 'millevaches'), T('propre-2', 'millevaches')];
+  const o = setup({ list: own, random: () => steps[m++] ?? 0.999 });
+  await o.on();
+  o.radio.play('millevaches');
+  const heard = [o.radio.current.id];
+  o.ready();
+  o.playing();
+  for (let i = 0; i < 4; i++) {
+    o.emit('FINISH');
+    heard.push(o.radio.current.id);
+    o.ready();
+    o.playing();
+  }
+  assert.deepEqual(heard.slice(0, 4), ['propre-1', 'jeu-a', 'jeu-b', 'propre-2']);
+  assert.notEqual(heard[4], 'jeu-b', `« jeu-b » revient en tête du tour suivant : ${heard.join(', ')}`);
+});
+
 test('« Gabber au boss, Internationale en niveau »', () => {
   // Valentin, 16 novembre 2026.
   const gabber = bundle.musiques['jeunesse-emmerde-le-fn-gabber'];
