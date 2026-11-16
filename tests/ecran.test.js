@@ -71,10 +71,13 @@ test('les notes attendent leur tour ; une rafale du même genre se replie en une
   assert.deepEqual(notes.map((n) => n.text), ['3 pancartes débloquées', '2 cartes débloquées']);
 });
 
-test('une note reste le temps d’être lue', () => {
-  assert.equal(readTime('2 pancartes débloquées'), 2.5);
-  assert.ok(readTime('Pancarte commune débloquée : « LA RETRAITE AVANT L’ARTHRITE, ET PLUS VITE QUE ÇA »') > 3.5);
-  assert.equal(readTime('x'.repeat(400)), 4, 'jamais plus de quatre secondes');
+test('une note reste le temps d’être lue, et un peu plus : d’autant plus longtemps que son texte est long', () => {
+  assert.equal(readTime('2 pancartes débloquées'), 3.75, 'une note courte : trois secondes trois quarts');
+  assert.equal(readTime('Débloqué : La BAC'), 3.75);
+  const sign = 'Pancarte commune débloquée : « LA RETRAITE AVANT L’ARTHRITE, ET PLUS VITE QUE ÇA »';
+  assert.ok(readTime(sign) > 5.25, 'une pancarte longue : plus de cinq secondes');
+  assert.ok(readTime('Débloqué : La compagnie de CRS') > readTime('Débloqué : La BAC'), 'plus long à lire, plus longtemps');
+  assert.equal(readTime('x'.repeat(400)), 6, 'jamais plus de six secondes');
 });
 
 // ---------------------------------------------------------------- textes flottants

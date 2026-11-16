@@ -54,8 +54,11 @@ export function lineBar(game, memo) {
   return null;
 }
 
-/** Secondes de jeu à l'écran pour une note : le temps de la lire. */
-export const readTime = (text) => Math.min(4, Math.max(2.5, 1.5 + text.length * 0.035));
+/**
+ * Secondes de jeu à l'écran pour une note : le temps de la lire, et un peu plus, d'autant plus long que le texte :
+ * de 3,75 à 6 secondes.
+ */
+export const readTime = (text) => Math.min(6, Math.max(3.75, 2.25 + text.length * 0.0525));
 
 /**
  * Range une note dans la file d'attente. Si une note du même genre (`group`) attend déjà, elles se replient
