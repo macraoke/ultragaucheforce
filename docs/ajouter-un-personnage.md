@@ -208,11 +208,11 @@ auteur: ton pseudo
 
 L'arme est facultative. Pour placer l'unité, un niveau la déclare dans sa légende : `c: compagnie-d-intervention`.
 
-Ce que le joueur voit, sans rien régler : une unité touchée blanchit et recule d'un pixel, puis montre sa jauge ; un bouclier de face ou une ligne arrête le coup (« PARÉ », des étincelles) ; sonnée, des étoiles tournent autour de sa tête ; gazée par son propre camp, elle pleure et tousse (« KOF ! ») ; quand elle repère le héros, un « ! » ; hors service, « EN GRÈVE ! » ou « EN PANNE », puis son `ecriteau` quelques secondes.
+Ce que le joueur voit, sans rien régler : une unité touchée blanchit et recule d'un pixel, puis montre sa jauge ; un bouclier de face ou une ligne arrête le coup (« PARÉ », des étincelles), mais pas le souffle d'une explosion ; sonnée, des étoiles tournent autour de sa tête ; gazée par son propre camp, elle pleure et tousse (« KOF ! ») ; quand elle repère le héros, un « ! » ; hors service, « EN GRÈVE ! » ou « EN PANNE », puis son `ecriteau` quelques secondes.
 
 ### Une ligne : `debordement`
 
-Tant que la manif compte moins de monde, la ligne tient : les tracts ne lui font rien et on ne la saute pas. Au-dessus d'elle, « ✊ 312 / 500 » et une jauge disent où en est la manif ; hors de l'image, le même compteur attend au bord de l'écran. Elle cède dès que le héros arrive devant elle assez nombreux, et s'ouvre. Devant une ligne qui tient, des passants rejoignent la manif peu à peu (« + 20 passants ») ; si elle perd du monde en attendant, il en vient de plus en plus : on finit toujours par passer, mais recruter va bien plus vite.
+Tant que la manif compte moins de monde, la ligne tient : les tracts ne lui font rien et on ne la saute pas. Au-dessus d'elle (au pouce, à son pied), « ✊ 312 / 500 » et une jauge disent où en est la manif ; hors de l'image, le même compteur attend au bord de l'écran. Elle cède dès que le héros arrive devant elle assez nombreux, et s'ouvre. Devant une ligne qui tient, des passants rejoignent la manif peu à peu (« + 20 passants ») ; si elle perd du monde en attendant, il en vient de plus en plus : on finit toujours par passer, mais recruter va bien plus vite.
 
 Modèles : [`barrage`](../content/ennemis/barrage.txt), [`centaure`](../content/ennemis/centaure.txt), [`grille`](../content/ennemis/grille.txt).
 
