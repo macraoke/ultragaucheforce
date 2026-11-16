@@ -38,7 +38,7 @@ test('collection : chaque carte se débloque quelque part en jouant', () => {
   assert.deepEqual(lost, [], 'cartes sans aucun chemin : attache-les à un personnage, un niveau, une scène');
   const hint = (kind, id) => whereToFind(bundle, kind, kind === 'pancartes' ? bundle.pancartes.find((p) => p.texte === id) : bundle[kind][id]);
   assert.deepEqual(hint('pancartes', 'MACRON, RENDS-NOUS LE POGNON !'), ['dans la manif'], 'même le slogan d’une recrue se tire au hasard');
-  assert.deepEqual(hint('heros', 'zucman'), ['dans une garde à vue']);
+  assert.deepEqual(hint('heros', 'zucman'), ['dans n’importe quel niveau']);
   assert.deepEqual(hint('pancartes', 'TAXEZ LES RICHES'), ['dans la manif']);
   assert.deepEqual(hint('citations', 'melenchon-bruit-et-fureur'), ["L'Ingénieur du chaos"], 'les mots du héros viennent de sa citation');
   assert.deepEqual(hint('fiches', 'procuration'), ['à la fin de la campagne']);
@@ -66,14 +66,14 @@ test('collection : un boss tiré au hasard se croise au bout de n’importe quel
 });
 
 test('collection : la ligne d’indice se lit d’un trait, sans « dans » en double', () => {
-  assert.equal(hintLine(['dans une garde à vue'], false), 'À découvrir dans une garde à vue');
-  assert.equal(hintLine(['dans une garde à vue'], true), 'Vu dans une garde à vue');
+  assert.equal(hintLine(['dans n’importe quel niveau'], false, 'heros'), 'À libérer dans n’importe quel niveau');
+  assert.equal(hintLine(['dans n’importe quel niveau'], true, 'heros'), 'À libérer dans n’importe quel niveau', 'la même ligne, trouvé ou non');
   assert.equal(hintLine(['au bout de n’importe quel niveau'], true), 'Vu au bout de n’importe quel niveau');
   assert.equal(hintLine(['Le rond-point', 'La raffinerie bloquée'], false), 'À découvrir : Le rond-point');
   assert.equal(hintLine(['Le rond-point', 'La raffinerie bloquée'], true), 'Vu dans : Le rond-point, La raffinerie bloquée');
   assert.equal(hintLine([], false), 'À découvrir');
   for (const c of cards) {
-    for (const found of [false, true]) assert.doesNotMatch(hintLine(whereToFind(bundle, c.kind, c.item), found), /dans : dans|: (dans|au|en|à|sur) /, `${c.kind}:${cardId(c.item)}`);
+    for (const found of [false, true]) assert.doesNotMatch(hintLine(whereToFind(bundle, c.kind, c.item), found, c.kind), /dans : dans|: (dans|au|en|à|sur) /, `${c.kind}:${cardId(c.item)}`);
   }
 });
 
