@@ -594,7 +594,7 @@ html.bas .commandes .pied { margin-top: .6em; }
 .taxe .paie.titre .nombre b { display: block; font-size: 1.55em; line-height: 1; }
 .taxe .impot:not(.titre) :is(.etiquette, .nombre) { display: inline; margin-right: .4em; }
 .taxe .impot:not(.titre) .nombre { font-size: clamp(1rem, 3vmin, 1.35rem); }
-/* « Taxer les riches » : la fortune s'efface du récit, ce que ça paierait prend sa place, puis le reste */
+/* « Taxer les riches » : la fortune s'efface du récit ; d'où vient l'argent, puis ce que ça paierait, en gros, puis le reste */
 .taxe .etapes li.part { animation: etape-part .26s ease-in both; }
 @keyframes etape-part { to { opacity: 0; transform: translateY(-8px); } }
 .taxe.faite .etapes li:not(.fortune) { animation: etape .35s ease-out both; animation-delay: calc(var(--rang, 0) * .3s); }
