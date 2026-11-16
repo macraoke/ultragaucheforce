@@ -80,6 +80,8 @@ Chaque fiche de `content/` devient une carte, trouvée en la croisant dans le je
 - **Rien à déclarer** : `citation`, `fiche` et `origine` dans une fiche suffisent ; aucune liste de cartes à tenir.
 - La sauvegarde reste locale : la liste des cartes trouvées, rien d'autre.
 
+**La rareté se choisit à la main** (décision de Valentin, 16 novembre 2026 : « Appliquer, bandeaux aussi ») : elle se tirait du texte, au hasard ; désormais une pancarte ou un bandeau est rare pour sa créativité, son originalité et son comique, et les légendaires sont les plus créatives. Elle s'écrit au bout de la ligne, `| rareté: épique` ; sans ce champ, la ligne est commune. Un contributeur peut en proposer une : la relecture la garde ou la change, et ça se voit dans le diff. L'identifiant ne bouge pas, la sauvegarde ne perd rien ; les poids du tirage non plus.
+
 ## La fortune, assise
 
 Chaque niveau finit devant un ultra-riche, assis sur sa fortune : un tas de liasses qui remplit son cadre, avec sa légende juste dessous (ce que vaut une liasse). Lequel ? Le hasard le dit à chaque partie. Puis on le taxe, sur un seul écran en deux temps, une idée chacun :
@@ -110,7 +112,7 @@ L'écran de fin donne le nombre de blessés que la partie annonce côté forces 
 ## Itération 4
 
 - **Des niveaux en hauteur et en profondeur** : sol épais qu'on creuse partout, galeries, caves, métro, immeubles à étages. Le héros tire aussi vers le bas et vers le haut.
-- **Les pancartes se débloquent** : toutes se valent, avec ou sans source ; chacune a une rareté tirée de son texte. Une seule façon d'en voir arriver une : une tranche de vingt personnes qui rejoint la manif en apporte une, une fois sur deux, tirée au hasard. Le cortège ne montre que celles qui sont arrivées.
+- **Les pancartes se débloquent** : toutes se valent, avec ou sans source ; chacune a une rareté, choisie à la main (voir « La Collection »). Une seule façon d'en voir arriver une : une tranche de vingt personnes qui rejoint la manif en apporte une, une fois sur deux, tirée au hasard. Le cortège ne montre que celles qui sont arrivées.
 - **Une pile de personnages** : on part avec un seul, tiré au hasard la première fois, choisi ensuite. Chacun encaisse quelques coups : une barre de vie sous la pile, pas de cœurs. Quand il tombe, le précédent prend sa place ; pile vide, niveau perdu. Chaque camarade libéré rejoint la pile, avec son grand carton.
 - **Le score, c'est la manif** : sa taille à l'arrivée, avec un record par niveau.
 - **Le hasard partout** : le boss, le personnage de départ, les camarades libérés, les pancartes, et dans la scène de taxe l'échelle, l'exemple et le fait choc.
@@ -138,7 +140,7 @@ Tout est sur l'appareil du joueur ; une mise à jour ne lui fait rien perdre.
 
 - **Un numéro de version** dans la sauvegarde. Changer son format, c'est ajouter une fonction de passage dans `src/client/save.js` et une vraie sauvegarde de l'ancienne version dans `tests/fixtures/sauvegardes/`.
 - **Un identifiant ne change pas.** Le nom du fichier est l'identifiant, et il dit la personne ou l'étiquette (`melenchon`, `arnault`) ; le nom affiché, lui, peut changer.
-- **Une pancarte corrigée garde son déblocage** : l'ancien texte reste au bout de la ligne, après `était:`. Sa rareté ne bouge pas.
+- **Une pancarte corrigée garde son déblocage** : l'ancien texte reste au bout de la ligne, après `était:`. Sa rareté, écrite sur la ligne, reste aussi.
 - **Rien n'est retiré** : ce qu'une version du jeu ne connaît pas reste dans la sauvegarde.
 - **Les brouillons de l'Atelier à part** : leur propre clé et leur propre numéro de version (`src/client/atelier-brouillons.js`). Un stockage refusé ou plein ne bloque ni le dessin ni la partie : l'Atelier le dit.
 

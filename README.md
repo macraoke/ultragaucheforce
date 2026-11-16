@@ -15,7 +15,7 @@ Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les platea
 - **Six étapes.** Le camp d'entraînement de Millevaches, le rond-point, la raffinerie bloquée, le siège de la chaîne d'info, le soir du 49.3 devant l'Assemblée, puis la Citadelle.
 - **Creuser, grimper.** Tout le décor se détruit. Sous la rue, le métro, les catacombes, la salle des coffres ; au-dessus, six étages et les toits.
 - **Libérer.** On part avec un seul personnage, tiré au hasard la première fois. Chaque camarade sorti de garde à vue rejoint l'équipe et se joue tout de suite ; quand il tombe, on repart avec le précédent.
-- **Débloquer.** Les gens qui rejoignent la manif portent parfois une pancarte : commune, rare, épique ou légendaire. Il y en a 344, toutes relevées en manif.
+- **Débloquer.** Les gens qui rejoignent la manif portent parfois une pancarte : commune, rare, épique ou légendaire. Il y en a 345, toutes relevées en manif.
 - **Taxer.** Au bout de chaque niveau, un ultra-riche est assis sur sa fortune : lequel, le hasard le dit. On en prend 2 % : de quoi payer, par exemple, 64 000 enseignants. Les comparaisons et les faits changent à chaque partie.
 - **PANIQUE TV.** Un bandeau de chaîne d'info fait défiler de vraies déclarations. Quand la panique monte, une équipe télé vient filmer la poubelle qui brûle, pas la manif.
 - **Partager.** En fin de niveau, une image à envoyer : la manif, ce que 2 % paieraient, une pancarte.
