@@ -1,0 +1,9 @@
+titre: 14,2 milliards estimés
+theme: richesses
+texte: Selon le classement Challenges publié le 8 juillet 2026, Emmanuel Besnier et sa famille (Lactalis), ont une fortune professionnelle estimée à 14,2 milliards d'euros, au 10e rang.
+portee: Estimation du magazine. Lactalis n'est pas cotée : Challenges dit estimer les actifs non cotés à partir des comptes et informations disponibles. Les biens personnels (immobilier privé, voitures, œuvres d'art…) ne sont pas comptés. Ce n'est pas de l'argent disponible.
+periode: classement 2026, publié le 8 juillet 2026
+source.titre: Challenges — Les 500 plus grandes fortunes de France en 2026
+source.url: https://www.challenges.fr/classements/fortune/
+source.nature: presse
+verifie: 2026-11-16

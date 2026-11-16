@@ -1,0 +1,12 @@
+texte: Notre industrie réalise de faibles marges, de l'ordre de moins de 2 % de résultat net.
+auteur: Emmanuel Besnier
+fonction: PDG de Lactalis
+date: 2025-06-17
+contexte: Déclaration liminaire sous serment devant la commission d'enquête du Sénat sur l'utilisation des aides publiques aux grandes entreprises (compte rendu officiel, p. 564).
+categorie: puissants
+mot: FAIBLES MARGES
+note: Il parle du résultat net du groupe, en pourcentage du chiffre d'affaires. Dans la même audition : « En 2024, Lactalis a franchi pour la première fois le seuil des 30 milliards d'euros de chiffre d'affaires » (p. 551).
+source.titre: Sénat — rapport n° 808 (2024-2025), tome III, compte rendu de l'audition de M. Emmanuel Besnier, 17 juin 2025
+source.url: https://www.senat.fr/rap/r24-808-3/r24-808-31.pdf
+source.nature: officielle
+verifie: 2026-11-16

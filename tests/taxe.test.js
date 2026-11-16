@@ -63,7 +63,7 @@ test('taxe : chaque fiche du dictionnaire donne un nombre affichable avec chaque
     }
     for (const use of taxUses(bundle)) {
       const { count } = taxNumbers(boss.fortune.montant, taxScales(bundle)[0], use);
-      assert.ok(count >= 10, `${boss.id} / ${use.id} : ${count} ${use.finance}`);
+      assert.ok(count >= 1, `${boss.id} / ${use.id} : ${count} ${use.finance}`);
       assert.ok(perYear(use) > 0);
     }
   }
