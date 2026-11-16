@@ -262,7 +262,12 @@ test('« GARDE À VUE » : écrit pour une cage à l’étage du héros, et jama
   const said = [];
   r.label = (text) => said.push(text);
   const cage = { kind: 'cage', x: 300, y: 150, w: 16, h: 16, on: false };
-  const show = () => { said.length = 0; r.prop(cage); return said.length > 0; };
+  const show = () => {
+    said.length = 0;
+    r.boxes = [];
+    r.placeTags([r.prop(cage)].filter(Boolean), [cage]);
+    return said.length > 0;
+  };
   // Elle entre dans l'image : le héros est au même étage, elle s'écrit.
   r.heroBox = { x: 20, y: 148, w: 12, h: 18 };
   assert.ok(show());
@@ -271,8 +276,8 @@ test('« GARDE À VUE » : écrit pour une cage à l’étage du héros, et jama
     r.heroBox = { x: 40, y, w: 12, h: 18 };
     assert.ok(show(), `héros à ${y}`);
   }
-  // Elle sort de l'image, puis revient pendant que le héros est trois étages plus bas : le dessin suffit.
-  r.cx = 400;
+  // Elle sort de l'image (et s'en éloigne), puis revient pendant que le héros est trois étages plus bas : le dessin suffit.
+  r.cx = 600;
   show();
   r.cx = 0;
   r.heroBox = { x: 40, y: 150 + 9 * 16, w: 12, h: 18 };
@@ -285,6 +290,110 @@ test('« GARDE À VUE » : écrit pour une cage à l’étage du héros, et jama
     r.heroBox = { x: 40, y, w: 12, h: 18 };
     assert.ok(show(), `héros à ${y} : toujours écrite`);
   }
+});
+
+test('une étiquette écrite sort de l’image avec son accessoire, sans disparaître d’un coup au bord', () => {
+  const r = renderer();
+  r.heroBox = { x: 20, y: 148, w: 12, h: 18 };
+  const cage = { kind: 'cage', x: 100, y: 150, w: 16, h: 16, on: false };
+  const said = [];
+  r.label = (text, x) => said.push(x);
+  const at = (cx) => {
+    said.length = 0;
+    r.cx = cx;
+    r.boxes = [];
+    r.placeTags([r.prop(cage)].filter(Boolean), [cage]);
+    return said.length;
+  };
+  assert.equal(at(0), 1);
+  assert.equal(at(108), 1, 'la cage à moitié sortie à gauche : son étiquette la suit');
+  assert.equal(at(130), 1, 'tout juste sortie : l’étiquette finit de sortir');
+  assert.equal(at(400), 0, 'loin de l’image : oubliée');
+});
+
+test('une cage et un piquet côte à côte, sous le panneau lu : leurs étiquettes ne se recouvrent pas, ne disparaissent pas, ne sautent pas', () => {
+  const r = renderer();
+  r.heroBox = { x: 20, y: 148, w: 12, h: 18 };
+  const cage = { kind: 'cage', x: 150, y: 150, w: 16, h: 16, on: false };
+  const piquet = { kind: 'piquet', x: 166, y: 150, w: 16, h: 16, on: false };
+  const props = [cage, piquet];
+  const written = [];
+  const label = r.label.bind(r);
+  r.label = (text, x, y, opts) => { written.push({ text, box: r.textBox(text, x, y, opts.size, 0) }); return label(text, x, y, opts); };
+  const frame = (board = null) => {
+    written.length = 0;
+    r.boxes = board ? [board] : [];
+    r.placeTags([cage, piquet].map((p) => r.prop(p)).filter(Boolean), props);
+    return written.map((w) => ({ ...w }));
+  };
+  const apart = (list) => list.every((a, i) => list.slice(i + 1).every((b) => !overlap(a.box, b.box)));
+  const first = frame();
+  assert.deepEqual(first.map((w) => w.text).sort(), ['GARDE À VUE', 'PIQUET DE GRÈVE']);
+  assert.ok(apart(first), 'côte à côte, la seconde se pose juste à côté de la première');
+  assert.equal(first[0].box.y0, first[1].box.y0, 'sur la même ligne');
+  // Image après image, rien ne bouge.
+  for (let k = 0; k < 5; k++) assert.deepEqual(frame(), first);
+  // Le panneau lu arrive juste là où elles sont : elles s'écartent, toutes deux écrites, sans le recouvrir.
+  const board = { x0: 100, x1: 230, y0: first[0].box.y0 - 40, y1: first[0].box.y1 + 2 };
+  const under = frame(board);
+  assert.equal(under.length, 2);
+  assert.ok(apart(under) && under.every((w) => !overlap(w.box, board)));
+  // Il s'en va : elles restent où elles sont allées, sans revenir d'un saut.
+  assert.deepEqual(frame(), under);
+  // Le piquet écrit seul, puis la cage qui s'écrit à côté : le piquet ne bouge pas (leurs places sont celles du niveau).
+  r.propSpot = new WeakMap();
+  written.length = 0;
+  r.boxes = [];
+  r.placeTags([r.prop(piquet)].filter(Boolean), props);
+  const alone = written.find((w) => w.text === 'PIQUET DE GRÈVE');
+  const both = frame().find((w) => w.text === 'PIQUET DE GRÈVE');
+  assert.deepEqual(both, alone, 'le piquet ne bouge pas quand la cage s’écrit');
+});
+
+test('sous la bande du HUD : l’étiquette passe sous les pieds de sa cage sans la couvrir ; cage cachée, pas d’étiquette', () => {
+  const r = renderer(5 / 3);
+  r.hudBottom = 120; // la barre « LA GRILLE DE LA CITADELLE » descend jusque-là, en pixels CSS
+  r.heroBox = { x: 20, y: 60, w: 12, h: 18 };
+  const ceiling = r.ceiling();
+  const art = (p) => ({ x0: p.x, x1: p.x + 16, y0: p.y, y1: p.y + 16 }); // une cage : 16 × 16, posée sur sa boîte
+  const placed = [];
+  r.label = (text, x, y, opts) => placed.push({ box: r.textBox(text, x, y, opts.size, 0), alpha: opts.alpha ?? 1 });
+  const frame = (props) => {
+    placed.length = 0;
+    r.boxes = [];
+    r.placeTags(props.map((p) => r.prop(p)).filter(Boolean), props);
+    return placed.slice();
+  };
+  const hidden = (box, a) => Math.min(box.x1 - 1, a.x1) - Math.max(box.x0 + 1, a.x0) > 2 && Math.min(box.y1 - 1, a.y1) - Math.max(box.y0 + 1, a.y0) > 2;
+  // Une cage de l'étage à moitié sous le HUD : son étiquette ne peut pas s'écrire au-dessus d'elle.
+  const cage = { kind: 'cage', x: 150, y: Math.round(ceiling) - 8, w: 16, h: 16, on: false };
+  const first = frame([cage]);
+  assert.equal(first.length, 1, 'elle s’écrit');
+  const [{ box, alpha }] = first;
+  assert.ok(box.y0 >= ceiling, 'sous le HUD, jamais dessous');
+  assert.ok(!hidden(box, art(cage)), 'sans couvrir la cage');
+  assert.ok(box.y0 >= art(cage).y1 && box.y0 - art(cage).y1 <= 16, 'sous ses pieds, à une tuile au plus');
+  assert.ok(alpha > 0 && alpha < 1, 'à demi effacée, comme sa cage à demi cachée');
+  for (let k = 0; k < 3; k++) assert.deepEqual(frame([cage]).map((w) => w.box), [box], 'et sans bouger');
+  // Toute la cage sous le HUD : pas d'étiquette.
+  const caught = { kind: 'cage', x: 150, y: Math.floor(ceiling) - 17, w: 16, h: 16, on: false };
+  assert.deepEqual(frame([caught]), []);
+});
+
+test('au téléphone, deux étiquettes voisines restent chacune au-dessus de son accessoire, sinon elles s’empilent', () => {
+  const r = renderer(5 / 3);
+  r.heroBox = { x: 20, y: 148, w: 12, h: 18 };
+  const cage = { kind: 'cage', x: 150, y: 150, w: 16, h: 16, on: false };
+  const piquet = { kind: 'piquet', x: 166, y: 150, w: 16, h: 16, on: false };
+  const props = [cage, piquet];
+  const written = {};
+  r.label = (text, x, y, opts) => { written[text] = r.textBox(text, x, y, opts.size, 0); };
+  r.boxes = [];
+  r.placeTags(props.map((p) => r.prop(p)).filter(Boolean), props);
+  const over = (box, p) => Math.min(box.x1, p.x + 16) - Math.max(box.x0, p.x) >= 4;
+  assert.ok(over(written['GARDE À VUE'], cage), 'la cage a la sienne au-dessus d’elle');
+  assert.ok(over(written['PIQUET DE GRÈVE'], piquet), 'le piquet aussi');
+  assert.ok(!overlap(written['GARDE À VUE'], written['PIQUET DE GRÈVE']), 'sans se recouvrir');
 });
 
 test('des unités identiques côte à côte n’ont qu’un « ! » ; une autre, plus loin ou différente, a le sien', () => {

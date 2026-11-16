@@ -739,7 +739,7 @@ export class Hud {
   measures() {
     if (this.marks) return this.marks;
     const scene = this.el.offsetParent;
-    if (!scene) return (this.marks = { row: 0, band: 0 }); // masqué : rien à laisser, et rien à remesurer avant qu'il revienne
+    if (!scene) return (this.marks = { row: 0, bar: 0, band: 0 }); // masqué : rien à laisser, ni à remesurer avant qu'il revienne
     const bottom = (el) => {
       if (!el?.offsetHeight) return 0;
       let y = el.offsetHeight;
@@ -759,9 +759,10 @@ export class Hud {
       return turned ? frame.right - r.left : r.bottom - frame.top;
     };
     const row = ids(['hud-heros', 'hud-vies', 'hud-charges', 'edition', 'pause']);
-    const band = Math.max(row, ids(['hud-manif', 'hud-boss']), ink(this.q('hud-manif')), ink(this.q('hud-heros')),
+    const bar = bottom(this.q('hud-boss')); // la barre de vie du boss ou d'une ligne, en haut au milieu (0 si elle est masquée)
+    const band = Math.max(row, bar, bottom(this.q('hud-manif')), ink(this.q('hud-manif')), ink(this.q('hud-heros')),
       ...[...this.el.querySelectorAll('.bloc')].map(bottom));
-    this.marks = { row, band };
+    this.marks = { row, bar, band };
     return this.marks;
   }
 

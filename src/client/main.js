@@ -346,13 +346,14 @@ function frame(now) {
 
 /**
  * Ce que le dessin doit laisser au HUD, d'après sa mesure (faite une fois, refaite quand sa forme change) : au pouce,
- * le panneau d'aide se pose sous sa première ligne, puce SPÉ comprise ; textes flottants et bulle du boss restent
- * sous tout le HUD, compteur de la manif compris, même quand la puce passe à la ligne.
+ * le panneau d'aide se pose sous sa première ligne, puce SPÉ comprise, et sous la barre de vie du boss ou d'une ligne
+ * quand elle est là ; textes flottants, étiquettes et bulle du boss restent sous tout le HUD, compteur de la manif
+ * compris, même quand la puce passe à la ligne.
  */
 function placeOverHud(demo) {
-  const { row, band } = demo ? { row: 0, band: 0 } : hud.measures();
+  const { row, bar, band } = demo ? { row: 0, bar: 0, band: 0 } : hud.measures();
   renderer.hudBottom = band;
-  if (!demo && document.body.classList.contains('tactile')) renderer.signTop = Math.max(30, Math.ceil((row + 6) / renderer.ratio));
+  if (!demo && document.body.classList.contains('tactile')) renderer.signTop = Math.max(30, Math.ceil((Math.max(row, bar) + 6) / renderer.ratio));
 }
 
 // ---------------------------------------------------------------- branchements
