@@ -10,6 +10,7 @@ import { Radio } from './music.js';
 import { Screens, Hud } from './ui.js';
 import { showHeroCard } from './herocard.js';
 import { showTaxScene } from './tax.js';
+import { shareImage, openShare } from './share.js';
 import { showAtelier } from './atelier.js';
 import { loadSave, storeSave, discover, isFound } from './save.js';
 import { cardName, citationOfWord, levelOrder, rarityName } from './collection.js';
@@ -176,10 +177,12 @@ async function win() {
   audio.play('victoire');
   const { level, id } = current;
   const boss = game.boss?.def; // celui qu'on vient d'affronter : il est tiré au hasard
+  let said = null; // ce que l'écran de taxe a dit des 2 % : l'image à partager le reprend
   if (boss?.fortune.montant) {
-    const learned = await showTaxScene(screenRoot, bundle, boss, { audio, hero: game.hero.def });
-    learned.forEach((f) => collect('fiches', f, true));
+    const tax = await showTaxScene(screenRoot, bundle, boss, { audio, hero: game.hero.def });
+    tax.learned.forEach((f) => collect('fiches', f, true));
     collect('boss', boss.id, true);
+    said = tax.said;
   }
   for (const fiche of [level.fiche].flat()) collect('fiches', fiche, true);
   const order = levelOrder(bundle);
@@ -189,8 +192,19 @@ async function win() {
   if (!custom && game.crowd > best) save.records[id] = game.crowd;
   if (index >= 0) save.termines[id] = true;
   storeSave(save);
+  // La pancarte de l'image : la plus rare de celles qui sont arrivées dans la manif pendant cette partie.
+  const sign = game.signs.map((t) => bundle.pancartes.find((p) => p.texte === t)).filter(Boolean)
+    .reduce((top, p) => (!top || p.rarete >= top.rarete ? p : top), null);
+  const crowd = game.crowd;
+  const share = () => openShare(shareImage({
+    frames: [document.getElementById('monde'), document.getElementById('textes')],
+    level: level.titre, crowd, tax: said, sign: sign?.texte, where: (location.host + location.pathname).replace(/(index\.html)?\/?$/, ''),
+  }), {
+    text: `✊ ${crowd.toLocaleString('fr-FR')} dans la manif. À toi.`, url: location.origin + location.pathname,
+    button: (label, action, className) => screens.button(label, action, className),
+  });
   screens.end({
-    level, stats: game.stats, time: game.time, crowd: game.crowd, won, best: custom ? null : best,
+    level, stats: game.stats, time: game.time, crowd, won, best: custom ? null : best, share,
     next: index >= 0 ? order[index + 1] : null,
     last: index === order.length - 1,
   });

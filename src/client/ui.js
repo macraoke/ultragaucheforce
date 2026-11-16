@@ -252,7 +252,7 @@ export class Screens {
    * Fin de niveau, en un écran : la manif, le bilan des blessés tel qu'on l'annonce côté forces de l'ordre
    * avec ce qui le compose, un fait réel à ouvrir, ce qui a été débloqué.
    */
-  end({ level, stats, time, crowd, next, last, won = [], best = 0 }) {
+  end({ level, stats, time, crowd, next, last, won = [], best = 0, share = null }) {
     const fact = this.bundle.fiches[level.fiche?.[0]];
     const card = fact && allCards(this.bundle).find((c) => c.kind === 'fiches' && c.item === fact);
     const minutes = `${Math.floor(time / 60)} min ${String(Math.floor(time % 60)).padStart(2, '0')} s`;
@@ -281,6 +281,7 @@ export class Screens {
       h('div', { className: 'pied' },
         next && this.button('Niveau suivant', () => this.go.play(next), 'gros'),
         last && this.button('La suite', () => this.final(), 'gros'),
+        share && this.button('Partager', share, 'discret'),
         this.button('Rejouer', () => this.go.restart(), 'discret'),
         this.button('Menu', () => this.go.quit(), 'discret')));
   }
