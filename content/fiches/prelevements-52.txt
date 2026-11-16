@@ -1,10 +1,9 @@
-titre: 52 % pour presque tout le monde
+titre: 52 % pour presque tout le monde, 27 % pour les milliardaires
 theme: richesses
-texte: Tous impôts et cotisations compris, la moitié la moins riche, les classes moyennes et presque tout le 1 % le plus riche payaient en France, en 2016, autour de 52 % de leurs revenus, estime l'économiste Gabriel Zucman.
+texte: Tous impôts et cotisations compris, la moitié la moins riche, les classes moyennes et presque tout le 1 % le plus riche payaient en France, en 2016, autour de 52 % de leurs revenus ; les milliardaires, 27 %, estime l'économiste Gabriel Zucman.
 portee: Rapport remis à la présidence brésilienne du G20 le 25 juin 2024. Tous les prélèvements (TVA, cotisations, impôt sur les sociétés attribué aux actionnaires) rapportés au revenu avant impôt. Estimation d'économiste, discutée.
 periode: données de 2016, rapport de juin 2024
 valeur: 52
-choc: oui
 source.titre: Gabriel Zucman — Rapport au G20 sur un impôt minimum pour les très grandes fortunes (juin 2024)
 source.url: https://gabriel-zucman.eu/files/report-g20.pdf
 source.nature: associative

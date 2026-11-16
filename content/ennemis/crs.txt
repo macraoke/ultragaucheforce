@@ -12,6 +12,7 @@ largeur: 12
 hauteur: 17
 fiche: sommations-mots-exacts
 fiche: code-562
+fiche: crs-blesses-octobre-2026
 ecriteau: CODE 562
 sommation: OBÉISSANCE À LA LOI.
 sommation: PREMIÈRE SOMMATION : NOUS ALLONS FAIRE USAGE DE LA FORCE.
