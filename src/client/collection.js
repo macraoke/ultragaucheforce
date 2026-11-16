@@ -5,7 +5,7 @@
 // Dans l'album, les cartes sont compactes et toutes de la même taille (`miniCard`) ; on en
 // touche une, elle s'ouvre en grand avec ses références (`openCard`, `collectionCard`).
 
-import { h, link, frenchDate } from './dom.js';
+import { h, link, frenchDate, signature, sourceName } from './dom.js';
 import { RARITIES } from '../content/rules.js';
 import { sprite, spriteElement } from './sprites.js';
 import { isFound } from './save.js';
@@ -181,10 +181,9 @@ function emblem(kind, item) {
 const shortName = (kind, item) => (kind === 'pancartes' || kind === 'manchettes' ? item.credit.split(' — ')[0] : cardName(item));
 
 /** Sur une carte, la source tient en une ligne : le média, cliquable. */
-const shortSource = (item) => h('p', { className: 'source' }, 'Source : ', link(item.source.url, item.source.titre.split(' — ')[0]));
+const shortSource = (item) => h('p', { className: 'source' }, 'Source : ', link(item.source.url, sourceName(item)));
 
-const quoteBlock = (quote) => h('blockquote', {}, `« ${quote.texte} »`,
-  h('cite', {}, `${quote.auteur}, ${frenchDate(quote.date)} · `, link(quote.source.url, 'source')));
+const quoteBlock = (quote) => h('blockquote', {}, `« ${quote.texte} »`, h('cite', {}, signature(quote)));
 
 /** Les lignes « d'où ça vient » : la citation exacte et la fiche sourcée attachées à la carte. */
 function references(bundle, item) {
@@ -227,10 +226,12 @@ function textBody(kind, item) {
   }
   if (kind === 'citations') {
     return [h('blockquote', {}, `« ${item.texte} »`),
-      h('p', { className: 'dapres' }, [item.fonction, frenchDate(item.date)].filter(Boolean).join(', ')),
-      h('p', {}, item.contexte), shortSource(item)];
+      h('p', { className: 'dapres' }, link(item.source.url, [item.fonction, frenchDate(item.date)].filter(Boolean).join(', '))),
+      item.contexte && h('details', { className: 'portee' }, h('summary', {}, 'Le contexte'), h('p', {}, item.contexte))];
   }
-  return [h('p', {}, item.texte), item.portee && h('p', { className: 'dapres' }, item.portee), shortSource(item)];
+  // Un fait tient en une phrase ; ce qu'il couvre exactement se déplie.
+  return [h('p', {}, item.texte), shortSource(item),
+    item.portee && h('details', { className: 'portee' }, h('summary', {}, 'Ce que ça couvre'), h('p', {}, item.portee))];
 }
 
 /**

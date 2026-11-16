@@ -1,11 +1,11 @@
 // Les écrans du jeu, en HTML : texte net à toute taille, liens cliquables vers les sources.
 // Chaque fonction remplit `#ecran` ; `close()` le vide et rend la main au jeu.
 
-import { h, link, frenchDate, sourceLine } from './dom.js';
+import { h, link, signature } from './dom.js';
 import { spriteElement } from './sprites.js';
 import { REPO, VERSION, REFERENCES } from './config.js';
 import { storeSave, isFound } from './save.js';
-import { SHELVES, VOTE_FICHES, allCards, collectionCount, isFresh, markSeen, progress, shelfGrid, wonCards } from './collection.js';
+import { SHELVES, VOTE_FICHES, allCards, collectionCount, isFresh, markSeen, openCard, progress, shelfGrid, wonCards } from './collection.js';
 import { livesStack } from './lives.js';
 
 const MENTION = 'Satire citoyenne, libre et collaborative.';
@@ -27,7 +27,8 @@ export class Screens {
     document.body.dataset.ecran = className.split(' ')[0]; // la feuille de style sait quel écran est ouvert
     this.root.hidden = false;
     this.open = true;
-    this.root.querySelector('button, a')?.focus({ preventScroll: true });
+    // Le bouton principal prend la main (Entrée, manette) ; sinon le premier.
+    (this.root.querySelector('button.gros') || this.root.querySelector('button, a'))?.focus({ preventScroll: true });
   }
 
   close() {
@@ -146,9 +147,10 @@ export class Screens {
       h('table', {},
         h('tr', {}, h('th', {}, ''), h('th', {}, 'Clavier'), h('th', {}, 'Manette'), h('th', {}, 'Tactile')),
         [['Avancer', '← → ou Q D', 'croix / stick', 'pouce gauche'], ['Sauter, grimper', 'Espace, ↑ ou Z', 'A', 'SAUT'],
-          ['Tirer (maintenir)', 'J, X ou Entrée', 'X / gâchette droite', 'TIR'], ['Spéciale', 'K, C ou Maj', 'B / gâchette gauche', 'SPÉ'],
+          ['Tirer (maintenir)', 'J, X ou Entrée', 'X / gâchette droite', 'TIR'],
+          ['Creuser, viser en haut', '↓ ou ↑, puis tirer', 'bas ou haut, puis tirer', 'pouce gauche vers le bas ou le haut'],
+          ['Spéciale', 'K, C ou Maj', 'B / gâchette gauche', 'SPÉ'],
           ['Pause', 'Échap ou P', 'Start', 'II']].map((row) => h('tr', {}, row.map((c) => h('td', {}, c))))),
-      h('p', {}, h('small', {}, 'Contre un mur, saute plusieurs fois pour l’escalader.')),
       h('div', { className: 'pied' }, this.back(() => this.go.back()),
         this.button('Effacer ma progression', () => {
           this.save.termines = {};
@@ -161,19 +163,18 @@ export class Screens {
   }
 
   about() {
+    const fold = (title, ...body) => h('details', {}, h('summary', {}, title), ...body);
     this.show('liste',
       h('h2', {}, 'À propos'),
       h('p', {}, MENTION),
-      h('p', {}, 'Une pancarte vue en manif, une citation, un drapeau, un niveau, un personnage, un son : tout le contenu est en fichiers texte, modifiables depuis GitHub.'),
       h('p', {}, link(REPO, 'Le dépôt'), ' · ', link(`${REPO}/blob/main/CONTRIBUER.md`, 'Contribuer'), ' · ',
         link(`${REPO}/blob/main/CHARTE.md`, 'La charte'), ' · ', h('a', { href: 'galerie.html' }, 'La Galerie')),
-      h('h3', {}, 'Références'),
-      h('ul', {}, REFERENCES.map((r) => h('li', {}, link(r.url, r.titre), ` — ${r.note}`))),
-      h('h3', {}, 'Licences et crédits'),
-      h('p', {}, 'Code : MIT. Contenus : CC BY-SA 4.0. Bruitages synthétisés avec ZzFX de Frank Force (MIT).'),
-      h('ul', {}, Object.values(this.bundle.sons).filter((s) => s.fichier).map((s) =>
-        h('li', {}, link(s.source, s.nom), ` — ${s.auteur}, ${s.licence}`))),
-      h('p', {}, h('b', {}, 'Radio Manif : '), Object.values(this.bundle.musiques).map((m, i) => [i ? ' · ' : '', link(m.url, `${m.titre} (${m.artiste})`)])),
+      fold('Références', h('ul', {}, REFERENCES.map((r) => h('li', {}, link(r.url, r.titre), ` — ${r.note}`)))),
+      fold('Crédits et licences',
+        h('p', {}, 'Code : MIT. Contenus : CC BY-SA 4.0. Bruitages synthétisés avec ZzFX de Frank Force (MIT).'),
+        h('ul', {}, Object.values(this.bundle.sons).filter((x) => x.fichier).map((x) =>
+          h('li', {}, link(x.source, x.nom), ` — ${x.auteur}, ${x.licence}`))),
+        h('p', {}, h('b', {}, 'Radio Manif : '), Object.values(this.bundle.musiques).map((m, i) => [i ? ' · ' : '', link(m.url, `${m.titre} (${m.artiste})`)]))),
       h('div', { className: 'pied' }, this.back()));
   }
 
@@ -210,7 +211,7 @@ export class Screens {
     this.show('intro',
       h('div', { className: 'tv' }, h('strong', {}, 'PANIQUE TV'), h('em', {}, quote ? 'ILS L’ONT DIT' : 'ÉDITION SPÉCIALE')),
       quote ? h('p', { className: 'manchette' }, `« ${quote.texte} »`) : level.intro && h('p', { className: 'manchette' }, level.intro),
-      quote && h('p', { className: 'signature' }, `${quote.auteur}, ${frenchDate(quote.date)} · `, link(quote.source.url, 'source')),
+      quote && h('p', { className: 'signature' }, signature(quote)),
       h('h2', {}, level.titre),
       level.accroche && h('p', {}, level.accroche),
       heroes.length > 1 && this.heroRow(heroes, mine, hero, pick),
@@ -241,37 +242,34 @@ export class Screens {
   }
 
   /**
-   * Fin de niveau : la manif, puis le bilan des blessés tel qu'on l'annonce côté forces de l'ordre,
-   * avec ce qui le compose. `won` : les cartes gagnées pendant le niveau.
+   * Fin de niveau, en un écran : la manif, le bilan des blessés tel qu'on l'annonce côté forces de l'ordre
+   * avec ce qui le compose, un fait réel à ouvrir, les cartes gagnées.
    */
   end({ level, stats, time, crowd, next, last, won = [] }) {
     const fact = this.bundle.fiches[level.fiche?.[0]];
+    const card = fact && allCards(this.bundle).find((c) => c.kind === 'fiches' && c.item === fact);
     const minutes = `${Math.floor(time / 60)} min ${String(Math.floor(time % 60)).padStart(2, '0')} s`;
     const n = (x) => x.toLocaleString('fr-FR');
-    const line = (count, one, many) => (count ? h('li', {}, h('b', {}, n(count)), ` ${count > 1 ? many : one}`) : null);
+    const part = (count, one, many) => (count ? `${n(count)} ${count > 1 ? many : one}` : '');
     const hurt = stats.breakdownsBySelf + stats.breakdownsByPlayer + stats.overrunOrder;
+    const parts = [
+      part(stats.breakdownsBySelf, 'gazé par ses propres grenades', 'gazés par leurs propres grenades'),
+      part(stats.breakdownsByPlayer, 'atteint par un tract', 'atteints par un tract'),
+      part(stats.overrunOrder, 'débordé par le nombre', 'débordés par le nombre'),
+    ].filter(Boolean);
     this.show('fin',
-      h('h2', {}, 'Niveau terminé'),
-      h('p', { className: 'temps' }, `${level.titre} — ${minutes}`),
+      h('h2', {}, 'Niveau terminé ', h('small', {}, `${level.titre} · ${minutes}`)),
       h('div', { className: 'bilans' },
         h('article', {},
-          h('h3', {}, 'La manif'),
           h('p', { className: 'chiffre' }, `✊ ${n(crowd)}`),
-          h('ul', {},
-            line(stats.recruits, 'recrue', 'recrues'),
-            line(stats.rescues, 'camarade libéré', 'camarades libérés'),
-            line(stats.overrun, 'ligne débordée', 'lignes débordées'),
-            line(stats.gassed, 'manifestant gazé', 'manifestants gazés'))),
+          h('p', {}, 'dans la manif')),
         h('article', { className: 'annonce' },
-          h('h3', {}, 'Forces de l’ordre'),
           h('p', { className: 'chiffre' }, n(hurt)),
-          h('p', {}, hurt > 1 ? 'blessés annoncés, dont :' : 'blessé annoncé, dont :'),
-          h('ul', {},
-            line(stats.breakdownsBySelf, 'gazé par ses propres grenades', 'gazés par leurs propres grenades'),
-            line(stats.breakdownsByPlayer, 'atteint par un tract', 'atteints par un tract'),
-            line(stats.overrunOrder, 'débordé par le nombre', 'débordés par le nombre')))),
-      fact && h('article', { className: 'fiche' }, h('h3', {}, `Et en vrai ? ${fact.titre}`), h('p', {}, fact.texte), sourceLine(fact)),
-      won.length ? [h('h3', {}, 'Cartes gagnées'), wonCards(this.bundle, won)] : null,
+          h('p', {}, hurt > 1 ? 'blessés annoncés côté forces de l’ordre' : 'blessé annoncé côté forces de l’ordre'),
+          parts.length ? h('p', { className: 'dont' }, `dont ${parts.join(', ')}`) : null)),
+      card && h('button', { type: 'button', className: 'vrai', onclick: () => openCard(this.bundle, card) },
+        'Et en vrai ? ', h('b', {}, fact.titre)),
+      won.length ? wonCards(this.bundle, won) : null,
       h('div', { className: 'pied' },
         next && this.button('Niveau suivant', () => this.go.play(next), 'gros'),
         last && this.button('La suite', () => this.final(), 'gros'),
@@ -279,24 +277,20 @@ export class Screens {
         this.button('Menu', () => this.go.quit(), 'discret')));
   }
 
-  /** Dernier écran : un appel au vote citoyen. Des dates, des démarches, des liens — pas de consigne. */
+  /** Dernier écran : un appel au vote citoyen. Les dates, deux démarches, le programme ; pas de consigne. */
   final() {
     const f = this.bundle.fiches;
-    const steps = VOTE_FICHES.map((id) => f[id]).filter(Boolean);
+    const [dates, ...steps] = VOTE_FICHES.map((id) => f[id]).filter(Boolean);
     const programme = Object.values(f).filter((x) => x.theme === 'programme');
-    this.go.learn([...steps, ...programme].map((x) => x.id)); // ce qu'on lit ici entre dans la Collection
+    this.go.learn([dates, ...steps, ...programme].filter(Boolean).map((x) => x.id)); // ce qu'on lit ici entre dans la Collection
     this.show('vote',
-      h('h2', {}, 'La Citadelle ne tombera pas toute seule'),
-      h('p', { className: 'dates' }, 'Élection présidentielle : ', h('b', {}, 'dimanche 18 avril'), ' et ', h('b', {}, 'dimanche 2 mai 2027'), '.'),
-      h('p', { className: 'appel' }, 'Allez voter.'),
-      h('div', { className: 'cartes' },
-        steps.map((x) => h('article', {}, h('h3', {}, x.titre), h('p', {}, x.texte), sourceLine(x)))),
-      programme.length ? h('h3', {}, 'Le programme') : null,
-      programme.length ? h('ul', {}, programme.map((x) => h('li', {}, x.texte, ' ', sourceLine(x)))) : null,
-      h('p', { className: 'mention' }, 'Un jeu fait par des citoyens, en open source et collaboratif.'),
+      h('h2', { className: 'appel' }, 'Allez voter.'),
+      h('p', { className: 'dates' }, dates ? link(dates.source.url, 'Dimanche 18 avril et dimanche 2 mai 2027') : 'Dimanche 18 avril et dimanche 2 mai 2027'),
+      h('nav', {},
+        steps.map((x) => h('a', { className: 'bouton', href: x.source.url, target: '_blank', rel: 'noopener' }, x.titre)),
+        programme.length ? this.button('Le programme', () => this.collection('propositions')) : null),
       h('div', { className: 'pied' },
         this.button('Menu', () => this.go.quit(), 'gros'),
-        this.button('Collection', () => this.collection(), 'discret'),
         h('a', { className: 'bouton discret', href: REPO, target: '_blank', rel: 'noopener' }, 'Contribuer au jeu')));
   }
 }

@@ -80,7 +80,7 @@ section('Drapeaux des luttes', grid(Object.values(bundle.drapeaux).map((d) =>
     drawings(d, ['image'], 6, true),
     h('h3', {}, d.nom),
     h('p', {}, d.description),
-    d.ressources.map((r) => h('p', {}, link(r.url, r.titre), h('span', { className: 'nature' }, r.nature))),
+    d.ressources.map((r) => h('p', {}, link(r.url, r.titre))),
   )), true));
 
 section('Tuiles et décors', grid([

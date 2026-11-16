@@ -86,13 +86,13 @@ button.discret { background: transparent; color: var(--papier); border-color: va
   right: 0;
   display: flex;
   justify-content: space-around;
-  gap: 2vw;
-  padding: 0 2vw;
+  gap: calc(var(--vw, 1vw) * 2);
+  padding: 0 calc(var(--vw, 1vw) * 2);
 }
 .carton .drapeaux.haut { top: calc(var(--vh, 1vh) * 2); }
 .carton .drapeaux.bas { bottom: calc(var(--vh, 1vh) * 2); }
 .carton .drapeaux canvas {
-  width: clamp(40px, 8vw, 110px) !important;
+  width: clamp(40px, calc(var(--vw, 1vw) * 8), 110px) !important;
   height: auto !important;
   aspect-ratio: 3 / 2;
   border: 2px solid var(--nuit);
@@ -103,11 +103,11 @@ button.discret { background: transparent; color: var(--papier); border-color: va
 
 .carton .scene {
   position: relative;
-  width: min(96vw, 1100px);
+  width: min(calc(var(--vw, 1vw) * 96), 1100px);
   display: grid;
   grid-template-columns: auto 1fr;
   align-items: center;
-  gap: clamp(8px, 3vw, 40px);
+  gap: clamp(8px, calc(var(--vw, 1vw) * 3), 40px);
   animation: secousse .5s .62s both;
 }
 .carton .portrait { animation: ecrase .5s cubic-bezier(.2, 1.9, .4, 1) .2s both; }
@@ -116,7 +116,7 @@ button.discret { background: transparent; color: var(--papier); border-color: va
 .carton .mots { min-width: 0; }
 .carton .tampon {
   display: inline-block;
-  font-size: clamp(.9rem, 3.2vw, 2rem);
+  font-size: clamp(.9rem, calc(var(--vw, 1vw) * 3.2), 2rem);
   color: var(--rouge);
   background: var(--blanc);
   border: 4px solid var(--rouge);
@@ -126,18 +126,18 @@ button.discret { background: transparent; color: var(--papier); border-color: va
 }
 .carton .nom {
   margin: .1em 0 0;
-  font-size: clamp(2rem, 10.5vw, 7.5rem);
+  font-size: clamp(2rem, calc(var(--vw, 1vw) * 10.5), 7.5rem);
   line-height: .88;
   color: var(--blanc);
-  -webkit-text-stroke: clamp(2px, .5vw, 5px) var(--nuit);
+  -webkit-text-stroke: clamp(2px, calc(var(--vw, 1vw) * .5), 5px) var(--nuit);
   paint-order: stroke fill;
-  text-shadow: clamp(3px, .7vw, 8px) clamp(3px, .7vw, 8px) 0 var(--nuit);
+  text-shadow: clamp(3px, calc(var(--vw, 1vw) * .7), 8px) clamp(3px, calc(var(--vw, 1vw) * .7), 8px) 0 var(--nuit);
   transform: rotate(-3deg);
   animation: claque .32s cubic-bezier(.2, 1.4, .4, 1) .5s both;
 }
 .carton .cri {
   margin: .5em 0 0;
-  font-size: clamp(1rem, 4.2vw, 2.8rem);
+  font-size: clamp(1rem, calc(var(--vw, 1vw) * 4.2), 2.8rem);
   color: var(--or);
   -webkit-text-stroke: 2px var(--nuit);
   paint-order: stroke fill;
@@ -145,7 +145,7 @@ button.discret { background: transparent; color: var(--papier); border-color: va
 }
 .carton .source, .carton .bonus {
   margin: .5em 0 0;
-  font: 700 clamp(.65rem, 1.7vw, 1rem)/1.25 var(--texte);
+  font: 700 clamp(.65rem, calc(var(--vw, 1vw) * 1.7), 1rem)/1.25 var(--texte);
   text-transform: none;
   color: var(--blanc);
   background: var(--nuit);
@@ -189,7 +189,7 @@ button.discret { background: transparent; color: var(--papier); border-color: va
 /* ------------------------------------------------------------------ Galerie */
 
 .galerie { max-width: 1100px; margin: 0 auto; padding: 16px 16px 80px; }
-.galerie h1 { font: 900 clamp(2rem, 7vw, 4rem)/.9 var(--titre); text-transform: uppercase; color: var(--blanc); margin: .4em 0 .2em; }
+.galerie h1 { font: 900 clamp(2rem, calc(var(--vw, 1vw) * 7), 4rem)/.9 var(--titre); text-transform: uppercase; color: var(--blanc); margin: .4em 0 .2em; }
 .galerie h1 b { color: var(--rouge); }
 .galerie h2 {
   font: 900 1.6rem/1 var(--titre);
@@ -365,17 +365,47 @@ html.pivote body.tactile #hud .droite { right: max(10px, env(safe-area-inset-bot
 .intro .tv strong { background: var(--rouge); color: var(--blanc); padding: .45em .7em; }
 .intro .tv em { background: var(--or); color: var(--nuit); padding: .45em .7em; font-style: normal; }
 .intro .manchette { font: 900 clamp(1.2rem, 4.4vmin, 2rem)/1.05 var(--titre); text-transform: uppercase; background: var(--blanc); color: var(--nuit); padding: .5em .7em; transform: rotate(-1deg); }
-.fin .temps { font-weight: 700; }
+.fin h2 small { font: 700 .5em/1.2 var(--texte); text-transform: none; letter-spacing: 0; opacity: .85; white-space: nowrap; }
 .fin .bilans { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.fin .bilans ul { margin: .4em 0 0; padding: 0; list-style: none; text-align: left; font: 400 .85rem/1.5 var(--texte); text-transform: none; }
+.fin .bilans article { padding: .6em .8em; }
+.fin .bilans p { margin: 0; font-weight: 700; }
+.fin .bilans .dont { font: 400 .82rem/1.3 var(--texte); margin-top: .3em; }
 .fin .annonce { background: var(--rouge); }
-.fin .annonce h3 { color: var(--blanc); }
-.fin .chiffre { font-size: clamp(2.4rem, 9vmin, 4.5rem); line-height: 1; margin: 0; }
-.fin .fiche { margin-top: 12px; border-left: 6px solid var(--or); }
-.vote .dates { font-size: 1.2rem; }
-.vote .appel { font: 900 clamp(3rem, 14vmin, 7rem)/.9 var(--titre); text-transform: uppercase; color: var(--or); margin: .1em 0 .3em; transform: rotate(-2deg); }
-.vote .mention, .panneau .mention { font-size: .8rem; opacity: .9; }
-@media (max-width: 560px) { .fin .bilans { grid-template-columns: 1fr; } }
+.fin .chiffre { font: 900 clamp(2rem, 8vmin, 4rem)/1 var(--titre); }
+.fin button.vrai { display: block; width: 100%; margin-top: 10px; text-align: left; background: var(--encre); color: var(--blanc); border: 0; border-left: 6px solid var(--or); box-shadow: none; font: 400 .9rem/1.3 var(--texte); letter-spacing: 0; text-transform: none; padding: .6em .8em; }
+.fin button.vrai b { text-decoration: underline; }
+.fin .cartes-gagnees { margin-top: 10px; }
+html.bas .panneau.fin { padding: 10px 14px; }
+html.bas .fin h2 { font-size: 1.25rem; margin: 0 0 6px; }
+html.bas .fin .bilans { gap: 8px; }
+html.bas .fin .bilans article { padding: .35em .6em; }
+html.bas .fin .bilans p { font-size: .8rem; }
+html.bas .fin .bilans p.chiffre { font-size: 1.9rem; }
+html.bas .fin .bilans .dont { font-size: .72rem; margin-top: .1em; }
+html.bas .fin button.vrai { margin-top: 6px; padding: .35em .6em; font-size: .8rem; }
+html.bas .fin .cartes-gagnees { margin-top: 6px; padding-bottom: 4px; }
+html.bas .fin .cartes-gagnees .carte-mini { flex-basis: 64px; height: 76px; grid-template-rows: auto 40px; padding: 3px; }
+html.bas .fin .cartes-gagnees .carte-mini .nom { display: none; }
+html.bas .fin .pied { margin-top: 6px; }
+.vote { text-align: center; }
+.vote .appel { font: 900 clamp(3rem, 16vmin, 8rem)/.9 var(--titre); text-transform: uppercase; color: var(--or); margin: .1em 0 .2em; transform: rotate(-2deg); }
+.vote .dates { font: 900 clamp(1.1rem, 4vmin, 2rem)/1.1 var(--titre); text-transform: uppercase; letter-spacing: .04em; margin: 0 0 .8em; }
+.vote .dates a { color: var(--blanc); }
+.vote nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 1em; }
+.vote .pied { justify-content: center; }
+.panneau .mention { font-size: .8rem; opacity: .9; }
+details { margin: .5em 0; }
+details summary { cursor: pointer; font-weight: 700; }
+details.portee { font-size: .82rem; opacity: .9; }
+details.portee p { margin: .3em 0 0; }
+html.bas .intro .tv { margin-bottom: 6px; font-size: .9rem; }
+html.bas .intro .manchette { margin: .3em 0; font-size: 1.1rem; }
+html.bas .intro h2, html.bas .intro p { margin: .25em 0; }
+html.bas .menu .logo { font-size: 2.6rem; }
+html.bas .menu .troupe { display: none; }
+html.bas .menu nav { gap: 6px; margin: 6px 0; }
+html.bas .menu nav > * { min-height: 40px; padding-block: .3em; }
+html.bas .menu .mention { display: none; }
 
 /* scène de taxation */
 .panneau.taxe { text-align: center; width: min(100%, 860px); }
@@ -421,7 +451,7 @@ html.bas .panneau.taxe { padding-block: 10px; }
 .atelier .case { padding: 0; font-size: .8rem; }
 .atelier .barre { display: flex; gap: 6px; align-items: center; }
 .atelier .barre .pousse { flex: 1; }
-.atelier .etabli { position: relative; display: grid; grid-template-columns: clamp(152px, 16vw, 190px) minmax(0, 1fr); gap: 6px; min-height: 0; }
+.atelier .etabli { position: relative; display: grid; grid-template-columns: clamp(152px, calc(var(--vw, 1vw) * 16), 190px) minmax(0, 1fr); gap: 6px; min-height: 0; }
 .atelier .palette { display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto; gap: 6px; min-height: 0; }
 .atelier .outils { display: flex; gap: 4px; }
 .atelier .outils button { flex: 1; padding: .25em 0; font: 1.15rem/1.1 var(--texte); }

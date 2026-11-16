@@ -284,6 +284,7 @@ function layout() {
   // La hauteur visible de l'écran de jeu : les styles s'en servent à la place de `vh`, qui ignore le pivot.
   const height = root.classList.contains('pivote') ? innerWidth : innerHeight;
   root.style.setProperty('--vh', `${height / 100}px`);
+  root.style.setProperty('--vw', `${(root.classList.contains('pivote') ? innerHeight : innerWidth) / 100}px`);
   root.classList.toggle('bas', height <= 480);
   renderer.resize();
   renderer.anchor = thumbs ? 0.58 : 0.62; // les pouces occupent les coins du bas : on remonte un peu l'action
