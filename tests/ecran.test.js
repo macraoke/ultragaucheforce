@@ -183,6 +183,30 @@ test('devant le héros, une pancarte se baisse tout de suite', () => {
   assert.ok(!r.raised.has(cortege[0]));
 });
 
+test('les porteurs lèvent leur pancarte à tour de rôle : un tiers à la fois, toutes à leur tour', () => {
+  const r = renderer();
+  // Neuf porteurs bien espacés : rien ne les gêne, seul leur tour décide.
+  const cortege = Array.from({ length: 27 }, (_, i) => ({
+    x: 20 + i * 14, y: 170, facing: 1, kind: ['pancarte', 'drapeau', 'fanfare'][i % 3], label: i % 3 === 0 ? 'ON LÂCHE RIEN' : '', gassed: 0, animTime: 0,
+  }));
+  r.viewW = 600;
+  const carriers = cortege.filter((m) => m.kind === 'pancarte');
+  const ever = new Set();
+  let raised = 0;
+  const frames = 60 * 36;
+  for (let frame = 0; frame < frames; frame++) {
+    r.clock = frame / 60;
+    r.boxes = [];
+    for (const m of carriers) m.y = 170 + (carriers.indexOf(m) % 2) * 40; // deux rangs : aucune ne cache l'autre
+    r.raiseSigns(cortege);
+    raised += r.raised.size;
+    for (const m of r.raised) ever.add(m);
+  }
+  assert.equal(ever.size, carriers.length, 'chaque pancarte a son tour');
+  const share = raised / frames / carriers.length;
+  assert.ok(share > 0.25 && share < 0.42, `levées ${(100 * share).toFixed(0)} % du temps`);
+});
+
 test('la bulle du boss reste entière dans la vue, sous le HUD', () => {
   const r = renderer();
   const def = Object.values(bundle.boss)[0];

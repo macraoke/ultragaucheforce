@@ -31,6 +31,8 @@ const SIGN_UP = 1; // une pancarte levée le reste au moins une seconde…
 const SIGN_DOWN = 0.5; // … et une pancarte baissée attend une demi-seconde avant de se relever
 const NEAR_HERO = 14; // un manifestant plus près que cela du héros passe en transparence
 const REC = '● REC'; // le cadre de la caméra l'affiche déjà : pas de bulle en double
+const SIGN_TURN = 6; // secondes d'un tour : les porteurs lèvent leur pancarte à tour de rôle…
+const SIGN_SHARE = 3; // … un tour sur trois chacun : un tiers des pancartes levées à la fois, toutes à leur tour
 const SAFE_TOP = 100; // pixels CSS en haut de l'écran laissés au HUD, au moins (bandeau au pouce, barre de vie du boss) ; plus s'il descend plus bas
 
 export class Renderer {
@@ -926,8 +928,12 @@ export class Renderer {
     const now = this.clock;
     const priority = this.boxes.length;
     const signs = [];
+    let k = 0;
     cortege.forEach((m, i) => {
       if (m.kind !== 'pancarte' || !m.label) return;
+      // À tour de rôle : chaque porteur a son tour un tour sur SIGN_SHARE, décalé de ses voisins. Une manif plus grande
+      // a plus de porteurs, donc plus de pancartes levées à la fois ; aucune n'est oubliée.
+      const turn = Math.floor(now / SIGN_TURN + k++ * 0.618) % SIGN_SHARE === 0;
       let held = this.held.get(m);
       if (held?.label !== m.label) this.held.set(m, (held = { up: false, since: -Infinity, label: m.label }));
       const s = this.spot(m, i);
@@ -935,7 +941,7 @@ export class Renderer {
         if (held.up) Object.assign(held, { up: false, since: now });
         return;
       }
-      signs.push({ m, held, box: this.textBox(m.label, s.hand, s.top, 4.6, s.width) });
+      signs.push({ m, held, turn, box: this.textBox(m.label, s.hand, s.top, 4.6, s.width) });
     });
     const clear = (box, upTo = this.boxes.length) => !this.boxes.slice(0, upTo).some((b) => box.x0 < b.x1 && box.x1 > b.x0 && box.y0 < b.y1 && box.y1 > b.y0);
     // Pour se relever, une pancarte veut de l'air autour des textes prioritaires, surtout en dessous
@@ -953,8 +959,8 @@ export class Renderer {
     const old = signs.filter((s) => s.held.up && now - s.held.since >= SIGN_UP).sort((a, b) => a.held.since - b.held.since);
     const down = signs.filter((s) => !s.held.up && now - s.held.since >= SIGN_DOWN);
     for (const s of young) keep(s, clear(s.box, priority));
-    for (const s of old) keep(s, clear(s.box));
-    for (const s of down) keep(s, roomy(s.box));
+    for (const s of old) keep(s, s.turn && clear(s.box));
+    for (const s of down) keep(s, s.turn && roomy(s.box));
     this.raised = new Set(signs.filter((s) => s.held.up).map((s) => s.m));
   }
 
