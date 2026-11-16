@@ -779,6 +779,37 @@ test('après l’échec de la dernière piste du sac, la piste qu’on vient d�
   assert.equal(s.radio.current.id, 'jeu-b', 'pas « jeu-a », qu’on vient d’entendre');
 });
 
+test('la dernière piste du tour échoue : celle qu’on vient d’entendre ne revient pas avant que les autres soient passées', async () => {
+  // Relecture : le tour suivant repartait de la piste de secours seule, et la précédente revenait juste après elle.
+  const list = [...tracks, T('jeu-c', 'jeu'), T('jeu-d', 'jeu')];
+  const values = [0, 0, 0, 0.5, 0]; // le menu, puis « jeu-a », « jeu-b », « jeu-d », et « jeu-c » en dernier
+  let n = 0;
+  const s = setup({ list, random: () => values[n++] ?? 0.999 });
+  await s.on();
+  s.radio.play('rond-point');
+  const heard = [s.radio.current.id];
+  s.ready();
+  s.playing();
+  for (let i = 0; i < 2; i++) {
+    s.emit('FINISH');
+    heard.push(s.radio.current.id);
+    s.ready();
+    s.playing();
+  }
+  s.emit('FINISH');
+  heard.push(s.radio.current.id);
+  assert.deepEqual(heard, ['jeu-a', 'jeu-b', 'jeu-d', 'jeu-c']);
+  s.emit('ERROR'); // « jeu-c », la dernière du tour, ne joue pas
+  s.ready();
+  const next = [s.radio.current.id];
+  s.ready();
+  s.playing();
+  s.emit('FINISH');
+  next.push(s.radio.current.id);
+  assert.ok(!next.includes('jeu-d'), `« jeu-d », la dernière entendue, revient trop tôt : ${next.join(', ')}`);
+  assert.deepEqual([...next].sort(), ['jeu-a', 'jeu-b']);
+});
+
 test('« Gabber au boss, Internationale en niveau »', () => {
   // Valentin, 16 novembre 2026.
   const gabber = bundle.musiques['jeunesse-emmerde-le-fn-gabber'];

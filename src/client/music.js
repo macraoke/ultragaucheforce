@@ -366,7 +366,13 @@ export class Radio {
   fail(track) {
     this.failed.add(track.id);
     // Jamais la dernière piste entendue à ce moment-là, même quand la piste en échec était la dernière du sac.
-    const next = this.following(track) ?? this.choose(this.lastHeard.get(this.moment()) ?? null);
+    const last = this.lastHeard.get(this.moment()) ?? null;
+    if (!NOT_A_LEVEL.has(this.slot)) {
+      // L'échec a pu finir le tour : le suivant commence, la dernière entendue déjà comptée.
+      const { all } = levelTracks(this.tracks, this.slot, this.named, this.failed);
+      if (all.every((t) => this.heard.has(t.id))) for (const t of all) if (t !== last) this.heard.delete(t.id);
+    }
+    const next = this.following(track) ?? this.choose(last);
     if (next) this.start(next);
     else this.unreachable();
   }
