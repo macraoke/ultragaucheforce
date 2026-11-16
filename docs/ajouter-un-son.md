@@ -78,4 +78,6 @@ auteur: ton pseudo
 
 Sur la page de la piste, **Share → Embed** doit proposer un lecteur. Préférez l'instrumental, et le Creative Commons : une piste « tous droits réservés » peut disparaître du lecteur du jour au lendemain.
 
+En partie, les pistes tournent. Un niveau ouvre sur ses pistes à lui (`ou` : le niveau, ou celle que nomme sa clé `musique`) la première fois seulement ; ensuite, il tire dans un sac : les siennes et celles de tous les niveaux (`jeu`), au hasard, sans en rejouer une avant d'avoir entendu les autres. Chaque niveau change de piste, « Rejouer » aussi ; « Recommencer » garde la musique en cours. Le menu et le boss tirent simplement au hasard.
+
 Une piste retirée laisse aussitôt la place à une autre ; une piste chiffrée, dans un navigateur qui ne sait pas la lire, au bout d'une quinzaine de secondes. Une piste réservée aux abonnés Go+ ne joue qu'un extrait de trente secondes. Au boss, quand le hasard tire l'extrait de « Abattez la citadelle » (Monarch), la version entière de Ryukken le suit (`puis`).

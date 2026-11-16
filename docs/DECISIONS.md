@@ -42,6 +42,8 @@ Le prix : un format maison. Il tient en moins de cent lignes (`src/content/parse
 
 Le prix : pas de musique hors-ligne, et un lecteur tiers avec ses traceurs. Il n'est chargé que si la musique est activée.
 
+**Des musiques qui tournent** (Valentin, 16 novembre 2026 : « aussi les musiques pendant le jeu elles tournent pas assez je trouve ») : un niveau dure moins qu'une piste, et chaque niveau tirait la sienne au hasard dans une liste courte ; la même revenait souvent, toujours depuis le début. Désormais, en partie, un sac : un niveau ouvre sur ses pistes à lui la première fois, puis toutes celles qu'il peut jouer passent avant qu'une revienne, et chaque niveau change de piste.
+
 Le lecteur ne dit pas toujours qu'une piste se tait. Radio Manif vérifie que la lecture avance : une piste morte cède la place à une autre, un réseau lent est attendu. Quand le navigateur refuse de jouer sans geste du joueur, un bouton le montre et le prochain toucher relance la musique. SoundCloud injoignable : on joue sans musique, et seul le bouton de Radio Manif, ou le retour du réseau, réessaie.
 
 ## Le but : une manif qui grossit

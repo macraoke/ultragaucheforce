@@ -259,12 +259,15 @@ test('menu, niveau, boss, « Recommencer », niveau suivant, retour au menu : la
   assert.equal(s.lastUrl(), tracks[5].url);
   s.ready();
   s.playing();
-  s.radio.play('rond-point'); // « Rejouer » après le boss
-  assert.equal(s.lastUrl(), tracks[3].url);
+  s.radio.play('rond-point'); // « Rejouer » après le boss : une autre piste que la première fois
+  assert.equal(s.lastUrl(), tracks[4].url);
   s.ready();
   s.playing();
-  s.radio.play('raffinerie'); // niveau suivant, même liste : la piste continue
-  assert.equal(s.widget.loads.length, 3);
+  s.radio.play('raffinerie'); // niveau suivant : la piste change aussi
+  assert.equal(s.lastUrl(), tracks[3].url);
+  assert.equal(s.widget.loads.length, 4);
+  s.ready();
+  s.playing();
   s.radio.play('menu');
   assert.equal(s.lastUrl(), tracks[0].url);
   s.ready();
@@ -476,4 +479,95 @@ test('l’extrait de Monarch ne se charge pas : la version de Ryukken prend sa p
   s.radio.play('boss');
   s.emit('ERROR');
   assert.equal(s.lastUrl(), bundle.musiques['abattez-la-citadelle-ryukken'].url);
+});
+
+// ---------------------------------------------------------------------- des musiques qui tournent
+// Valentin, 16 novembre 2026 : « aussi les musiques pendant le jeu elles tournent pas assez je trouve ».
+
+/** Une campagne jouée dans la Radio : l'ouverture de chaque niveau, avec son boss entre deux. */
+async function campaignOpenings(s, levels) {
+  const openings = [];
+  for (const id of levels) {
+    s.radio.play(id, bundle.niveaux[id]?.musique);
+    openings.push(s.radio.current.id);
+    s.ready();
+    s.playing();
+    s.radio.play('boss');
+    s.ready();
+    s.playing();
+  }
+  return openings;
+}
+
+test('une campagne : six niveaux, six pistes différentes, et chaque niveau ouvre sur ses pistes à lui la première fois', async () => {
+  for (let seed = 1; seed <= 100; seed++) {
+    const s = setup({ list: real, random: seeded(seed) });
+    await s.on();
+    const openings = await campaignOpenings(s, bundle.campagne);
+    assert.equal(new Set(openings).size, bundle.campagne.length, openings.join(', '));
+    bundle.campagne.forEach((id, i) => {
+      const own = real.filter((t) => t.ou === id);
+      if (own.length) assert.equal(bundle.musiques[openings[i]].ou, id, `${id} : ${openings[i]}`);
+    });
+  }
+});
+
+test('« Rejouer » un niveau : une autre piste ; la piste d’un niveau n’est une préférence que la première fois', async () => {
+  for (const id of bundle.campagne) {
+    for (let seed = 1; seed <= 20; seed++) {
+      const s = setup({ list: real, random: seeded(seed) });
+      await s.on();
+      const [first, again] = await campaignOpenings(s, [id, id]);
+      assert.notEqual(again, first, `${id}, graine ${seed}`);
+    }
+  }
+  // La chaîne d'info n'a qu'une piste à elle : la deuxième fois, une de tous les niveaux.
+  const s = setup({ list: real, random: seeded(3) });
+  await s.on();
+  const [first, again] = await campaignOpenings(s, ['chaine-info', 'chaine-info']);
+  assert.equal(first, 'jles-aime-pas');
+  assert.equal(bundle.musiques[again].ou, 'jeu');
+  // Une piste nommée par un niveau (`musique`) : d'abord elle, puis le sac.
+  const n = setup({ random: seeded(5) });
+  await n.on();
+  const named = [];
+  for (let i = 0; i < 3; i++) {
+    n.radio.play('rond-point', 'jeu-b');
+    named.push(n.radio.current.id);
+    n.ready();
+    n.playing();
+    n.radio.play('boss');
+    n.ready();
+    n.playing();
+  }
+  assert.deepEqual(named.slice(0, 2), ['jeu-b', 'jeu-a']);
+});
+
+test('aucune piste de niveau ne revient avant que les autres soient passées, d’un niveau à l’autre comme en fin de piste', async () => {
+  const jeu = real.filter((t) => t.ou === 'jeu').map((t) => t.id);
+  for (let seed = 1; seed <= 50; seed++) {
+    const s = setup({ list: real, random: seeded(seed) });
+    await s.on();
+    const heard = [];
+    for (let i = 0; i < 6; i++) {
+      s.radio.play(['rond-point', 'raffinerie', 'bismillah'][i % 3]);
+      heard.push(s.radio.current.id);
+      s.ready();
+      s.playing();
+      s.emit('FINISH'); // le niveau dure plus que sa piste : la suivante
+      heard.push(s.radio.current.id);
+      s.ready();
+      s.playing();
+      s.radio.play('boss');
+      s.ready();
+      s.playing();
+    }
+    // Un sac : pas une piste deux fois avant que toutes soient passées ; puis un nouveau tour, jamais sur la même.
+    let bag = new Set();
+    for (const t of heard) {
+      assert.ok(!bag.has(t), `graine ${seed} : « ${t} » revient avant la fin du tour (${heard.join(', ')})`);
+      bag.add(t);
+      if (jeu.every((x) => bag.has(x))) bag = new Set([t]);
+    }
+  }
 });
