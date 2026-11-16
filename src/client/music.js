@@ -135,6 +135,7 @@ export class Radio {
     this.slot = 'menu';
     this.named = null;
     this.chosenFor = null; // le moment pour lequel `current` a été choisie
+    this.visit = null; // la visite du niveau en cours : { key, track }, la piste de niveau qu'on y entend
     // En partie, les pistes tournent : `heard`, celles du tour en cours (le sac) ; `opened`, la piste à lui par
     // laquelle chaque niveau a commencé la dernière fois.
     this.heard = new Set();
@@ -158,29 +159,54 @@ export class Radio {
       this.status = 'off';
     }
     this.render(possible);
-    if (this.enabled && !was) this.play(this.slot, this.named);
+    if (this.enabled && !was) this.tune();
   }
 
   /**
    * Lance la musique d'un moment du jeu : « menu », « boss », ou l'identifiant d'un niveau,
    * avec la piste que nomme le niveau s'il en nomme une.
+   * @param {{ restart?: boolean }} [how]  `restart` : « Recommencer » ; la visite du niveau continue, sa musique avec.
+   *   Sinon, chaque arrivée dans un niveau en commence une nouvelle visite (« Rejouer » après une victoire aussi).
    */
-  play(slot, named = null) {
-    const again = this.chosenFor === `${slot}|${named}`;
+  play(slot, named = null, { restart = false } = {}) {
+    const key = `${slot}|${named}`;
+    const level = !NOT_A_LEVEL.has(slot);
+    const back = level && restart && this.visit?.key === key;
+    if (level && !back) this.visit = { key, track: null };
     this.slot = slot;
     this.named = named;
     if (!this.enabled) return;
     if (this.status === 'unreachable') return; // le bouton ou le retour du réseau réessaieront
+    if (back) return this.comeBack();
+    this.tune();
+  }
+
+  /**
+   * La musique du moment présent. Une visite de niveau commence par sa piste à lui, s'il en a une ; ensuite (et sans
+   * piste à lui), le sac ; jamais celle qu'on entend déjà en y entrant. Le menu et le boss tirent au hasard.
+   */
+  tune() {
+    const key = `${this.slot}|${this.named}`;
+    const level = !NOT_A_LEVEL.has(this.slot);
     const live = this.status === 'playing' || this.status === 'loading';
-    if (again && live) return; // « Recommencer » : la même musique continue
-    // Chaque entrée dans un niveau commence par sa piste à lui, s'il en a une ; sinon (et pour la suite), le sac.
-    // Jamais celle qu'on entend déjà en y entrant.
-    const level = !NOT_A_LEVEL.has(slot);
-    const track = (level && !again && this.open()) || this.choose(level ? this.current : null);
+    if (!level && this.chosenFor === key && live) return; // toujours le même moment (le menu) : la musique continue
+    const track = (level && !this.visit?.track && this.open()) || this.choose(level ? this.current : null);
     if (!track) return this.unreachable(); // plus aucune piste ne joue
-    this.chosenFor = `${slot}|${named}`;
+    this.chosenFor = key;
     if (track !== this.current) return this.start(track);
     if (!live) this.resume();
+  }
+
+  /**
+   * « Recommencer » : la piste de niveau de cette visite continue, ou revient après une mort au boss.
+   * Une musique mise en pause, ou refusée par le navigateur, le reste, sur la même piste.
+   */
+  comeBack() {
+    this.chosenFor = `${this.slot}|${this.named}`;
+    if (this.status !== 'playing' && this.status !== 'loading') return;
+    const track = this.visit.track;
+    if (!track || this.failed.has(track.id)) return this.tune();
+    if (track !== this.current) this.start(track);
   }
 
   choose(avoid = null) {
@@ -221,6 +247,7 @@ export class Radio {
   /** Charge une piste ; le lecteur n'est créé qu'à la première. */
   start(track) {
     this.current = track;
+    if (!NOT_A_LEVEL.has(this.slot) && this.visit) this.visit.track = track;
     this.status = 'loading';
     this.ownPause = false;
     // Tant que le lecteur n'a pas fini de charger cette piste, ce qu'il annonce vient de la précédente.

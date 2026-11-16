@@ -194,7 +194,7 @@ test('une piste chargée qui ne part jamais (chiffrée, sans module de lecture) 
   assert.equal(s.radio.status, 'playing');
   // « Recommencer » : la piste écartée n'est pas redemandée, la musique continue.
   const loads = s.widget.loads.length;
-  s.radio.play('chaine-info');
+  s.radio.play('chaine-info', null, { restart: true });
   assert.equal(s.widget.loads.length, loads);
   // Le réseau revient : les pistes écartées retrouvent leur chance.
   s.radio.reconnected();
@@ -253,13 +253,13 @@ test('menu, niveau, boss, « Recommencer », niveau suivant, retour au menu : la
   assert.equal(s.lastUrl(), tracks[3].url);
   s.ready();
   s.playing();
-  s.radio.play('rond-point'); // « Recommencer » avant le boss : la musique continue
+  s.radio.play('rond-point', null, { restart: true }); // « Recommencer » avant le boss : la musique continue
   assert.equal(s.widget.loads.length, 1);
   s.radio.play('boss');
   assert.equal(s.lastUrl(), tracks[5].url);
   s.ready();
   s.playing();
-  s.radio.play('rond-point'); // « Rejouer » après le boss : une autre piste que la première fois
+  s.radio.play('rond-point'); // « Rejouer » après une victoire : une nouvelle entrée, une autre piste que la première fois
   assert.equal(s.lastUrl(), tracks[4].url);
   s.ready();
   s.playing();
@@ -650,7 +650,7 @@ test('« Recommencer » n’est pas une entrée ; après sa piste, le sac, jamai
   s.ready();
   s.playing();
   const loads = s.widget.loads.length;
-  s.radio.play('chaine-info'); // « Recommencer »
+  s.radio.play('chaine-info', null, { restart: true }); // « Recommencer »
   assert.equal(s.widget.loads.length, loads, 'la musique continue');
   s.emit('FINISH');
   assert.equal(s.radio.current.ou, 'jeu', 'le sac prend le relais');
@@ -672,6 +672,83 @@ test('« Recommencer » n’est pas une entrée ; après sa piste, le sac, jamai
   s.playing();
   s.radio.play('chaine-info');
   assert.equal(s.radio.current.ou, 'jeu');
+});
+
+// Relecture : « Recommencer » reprend la piste de niveau de cette visite, même après une mort au boss ; « Rejouer »,
+// après une victoire, est une nouvelle entrée. main.js dit à la Radio lequel des deux (`restart`).
+const ownList = [...tracks, T('propre-a', 'rond-point'), T('propre-b', 'rond-point')];
+
+test('« Recommencer » après une mort au boss : la piste de cette visite revient, pas l’autre piste du niveau', async () => {
+  const s = setup({ list: ownList });
+  await s.on();
+  s.radio.play('rond-point');
+  assert.equal(s.radio.current.id, 'propre-a');
+  s.ready();
+  s.playing();
+  s.radio.play('boss');
+  s.ready();
+  s.playing();
+  s.radio.play('rond-point', null, { restart: true }); // « Plus de vies » au boss, puis « Recommencer »
+  assert.equal(s.radio.current.id, 'propre-a');
+  assert.equal(s.lastUrl(), ownList.find((t) => t.id === 'propre-a').url);
+  s.ready();
+  s.playing();
+  assert.equal(s.radio.status, 'playing');
+  // La visite a continué après la fin de sa piste : c'est la suivante qui revient.
+  s.emit('FINISH');
+  const then = s.radio.current;
+  assert.notEqual(then.id, 'propre-a');
+  s.ready();
+  s.playing();
+  s.radio.play('boss');
+  s.ready();
+  s.playing();
+  s.radio.play('rond-point', null, { restart: true });
+  assert.equal(s.radio.current, then);
+});
+
+test('« Rejouer » après une victoire : une nouvelle entrée, et l’autre piste du niveau', async () => {
+  const s = setup({ list: ownList });
+  await s.on();
+  s.radio.play('rond-point');
+  assert.equal(s.radio.current.id, 'propre-a');
+  s.ready();
+  s.playing();
+  s.radio.play('boss');
+  s.ready();
+  s.playing();
+  s.radio.play('rond-point'); // la taxe, l'écran de fin, « Rejouer »
+  assert.equal(s.radio.current.id, 'propre-b');
+});
+
+test('« Recommencer », musique en pause ou refusée : elle le reste, sur la même piste', async () => {
+  const s = setup({ list: ownList });
+  await s.on();
+  s.radio.play('rond-point');
+  s.ready();
+  s.playing();
+  s.emit('PAUSE'); // le joueur met le lecteur en pause
+  assert.equal(s.radio.status, 'paused');
+  const loads = s.widget.loads.length;
+  s.radio.play('rond-point', null, { restart: true });
+  assert.equal(s.radio.status, 'paused');
+  assert.equal(s.radio.current.id, 'propre-a');
+  assert.equal(s.widget.loads.length, loads);
+  assert.equal(s.widget.plays, 0);
+  // Refusée par le navigateur : la même piste attend le prochain geste.
+  const b = setup({ list: ownList, activated: false });
+  await b.on();
+  b.radio.play('rond-point');
+  b.ready();
+  b.advance(START_TIMEOUT);
+  assert.equal(b.radio.status, 'blocked');
+  b.radio.play('rond-point', null, { restart: true });
+  assert.equal(b.radio.status, 'blocked');
+  assert.equal(b.radio.current.id, 'propre-a');
+  assert.equal(b.widget.loads.length, 1);
+  b.radio.unblock();
+  assert.equal(b.widget.plays, 1);
+  assert.equal(b.widget.loads.length, 1);
 });
 
 test('aucune piste de niveau ne revient avant que les autres soient passées, d’un niveau à l’autre comme en fin de piste', async () => {
