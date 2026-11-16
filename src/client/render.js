@@ -31,7 +31,7 @@ export class Renderer {
     this.floaters = [];
     this.shake = 0;
     this.reduced = false;
-    this.anchor = 0.8; // hauteur des pieds du héros à l'écran (0 = haut, 1 = bas)
+    this.anchor = 0.62; // hauteur des pieds du héros à l'écran (0 = haut, 1 = bas) : on voit ce qu'il y a sous terre
     this.demo = false; // démo du menu : pas de panneaux par-dessus le titre
     this.clock = 0;
   }
@@ -71,7 +71,8 @@ export class Renderer {
     const maxX = Math.max(0, world.w * TILE - this.viewW);
     const maxY = world.h * TILE - this.viewH;
     const x = hero.x + hero.w / 2 - this.viewW / 2 + hero.facing * 28;
-    const y = hero.y + hero.h - this.viewH * this.anchor;
+    // Quand le héros vise en haut ou en bas, la vue se décale du même côté : on voit où l'on creuse.
+    const y = hero.y + hero.h - this.viewH * this.anchor + (hero.aim || 0) * this.viewH * 0.22;
     return { x: Math.min(maxX, Math.max(0, x)), y: maxY < 0 ? maxY : Math.min(maxY, Math.max(0, y)) };
   }
 

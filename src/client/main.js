@@ -286,7 +286,7 @@ function layout() {
   root.style.setProperty('--vh', `${height / 100}px`);
   root.classList.toggle('bas', height <= 480);
   renderer.resize();
-  renderer.anchor = thumbs ? 0.76 : 0.8; // les pouces occupent les coins du bas : on remonte un peu l'action
+  renderer.anchor = thumbs ? 0.58 : 0.62; // les pouces occupent les coins du bas : on remonte un peu l'action
   input.refreshTouch();
 }
 addEventListener('resize', layout);
