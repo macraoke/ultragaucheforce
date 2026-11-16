@@ -112,13 +112,16 @@ function readValue(f, key, s, report) {
   }
 }
 
+/** Des clés qui ont changé de nom : le message dit laquelle écrire à la place. */
+const RENAMED = { debordement: '« ligne.vie: … » : une ligne a maintenant une vie (voir docs/ajouter-un-personnage.md)' };
+
 function readFields(f, spec, report, extra = () => false) {
   const out = {};
   for (const [key, s] of Object.entries(spec)) setPath(out, key, readValue(f, key, s, report));
   for (const { key, line } of f.fields) {
-    if (!(key in spec) && !extra(key)) {
-      report(line, `Clé inconnue « ${key} ». Clés possibles : ${Object.keys(spec).join(', ')}.`);
-    }
+    if (key in spec || extra(key)) continue;
+    if (RENAMED[key]) report(line, `Clé inconnue « ${key} ». Écris plutôt ${RENAMED[key]}.`);
+    else report(line, `Clé inconnue « ${key} ». Clés possibles : ${Object.keys(spec).join(', ')}.`);
   }
   return out;
 }
@@ -217,8 +220,7 @@ function buildEnemy(f, ctx, report) {
     nom: req(), pv: num(1, 20, 2), vitesse: num(0, 200, 40), deplacement: pick(MOVES), reaction: pick(REACTIONS),
     vue: num(32, 400, 150), bouclier: bool(), contact: num(0, 3, 0), panique: num(0, 30, 0), fin: pick(ENDINGS), camp: pick(CAMPS),
     replique: list(), largeur: num(6, 32, 12), hauteur: num(6, 32, 16),
-    // `debordement` : la ligne tient (insensible, infranchissable) tant que la manif compte moins de monde.
-    debordement: num(0, 5000, 0), sommation: list(), citation: str(),
+    sommation: list(), citation: str(),
     // `interpelle` : combien de manifestants l'unité emmène quand elle atteint le cortège (une fois toutes les 2,5 s).
     interpelle: num(0, 20, 0),
     // `ecriteau` : ce qu'on lit au-dessus de l'unité une fois hors service (rien si la clé est absente).

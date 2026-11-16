@@ -8,10 +8,10 @@ Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les platea
 |---|---|
 | ![La nasse se referme ; dessous, le métro](docs/captures/nasse.jpg) | ![On creuse : une paysanne attend sous le panneau](docs/captures/millevaches-creuser.jpg) |
 | ![Le métro, sous le boulevard](docs/captures/metro.jpg) | ![Un immeuble, étage par étage](docs/captures/immeuble.jpg) |
-| ![Le barrage cède à 200](docs/captures/barrage.jpg) | ![Le boss, assis sur sa fortune](docs/captures/boss-assis.jpg) |
+| ![Le barrage, sa vie en haut de l'écran](docs/captures/barrage.jpg) | ![Le boss, assis sur sa fortune](docs/captures/boss-assis.jpg) |
 
 - **Faire grossir la manif.** Une soignante, un cheminot, une intersyndicale : chaque recrue compte, une assemblée générale double tout.
-- **Déborder.** Un barrage ne se casse pas : il cède devant le nombre.
+- **Pousser.** Un barrage a une vie : les tracts l'entament, la manif le pousse, d'autant plus fort qu'elle est nombreuse.
 - **Six étapes.** Le camp d'entraînement de Millevaches, le rond-point, la raffinerie bloquée, le siège de la chaîne d'info, le soir du 49.3 devant l'Assemblée, puis la Citadelle.
 - **Creuser, grimper.** Tout le décor se détruit. Sous la rue, le métro, les catacombes, la salle des coffres ; au-dessus, six étages et les toits.
 - **Libérer.** On part avec un seul personnage, tiré au hasard la première fois. Chaque camarade sorti de garde à vue rejoint l'équipe et se joue tout de suite ; quand il tombe, on repart avec le précédent.

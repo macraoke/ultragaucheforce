@@ -12,7 +12,7 @@ nasse.nombre: 3
 nasse.vitesse: 20
 nasse.rythme: 45
 
-panneau.1: Assez nombreux, le barrage cède
+panneau.1: Tracts et manif : le barrage cède
 panneau.2: NASSE : par les toits, ou par les quais
 panneau.3: Sous le pont : le fleuve et ses piles
 

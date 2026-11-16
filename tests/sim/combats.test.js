@@ -86,13 +86,18 @@ test('bouclier de face : chaque tract arrêté se voit et s’entend (« paré �
   assert.equal(of(hits, 'parry').length, 0);
 });
 
-test('ligne qui tient : un tract qui s’y écrase est paré, comme sur un bouclier', () => {
+test('ligne : un tract qui l’atteint l’entame, comme le boss ; à zéro, elle cède', () => {
   const game = settle(play(flat({ cortege: true, legende: { l: enemy('ligne') }, draw: (put, ground) => put(ground, 9, 'l') })));
-  const events = run(game, 60, { fire: true });
   const line = game.enemies[0];
-  assert.ok(of(events, 'parry').some((e) => e.line), 'paré par la ligne');
-  assert.equal(line.hp, line.def.pv);
-  assert.equal(line.flash, 0);
+  const events = run(game, 40, { fire: true });
+  assert.ok(line.hp < line.def.ligne.vie, 'les tracts l’entament');
+  assert.equal(line.push, 0, 'trop loin pour que la manif pousse : ce sont bien les tracts');
+  assert.equal(of(events, 'parry').length, 0, 'plus parés');
+  assert.ok(sounds(events).includes('touche'), 'un coup qui porte');
+  assert.equal(line.x, line.home.x, 'ni recul');
+  const rest = run(game, 600, { fire: true });
+  assert.equal(of(rest, 'overrun').length, 1, 'à zéro, elle cède');
+  assert.equal(line.state, 'done');
 });
 
 test('un tract qui explose sur un bouclier n’est pas « paré » : le souffle passe, et seulement lui', () => {
@@ -205,17 +210,16 @@ test('une unité sonnée n’interpelle personne', () => {
 
 // ---------------------------------------------------------------- jamais d'impasse
 
-test('jamais d’impasse : gazée sans relâche devant une ligne, la manif finit quand même par passer', () => {
+test('jamais d’impasse : gazée sans relâche devant une ligne jusqu’à n’être plus qu’une, la manif passe : ses tracts l’usent', () => {
   const game = settle(play(flat({ cortege: true, legende: { l: enemy('ligne') }, draw: (put, ground) => put(ground, 12, 'l') })));
   const line = game.enemies[0];
-  // Elle perd quatre personnes par seconde : deux fois plus que ce que les passants apportent d'habitude devant cette ligne.
+  let crowd = Infinity;
   const events = run(game, 60 * 60, (i, g) => {
     if (i % 60 === 59) g.loseCrowd(4, 'gaz');
-    return { right: true };
+    if (line.state !== 'done') crowd = g.crowd;
+    return { right: true, fire: true };
   });
   assert.equal(of(events, 'overrun').length, 1, 'la ligne cède');
   assert.equal(line.state, 'done');
-  const blocked = of(events, 'blocked');
-  assert.ok(blocked.some((e) => e.joined > Math.ceil(line.def.debordement * 0.04)), 'il est venu plus de passants que d’habitude');
-  assert.ok(blocked.every((e) => e.joined >= Math.ceil(line.def.debordement * 0.04) || e.crowd >= e.need), 'jamais moins');
+  assert.equal(crowd, 1, 'il ne restait plus qu’une personne quand elle a cédé');
 });

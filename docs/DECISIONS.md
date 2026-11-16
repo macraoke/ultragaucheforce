@@ -49,8 +49,8 @@ Le lecteur ne dit pas toujours qu'une piste se tait. Radio Manif vérifie que la
 On ne gagne pas en tirant plus, mais en arrivant plus nombreux.
 
 - **Le nombre est la ressource** : chaque recrue ajoute du monde, une assemblée générale multiplie. Plus on est nombreux, plus les tracts font de dégâts.
-- **Une ligne cède au nombre**, pas aux coups : barrage, blindé, grille. Explorer pour recruter devient le cœur du niveau.
-- **Jamais d'impasse** : devant une ligne qui tient, des passants rejoignent peu à peu, et d'autant plus que la manif perd du monde en attendant. Une nasse est levée au bout de vingt secondes.
+- **Une ligne a une vie** : barrage, blindé, grille. Les tracts l'entament, la manif la pousse, d'autant plus fort qu'elle est nombreuse : explorer pour recruter fait passer plus vite.
+- **Jamais d'impasse** : même seul, on finit par casser une ligne à coups de tracts. Une nasse est levée au bout de vingt secondes.
 - **Disperser, pas éliminer** : une charge ou du gaz dispersent une part de la manif, la BAC interpelle ; on lit combien et pourquoi (« − 12 gazés »). Une unité finit hors service, un boss s'éjecte.
 
 ## En face : des unités réelles

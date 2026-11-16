@@ -86,7 +86,7 @@ test('Millevaches apprend chaque action, avec des touches que chaque appareil co
     for (const text of signs) assert.doesNotMatch(withKeys(text, device), /\[/, `${device} : ${text}`);
   }
   const all = signs.join(' ');
-  for (const word of ['[avancer]', '[sauter]', '[tirer]', 'manif', 'mur', '[bas]', '[haut]', '[spéciale]', 'cage', 'Assez nombreux']) {
+  for (const word of ['[avancer]', '[sauter]', '[tirer]', 'manif', 'mur', '[bas]', '[haut]', '[spéciale]', 'cage', 'le blindé cède']) {
     assert.ok(all.includes(word), `un panneau parle de « ${word} »`);
   }
 });

@@ -139,14 +139,10 @@ export class Renderer {
         this.float({ x: e.x, y: e.y - 10, text: '+1', t: 2.4, color: '#f6c21c', size: 20, gain: true });
         this.burst(e.x, e.y, '#f6c21c', 14, 90);
       } else if (e.type === 'overrun') {
-        // La ligne cède : le compteur au-dessus du seuil, le cri, des confettis, et elle s'ouvre (voir `opening`).
+        // La ligne cède, sa vie à zéro : le cri, des confettis, et elle s'ouvre (voir `opening`).
         // Au pouce, le haut de l'image est aux notes de déblocage : tout se dit au pied de la ligne, sans monter.
         const low = this.thumbs && e.feet;
         this.float({ x: e.x, y: low ? e.feet + 18 : e.y - 22, rise: low ? 0 : 14, text: 'ON EST LÀ !', t: 2.2, color: '#f6c21c', size: 12, keep: true }); // « On est là, même si Macron le veut pas »
-        if (e.need) {
-          this.float({ x: e.x, y: low ? e.feet + 4 : e.y - 8, rise: low ? 0 : 14, text: `✊ ${e.crowd.toLocaleString('fr-FR')} / ${e.need.toLocaleString('fr-FR')}`,
-            t: 2.2, color: '#f4f4f4', bg: '#257953', size: 7.5, keep: true });
-        }
         this.rings.push({ x: e.x, y: e.y + 10, t: 0.3, color: '#f6c21c' });
         this.burst(e.x, e.y, '#94b0c2', 10, 70);
         this.burst(e.x, e.y, '#f6c21c', 12, 110);
@@ -157,23 +153,6 @@ export class Renderer {
         this.float({ x: e.x + TILE / 2, y: e.y - 14, text: '+ 10', t: 1.8, color: '#f6c21c', size: 11, gain: true });
         this.float({ x: e.x + TILE / 2, y: e.y - 28, text: 'ON REPART D’ICI', t: 2.2, color: '#f4f4f4', size: 8 });
         this.burst(e.x + TILE / 2, e.y, '#f6c21c', 10, 70);
-      } else if (e.type === 'blocked') {
-        // Le héros bute sur une ligne qui tient : combien il en manque, et les passants qui arrivent par derrière.
-        // Au pouce, sous le compteur, au pied de la ligne : là où les notes de déblocage ne passent jamais.
-        const low = this.thumbs;
-        const short = e.need - e.crowd;
-        if (short > 0) {
-          this.float({ x: e.x, y: low ? e.feet + 24 : e.y - 24, rise: low ? 0 : 14, text: `IL EN MANQUE ${short.toLocaleString('fr-FR')}`,
-            t: 1.6, color: '#f4f4f4', bg: '#e43b44', size: 6.5, keep: true });
-        }
-        if (e.joined > 0) {
-          const from = e.x + e.dir * 60;
-          this.float({ x: from, y: low ? e.feet + 36 : e.y - 6, rise: low ? 0 : 14, text: `+ ${e.joined.toLocaleString('fr-FR')} passants`,
-            t: 1.8, color: '#f6c21c', size: 8, keep: true });
-          for (let k = 0; k < Math.min(4, Math.ceil(e.joined / 6)); k++) {
-            this.runners.push({ x: from + e.dir * (90 + k * 14), y: e.feet, dir: -e.dir, t: 0.9, n: k, join: true });
-          }
-        }
       } else if (e.type === 'respawn') {
         this.hurt = null;
       } else if (e.type === 'hurt') {
@@ -264,7 +243,7 @@ export class Renderer {
     this.floaters = this.floaters.filter((f) => f.t > 0);
     for (const r of this.runners) {
       r.t -= dt;
-      r.x += r.dir * (r.join ? 110 : 70) * dt;
+      r.x += r.dir * 70 * dt;
     }
     this.runners = this.runners.filter((r) => r.t > 0);
     for (const r of this.rings) r.t -= dt;
@@ -291,7 +270,6 @@ export class Renderer {
     tctx.clearRect(0, 0, this.textCanvas.width, this.textCanvas.height);
     tctx.setTransform(this.scale, 0, 0, this.scale, 0, 0);
 
-    this.crowd = game.crowd || 0;
     this.heroBox = game.hero;
     this.boxes = []; // les pancartes déjà posées à cette image : aucune ne recouvre l'autre
     this.backRows = game.level?.murs;
@@ -321,7 +299,7 @@ export class Renderer {
     this.raiseSigns(game.cortege);
     game.cortege.forEach((m, i) => this.marcher(m, i));
     for (const e of game.enemies) this.enemy(e, e === talker);
-    this.combatMiddle(game); // ceux qui quittent la manif ou la rejoignent, les lignes hors de l'image
+    this.combatMiddle(); // ceux qui quittent la manif ou la rejoignent
     if (game.boss) this.boss(game.boss);
     this.hero(game.hero);
     for (const p of game.projectiles) this.projectile(p);
@@ -376,10 +354,9 @@ export class Renderer {
     }
   }
 
-  /** Après les unités : les manifestants qui s'en vont ou accourent, et la ligne qui attend hors de l'image. */
-  combatMiddle(game) {
+  /** Après les unités : les manifestants qui s'en vont ou accourent. */
+  combatMiddle() {
     for (const r of this.runners) this.runner(r);
-    if (!this.demo) this.lineAhead(game);
   }
 
   /** Par-dessus tout le reste du monde. */
@@ -578,16 +555,16 @@ export class Renderer {
     const still = this.reduced; // effets réduits : le blanc suffit, le dessin ne bouge pas
     const flinch = e.flash > 0 && !still ? (e.hitDir || 0) * (e.flash > 0.06 ? 2 : 1) : 0;
     const cough = !still && stunned && e.daze === 'gaz' && Math.floor(this.clock * 12 + e.x) % 3 === 0 ? 1 : 0;
-    this.actor(e, rows, { flash: e.flash > 0, dx: flinch + cough, ...(set && { flip: false }) });
+    const shoved = !still && e.push > 0 && Math.floor(this.clock * 16) % 2 ? 1 : 0; // une ligne que la manif pousse tremble
+    this.actor(e, rows, { flash: e.flash > 0, dx: flinch + cough + shoved, ...(set && { flip: false }) });
     const top = e.y + e.h - (rows?.length || e.h) - this.cy;
     if (e.aim) this.aim(e);
     if (e.rush?.phase === 'ruee') {
       this.ctx.fillStyle = '#f4f4f4';
       for (let k = 0; k < 3; k++) this.ctx.fillRect(Math.round(e.x + (e.facing > 0 ? -8 - k * 5 : e.w + 4 + k * 5) - this.cx), Math.round(e.y + 3 + k * 5 - this.cy), 4, 1);
     }
-    // Une ligne qui tient : où en est la manif face au nombre qu'il faut, en chiffres et en jauge.
-    if (e.blocking && e.def.debordement > 0) this.lineCount(e, cx, e.y - this.cy, speaks);
-    else if (e.hp < e.def.pv && e.hp > 0) this.gauge(e, cx, top - 5);
+    // Une ligne (`ligne.vie`) : sa vie est dans la barre du haut, comme celle du boss (voir ui.js).
+    if (!(e.def.ligne?.vie > 0) && e.hp < e.def.pv && e.hp > 0) this.gauge(e, cx, top - 5);
     if (stunned && e.daze === 'gaz') this.weepers.push([e, cx, top]); // dessinés par-dessus le nuage qui les a gazés
     else if (stunned) this.stars(e, cx, top);
     else this.warn(e, cx, top);
@@ -596,59 +573,7 @@ export class Renderer {
   }
 
   /**
-   * Au-dessus d'une ligne qui tient : « ✊ 312 / 500 » et une jauge qui se remplit, rouge tant qu'on n'est pas assez,
-   * verte quand on l'est. Quand le héros bute dessus ou qu'un tract s'y écrase, le compteur sursaute.
-   */
-  lineCount(e, cx, top, speaks) {
-    const need = e.def.debordement;
-    const part = Math.min(1, this.crowd / need);
-    const enough = part >= 1;
-    const bumped = !this.reduced && (e.nag > 1.65 || e.parry > 0.15);
-    const text = `✊ ${this.crowd.toLocaleString('fr-FR')} / ${need.toLocaleString('fr-FR')}`;
-    // Au pouce, le compteur se lit au pied de la ligne : le haut de l'image est aux notes de déblocage.
-    const base = e.y + e.h - this.cy;
-    const y = this.thumbs ? base + 4 : top - (speaks ? 30 : 18);
-    this.label(text, cx + (bumped && e.nag > 1.65 ? Math.round(Math.sin(this.clock * 60)) : 0), y,
-      { size: 7 + (bumped ? 1.5 : 0), color: '#f4f4f4', bg: enough ? '#257953' : '#e43b44' });
-    const { ctx } = this;
-    const width = 36;
-    const x = Math.round(cx - width / 2);
-    const by = Math.round(this.thumbs ? base + 17 : top - 7);
-    ctx.fillStyle = '#1a1c2c';
-    ctx.fillRect(x - 1, by - 1, width + 2, 5);
-    ctx.fillStyle = '#566c86';
-    ctx.fillRect(x, by, width, 3);
-    ctx.fillStyle = enough ? '#38b764' : part > 0.66 ? '#f6c21c' : '#e43b44';
-    ctx.fillRect(x, by, Math.max(1, Math.round(width * part)), 3);
-  }
-
-  /** Une ligne qui tient, hors de l'écran mais pas loin : son compteur au bord de l'image, du côté où elle attend. */
-  lineAhead(game) {
-    const { hero } = game;
-    const hx = hero.x + hero.w / 2;
-    const left = this.cx;
-    const right = this.cx + this.viewW;
-    const exit = game.props.find((p) => p.kind === 'sortie');
-    const forward = exit && exit.x < hero.x ? -1 : 1; // seulement celles qui attendent sur le chemin de la sortie
-    const line = game.enemies
-      .filter((e) => e.blocking && e.def.debordement > 0 && e.state !== 'done' && (forward > 0 ? e.x > right : e.x + e.w < left)
-        && Math.abs(e.x + e.w / 2 - hx) < this.viewW * 2 && Math.abs(e.y + e.h - (hero.y + hero.h)) < this.viewH)
-      .sort((a, b) => Math.abs(a.x - hx) - Math.abs(b.x - hx))[0];
-    if (!line) return;
-    const need = line.def.debordement;
-    const ahead = line.x > right;
-    const count = `✊ ${this.crowd.toLocaleString('fr-FR')} / ${need.toLocaleString('fr-FR')}`;
-    const text = ahead ? `${count} ▶` : `◀ ${count}`;
-    this.tctx.font = `6.5px ${FONT}`;
-    const half = this.tctx.measureText(text).width / 2 + 4;
-    // À hauteur du héros : au pouce, entre le bouton SPÉ au-dessus et TIR en dessous.
-    const y = Math.max(40, Math.min(this.viewH - 40, hero.y + hero.h * 0.3 - this.cy));
-    this.label(text, ahead ? this.viewW - half - 2 : half + 2, y,
-      { size: 6.5, color: '#f4f4f4', bg: this.crowd >= need ? '#257953' : '#e43b44' });
-  }
-
-  /**
-   * Une ligne débordée s'ouvre : une grille ou un barrage s'écarte en deux et s'efface, laissant son dessin de fin ;
+   * Une ligne cassée s'ouvre : une grille ou un barrage s'écarte en deux et s'efface, laissant son dessin de fin ;
    * un blindé recule et s'éteint.
    */
   opening(e, rows) {
@@ -742,14 +667,14 @@ export class Renderer {
     this.label('!', cx, top - 10 - above - jump, { size: 10, color: '#e43b44' });
   }
 
-  /** Un manifestant qui s'en va en courant et s'efface, ou un passant qui accourt rejoindre la manif (`join`). */
+  /** Un manifestant qui s'en va en courant et s'efface. */
   runner(r) {
-    if (!r.join && r.t < 0.35 && Math.floor(this.clock * 16) % 2) return;
+    if (r.t < 0.35 && Math.floor(this.clock * 16) % 2) return;
     const body = this.bundle.decors[r.n % 2 ? 'manifestant-2' : 'manifestant'];
     if (!body) return;
     const step = Math.floor(this.clock * 12 + r.n) % 2 && body.sprites.image2;
     const img = sprite(step ? body.sprites.image2 : body.sprites.image, this.palette, r.dir < 0);
-    this.ctx.globalAlpha = r.join ? Math.min(1, (0.9 - r.t) * 5, r.t * 4) : Math.min(1, r.t * 2);
+    this.ctx.globalAlpha = Math.min(1, r.t * 2);
     this.ctx.drawImage(img, Math.round(r.x - img.width / 2 - this.cx), Math.round(r.y - img.height - this.cy - Math.abs(Math.sin(r.t * 14)) * 2));
     this.ctx.globalAlpha = 1;
   }

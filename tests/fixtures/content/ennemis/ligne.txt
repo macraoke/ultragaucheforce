@@ -1,11 +1,12 @@
-# Une ligne qui tient : on ne la casse pas, on la déborde à trente.
+# Une ligne qui tient : soixante points de vie ; cent manifestants qui poussent lui en retirent dix par seconde.
 nom: Ligne
 pv: 3
 vitesse: 0
 deplacement: fixe
 reaction: rien
 fin: greve
-debordement: 30
+ligne.vie: 60
+ligne.poussee: 10
 origine: Un barrage d'essai.
 fiche: garde-a-vue
 --- repos

@@ -280,7 +280,6 @@ function handle(events) {
       collect('manchettes', e.text, true);
       audio.play('papier', { volume: 0.6 });
     } else if (e.type === 'panic') audio.play(e.level >= 2 ? 'casseroles' : 'sifflet');
-    else if (e.type === 'blocked' && e.joined > 0) audio.play('recrue', { volume: 0.5, pitch: 0.8 }); // des passants arrivent
     else if (e.type === 'boss' && e.state === 'enter') {
       audio.speak(game.boss.def.id);
       radio.play('boss');

@@ -66,17 +66,19 @@ test('niveau : le repère « N » demande une nasse décrite dans l’en-tête',
   assert.deepEqual(checkLevel(textOf(path), fixtureBundle()).errors, []);
 });
 
-test('ennemi : débordement, sommations, charge, tir visé, jet, faisceau et renforts se règlent dans la fiche', () => {
+test('ennemi : ligne, sommations, charge, tir visé, jet, faisceau et renforts se règlent dans la fiche', () => {
   const { ennemis } = fixtureBundle();
-  assert.equal(ennemis.ligne.debordement, 30);
-  assert.equal(ennemis.garde.debordement, 0, 'désactivé par défaut');
+  assert.deepEqual(ennemis.ligne.ligne, { vie: 60, poussee: 10 });
+  assert.equal(ennemis.garde.ligne.vie, 0, 'pas une ligne par défaut');
   assert.deepEqual(ennemis.chargeur.charge, { distance: 120, vitesse: 200, pause: 2, disperse: 10 });
   assert.deepEqual([ennemis.tireur.arme.vise, ennemis.tireur.arme.visee], [1, 0.8]);
   assert.deepEqual(ennemis.canon.arme, { type: 'jet', duree: 2, pause: 1, portee: 160, poussee: 220, son: '' });
   assert.deepEqual(ennemis.helico.renfort, { nombre: 2, max: 1, ennemi: 'fonceur' });
   assert.deepEqual(ennemis.garde.charge, { distance: 160, vitesse: 220, pause: 2.5, disperse: 5 }, 'valeurs par défaut pour qui ne les règle pas');
 
-  expect(edit('content/ennemis/ligne.txt', (t) => t.replace('debordement: 30', 'debordement: 6000')), /« debordement » doit être entre 0 et 5000/);
+  expect(edit('content/ennemis/ligne.txt', (t) => t.replace('ligne.vie: 60', 'ligne.vie: 6000')), /« ligne\.vie » doit être entre 0 et 5000/);
+  expect(edit('content/ennemis/ligne.txt', (t) => t.replace('ligne.poussee: 10', 'ligne.poussee: 80')), /« ligne\.poussee » doit être entre 0 et 50/);
+  expect(edit('content/ennemis/ligne.txt', (t) => t.replace('ligne.vie: 60', 'debordement: 30')), /« debordement »\. Écris plutôt « ligne\.vie: … »/);
   expect(edit('content/ennemis/chargeur.txt', (t) => t.replace('charge.distance: 120', 'charge.elan: 3')), /Réglage inconnu « charge\.elan »/);
   expect(edit('content/ennemis/tireur.txt', (t) => t.replace('arme.visee: 0.8', 'arme.visee: 5')), /« arme\.visee » doit être entre 0 et 2/);
   expect(edit('content/ennemis/canon.txt', (t) => t.replace('arme.duree: 2', 'arme.degats: 2')), /Réglage inconnu « arme\.degats »/);

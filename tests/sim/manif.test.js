@@ -3,9 +3,10 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { fixtureBundle, flat, play, run, settle } from './helpers.js';
+import { fixtureBundle, flat, level, play, run, settle } from './helpers.js';
 import { TILE } from '../../src/sim/world.js';
 import { LINE_REACH } from '../../src/sim/enemy.js';
+import { spawnProjectile } from '../../src/sim/projectile.js';
 
 const enemy = (id) => ({ type: 'ennemi', id });
 const recruit = (id) => ({ type: 'recrue', id });
@@ -139,63 +140,135 @@ test('force du nombre : plus la manif est grande, plus les tracts portent', () =
   assert.ok(hits >= 1 && Math.abs(hits - Math.round(hits)) < 1e-6, 'chaque tract enlève au boss un point multiplié par la force');
 });
 
-// ---------------------------------------------------------------- débordement
+// ---------------------------------------------------------------- les lignes : une vie, et la manif qui pousse
 
-test('débordement : la ligne tient, insensible et infranchissable, puis cède quand on est assez nombreux', () => {
-  const game = settle(play(flat({
-    cortege: true, legende: { l: enemy('ligne') },
-    draw: (put, ground) => put(ground, 12, 'l'),
-  })));
+const wall = ({ draw = (put, ground) => put(ground, 12, 'l'), legende = {}, ...extra } = {}) => flat({
+  cortege: true, legende: { l: enemy('ligne'), ...legende }, draw, ...extra,
+});
+
+test('ligne : tant qu’elle a de la vie, elle tient : ni en marchant, ni en sautant, ni par la spéciale', () => {
+  const game = settle(play(wall()));
   const { hero } = game;
   const line = game.enemies[0];
   assert.ok(line.blocking);
-
-  let events = run(game, 200, (i) => ({ right: true, fire: true, jump: i % 40 < 20 }));
+  assert.equal(line.hp, line.def.ligne.vie, 'une vie de ligne, pas les « pv » d’une unité');
+  run(game, 200, (i) => ({ right: true, jump: i % 40 < 20 }));
   assert.ok(hero.x + hero.w <= line.x + 0.001, 'ni en marchant, ni en sautant');
-  assert.equal(line.hp, line.def.pv, 'les tracts ne l’entament pas');
   assert.notEqual(line.state, 'done');
-  const blocked = of(events, 'blocked');
-  assert.ok(blocked.length >= 2 && blocked.length <= 3, 'un rappel de temps en temps, pas à chaque image');
-  assert.deepEqual({ need: blocked[0].need, crowd: blocked[0].crowd, joined: blocked[0].joined }, { need: 30, crowd: 12, joined: 2 },
-    'dix au départ, deux passants rejoignent (4 % de trente) : le client le montre');
   game.step({ special: true });
   run(game, 30);
-  assert.notEqual(line.state, 'stunned', 'la spéciale ne la fait pas reculer non plus');
+  assert.notEqual(line.state, 'stunned', 'la spéciale ne la fait pas reculer');
   assert.equal(line.x, line.home.x);
   assert.ok(LINE_REACH > hero.def.saut * TILE, 'le barrage monte plus haut que le plus haut des sauts');
+});
 
-  game.addCrowd(20);
-  events = run(game, 5, { right: true });
-  assert.equal(of(events, 'overrun').length, 1);
-  assert.equal(line.state, 'done', 'débordée : elle se range');
+test('ligne : la manif au contact la pousse, d’autant plus vite qu’elle est nombreuse', () => {
+  const push = (manif) => {
+    const game = settle(play(wall({ manif })));
+    const line = game.enemies[0];
+    let from = -1;
+    let steps = 0;
+    for (; steps < 60 * 60 && line.state !== 'done'; steps++) {
+      run(game, 1, { right: true });
+      if (from < 0 && line.push > 0) from = steps;
+    }
+    assert.equal(line.state, 'done', `${manif} manifestants finissent par la faire céder`);
+    return steps - from;
+  };
+  const vie = fixtureBundle().ennemis.ligne.ligne.vie;
+  const { poussee } = fixtureBundle().ennemis.ligne.ligne;
+  const small = push(50);
+  const big = push(500);
+  // `ligne.poussee` points de vie par seconde pour cent manifestants : 5 par seconde à 50, 50 à 500.
+  assert.ok(Math.abs(small - (vie / ((poussee * 50) / 100)) * 60) <= 2, `à 50, en ${small} pas`);
+  assert.ok(Math.abs(big - (vie / ((poussee * 500) / 100)) * 60) <= 2, `à 500, en ${big} pas`);
+  assert.ok(big * 5 < small, 'dix fois plus nombreuse, elle passe dix fois plus vite');
+});
+
+test('ligne : plus rien ne la fait céder d’un coup : ni un nombre atteint au loin, ni son propre camp ; elle s’use petit à petit', () => {
+  const game = settle(play(wall({ width: 80, manif: 1000, draw: (put, ground) => put(ground, 40, 'l') })));
+  const line = game.enemies[0];
+  const vie = line.def.ligne.vie;
+  run(game, 600);
+  assert.equal(line.hp, vie, 'mille manifestants, mais loin d’elle : rien ne bouge');
+  game.explode(line.x + line.w / 2, line.y + line.h / 2, 30, { team: 'ordre', friendly: true, damage: 5 });
+  game.hurtEnemy(line, 10, 'ordre');
+  assert.equal(line.hp, vie, 'les coups de son propre camp n’y font rien');
+  assert.notEqual(line.state, 'done');
+
+  const seen = [];
+  const events = run(game, 600, (i, g) => {
+    if (line.state !== 'done') seen.push(line.hp);
+    return { right: true };
+  });
+  const worn = seen.filter((hp) => hp < vie);
+  assert.ok(worn.length >= 20, `elle s’use sur ${worn.length} pas, pas d’un coup`);
+  assert.ok(worn.every((hp, i) => i === 0 || hp < worn[i - 1]), 'sa vie ne fait que baisser');
+  assert.equal(of(events, 'overrun').length, 1, 'à zéro, elle cède');
   assert.equal(line.blocking, false);
   assert.equal(game.stats.overrun, 1);
   run(game, 60, { right: true });
-  assert.ok(hero.x > line.x + line.w, 'la manif passe');
+  assert.ok(game.hero.x > line.x + line.w, 'la manif passe');
 });
 
-test('débordement : jamais d’impasse, des passants rejoignent la manif devant la ligne jusqu’à ce qu’elle cède', () => {
-  const game = settle(play(flat({
-    cortege: true, legende: { l: enemy('ligne') },
-    draw: (put, ground) => put(ground, 12, 'l'),
+test('ligne : la manif ne la pousse ni à travers le sol, ni à travers un mur', () => {
+  // Une ligne sur une dalle ; le héros passe dans le couloir, six cases dessous, avec mille manifestants.
+  const below = settle(play(flat({
+    width: 60, height: 20, cortege: true, manif: 1000, legende: { l: enemy('ligne') },
+    draw: (put) => {
+      put(13, 14, 'A'.repeat(16)); // la dalle, six cases au-dessus du sol du couloir
+      put(12, 22, 'l'); // la ligne, posée dessus
+    },
   })));
-  assert.equal(game.crowd, 10);
-  const events = run(game, 60 * 30, { right: true });
-  assert.equal(of(events, 'overrun').length, 1, 'trente manifestants finissent par être là');
-  assert.ok(game.crowd >= 30);
-  assert.ok(of(events, 'blocked').length >= 8, 'mais il faut insister : recruter va bien plus vite');
+  const line = below.enemies[0];
+  let passed = false;
+  run(below, 600, (i, g) => {
+    passed ||= g.hero.x > line.x + line.w;
+    return { right: true };
+  });
+  assert.ok(passed, 'le héros est passé dessous');
+  assert.equal(line.hp, line.def.ligne.vie, 'vie inchangée');
+
+  // Au même niveau, mais un mur entre eux : rien non plus.
+  const walled = settle(play(flat({
+    width: 40, manif: 1000, legende: { l: enemy('ligne') },
+    draw: (put, ground) => {
+      for (let row = ground - 6; row <= ground; row++) put(row, 18, 'A');
+      put(ground, 21, 'l');
+    },
+  })));
+  const behind = walled.enemies[0];
+  run(walled, 300, { right: true });
+  assert.ok(Math.abs(walled.hero.x + walled.hero.w / 2 - (behind.x + behind.w / 2)) < 72, 'le héros est tout près, de l’autre côté du mur');
+  assert.equal(behind.hp, behind.def.ligne.vie, 'vie inchangée');
 });
 
-test('débordement : une ligne loin du héros attend qu’il arrive pour céder', () => {
-  const game = settle(play(flat({
-    width: 80, cortege: true, manif: 500, legende: { l: enemy('ligne') },
-    draw: (put, ground) => put(ground, 40, 'l'),
-  })));
-  run(game, 60);
-  assert.notEqual(game.enemies[0].state, 'done');
-  const events = run(game, 400, { right: true });
-  assert.equal(of(events, 'overrun').length, 1);
-  assert.equal(of(events, 'blocked').length, 0, 'assez nombreux : on ne bute jamais dessus');
+test('ligne : enfoncée dans son cratère, elle reste poussée depuis le bord, et cède', () => {
+  // Un sol de terre ; la ligne est posée dessus. On creuse deux cases sous elle : elle tombe au fond.
+  const rows = [
+    ...Array.from({ length: 7 }, () => '.'.repeat(40)),
+    `..D.........l.......................S...`,
+    'T'.repeat(40),
+    'T'.repeat(40),
+    'A'.repeat(40),
+    'A'.repeat(40),
+  ];
+  const game = settle(play(level(rows, { cortege: true, manif: 140, legende: { l: enemy('ligne') } })));
+  const line = game.enemies[0];
+  const feet = line.y + line.h;
+  for (let tx = Math.floor(line.x / TILE); tx <= Math.floor((line.x + line.w - 0.01) / TILE); tx++) {
+    game.world.set(tx, 8, 0);
+    game.world.set(tx, 9, 0);
+  }
+  run(game, 30);
+  assert.equal(line.y + line.h, feet + 2 * TILE, 'elle est au fond du cratère, deux cases plus bas');
+  let rim = false;
+  const events = run(game, 60 * 10, (i, g) => {
+    rim ||= g.hero.y + g.hero.h === feet && Math.abs(g.hero.x + g.hero.w - line.x) < 1;
+    return { right: true };
+  });
+  assert.ok(rim, 'le héros est au bord, retenu par sa barrière');
+  assert.equal(of(events, 'overrun').length, 1, 'la manif la pousse, et elle cède');
 });
 
 // ---------------------------------------------------------------- nasse
@@ -243,7 +316,7 @@ test('nasse : elle prend fin si une ligne cède ou si le héros en sort par le h
   const broken = settle(play(nasse('ligne', { cortege: true }), { invincible: true }));
   run(broken, 260, { right: true });
   assert.ok(broken.kettle, 'nasse en cours');
-  broken.addCrowd(100);
+  broken.addCrowd(300); // la manif pousse la ligne qui la retient
   let events = run(broken, 300, { right: true });
   assert.deepEqual(of(events, 'kettle'), [{ type: 'kettle', state: 'end', reason: 'broken' }]);
   assert.ok(of(events, 'overrun').length >= 1);
@@ -258,6 +331,30 @@ test('nasse : elle prend fin si une ligne cède ou si le héros en sort par le h
   const calm = settle(play(nasse('statue', { nasse: { ennemi: '', nombre: 2, vitesse: 20 } })));
   events = run(calm, 400, { right: true });
   assert.equal(of(events, 'kettle').length, 0, 'sans unité désignée, le repère ne fait rien');
+});
+
+test('nasse : ses lignes ne craignent pas les grenades de leur propre camp', () => {
+  /** Une grenade fratricide qui tombe droit sur l'unité. */
+  const grenade = (game, unit) => spawnProjectile(game, {
+    team: 'ordre', friendly: true, w: 5, h: 5, damage: 3, range: 200, explosion: 18,
+    x: unit.x + unit.w / 2 - 2, y: unit.y - 24, vy: 80, gravity: 400,
+  });
+  const game = settle(play(nasse('statue'), { invincible: true }));
+  run(game, 260, { right: true });
+  assert.ok(game.kettle, 'nasse en cours');
+  const unit = game.kettle.units[0];
+  grenade(game, unit);
+  const events = run(game, 60);
+  assert.equal(unit.hp, unit.def.pv, 'pv inchangés');
+  assert.notEqual(unit.state, 'done');
+  assert.ok(of(events, 'parry').some((e) => e.line), 'paré, comme une ligne');
+
+  // Témoin : la même grenade sur la même unité, hors de toute nasse, l'entame.
+  const alone = settle(play(flat({ legende: { u: enemy('statue') }, draw: (put, ground) => put(ground, 20, 'u') }), { invincible: true }));
+  const statue = alone.enemies[0];
+  grenade(alone, statue);
+  run(alone, 60);
+  assert.ok(statue.hp < statue.def.pv, 'hors nasse, son propre camp l’entame');
 });
 
 // ---------------------------------------------------------------- découvertes

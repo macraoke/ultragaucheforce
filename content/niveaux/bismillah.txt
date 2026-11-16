@@ -12,7 +12,7 @@ nasse.nombre: 3
 nasse.vitesse: 18
 nasse.rythme: 50
 
-panneau.1: Assez nombreux, le barrage cède
+panneau.1: Tracts et manif : le barrage cède
 panneau.2: NASSE : les toits, ou le métro
 panneau.3: GARDE À VUE : un camarade est à l'étage
 panneau.4: LA CITADELLE

@@ -1,5 +1,6 @@
 // Une ligne qui tient arrête aussi l'autre camp : ses unités au sol (charge, ruée, marche, recul) et ses tirs droits,
-// comme elle arrête le héros et ses tracts. Les grenades passent par-dessus. Une ligne qui a cédé n'arrête plus personne.
+// comme elle arrête le héros et ses tracts (qui l'entament). Les grenades passent par-dessus.
+// Une ligne qui a cédé n'arrête plus personne.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -8,7 +9,7 @@ import { flat, play, run, settle } from './helpers.js';
 const enemy = (id) => ({ type: 'ennemi', id });
 const of = (events, type) => events.filter((e) => e.type === type);
 
-/** La ligne d'essai (trente manifestants) en colonne 5, une unité d'en face derrière elle, en colonne `col`. */
+/** La ligne d'essai (soixante points de vie) en colonne 5, une unité d'en face derrière elle, en colonne `col`. */
 const behind = (id, { col = 8, ...extra } = {}) => flat({
   width: 40, legende: { l: enemy('ligne'), u: enemy(id) },
   draw: (put, ground) => {
@@ -20,14 +21,14 @@ const behind = (id, { col = 8, ...extra } = {}) => flat({
 
 const parts = (game) => ({ line: game.enemies.find((e) => e.def.id === 'ligne'), foe: game.enemies.find((e) => e.def.id !== 'ligne') });
 
-test('ligne qui tient : la charge d’en face s’y arrête, le héros qui attend devant n’est pas touché ; ses tracts restent parés', () => {
+test('ligne qui tient : la charge d’en face s’y arrête, le héros qui attend devant n’est pas touché ; ses tracts s’y écrasent', () => {
   const game = settle(play(behind('chargeur')));
   const { hero } = game;
   const { line, foe } = parts(game);
   const phases = [];
   const events = [];
   for (let i = 0; i < 600; i++) {
-    events.push(...run(game, 1, { right: true, fire: true }));
+    events.push(...run(game, 1, { right: true })); // sans manif ni tracts : la ligne tient tout du long
     const phase = foe.rush?.phase ?? null;
     if (phase && phases.at(-1) !== phase) phases.push(phase);
     assert.ok(foe.x >= line.x + line.w - 0.001, `la charge ne traverse pas la ligne (pas ${i})`);
@@ -37,13 +38,14 @@ test('ligne qui tient : la charge d’en face s’y arrête, le héros qui atten
   assert.equal(of(events, 'hurt').length, 0, 'le héros n’est pas touché');
   assert.equal(hero.hp, hero.def.pv);
 
-  // Comme avant : le héros bute sur la ligne, ses tracts s'y écrasent, et l'unité derrière n'en reçoit aucun.
   assert.ok(hero.x + hero.w <= line.x + 0.001, 'le héros reste devant la ligne');
-  assert.ok(of(events, 'blocked').length >= 2, 'il bute dessus');
-  assert.ok(of(events, 'parry').some((e) => e.line), 'ses tracts sont parés par la ligne');
-  assert.equal(line.hp, line.def.pv, 'elle n’est pas entamée');
+  assert.equal(line.hp, line.def.ligne.vie, 'personne ne l’a entamée');
+
+  // Ses tracts s'écrasent sur la ligne, qu'ils entament : l'unité derrière n'en reçoit aucun.
+  run(game, 20, { right: true, fire: true });
+  assert.ok(line.hp < line.def.ligne.vie, 'les tracts l’entament');
+  assert.notEqual(line.state, 'done', 'elle tient encore');
   assert.equal(foe.hp, foe.def.pv, 'derrière elle, rien ne l’atteint');
-  assert.equal(line.state === 'done', false, 'elle tient toujours');
 });
 
 test('ligne qui tient : rien ne passe au sol, ni en fonçant, ni à moto, ni en reculant sous un coup', () => {
@@ -85,7 +87,7 @@ test('ligne qui tient : les tirs droits d’en face s’y écrasent, comme nos t
   assert.ok(of(events, 'sfx').filter((e) => e.id === 'tir').length >= 3, 'il tire');
   assert.equal(of(events, 'hurt').length, 0, 'aucun tir ne passe');
   assert.ok(of(events, 'parry').filter((e) => e.line).length >= 3, 'chaque tir est paré par la ligne');
-  assert.equal(line.hp, line.def.pv);
+  assert.equal(line.hp, line.def.ligne.vie, 'et ne l’entame pas');
 
   const jet = settle(play(behind('canon', { col: 9 })));
   const { line: wall, foe: canon } = parts(jet);
@@ -101,10 +103,11 @@ test('ligne qui tient : les tirs droits d’en face s’y écrasent, comme nos t
 });
 
 test('ligne cédée : elle n’arrête plus personne, la charge passe', () => {
-  const game = settle(play(behind('chargeur', { manif: 30 })));
+  const game = settle(play(behind('chargeur', { manif: 1000 })));
   const { hero } = game;
   const { line, foe } = parts(game);
-  assert.equal(line.state, 'done', 'assez nombreux, à portée : elle a cédé');
+  run(game, 30); // mille manifestants, à portée : la manif la pousse
+  assert.equal(line.state, 'done', 'poussée jusqu’à zéro, elle a cédé');
   let x = Infinity;
   const events = run(game, 200, () => {
     x = Math.min(x, foe.x);

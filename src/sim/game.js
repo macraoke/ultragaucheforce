@@ -10,8 +10,7 @@
 //   boss {state: 'enter' | 'phase' | 'stand' | 'defeated'} · won · lost
 //   hurt {x, y, kind, hp, max, dir} : le héros est touché (kind : 'tir' | 'gaz' | 'charge' | 'contact' | 'explosion')
 //   parry {x, y, line} : un bouclier ou une ligne qui tient arrête un coup · down {x, y, end} : une unité hors service
-//   recruit {id, n, crowd, x, y} · overrun {x, y, feet, need, crowd} : une ligne cède
-//   blocked {x, y, feet, need, crowd, joined, dir} : le héros bute sur une ligne qui tient ; `joined` passants arrivent
+//   recruit {id, n, crowd, x, y} · overrun {x, y, feet, crowd} : une ligne cède, sa vie à zéro
 //   dispersed {n, crowd, reason, x, y, gone} : la manif perd du monde (reason : 'charge' | 'gaz' | 'chute' | 'interpelle'
 //     | 'touche' ; gone : où étaient les manifestants qui ne sont plus dessinés, six au plus)
 //   kettle {state: 'start', x} puis {state: 'end', reason: 'out' | 'broken' | 'time'} · drop {x, y, n}
@@ -35,7 +34,7 @@ import { makeRng } from './rng.js';
 import { TILE } from './world.js';
 import { hitsSolid, overlap, holds } from './physics.js';
 import { updateHero, setHeroDef, FEEL } from './hero.js';
-import { createEnemy, updateEnemy, sturdy, LINE_REACH } from './enemy.js';
+import { createEnemy, updateEnemy, sturdy, isLine, wearLine, LINE_REACH } from './enemy.js';
 import { updateProjectiles } from './projectile.js';
 import { updateBoss, hurtBoss } from './boss.js';
 import { loadLevel, toList, playable } from './level.js';
@@ -52,9 +51,6 @@ export const START_LIVES = 1; // on part avec un seul personnage : les autres so
 const RESPAWN_DELAY = 0.8;
 const TRAIL_LENGTH = 600;
 const MAX_EVENTS = 400;
-const NAG = 2; // secondes entre deux rappels « vous n'êtes pas assez nombreux »
-const PASSERS = 0.04; // devant une ligne qui tient, à chaque rappel, cette part du nombre voulu rejoint la manif…
-const PASSERS_BOOST = 64; // …et jusqu'à 64 fois plus quand la manif ne progresse plus (elle perd du monde en attendant)
 const PARRY = 0.25; // secondes pendant lesquelles un coup paré se voit sur le bouclier ou la ligne
 
 export class Game {
@@ -309,9 +305,14 @@ export class Game {
    */
   hurtEnemy(e, amount, team = 'luttes', dir = 0) {
     if (e.state === 'done' || amount <= 0) return;
-    if (e.def.debordement > 0) {
-      this.parry(e, e.x + e.w / 2, true); // la ligne tient : seul le nombre la fait céder
-      return;
+    // Une ligne qui tient (obstacle ou nasse) ne craint pas les coups de son propre camp : elle ne s'use pas toute seule.
+    if ((e.blocking || isLine(e.def)) && team !== 'luttes') return this.parry(e, e.x + e.w / 2, true);
+    if (isLine(e.def)) {
+      // Une ligne : les coups de la manif l'entament.
+      e.flash = 0.12;
+      e.hitDir = dir;
+      this.sfx('touche', e.x);
+      return wearLine(this, e, amount);
     }
     e.hp -= amount;
     e.flash = 0.12;
@@ -528,7 +529,7 @@ export class Game {
     const defs = Object.values(level.legende || {})
       .filter((ref) => ref.type === 'ennemi' && bundle.ennemis?.[ref.id])
       .map((ref) => bundle.ennemis[ref.id])
-      .filter((def) => !(def.debordement > 0)); // un barrage ne tombe pas du ciel
+      .filter((def) => !isLine(def)); // un barrage ne tombe pas du ciel
     const pool = defs.some((d) => d.reaction === 'cadre') ? defs.filter((d) => d.reaction === 'cadre') : defs;
     if (!pool.length) return;
     const exit = this.props.find((p) => p.kind === 'sortie');
@@ -602,7 +603,7 @@ export class Game {
 
   /**
    * Les lignes qui tiennent et les véhicules sont pleins pour le héros : on l'écarte du côté où il se trouve.
-   * Une ligne barre aussi le passage au-dessus d'elle (LINE_REACH) : on ne la saute pas, on la déborde.
+   * Une ligne barre aussi le passage au-dessus d'elle (LINE_REACH) : on ne la saute pas, on la casse.
    */
   blockHero() {
     const { hero, world } = this;
@@ -617,25 +618,6 @@ export class Game {
       if (x === undefined) continue;
       hero.x = x;
       hero.vx = 0;
-      if (e.def.debordement > 0 && e.nag <= 0) {
-        e.nag = NAG;
-        const need = e.def.debordement;
-        // Jamais d'impasse : devant une ligne qui tient, des passants rejoignent la manif, peu à peu.
-        // Si elle n'a pas grossi depuis (gazée, interpellée pendant qu'elle attend), il en vient deux fois plus,
-        // puis quatre fois… : aucune perte ne peut la tenir indéfiniment sous le nombre voulu.
-        let joined = 0;
-        if (this.crowd < need) {
-          e.boost = this.crowd > (e.best ?? -1) ? 1 : Math.min(PASSERS_BOOST, (e.boost || 1) * 2);
-          e.best = Math.max(e.best ?? -1, this.crowd);
-          const base = Math.ceil(need * PASSERS);
-          joined = Math.max(base, Math.min(need - this.crowd, base * e.boost));
-          this.addCrowd(joined);
-        }
-        this.emit('blocked', {
-          x: e.x + e.w / 2, y: e.y, feet: hero.y + hero.h, need, crowd: this.crowd, joined,
-          dir: Math.sign(hero.x + hero.w / 2 - (e.x + e.w / 2)) || -1, // de quel côté de la ligne est le héros
-        });
-      }
     }
   }
 }

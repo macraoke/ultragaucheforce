@@ -10,8 +10,11 @@ fiche: cnews-amendes-novembre-2024
 fond: ville
 cortege: oui
 manif: 5
+nasse.ennemi: crs
+nasse.nombre: 3
+nasse.vitesse: 20
 
-panneau.1: Assez nombreux, le barrage cède
+panneau.1: Tracts et manif : le barrage cède
 
 c: crs
 b: barrage
@@ -87,7 +90,7 @@ $: liasse
 ............................................................B...........................................B.................B...........................B........................................................................................................................LLLLLLLLL........................
 ............................................................V...........................................V.................V...........................V.......................................................................................................................LLLLLLLLLLL.......................
 ............................................................V..P...................P....................V.................V..P...........P............V......................................................................................................................LLLLLLLLLLLLL......................
-...D.....x.=.....l..<..K..y.,...f...x..a..u..j..~..,..k.=...V..PPs..XX..@.<.f.....PPa...n...u...c...Q...V..x..a..f..yp.~..V..PP.c...e.a.KPi.u...a..Q..V..x..c.c...<..f.py..lXX.eax..a..i.s.1.K.u.Q.t.~...b..........i...a....p..x....n...<..f...c.......K.aQ..K.......^..$..LLLLLLLLLLLLLLL..$....^.......S.....
+...D.....x.=.....l..<..K..y.,...f...x..a..u..j.N~..,..k.=...V..PPs..XX..@.<.f.....PPa...n...u...c...Q...V..x..a..f..yp.~..V..PP.c...e.a.KPi.u...a..Q..V..x..c.c...<..f.py..lXX.eax..a..i.s.1.K.u.Q.t.~...b..........i...a....p..x....n...<..f...c.......K.aQ..K.......^..$..LLLLLLLLLLLLLLL..$....^.......S.....
 GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGPPGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGPPGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGPPGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGPPGGGGGGGGPPGGGOOOOOOOGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
 GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG..GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG..GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG..GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG..GGGGGGGG..GGGOOOOOOOGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG..GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG..GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG..GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG..GGGGGGGG..GGGOOOOOOOGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
