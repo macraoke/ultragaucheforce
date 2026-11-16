@@ -1,0 +1,12 @@
+texte: Le temps de la négociation est passé.
+auteur: Bruno Le Maire
+fonction: ministre de l'Économie
+date: 2022-10-17
+contexte: Au micro de BFMTV, à propos des raffineries et des dépôts de carburant bloqués par la grève.
+categorie: diabolisation
+mot: NÉGOCIATION PASSÉE
+note: Suite : « Il y a eu une négociation, il y a eu un accord, cela veut dire qu'il faut que force reste à la voix majoritaire », puis « C'est inacceptable et c'est illégitime » à propos du blocage. Il appelle à « libérer les dépôts de carburants, libérer les raffineries qui sont bloquées et utiliser les moyens de la réquisition » (La Libre, d'après Belga).
+source.titre: La Libre — Le gouvernement français réquisitionne de nouveaux dépôts de carburant : "Nous le faisons pour les Français, nous ne le faisons pas contre les grévistes"
+source.url: https://www.lalibre.be/economie/conjoncture/2022/10/17/le-gouvernement-francais-requisitionne-de-nouveaux-depots-de-carburant-nous-le-faisons-pour-les-francais-nous-ne-le-faisons-pas-contre-les-grevistes-4SRARLFE4JCWDCLP3FCFJIJZVY/
+source.nature: presse
+verifie: 2026-11-16
