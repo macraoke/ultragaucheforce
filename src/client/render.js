@@ -91,7 +91,7 @@ export class Renderer {
       else if (e.type === 'bubble') this.floaters.push({ x: e.x, y: e.y, text: e.text, t: 1.6, color: e.color || '#f4f4f4' });
       else if (e.type === 'recruit') {
         this.floaters.push({ x: e.x, y: e.y - 14, text: `+ ${e.n.toLocaleString('fr-FR')}`, t: 1.8, color: '#f6c21c', size: 11 });
-        if (e.healed) this.floaters.push({ x: e.x, y: e.y - 28, text: `+${e.healed}`, t: 2.2, color: '#f6c21c', size: 18 }); // un camarade relevé
+        if (e.healed) this.floaters.push({ x: e.x, y: e.y - 28, text: 'SOIGNÉ', t: 1.8, color: '#38b764', size: 9 });
         this.burst(e.x, e.y, '#f6c21c', 10, 80);
         this.burst(e.x, e.y, '#e43b44', 8, 60);
       } else if (e.type === 'heroCard' && e.x !== undefined) {

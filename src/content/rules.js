@@ -200,7 +200,7 @@ const HERO_WEAPONS = Object.fromEntries(Object.entries(WEAPONS).filter(([, w]) =
 function buildHero(f, ctx, report) {
   const spec = {
     nom: req(), inspiration: str(), traitement: str(), cri: str(), citation: str(),
-    vitesse: num(60, 220, 140), saut: num(1.5, 5, 3.2),
+    pv: num(1, 5, 2), vitesse: num(60, 220, 140), saut: num(1.5, 5, 3.2),
     largeur: num(6, 16, 10), hauteur: num(8, 24, 14), statut: pick(['jouable', 'test']), ...CARD, ...CREDITS,
   };
   const out = readFields(f, spec, report, under('arme', 'speciale'));
@@ -232,7 +232,7 @@ function buildEnemy(f, ctx, report) {
 
 /** Une recrue : quelqu'un (ou une assemblée) qui rejoint la manif quand le héros passe ou lui tend un tract. */
 function buildRecruit(f, ctx, report) {
-  // `soin` : combien de personnages perdus la recrue relève quand elle rejoint la manif (une street medic).
+  // `soin` : combien de coups la recrue rend au personnage en jeu quand elle rejoint la manif (une street medic).
   const spec = { nom: req(), apport: num(1, 500, 0), multiplie: num(1.5, 5, 0), soin: num(0, 3, 0), slogan: list(), ...CARD, ...CREDITS };
   const out = readFields(f, spec, report);
   if (f.has('apport') === f.has('multiplie')) {

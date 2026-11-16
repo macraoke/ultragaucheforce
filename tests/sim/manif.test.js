@@ -6,7 +6,6 @@ import assert from 'node:assert/strict';
 import { fixtureBundle, flat, play, run, settle } from './helpers.js';
 import { TILE } from '../../src/sim/world.js';
 import { LINE_REACH } from '../../src/sim/enemy.js';
-import { START_LIVES } from '../../src/sim/game.js';
 
 const enemy = (id) => ({ type: 'ennemi', id });
 const recruit = (id) => ({ type: 'recrue', id });
@@ -61,19 +60,18 @@ test('recrue « multiplie » : l’assemblée générale double la manif, quelle
   assert.equal(alone.cortege.length, 0);
 });
 
-test('recrue qui soigne : une street medic relève un personnage perdu, au bas de la pile', () => {
+test('recrue qui soigne : un medic rend des points de vie au héros, sans dépasser son maximum', () => {
   const lvl = () => flat({ cortege: true, legende: { m: recruit('soigneuse') }, draw: (put, ground) => put(ground, 9, 'm') });
   const hurt = settle(play(lvl()));
-  hurt.fallen.push(hurt.stack.pop());
-  assert.equal(hurt.lives, START_LIVES - 1);
+  hurt.hero.hp = 1;
   const events = run(hurt, 60, { right: true });
-  assert.equal(hurt.lives, START_LIVES, 'le camarade tombé reprend sa place');
-  assert.deepEqual(hurt.fallen, []);
+  assert.equal(hurt.hero.hp, 2);
   assert.equal(of(events, 'recruit')[0].healed, 1);
 
   const fine = settle(play(lvl()));
-  assert.equal(of(run(fine, 60, { right: true }), 'recruit')[0].healed, 0, 'personne à relever : rien');
-  assert.equal(fine.lives, START_LIVES);
+  const full = fine.hero.hp;
+  assert.equal(of(run(fine, 60, { right: true }), 'recruit')[0].healed, 0, 'en pleine forme : rien à soigner');
+  assert.equal(fine.hero.hp, full);
 });
 
 // ---------------------------------------------------------------- dispersions

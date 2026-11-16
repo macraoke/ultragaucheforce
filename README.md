@@ -13,7 +13,7 @@ Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les platea
 - **Faire grossir la manif.** Une soignante, un cheminot, une intersyndicale : chaque recrue compte, une assemblée générale double tout.
 - **Déborder.** Un barrage ne se casse pas : il cède devant le nombre.
 - **Creuser, grimper.** Tout le décor se détruit. Sous la rue, le métro, les catacombes, la salle des coffres ; au-dessus, six étages et les toits.
-- **Libérer.** Chaque camarade sorti de garde à vue rejoint l'équipe et se joue tout de suite. Un coup, et on repart avec le précédent.
+- **Libérer.** On part avec un seul personnage. Chaque camarade sorti de garde à vue rejoint l'équipe et se joue tout de suite ; quand il tombe, on repart avec le précédent.
 - **Débloquer.** Les gens qui rejoignent la manif portent parfois une pancarte : commune, rare, épique ou légendaire. Toutes ont été vues en manif.
 - **Taxer.** Le boss est assis sur sa fortune. On en prend 2 % : de quoi payer, par exemple, 64 000 enseignants. Les comparaisons changent à chaque partie.
 

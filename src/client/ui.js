@@ -342,7 +342,7 @@ export class Hud {
 
   update(game) {
     const { hero, boss } = game;
-    const state = [hero.def.id, game.stack.join(), hero.charges, game.panicLevel, Math.round(game.panic), game.crowd,
+    const state = [hero.def.id, hero.hp, game.stack.join(), hero.charges, game.panicLevel, Math.round(game.panic), game.crowd,
       boss?.active && boss.state !== 'gone' ? boss.hp : -1].join('|');
     if (state === this.last) return; // on ne touche au DOM que si quelque chose a changé
     this.last = state;

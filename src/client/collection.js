@@ -210,7 +210,7 @@ function references(bundle, item) {
 
 function facts(kind, item) {
   if (kind === 'heros') {
-    return [`vitesse ${bar(item.vitesse, 200)}  saut ${bar(item.saut, 4.5)}`,
+    return [`encaisse ${item.pv} coups  vitesse ${bar(item.vitesse, 200)}  saut ${bar(item.saut, 4.5)}`,
       item.speciale?.nom && `Spéciale : ${item.speciale.nom}`];
   }
   if (kind === 'ennemis') {

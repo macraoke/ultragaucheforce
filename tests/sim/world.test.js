@@ -64,14 +64,14 @@ test('réaction en chaîne : tonneau → tonneau → mur', () => {
   assert.equal(game.world.at(12, ground), null, 'second tonneau parti');
   assert.ok(!game.world.solid(14, ground) && !game.world.solid(14, ground - 1), 'le mur derrière est tombé');
   assert.ok(game.world.solid(12, ground + 1), 'le sol d’acier tient');
-  assert.equal(game.stats.deaths, 0, 'le héros, à distance, n’a rien');
+  assert.equal(game.hero.hp, game.hero.def.pv, 'le héros, à distance, n’a rien');
   assert.ok(events.some((e) => e.type === 'debris'), 'des éclats sont signalés au client');
 });
 
 test('une explosion de tonneau blesse le héros trop proche', () => {
   const game = settle(play(flat({ draw: (put, ground) => put(ground, 4, 'X') })));
   run(game, 60, { fire: true });
-  assert.equal(game.stats.deaths, 1);
+  assert.equal(game.hero.hp, game.hero.def.pv - 1);
 });
 
 test('bords du monde : pleins à gauche et à droite, ciel ouvert, vide sous la carte', () => {

@@ -49,6 +49,7 @@ nom: La Casserolière
 traitement: archétype — une manifestante armée d'une casserole
 cri: ON EST LÀ !
 fiche: casseroles-arrete
+pv: 2
 vitesse: 145
 saut: 3.2
 auteur: ton pseudo
@@ -98,6 +99,7 @@ speciale.etourdit: 3
 | `traitement` | en une phrase : archétype, ou nature de la caricature | |
 | `cri` | la phrase du carton de déblocage : un slogan réel ou ses propres mots | |
 | `citation`, `fiche`, `origine` | sa carte | |
+| `pv` | combien de coups il encaisse avant de céder sa place au personnage précédent | 1 à 5 |
 | `vitesse` | pixels par seconde | 60 à 220 |
 | `saut` | hauteur du saut, en cases | 1,5 à 5 |
 | `largeur`, `hauteur` | la boîte de collision, en pixels | 6 à 16, 8 à 24 |
@@ -138,7 +140,7 @@ auteur: ton pseudo
 | `nom` | obligatoire | |
 | `apport` | combien de personnes rejoignent la manif | 1 à 500 |
 | `multiplie` | à la place d'`apport` : la manif est multipliée (une assemblée générale) | 1,5 à 5 |
-| `soin` | combien de personnages perdus elle relève en rejoignant la manif (une street medic) | 0 à 3 |
+| `soin` | combien de coups elle rend au personnage en jeu en rejoignant la manif (une street medic) | 0 à 3 |
 | `slogan` | ce qu'elle lance en rejoignant : un slogan réellement scandé ou une pancarte vue ; répétable | |
 | `fiche`, `origine` | sa carte | |
 

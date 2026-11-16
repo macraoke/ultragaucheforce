@@ -21,7 +21,7 @@ export const FEEL = {
 
 export function createHero(def, cx, feetY) {
   const hero = {
-    x: 0, y: 0, w: 0, h: 0, vx: 0, vy: 0, facing: 1, aim: 0, onGround: false, onWall: 0, invuln: 0,
+    x: 0, y: 0, w: 0, h: 0, vx: 0, vy: 0, facing: 1, aim: 0, onGround: false, onWall: 0, hp: 0, invuln: 0,
     def: null, charges: 0, anim: 'repos', animTime: 0, clones: [], dead: false,
     coyote: 0, buffer: 0, cut: true, cooldown: 0, gasTime: 0, hitX: 0, hitY: 0,
   };
@@ -29,13 +29,14 @@ export function createHero(def, cx, feetY) {
   return hero;
 }
 
-/** Change de personnage sans bouger les pieds : nouvelle boîte, charges pleines. */
+/** Change de personnage sans bouger les pieds : nouvelle boîte, vie et charges pleines. */
 export function setHeroDef(hero, def, cx = hero.x + hero.w / 2, feetY = hero.y + hero.h) {
   hero.def = def;
   hero.w = def.largeur;
   hero.h = def.hauteur;
   hero.x = cx - hero.w / 2;
   hero.y = feetY - hero.h;
+  hero.hp = def.pv;
   hero.charges = def.speciale?.charges ?? 0;
   hero.cooldown = 0;
   hero.clones = [];

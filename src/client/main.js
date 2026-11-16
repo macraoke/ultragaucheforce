@@ -135,12 +135,24 @@ function readSigns() {
   });
 }
 
+/**
+ * Le personnage de départ : celui que le joueur a choisi ; sinon un de ceux qu'il a débloqués, au hasard ;
+ * et la toute première fois, n'importe lequel, au hasard.
+ */
+function startingHero() {
+  const playable = Object.values(bundle.heros).filter((x) => x.statut === 'jouable').map((x) => x.id);
+  const mine = playable.filter((x) => isFound(save, 'heros', x));
+  if (mine.includes(save.heros)) return save.heros;
+  const pool = mine.length ? mine : playable;
+  return pool[Math.floor(Math.random() * pool.length)] ?? '';
+}
+
 function start(id, level = null) {
   custom = level;
   const again = current?.id === (id ?? 'atelier'); // « Recommencer » : les cartes déjà gagnées dans ce niveau restent
   current = { id: id ?? 'atelier', level: level ?? bundle.niveaux[id] };
   // Dans l'Atelier, on essaie le niveau avec le héros que dit sa fiche, pas celui de la sauvegarde.
-  game = new Game(bundle, id, { seed: Math.floor(Math.random() * 1e9), level, hero: level ? '' : save.heros });
+  game = new Game(bundle, id, { seed: Math.floor(Math.random() * 1e9), level, hero: level ? '' : startingHero() });
   renderer.snap(game);
   hud.reset();
   if (!begin && !again) won = []; // un changement de héros sur le carton d'ouverture garde les cartes déjà gagnées

@@ -2,6 +2,7 @@ nom: L'Écoterroriste
 traitement: un jardinier, comme le mot le laisse imaginer
 cri: ON EST PLUS CHAUDS QUE LE CLIMAT !
 citation: darmanin-ecoterrorisme
+pv: 2
 vitesse: 150
 saut: 3.6
 fiche: soulevements-dissolution-annulee

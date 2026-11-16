@@ -53,10 +53,11 @@ export function joinRecruit(game, r) {
   const x = r.x + r.w / 2;
   game.stats.recruits++;
   game.addCrowd(n);
-  // Une street medic relève des camarades tombés : ils reprennent place au bas de la pile.
-  const back = def.soin > 0 ? game.fallen.splice(-def.soin).filter(Boolean) : [];
-  game.stack.unshift(...back);
-  game.emit('recruit', { id: def.id, n, crowd: game.crowd, x, y: r.y, healed: back.length });
+  // Une street medic soigne : elle rend des coups au personnage en jeu, sans dépasser son maximum.
+  const { hero } = game;
+  const healed = def.soin > 0 && !hero.dead ? Math.min(def.soin, hero.def.pv - hero.hp) : 0;
+  hero.hp += healed;
+  game.emit('recruit', { id: def.id, n, crowd: game.crowd, x, y: r.y, healed });
   if (def.slogan.length) game.emit('bubble', { x, y: r.y - 6, text: def.slogan[(game.stats.recruits - 1) % def.slogan.length] });
   game.sfx('recrue', x);
   game.discover('recrue', def.id);

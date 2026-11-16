@@ -60,7 +60,7 @@ Déposé dans `content/niveaux/`, il apparaît dans « Niveaux de la communauté
 | `manif` | combien de manifestants au départ (10 avec un cortège, sauf indication ; 5000 au plus) |
 | `panneau.1` à `panneau.9` | le texte du panneau placé par le chiffre correspondant sur la carte |
 | un signe de légende | `b: bac` place une unité, une recrue ou un décor à chaque `b` de la carte |
-| `heros` | le héros de départ (sinon le premier disponible) ; dans la campagne, le joueur peut en choisir un autre sur le carton d'ouverture |
+| `heros` | le héros avec lequel on essaie le niveau dans l'Atelier. En jeu, le joueur choisit parmi ceux qu'il a débloqués ; la première fois, le hasard choisit |
 | `camarades` | l'ordre des héros libérés, séparés par une barre verticale : `melenchotron \| zuc-man` (sinon au hasard) |
 | `boss` | l'identifiant d'un boss de `content/boss/` ; il faut alors un `Y` sur la carte |
 | `nasse.ennemi` | l'unité qui forme la nasse ; obligatoire s'il y a un `N` sur la carte |
@@ -161,6 +161,7 @@ Au même endroit, c'est toujours la même pancarte. Modèles : [`banderole`](../
 - **Tout mur se grimpe** en sautant plusieurs fois contre lui. Évitez seulement un surplomb d'acier au-dessus d'un mur à escalader.
 - Pas de trou de plus de quatre cases de large.
 - Écartez les tonneaux de deux cases : assez près pour la réaction en chaîne, assez loin pour qu'on la voie. Un tonneau ouvre le sol sur deux rangées : une cave juste dessous devient un raccourci.
+- **Des gardes à vue sur le chemin** : on part avec un seul personnage, les autres en sortent.
 - **Des recrues sur le chemin au sol** avant chaque ligne : le robot joueur ne monte pas les chercher.
 - Une ligne (barrage, grille) se contourne par-dessous si le sol se creuse. Pour qu'elle ne cède qu'au nombre, posez-la sur du socle.
 - Trois à six minutes suffisent : un sauvetage, une ligne à déborder, un passage à casser, la sortie.

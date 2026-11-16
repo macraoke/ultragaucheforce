@@ -20,7 +20,7 @@ test('charge : les sommations, une par une, puis la ruée en ligne droite, puis 
   const said = [];
   let rushedAt = -1;
   let x0 = null;
-  for (let i = 0; i < 200 && !hero.dead; i++) {
+  for (let i = 0; i < 200 && hero.hp === hero.def.pv; i++) {
     run(game, 1);
     if (foe.bubble && said.at(-1) !== foe.bubble.text) said.push(foe.bubble.text);
     if (foe.rush?.phase === 'sommation') x0 = foe.x;
@@ -29,7 +29,7 @@ test('charge : les sommations, une par une, puis la ruée en ligne droite, puis 
   assert.deepEqual(said, ['PREMIÈRE SOMMATION', 'DERNIÈRE SOMMATION'], 'dans l’ordre de la fiche');
   assert.ok(rushedAt >= 110, `deux sommations d'une seconde avant de charger (ruée au pas ${rushedAt})`);
   assert.ok(x0 - foe.x > 60, 'la ruée couvre du terrain d’un coup');
-  assert.equal(game.stats.deaths, 1, 'le contact pendant la ruée coûte un personnage');
+  assert.equal(hero.hp, hero.def.pv - 1, 'le contact pendant la ruée blesse');
   assert.equal(foe.state, 'stunned', 'après le choc, il recule, sonné');
 
   // Charges suivantes : plus de sommation, un court élan, et la même distance à chaque fois.
@@ -93,7 +93,7 @@ test('tir visé : une visée que l’on voit venir, puis un tir vers le héros, 
   assert.ok(shot.vx < 0 && shot.vy > 0, 'le tir descend vers le héros');
   assert.ok(Math.abs(Math.hypot(shot.vx, shot.vy) - foe.def.arme.vitesse) < 1, 'à la vitesse de la fiche');
   run(game, 60);
-  assert.equal(game.stats.deaths, 1, 'immobile, le héros est touché');
+  assert.equal(hero.hp, hero.def.pv - 1, 'immobile, le héros est touché');
 });
 
 test('tir visé : la visée se fige juste avant le tir, on peut l’esquiver', () => {
@@ -112,7 +112,7 @@ test('tir visé : la visée se fige juste avant le tir, on peut l’esquiver', (
   run(game, 6, { right: true });
   assert.deepEqual({ x: foe.aim.x, y: foe.aim.y }, { x: locked.x, y: locked.y }, 'le point ne suit plus');
   run(game, 90, { right: true });
-  assert.equal(game.stats.deaths, 0, 'le tir passe derrière');
+  assert.equal(hero.hp, hero.def.pv, 'le tir passe derrière');
 });
 
 // ---------------------------------------------------------------- canon à eau
@@ -143,7 +143,7 @@ test('canon à eau : le jet repousse le héros et le cortège sans blesser perso
   assert.ok(jets >= 115 && jets <= 125, `arme.duree: 2 s de jet (${jets} pas)`);
   assert.ok(to < from - 60, `le héros recule alors qu'il avance (${from.toFixed(0)} → ${to.toFixed(0)})`);
   assert.ok(pushed, 'le cortège est repoussé aussi');
-  assert.ok(!hero.dead, 'aucun dégât');
+  assert.equal(hero.hp, hero.def.pv, 'aucun dégât');
   assert.equal(game.crowd, crowd, 'aucune dispersion');
   assert.equal(game.stats.deaths, 0);
 });
@@ -171,7 +171,7 @@ test('moto : elle traverse, dépasse le héros, fait demi-tour et revient', () =
     if (side && sides.at(-1) !== side) sides.push(side);
     stunned ||= moto.state === 'stunned';
     farthest = Math.max(farthest, centre(hero) - centre(moto));
-    if (hitAt < 0 && game.stats.deaths > 0) hitAt = i;
+    if (hitAt < 0 && hero.hp < hero.def.pv) hitAt = i;
   }
   assert.deepEqual(sides, [1, -1, 1], 'arrivée par la droite, passée à gauche, revenue à droite');
   assert.ok(hitAt > 0, 'le passage bouscule le héros');

@@ -100,7 +100,7 @@ Le public visé est autant la classe moyenne que les jeunes.
 
 - **Des niveaux en hauteur et en profondeur** : sol épais qu'on creuse partout, galeries, caves, métro, immeubles à étages. Le héros tire aussi vers le bas et vers le haut.
 - **Les pancartes se débloquent** : toutes se valent, avec ou sans source ; chacune a une rareté tirée de son texte ; les gens qui rejoignent la manif en portent parfois une, tirée au hasard.
-- **Un personnage, une vie** : pas de points de vie. Un coup, et le personnage est perdu ; le précédent prend sa place. Chaque camarade libéré rejoint la pile ; son carton de déblocage ne joue que la première fois.
+- **Une pile de personnages** : on part avec un seul, tiré au hasard la première fois, choisi ensuite. Chacun encaisse quelques coups, et sa tête se vide à l'écran : pas de cœurs. Quand il tombe, le précédent prend sa place ; pile vide, niveau perdu. Chaque camarade libéré rejoint la pile ; son carton de déblocage ne joue que la première fois.
 - **Le score, c'est la manif** : sa taille à l'arrivée, avec un record par niveau.
 - **La taxe, par un dictionnaire** : à qui comparer la fortune, ce que 2 % paieraient ; des fiches sourcées, tirées au hasard à chaque partie.
 - **Des écrans courts** : un écran, une idée ; ce qui précise se déplie. Une citation est simplement signée, et sa signature mène à la source.

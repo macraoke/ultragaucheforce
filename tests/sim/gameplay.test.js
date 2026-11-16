@@ -6,7 +6,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
 import { fixtureBundle, flat, play, run, settle } from './helpers.js';
-import { Game, START_LIVES } from '../../src/sim/game.js';
+import { Game } from '../../src/sim/game.js';
 import { TILE } from '../../src/sim/world.js';
 import { botActions } from '../../src/sim/bot.js';
 
@@ -22,8 +22,9 @@ test('sauvetage : exactement une vie de plus, un autre héros, une seule fois', 
   const game = settle(play(flat({ draw: (put, ground) => put(ground, 6, 'K') })));
   const before = game.hero.def.id;
   const events = run(game, 60, { right: true });
-  assert.equal(game.lives, START_LIVES + 1, 'une vie de plus');
+  assert.equal(game.lives, 4, 'une vie de plus');
   assert.notEqual(game.hero.def.id, before, 'le héros a changé');
+  assert.equal(game.hero.hp, game.hero.def.pv, 'vie pleine');
   assert.equal(game.hero.charges, game.hero.def.speciale.charges, 'charges pleines');
   assert.deepEqual(events.filter((e) => e.type === 'heroCard').map((e) => e.hero), [game.hero.def.id]);
   assert.deepEqual(events.filter((e) => e.type === 'card'), [{ type: 'card', id: 'garde-a-vue' }], 'une fiche « droits » débloquée');
@@ -31,7 +32,7 @@ test('sauvetage : exactement une vie de plus, un autre héros, une seule fois', 
 
   run(game, 40, { left: true });
   run(game, 60, { right: true }); // repasse sur la cage ouverte
-  assert.equal(game.lives, START_LIVES + 1);
+  assert.equal(game.lives, 4);
   assert.equal(game.stats.rescues, 1);
 });
 
@@ -257,9 +258,9 @@ test('gaz lacrymogène : étourdit aussi les automates et blesse le héros qui s
   game.clouds.push({ x: hero.x + hero.w / 2, y: hero.y + hero.h / 2, r: 40, t: 3 });
   run(game, 30);
   assert.equal(game.enemies[0].state, 'stunned');
-  assert.equal(game.stats.deaths, 0, 'une bouffée ne fait rien');
+  assert.equal(hero.hp, hero.def.pv, 'une bouffée ne blesse pas');
   run(game, 60);
-  assert.equal(game.stats.deaths, 1, 'une seconde dans le nuage : le personnage est perdu');
+  assert.equal(hero.hp, hero.def.pv - 1, 'une seconde dans le nuage, si');
   run(game, 200);
   assert.equal(game.clouds.length, 0, 'le nuage se dissipe');
 });
@@ -275,20 +276,22 @@ test('les automates dorment tant que le héros est loin (distance fixe, pas l’
   assert.notEqual(far.state, 'sleep', 'réveillé à l’approche du héros');
 });
 
-test('contact : un coup, et le personnage est perdu ; le suivant repart du piquet, invulnérable un instant', () => {
+test('contact : deux points de vie ; après un coup, le héros est invulnérable et l’automate recule, sonné', () => {
   const game = settle(play(flat({ legende: { f: enemy('fonceur') }, draw: (put, ground) => put(ground, 8, 'f') })));
   const { hero } = game;
   let events = [];
-  for (let i = 0; i < 200 && !hero.dead; i++) events = events.concat(run(game, 1));
-  assert.ok(hero.dead, 'premier contact : à terre');
+  for (let i = 0; i < 200 && hero.hp === hero.def.pv; i++) events = events.concat(run(game, 1));
+  assert.equal(hero.hp, 1, 'premier contact : un point de vie en moins');
   assert.ok(events.some((e) => e.type === 'sfx' && e.id === 'degat'));
-  assert.ok(types(events).includes('death'));
-  assert.equal(game.lives, START_LIVES - 1, 'un personnage de moins dans la pile');
-  assert.deepEqual(game.fallen, [hero.def.id], 'et on sait lequel est tombé');
   const foe = game.enemies[0];
   assert.equal(foe.state, 'stunned', 'l’automate qui a bousculé le héros reste sonné');
-  for (let i = 0; i < 200 && hero.dead; i++) run(game, 1);
-  assert.ok(!hero.dead && hero.invuln > 0, 'le suivant repart, invulnérable un instant');
+  run(game, 50);
+  assert.equal(hero.hp, 1, 'invulnérable juste après le coup');
+  events = [];
+  for (let i = 0; i < 600 && !hero.dead; i++) events = events.concat(run(game, 1));
+  assert.ok(hero.dead, 'second contact, plus tard : à terre');
+  assert.equal(game.lives, 2);
+  assert.ok(types(events).includes('death'));
 });
 
 // ---------------------------------------------------------------- panique et cortège
@@ -379,12 +382,12 @@ const pit = (extra = () => {}) => flat({
 
 test('tomber sous la carte coûte une vie ; plus de vie = partie perdue', () => {
   const game = settle(play(pit()));
-  const events = run(game, 4000, { right: true });
+  const events = run(game, 2000, { right: true });
   assert.equal(game.status, 'lost');
   assert.equal(game.lives, 0);
-  assert.equal(game.stats.deaths, START_LIVES);
-  assert.equal(events.filter((e) => e.type === 'death').length, START_LIVES);
-  assert.equal(events.filter((e) => e.type === 'respawn').length, START_LIVES - 1);
+  assert.equal(game.stats.deaths, 3);
+  assert.equal(events.filter((e) => e.type === 'death').length, 3);
+  assert.equal(events.filter((e) => e.type === 'respawn').length, 2);
   assert.equal(events.at(-1).type, 'lost');
   const frozen = game.time;
   game.step({ right: true });
@@ -401,14 +404,15 @@ test('reprise au dernier piquet de grève allumé, avec une courte invulnérabil
   assert.ok(respawned, 'le héros est revenu');
   assert.ok(Math.abs(respawned.x + game.hero.w / 2 - 7.5 * TILE) < 1, `reprise au piquet (x=${respawned.x})`);
   assert.ok(respawned.invuln > 1);
-  assert.equal(game.lives, START_LIVES - 1);
+  assert.equal(game.lives, 2);
 });
 
 test('mode invincible : aucun dégât, et la chute ramène au piquet sans coûter de vie', () => {
   const game = settle(play(pit((put, ground) => put(ground, 4, 'X')), { invincible: true }));
   run(game, 900, { right: true, fire: true });
   assert.equal(game.status, 'playing');
-  assert.equal(game.lives, START_LIVES);
+  assert.equal(game.lives, 3);
+  assert.equal(game.hero.hp, game.hero.def.pv);
   assert.ok(game.stats.deaths >= 2, 'il est bien tombé plusieurs fois');
 });
 
