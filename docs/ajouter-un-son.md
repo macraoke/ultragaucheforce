@@ -73,9 +73,9 @@ auteur: ton pseudo
 | `titre`, `artiste` | affichés dans « Radio Manif », avec le lien |
 | `url` | l'adresse de la piste sur SoundCloud |
 | `ou` | `menu`, `jeu` (tous les niveaux), `boss`, `partout`, ou l'identifiant d'un niveau (`millevaches`) |
-| `puis` | facultatif : l'identifiant de la piste qui suit celle-ci quand elle finit. La piste qui en annonce une autre passe la première à son endroit ; celle qui suit ne se tire jamais au hasard. |
+| `puis` | facultatif : l'identifiant de la piste qui suit celle-ci quand elle finit, ou prend sa place si elle ne se charge pas. Celle qui suit ne se tire jamais au hasard. |
 | `licence` | celle qu'affiche la page de la piste |
 
 Sur la page de la piste, **Share → Embed** doit proposer un lecteur. Préférez l'instrumental, et le Creative Commons : une piste « tous droits réservés » peut disparaître du lecteur du jour au lendemain.
 
-Une piste retirée laisse aussitôt la place à une autre ; une piste chiffrée, dans un navigateur qui ne sait pas la lire, au bout d'une quinzaine de secondes. Une piste réservée aux abonnés Go+ ne joue qu'un extrait de trente secondes. Au boss, l'extrait de « Abattez la citadelle » (Monarch) est suivi de la version entière de Ryukken (`puis`).
+Une piste retirée laisse aussitôt la place à une autre ; une piste chiffrée, dans un navigateur qui ne sait pas la lire, au bout d'une quinzaine de secondes. Une piste réservée aux abonnés Go+ ne joue qu'un extrait de trente secondes. Au boss, quand le hasard tire l'extrait de « Abattez la citadelle » (Monarch), la version entière de Ryukken le suit (`puis`).
