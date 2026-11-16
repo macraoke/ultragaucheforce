@@ -183,6 +183,125 @@ test('devant le héros, une pancarte se baisse tout de suite', () => {
   assert.ok(!r.raised.has(cortege[0]));
 });
 
+test('les porteurs lèvent leur pancarte à tour de rôle : une sur deux à la fois, toutes à leur tour', () => {
+  const r = renderer();
+  // Neuf porteurs bien espacés : rien ne les gêne, seul leur tour décide.
+  const cortege = Array.from({ length: 27 }, (_, i) => ({
+    x: 20 + i * 14, y: 170 + (Math.floor(i / 3) % 2) * 40, facing: 1, kind: ['pancarte', 'drapeau', 'fanfare'][i % 3],
+    label: i % 3 === 0 ? 'ON LÂCHE RIEN' : '', gassed: 0, animTime: 0,
+  }));
+  r.viewW = 600;
+  const carriers = cortege.filter((m) => m.kind === 'pancarte');
+  const ever = new Set();
+  let raised = 0;
+  let counted = 0;
+  for (let frame = 0; frame < 60 * 42; frame++) {
+    r.clock = frame / 60;
+    r.boxes = [];
+    r.raiseSigns(cortege);
+    if (r.clock < 6) continue; // les six premières secondes, toutes viennent d'arriver : toutes levées
+    counted++;
+    raised += r.raised.size;
+    for (const m of r.raised) ever.add(m);
+  }
+  assert.equal(ever.size, carriers.length, 'chaque pancarte a son tour');
+  const share = raised / counted / carriers.length;
+  assert.ok(share > 0.4 && share < 0.6, `levées ${(100 * share).toFixed(0)} % du temps`);
+});
+
+test('une pancarte qui vient d’arriver se lève tout de suite, puis rejoint la rotation', () => {
+  const r = renderer();
+  const cortege = Array.from({ length: 12 }, (_, i) => ({
+    x: 20 + i * 30, y: 170 + (Math.floor(i / 3) % 2) * 40, facing: 1, kind: ['pancarte', 'drapeau', 'fanfare'][i % 3],
+    label: i % 3 === 0 ? `PANCARTE ${i}` : '', gassed: 0, animTime: 0,
+  }));
+  r.viewW = 600;
+  const carriers = cortege.filter((m) => m.kind === 'pancarte');
+  for (let frame = 0; frame < 60 * 20; frame++) {
+    r.clock = frame / 60;
+    r.boxes = [];
+    r.raiseSigns(cortege);
+  }
+  // À 20 s, chacune est dans la rotation : on donne une pancarte nouvelle à un porteur dont ce n'est pas le tour.
+  const resting = carriers.find((m) => !r.raised.has(m));
+  assert.ok(resting, 'un porteur au repos');
+  resting.label = 'ELLE VIENT D’ARRIVER';
+  r.clock += 1 / 60;
+  r.boxes = [];
+  r.raiseSigns(cortege);
+  assert.ok(r.raised.has(resting), 'levée tout de suite');
+});
+
+test('une recrue sur plusieurs, à quelques secondes d’écart, crie son slogan ; le gain s’affiche toujours', () => {
+  const r = renderer();
+  const join = (x, text) => r.absorb([{ type: 'recruit', x, y: 150, n: 20 }, { type: 'bubble', x, y: 144, text }]);
+  r.clock = 0;
+  join(100, 'LA RETRAITE AVANT L’ARTHRITE');
+  r.clock = 1;
+  join(260, 'DE L’ARGENT POUR L’HÔPITAL');
+  let texts = r.floaters.map((f) => f.text);
+  assert.ok(texts.includes('LA RETRAITE AVANT L’ARTHRITE') && !texts.includes('DE L’ARGENT POUR L’HÔPITAL'), 'la seconde rejoint sans crier');
+  assert.equal(texts.filter((t) => t === '+ 20').length, 2, 'ses « + 20 » s’affichent tous les deux');
+  r.clock = 3.5;
+  join(400, 'TOUS ENSEMBLE');
+  texts = r.floaters.map((f) => f.text);
+  assert.ok(texts.includes('TOUS ENSEMBLE'), 'plus tard, une autre crie le sien');
+  r.absorb([{ type: 'bubble', x: 200, y: 100, text: 'DÉCONSTRUCTION !' }]);
+  assert.ok(r.floaters.some((f) => f.text === 'DÉCONSTRUCTION !'), 'le nom d’une spéciale passe toujours');
+});
+
+test('des pertes pour la même raison, au même endroit, font un seul texte qui s’additionne', () => {
+  const r = renderer();
+  r.absorb([{ type: 'dispersed', reason: 'gaz', n: 10, x: 40, y: 150 }, { type: 'dispersed', reason: 'gaz', n: 9, x: 60, y: 150 }]);
+  r.absorb([{ type: 'dispersed', reason: 'interpelle', n: 3, x: 50, y: 150 }]);
+  assert.deepEqual(r.floaters.map((f) => f.text), ['− 19 gazés', '− 3 interpellés']);
+});
+
+test('« GARDE À VUE » : écrit pour une cage à l’étage du héros, et jamais effacé tant qu’elle reste à l’écran', () => {
+  const r = renderer();
+  const said = [];
+  r.label = (text) => said.push(text);
+  const cage = { kind: 'cage', x: 300, y: 150, w: 16, h: 16, on: false };
+  const show = () => { said.length = 0; r.prop(cage); return said.length > 0; };
+  // Elle entre dans l'image : le héros est au même étage, elle s'écrit.
+  r.heroBox = { x: 20, y: 148, w: 12, h: 18 };
+  assert.ok(show());
+  // Le héros saute, s'éloigne d'un étage : tant qu'elle reste à l'écran, rien ne change.
+  for (const y of [100, 60, 148, 40]) {
+    r.heroBox = { x: 40, y, w: 12, h: 18 };
+    assert.ok(show(), `héros à ${y}`);
+  }
+  // Elle sort de l'image, puis revient pendant que le héros est trois étages plus bas : le dessin suffit.
+  r.cx = 400;
+  show();
+  r.cx = 0;
+  r.heroBox = { x: 40, y: 150 + 9 * 16, w: 12, h: 18 };
+  assert.ok(!show());
+  assert.ok(!show(), 'elle reste muette tant qu’il est en bas');
+  // Il remonte à son étage (le métro, le puits) : elle s'écrit, une fois, et ne s'efface plus, même s'il redescend.
+  r.heroBox = { x: 300, y: 148, w: 12, h: 18 };
+  assert.ok(show(), 'le héros arrive à côté : elle s’écrit');
+  for (const y of [150 + 9 * 16, 60, 148]) {
+    r.heroBox = { x: 40, y, w: 12, h: 18 };
+    assert.ok(show(), `héros à ${y} : toujours écrite`);
+  }
+});
+
+test('des unités identiques côte à côte n’ont qu’un écriteau ; une autre, plus loin ou différente, a le sien', () => {
+  const r = renderer();
+  const unit = (id, x) => ({ def: { id }, x, y: 150, w: 12, h: 18 });
+  r.groups.clear();
+  assert.equal(r.first('écriteau', unit('crs', 100)), true);
+  assert.equal(r.first('écriteau', unit('crs', 114)), false);
+  assert.equal(r.first('écriteau', unit('crs', 128)), false, 'de proche en proche, toute la ligne');
+  assert.equal(r.first('écriteau', unit('bac', 120)), true, 'une autre unité');
+  assert.equal(r.first('écriteau', unit('crs', 260)), true, 'un autre groupe');
+  // Une unité hors de l'image n'écrit rien : elle ne prend pas l'écriteau de sa voisine visible.
+  r.groups.clear();
+  assert.equal(r.first('écriteau', unit('gm', -50)), true);
+  assert.equal(r.first('écriteau', unit('gm', -20)), true, 'la voisine visible a le sien');
+});
+
 test('la bulle du boss reste entière dans la vue, sous le HUD', () => {
   const r = renderer();
   const def = Object.values(bundle.boss)[0];
@@ -228,6 +347,23 @@ test('un texte flottant ne monte jamais sous la bande du HUD', () => {
   for (const f of r.floaters) assert.ok(r.textBox(f.text, f.x, f.y, f.size, 150).y0 >= 100 / r.ratio - 1e-9, f.text);
   const [a, b] = r.floaters.map((f) => r.textBox(f.text, f.x, f.y, f.size, 150));
   assert.ok(!overlap(a, b), 'au plafond, le second passe dessous');
+});
+
+test('quand le HUD descend plus bas (puce passée à la ligne), le plafond descend avec lui', () => {
+  const r = renderer(5 / 3); // 667×375 couché : HUD sur trois lignes, jusqu'à 118 px
+  r.hudBottom = 118;
+  const below = (box) => box.y0 >= (118 + 4) / r.ratio - 1e-9;
+  r.float({ x: 40, y: 30, text: '+1', t: 2.4, size: 20, gain: true });
+  r.float({ x: 60, y: 10, text: 'ON EST LÀ !', rise: 0, t: 2.2, size: 12, keep: true });
+  r.placeFloaters([]);
+  for (const f of r.floaters) assert.ok(below(r.textBox(f.text, f.x, f.y, f.size, 150)), f.text);
+  const def = Object.values(bundle.boss)[0];
+  r.heroBox = { x: 100, w: 12, h: 18, y: 150 };
+  r.boxes = [];
+  const say = r.bossBubble({ def, x: 200, y: 10, w: 40, h: 60, state: 'idle', flash: 0, bubble: { text: 'QUAND LES TARIFS DE FRET' } });
+  assert.ok(below(say.box), 'la bulle du boss aussi');
+  r.hudBottom = 0;
+  assert.equal(r.ceiling(), 100 / r.ratio, 'sinon, SAFE_TOP au moins');
 });
 
 test('un gain (« + 20 », « +1 », « SOIGNÉ ») n’est jamais évincé avant un slogan', () => {

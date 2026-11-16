@@ -209,7 +209,7 @@ auteur: ton pseudo
 
 L'arme est facultative. Pour placer l'unité, un niveau la déclare dans sa légende : `c: compagnie-d-intervention`.
 
-Ce que le joueur voit, sans rien régler : une unité touchée blanchit et recule d'un pixel, puis montre sa jauge ; un bouclier de face arrête le coup (« PARÉ », des étincelles), mais pas le souffle d'une explosion ; sonnée, des étoiles tournent autour de sa tête ; gazée par son propre camp, elle pleure et tousse (« KOF ! ») ; quand elle repère le héros, un « ! » ; hors service, « EN GRÈVE ! » ou « EN PANNE », puis son `ecriteau` quelques secondes.
+Ce que le joueur voit, sans rien régler : une unité touchée blanchit et recule d'un pixel, puis montre sa jauge ; un bouclier de face arrête le coup (« PARÉ », des étincelles), mais pas le souffle d'une explosion ; sonnée, des étoiles tournent autour de sa tête ; gazée par son propre camp, elle pleure et tousse (« KOF ! ») ; quand elle repère le héros, un « ! » ; hors service, « EN GRÈVE ! » ou « EN PANNE », puis son `ecriteau` quelques secondes. Des unités identiques côte à côte font un groupe : un seul « ! », un seul « KOF ! », un seul écriteau pour le groupe, et un seul « EN GRÈVE ! » pour des unités voisines qui le disent en même temps.
 
 ### Une ligne : `ligne.vie`
 

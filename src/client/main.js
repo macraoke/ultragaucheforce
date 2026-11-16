@@ -198,7 +198,7 @@ function backToEdit() {
 function showEditButton(on) {
   editButton.hidden = !on;
   document.body.classList.toggle('essai', on);
-  hud.row = 0; // la première ligne du HUD a changé : à remesurer
+  hud.marks = null; // la première ligne du HUD a changé : à remesurer
 }
 
 /** La largeur des boutons du HUD à droite : au pouce, les notes s'arrêtent avant eux. */
@@ -339,14 +339,20 @@ function frame(now) {
   }
   renderer.device = input.device;
   hud.device = input.device;
-  if (!demo) placeSign();
+  if (!demo) hud.update(game); // d'abord le HUD : le dessin se place sous lui tel qu'il est à cette image
+  placeOverHud(demo);
   if (mode !== 'card') renderer.draw(game, dt); // sous le carton de héros, opaque, rien à redessiner (voir `handle`)
-  if (!demo) hud.update(game);
 }
 
-/** Au pouce, le panneau d'aide se pose sous la première ligne du HUD, puce SPÉ comprise (mesurée une fois, gardée). */
-function placeSign() {
-  if (document.body.classList.contains('tactile')) renderer.signTop = Math.max(30, Math.ceil((hud.rowBottom() + 6) / renderer.ratio));
+/**
+ * Ce que le dessin doit laisser au HUD, d'après sa mesure (faite une fois, refaite quand sa forme change) : au pouce,
+ * le panneau d'aide se pose sous sa première ligne, puce SPÉ comprise ; textes flottants et bulle du boss restent
+ * sous tout le HUD, compteur de la manif compris, même quand la puce passe à la ligne.
+ */
+function placeOverHud(demo) {
+  const { row, band } = demo ? { row: 0, band: 0 } : hud.measures();
+  renderer.hudBottom = band;
+  if (!demo && document.body.classList.contains('tactile')) renderer.signTop = Math.max(30, Math.ceil((row + 6) / renderer.ratio));
 }
 
 // ---------------------------------------------------------------- branchements
@@ -387,9 +393,9 @@ function layout() {
   renderer.resize();
   renderer.anchor = thumbs ? 0.58 : 0.62; // les pouces occupent les coins du bas : on remonte un peu l'action
   // Au clavier, les notes du coin gauche descendent jusqu'à 140 pixels environ : le panneau passe dessous.
-  // Au pouce, le HUD est sous le bandeau : le panneau se pose sous sa première ligne (`placeSign`).
+  // Au pouce, le HUD est sous le bandeau : le panneau se pose sous sa première ligne (`placeOverHud`).
   renderer.signTop = thumbs ? 30 : Math.max(30, Math.ceil((140 * (window.devicePixelRatio || 1)) / renderer.scale));
-  hud.row = 0; // à remesurer
+  hud.marks = null; // à remesurer
   fitRight();
   input.refreshTouch();
   screens.fitShelf(); // la Collection ouverte : une rangée de cartes tient-elle encore sous ses rayons ?
@@ -430,9 +436,9 @@ if (new URLSearchParams(location.search).has('debug')) {
     draw(snap = false) {
       if (snap) renderer.snap(game);
       renderer.tick(1 / 60);
-      placeSign();
-      renderer.draw(game, 1 / 60);
       hud.update(game);
+      placeOverHud(false);
+      renderer.draw(game, 1 / 60);
     },
     /** Avance de n pas avec des actions fixes, ou avec le robot si `actions` vaut 'bot'. */
     step(n = 1, actions = {}) {
