@@ -588,20 +588,23 @@ export class Renderer {
 
   /**
    * Une unité hors service : rien d'écrit au-dessus d'elle, le dessin suffit. Son dessin de fin, sinon le sien, apaisé,
-   * presque gris ; en grève, elle s'assoit en tailleur ; et une petite fleur pousse, dans sa main ou plantée sur elle.
+   * presque gris ; en grève, elle s'assoit en tailleur ; et une petite fleur pousse : assise, dans sa main ; sinon,
+   * plantée sur elle.
    */
   down(e) {
     const s = e.def.sprites;
     const rows = s.fin || s.repos;
     const sit = e.def.fin === 'greve' ? seated(rows) : null;
     const drawn = sit || rows;
-    const at = this.actor(e, drawn, { flash: e.flash > 0, dim: !s.fin && 'calm' });
+    // Un plateau de télé ne se retourne pas, hors service non plus : son enseigne resterait à l'envers.
+    const flip = e.def.deplacement === 'fixe' && e.def.reaction === 'cadre' ? false : e.facing < 0;
+    const at = this.actor(e, drawn, { flip, flash: e.flash > 0, dim: !s.fin && 'calm' });
     const seen = this.watch.get(e) ?? { state: e.state, at: -9 };
     seen.down ??= this.clock;
     this.watch.set(e, seen);
     if (!at) return;
     const spot = (sit && hand(drawn)) || crown(drawn);
-    const x = e.facing < 0 ? drawn[0].length - 1 - spot.x : spot.x;
+    const x = flip ? drawn[0].length - 1 - spot.x : spot.x;
     this.flowers.push([at.x + x, at.y + spot.y - 1, this.reduced ? 1 : (this.clock - seen.down) / BLOOM]);
   }
 

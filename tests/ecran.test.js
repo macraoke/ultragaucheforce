@@ -314,7 +314,7 @@ test('hors service, une unité n’a rien d’écrit au-dessus d’elle : elle s
     const def = bundle.ennemis[id];
     return { def, x: 120, y: 150, w: def.largeur, h: def.hauteur, facing: -1, flash: 0, state: 'done', ...extra };
   };
-  // Le CRS en grève, le canon à eau en panne : la simulation dit encore « EN GRÈVE ! », « EN PANNE », le CRS a son écriteau.
+  // Le CRS en grève, le canon à eau en panne : la simulation leur donne encore une bulle, « EN GRÈVE ! », « EN PANNE ».
   const crs = down('crs', { bubble: { text: 'EN GRÈVE !', t: 2.5 } });
   const canon = down('canon-a-eau', { x: 220, bubble: { text: 'EN PANNE', t: 2.5 } });
   assert.ok(crs.def.sprites.fin && !canon.def.sprites.fin);
@@ -338,6 +338,23 @@ test('hors service, une unité n’a rien d’écrit au-dessus d’elle : elle s
   const [x, y] = r.flowers[1];
   const top = canon.y + canon.h - canon.def.sprites.repos.length;
   assert.ok(y < top + 4 && Math.abs(x - (canon.x + canon.w / 2)) < 4, 'la fleur est plantée sur le canon à eau');
+});
+
+test('hors service, un plateau de télé ne se retourne pas ; en effets réduits, la fleur est là d’emblée', () => {
+  const r = renderer();
+  const flips = [];
+  const actor = r.actor.bind(r);
+  r.actor = (a, rows, opts) => { flips.push(opts.flip); return actor(a, rows, opts); };
+  r.combatBefore({ hero: { x: 0, y: 150, w: 12, h: 18, dead: false }, enemies: [] });
+  const def = bundle.ennemis.cnews;
+  assert.equal(def.deplacement, 'fixe');
+  assert.equal(def.reaction, 'cadre');
+  const set = { def, x: 120, y: 150, w: def.largeur, h: def.hauteur, facing: -1, flash: 0, state: 'done' };
+  r.reduced = true;
+  r.enemy(set);
+  assert.deepEqual(flips, [false], 'son enseigne se lit à l’endroit, comme quand il tourne');
+  assert.equal(r.flowers.length, 1);
+  assert.equal(r.flowers[0][2], 1, 'effets réduits : la fleur ne pousse pas, elle est là');
 });
 
 test('assise en tailleur : le haut du dessin jusqu’à la ceinture, puis les genoux ; une machine ne s’assoit pas', async () => {
