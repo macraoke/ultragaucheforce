@@ -95,6 +95,8 @@ export class Renderer {
     this.propSpot = new WeakMap(); // accessoire → { dx, dy } : son étiquette, écartée d'une gêne, tant qu'il est à l'écran (`placeTags`)
     this.layout = null; // où s'écrit l'étiquette de chaque accessoire du niveau (`tagLayout`)
     this.propHidden = new WeakSet(); // accessoires cachés sous la bande du HUD : sans étiquette tant qu'ils n'en sont pas sortis
+    this.gainMoved = new WeakMap(); // recrue → { dx, dy } : son gain, écarté d'une gêne, tant qu'elle est à l'écran (`gainSpot`)
+    this.gainHidden = new WeakSet(); // recrues cachées sous la bande du HUD : sans gain tant qu'elles n'en sont pas sorties
     this.held = new WeakMap(); // porteur de pancarte du cortège → { up, since, label } : levée ou baissée, depuis quand
     this.raised = new Set(); // les porteurs dont la pancarte est levée à cette image
     this.particles = [];
@@ -1041,8 +1043,55 @@ export class Renderer {
     const rows = s.image2 && Math.floor(r.animTime * 3) % 2 ? s.image2 : s.image;
     this.actor(r, rows, { flip: false, dy: Math.round(Math.sin(this.clock * 5 + r.x) * 1) });
     const gain = r.def.multiplie > 0 ? `× ${String(r.def.multiplie).replace('.', ',')}` : `+ ${r.def.apport}`;
-    this.reserve(gain, r.x + r.w / 2 - this.cx, r.y - 12 - this.cy, 8, 0);
-    this.label(gain, r.x + r.w / 2 - this.cx, r.y - 12 - this.cy, { size: 8, color: '#1a1c2c', bg: '#f6c21c' });
+    const spot = this.gainSpot(r, gain);
+    if (spot) this.label(gain, spot.x, spot.y, { size: 8, color: '#1a1c2c', bg: '#f6c21c' });
+  }
+
+  /**
+   * Où s'écrit le gain d'une recrue, à l'écran : au-dessus de sa tête, sur rien de ce qui est déjà posé (le panneau lu,
+   * l'étiquette d'un accessoire, l'écriture d'un décor, le gain d'une voisine), jamais sous la bande du HUD, jamais sur
+   * elle. Gêné là, il monte d'un cran, sinon il passe sous ses pieds ; il y reste tant qu'elle est à l'écran, comme une
+   * étiquette (`placeTags`) : pas de retour d'un saut quand la gêne s'en va. Sa place est réservée : les textes
+   * flottants et les pancartes du cortège passent autour. Une recrue si haut que même sous ses pieds son gain serait
+   * sous la bande du HUD n'en a pas (null : rien à écrire), comme un accessoire caché.
+   */
+  gainSpot(r, text) {
+    const x = r.x + r.w / 2 - this.cx;
+    const y = r.y - 12 - this.cy;
+    const body = { x0: r.x - this.cx, x1: r.x + r.w - this.cx, y0: r.y - this.cy, y1: r.y + r.h - this.cy };
+    if (body.x1 < -TAG_OUT || body.x0 > this.viewW + TAG_OUT || body.y1 < -TAG_OUT || body.y0 > this.viewH + TAG_OUT) {
+      this.gainMoved.delete(r); // loin de l'image : sa place s'oublie
+      return { x, y };
+    }
+    // Sa place la plus basse (un cran sous ses pieds) passe sous la bande du HUD : pas de gain. Il revient quand elle
+    // en sort, deux pixels plus bas : une caméra qui sautille ne le fait pas clignoter.
+    const ceiling = this.ceiling();
+    const step = this.fit(8) * 1.1 + 7; // la hauteur de sa boîte (`textBox`), plus un pixel
+    const lowest = body.y1 + 1 + step;
+    if (lowest < ceiling - 2) this.gainHidden.add(r);
+    else if (lowest >= ceiling + 2) this.gainHidden.delete(r);
+    if (this.gainHidden.has(r)) return null;
+    const under = r.h + 16; // le haut de sa boîte juste sous ses pieds
+    if (this.outside(text, x, y, 8, 0) && this.outside(text, x, y + under, 8, 0)) {
+      const kept = this.gainMoved.get(r) ?? { dx: 0, dy: 0 }; // hors de la vue : ni mesuré, ni déplacé
+      return { x: x + kept.dx, y: y + kept.dy };
+    }
+    const base = this.textBox(text, x, y, 8, 0);
+    const at = (s) => ({ x0: base.x0 + s.dx, x1: base.x1 + s.dx, y0: base.y0 + s.dy, y1: base.y1 + s.dy });
+    const free = (s) => {
+      const box = at(s);
+      return box.y0 >= ceiling && !covers(box, body)
+        && !this.boxes.some((b) => box.x0 < b.x1 && box.x1 > b.x0 && box.y0 < b.y1 && box.y1 > b.y0);
+    };
+    const home = { dx: 0, dy: 0 };
+    const moved = this.gainMoved.get(r);
+    let spot = (moved && free(moved) ? moved : null) ?? (free(home) ? home : null);
+    if (!spot) {
+      spot = [{ dx: 0, dy: -step }, { dx: 0, dy: under }, { dx: 0, dy: under + step }].find(free) ?? moved ?? home;
+      this.gainMoved.set(r, spot);
+    }
+    this.boxes.push(at(spot));
+    return { x: x + spot.dx, y: y + spot.dy };
   }
 
   /**

@@ -460,6 +460,92 @@ test('au téléphone, deux étiquettes voisines restent chacune au-dessus de son
   assert.ok(!overlap(written['GARDE À VUE'], written['PIQUET DE GRÈVE']), 'sans se recouvrir');
 });
 
+// ---------------------------------------------------------------- le gain d'une recrue
+
+/** Une recrue qui attend, les pieds en `feet`, centrée en `cx` (comme `createRecruit`). */
+const waiting = (id, cx, feet) => {
+  const def = bundle.recrues[id];
+  return { id, def, x: cx - def.largeur / 2, y: feet - def.hauteur, w: def.largeur, h: def.hauteur, joined: false, animTime: 0 };
+};
+const GAIN = /^[+×] /;
+
+test('le gain d’une recrue ne se pose pas sur l’étiquette d’un accessoire voisin ni sur elle, et ne saute pas', () => {
+  for (const ratio of [3, 5 / 3]) {
+    const r = renderer(ratio);
+    r.heroBox = { x: 20, y: 148, w: 12, h: 18 };
+    // À Bismillah, une street medic attend juste à côté d'un piquet de grève : son « + 5 » était sur « PIQUET DE GRÈVE ».
+    const piquet = { kind: 'piquet', x: 166, y: 150, w: 16, h: 16, on: false };
+    const medic = waiting('medic', 160, 166);
+    const written = {};
+    r.label = (text, x, y, opts) => { written[text] = r.textBox(text, x, y, opts.size, 0); };
+    const frame = () => {
+      for (const k of Object.keys(written)) delete written[k];
+      r.boxes = [];
+      r.placeTags([r.prop(piquet)].filter(Boolean), [piquet]);
+      r.recruit(medic);
+      return { tag: written['PIQUET DE GRÈVE'], gain: written['+ 5'] };
+    };
+    const { tag, gain } = frame();
+    const home = r.textBox('+ 5', medic.x + medic.w / 2, medic.y - 12, 8, 0);
+    assert.ok(tag && overlap(home, tag), `${ratio} : au-dessus de sa tête, le gain serait sur l’étiquette`);
+    assert.ok(gain, 'le gain s’écrit');
+    assert.ok(!overlap(gain, tag), `${ratio} : pas sur « PIQUET DE GRÈVE »`);
+    const body = { x0: medic.x, x1: medic.x + medic.w, y0: medic.y, y1: medic.y + medic.h };
+    assert.ok(gain.y1 <= body.y0 || gain.y0 >= body.y1, `${ratio} : pas sur la recrue`);
+    assert.ok(gain.x0 < body.x1 && gain.x1 > body.x0, `${ratio} : à son aplomb`);
+    for (let k = 0; k < 4; k++) assert.deepEqual(frame().gain, gain, `${ratio} : image après image, il ne bouge pas`);
+  }
+});
+
+test('le gain d’une recrue passe sous ses pieds plutôt que sur le panneau lu, et y reste ; sans place sous le HUD, pas de gain', () => {
+  const r = renderer(5 / 3);
+  r.hudBottom = 60;
+  const ceiling = r.ceiling();
+  // Au Soir du 49-3, au pouce : une recrue sur un balcon, juste sous le panneau « NASSE » qui s'affiche en haut.
+  const nurse = waiting('soignante', 190, ceiling + 40);
+  const gains = [];
+  r.label = (text, x, y, opts) => { if (GAIN.test(text)) gains.push(r.textBox(text, x, y, opts.size, 0)); };
+  const frame = (board = null) => {
+    gains.length = 0;
+    r.boxes = board ? [board] : [];
+    r.recruit(nurse);
+    return gains.slice();
+  };
+  const [alone] = frame();
+  assert.ok(alone.y0 >= ceiling && alone.y1 <= nurse.y, 'sans gêne : au-dessus de sa tête, sous le HUD');
+  const board = { x0: 100, x1: 290, y0: ceiling, y1: alone.y1 + 2 }; // le panneau lu, juste là
+  const [moved] = frame(board);
+  assert.ok(!overlap(moved, board), 'pas sur le panneau');
+  assert.ok(moved.y0 >= nurse.y + nurse.h, 'sous ses pieds');
+  assert.deepEqual(frame(), [moved], 'le panneau parti, il reste où il est allé : pas de retour d’un saut');
+  // Une recrue sous la bande du HUD, mais ses pieds juste au bord : son gain s'écrit sous eux, hors de la bande.
+  const high = waiting('soignante', 190, ceiling);
+  const once = (who) => { gains.length = 0; r.boxes = []; r.recruit(who); return gains.slice(); };
+  const [below] = once(high);
+  assert.ok(below && below.y0 >= ceiling && below.y0 >= high.y + high.h, 'sous ses pieds, sous la bande du HUD');
+  // Plus haut, même sous ses pieds il n'a plus de place : pas de gain. Un peu plus bas, à la limite, toujours pas (pas
+  // de clignotement quand la caméra sautille) ; revenue assez bas, il revient.
+  const hidden = waiting('soignante', 190, ceiling - 22);
+  assert.deepEqual(once(hidden), [], 'sans place : pas de gain');
+  hidden.y += 4;
+  assert.deepEqual(once(hidden), [], 'à la limite : toujours pas');
+  hidden.y += 6;
+  const [back] = once(hidden);
+  assert.ok(back && back.y0 >= ceiling, 'revenue assez bas : son gain revient, jamais sous la bande du HUD');
+});
+
+test('deux recrues côte à côte : leurs gains ne se recouvrent pas', () => {
+  const r = renderer();
+  // À la raffinerie, un cheminot et une prof attendent à une tuile l'un de l'autre : « + 30 » et « + 20 » se chevauchaient.
+  const pair = [waiting('cheminot', 200, 166), waiting('prof', 216, 166)];
+  const gains = [];
+  r.label = (text, x, y, opts) => { if (GAIN.test(text)) gains.push(r.textBox(text, x, y, opts.size, 0)); };
+  r.boxes = [];
+  pair.forEach((p) => r.recruit(p));
+  assert.equal(gains.length, 2);
+  assert.ok(!overlap(gains[0], gains[1]));
+});
+
 test('des unités identiques côte à côte n’ont qu’un « ! » ; une autre, plus loin ou différente, a le sien', () => {
   const r = renderer();
   const unit = (id, x) => ({ def: { id }, x, y: 150, w: 12, h: 18 });
