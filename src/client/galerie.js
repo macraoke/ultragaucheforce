@@ -70,7 +70,7 @@ if (bundle.erreurs?.length) {
   section('Contenu à corriger', '', h('div', { className: 'erreurs' }, bundle.erreurs.map((e) => `${e.file}:${e.line} — ${e.message}`).join('\n')));
 }
 
-section('La Collection', '', collectionAlbum(bundle, null, (shelf) => addLink(ADD_TO_SHELF[shelf.id])));
+section('Collection', '', collectionAlbum(bundle, null, (shelf) => addLink(ADD_TO_SHELF[shelf.id])));
 
 section('Héros', 'heros', grid(Object.values(bundle.heros).map((hero) =>
   h('article', {},

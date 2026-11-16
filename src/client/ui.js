@@ -238,7 +238,7 @@ export class Screens {
     const actionsFor = (card) => (card.kind === 'heros' && !this.go.playing() ? [this.button('Jouer avec', () => this.playAs(card.item.id), 'gros')] : []);
     let shown = null;
     this.show('biblio',
-      h('h2', {}, 'La Collection ', h('small', {}, `${all.found} / ${all.total}`)),
+      h('h2', {}, 'Collection ', h('small', {}, `${all.found} / ${all.total}`)),
       progress(all.found, all.total),
       h('div', { className: 'onglets' }, SHELVES.map((shelf) => {
         const { found, total } = collectionCount(bundle, save, shelf.id);

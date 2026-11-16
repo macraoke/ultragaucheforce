@@ -113,7 +113,7 @@ export function showAtelier(root, { bundle, save, test, back, resume = false }) 
       item('Panneau', image(bundle.decors.panneau), { type: 'panneau' }),
     ]],
     ['En face', things(bundle.ennemis)],
-    ['La manif', things(bundle.recrues)],
+    ['Manif', things(bundle.recrues)],
     ['Décors', things(bundle.decors).filter((it) => !['panneau', ...Object.values(PROPS)].includes(it.brush.id))],
   ].map(([name, items]) => [name, items.filter((it) => it.rows)]);
 
