@@ -78,16 +78,16 @@ Chaque fiche de `content/` devient une carte, trouvée en la croisant dans le je
 
 ## La fortune, assise
 
-Chaque niveau finit devant un ultra-riche, assis sur sa fortune : un tas de liasses qui remplit son cadre, avec sa légende juste dessous (ce que vaut une liasse). Lequel ? Le hasard le dit à chaque partie. Puis on le taxe, sur un seul écran qui se lit dans l'ordre, une idée par étape :
+Chaque niveau finit devant un ultra-riche, assis sur sa fortune : un tas de liasses qui remplit son cadre, avec sa légende juste dessous (ce que vaut une liasse). Lequel ? Le hasard le dit à chaque partie. Puis on le taxe, sur un seul écran en deux temps, une idée chacun :
 
-1. **Sa fortune, à l'échelle de quelqu'un** (« 670 000 ans de revenus d'un chirurgien ») et ce qu'elle rapporte en un an, pour répondre d'avance à « flux et stocks ».
-2. Le bouton « Taxer les riches » : **2 % par an**, au plus, puisque l'impôt est différentiel. La part des 2 % quitte le tas.
-3. **Ce que ça paierait** (« 64 000 enseignants »).
-4. **Ce que chacun paie déjà** : autour de 52 % pour presque tout le monde, 27 % pour les milliardaires. Les deux nombres toujours ensemble.
+1. **Avant : sa fortune, à l'échelle de quelqu'un** (« 670 000 ans de revenus d'un chirurgien ») et ce qu'elle rapporte en un an, pour répondre d'avance à « flux et stocks ».
+2. **Après « Taxer les riches » : ce que ça paierait** (« 64 000 enseignants »), en aussi gros que l'était la fortune, qui s'efface du récit : on l'a déjà vue, le tas et sa légende la gardent. La part des 2 % quitte le tas. Dessous, en petit, d'où vient l'argent : **2 % par an**, au plus, puisque l'impôt est différentiel. Puis **ce que chacun paie déjà** : autour de 52 % pour presque tout le monde, 27 % pour les milliardaires. Les deux nombres toujours ensemble.
+
+Valentin, le 16 novembre 2026 : « après avoir taxé, on devrait mettre le focus sur ce que 2% qui représente peu pour le boss final, comme on le voit dans l'illustration, mais qui représente beaucoup pour la société ».
 
 Chaque étape porte ses sources, en petit. Le bouton suivant mène au bilan du niveau avec un slogan scandé en manif, tiré au hasard (« On lâche rien ! »).
 
-L'échelle et l'exemple se tirent au hasard dans un dictionnaire de fiches sourcées (`compare`, `finance`). Choix proposé, à valider par Valentin : un exemple n'est pas tiré quand 2 % de la fortune en paient moins de dix (« 2 Canadair » ne dit rien) ; il reste au tirage des fortunes plus grosses. Les faits frappants sur les inégalités (`choc`) se comprennent seuls : l'un d'eux, tiré au hasard, passe à l'écran de fin, dans « Et en vrai ? ». Le public visé est autant la classe moyenne que les jeunes : c'est une manif virtuelle, elle doit apprendre quelque chose à chacun.
+L'échelle et l'exemple se tirent au hasard dans un dictionnaire de fiches sourcées (`compare`, `finance`). Un exemple n'est pas tiré quand 2 % de la fortune en paient moins de dix (« 2 Canadair » ne dit rien) ; il reste au tirage des fortunes plus grosses. Choix confirmé par Valentin. Les faits frappants sur les inégalités (`choc`) se comprennent seuls : l'un d'eux, tiré au hasard, passe à l'écran de fin, dans « Et en vrai ? ». Le public visé est autant la classe moyenne que les jeunes : c'est une manif virtuelle, elle doit apprendre quelque chose à chacun.
 
 ## Les blessés annoncés, répartis comme en vrai
 

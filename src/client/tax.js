@@ -1,9 +1,9 @@
 // La scène de taxation, après le boss. Il est assis sur sa fortune, un tas de liasses qui remplit son cadre.
-// Un seul écran, qui se lit dans l'ordre, une idée par étape :
-//   1. sa fortune, à l'échelle de quelqu'un (et ce qu'elle rapporte en un an) ;
-//   2. « Taxer les riches » : 2 % par an, combien ça fait ; la part des 2 % quitte le tas ;
-//   3. ce que ça paierait ;
-//   4. ce que chacun paie déjà : autour de 52 % pour presque tout le monde, 27 % pour les milliardaires, ensemble.
+// Un seul écran, en deux temps, une idée chacun :
+//   - avant « Taxer les riches » : sa fortune, à l'échelle de quelqu'un (et ce qu'elle rapporte en un an) ;
+//   - après : la fortune s'efface du récit (le tas et sa légende la gardent) et ce que ça paierait prend sa place,
+//     en aussi gros ; dessous, en petit, d'où vient l'argent (2 % par an, combien ça fait), puis ce que chacun paie
+//     déjà : autour de 52 % pour presque tout le monde, 27 % pour les milliardaires, ensemble. La part des 2 % quitte le tas.
 // L'échelle et l'exemple se tirent au hasard dans les fiches sourcées de `content/fiches/` (clés `compare` et
 // `finance`) : d'une partie à l'autre, ce ne sont pas les mêmes. Le bouton suivant reprend un slogan scandé en manif.
 
@@ -12,7 +12,7 @@ import { sprite } from './sprites.js';
 import { TAX_RATES, taxFiches, taxScales, taxUses } from './collection.js';
 
 const RATE = 0.02; // l'impôt plancher discuté : 2 % par an
-/** Choix proposé, à valider : un exemple n'est tiré que si 2 % de la fortune en paient au moins dix (« 2 Canadair » ne dit rien). */
+/** Choix confirmé par Valentin : un exemple n'est tiré que si 2 % de la fortune en paient au moins dix (« 2 Canadair » ne dit rien). */
 export const MIN_COUNT = 10;
 const STACKS = 380; // le tas compte entre 285 et 380 liasses, quelle que soit la fortune : il remplit toujours son cadre
 const STEPS = [1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 6, 8]; // ce que vaut une liasse : un de ces nombres × 10ⁿ années de revenus
@@ -22,6 +22,7 @@ const SIDE = 22; // de chaque côté du tas : le héros à gauche, la caisse com
 const GROUND = 8;
 const SINK = 8; // le boss s'enfonce un peu dans son tas
 const GUARD = 450; // ms pendant lesquelles le bouton n'écoute pas, à l'ouverture et après un appui
+const SWAP = 260; // ms : la fortune s'efface du récit, puis ce que ça paierait prend sa place
 
 /**
  * Le bouton qui mène au bilan du niveau : un slogan tiré au hasard. « On lâche rien ! », et des slogans courts
@@ -223,25 +224,27 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pi
       goldKey);
     const figure = h('figure', { className: 'tas' }, scene, legend);
 
-    // 1. Sa fortune.
+    // Avant la taxe : sa fortune.
     const first = step('fortune', `La fortune ${de(owner)}`, h('p', { className: 'montant' }, `${billions(boss.fortune.montant)} d’euros`),
       [`${round(years)} ans de revenus ${de(scale.compare)}.`, yearly > 0 && ` Rien qu’en dividendes, elle rapporte ${money(yearly)} par an.`],
       [estimate, scale, ...(yearly > 0 ? rent : [])]);
-    // 2. Taxée à 2 % : au plus, puisque l'impôt est différentiel.
+    // Taxée à 2 % : au plus, puisque l'impôt est différentiel. « Moins que ses dividendes » garde les sources des dividendes.
     const second = step('impot', 'Taxée à 2 % par an', h('p', { className: 'nombre' }, money(tax)),
-      [`Au plus : on déduit les impôts déjà payés sur ses revenus.`, under && ' Moins que ses dividendes.'], [rule]);
-    // 3. Ce que ça paierait.
+      [`Au plus : on déduit les impôts déjà payés sur ses revenus.`, under && ' Moins que ses dividendes.'], [rule, ...(under ? rent : [])]);
+    // Ce que ça paierait : le titre, après la taxe.
     const result = use ? `${round(count)} ${use.finance}` : `Au plus ${money(tax)} par an`;
     const third = use && step('paie', 'Ce que ça paierait', h('p', { className: 'nombre' }, h('b', {}, round(count)), ` ${use.finance}`),
       `${use.ponctuel ? 'En un an' : 'Chaque année'}, au plus.`, [use]);
-    // 4. Ce que chacun paie déjà : les deux taux, côte à côte.
+    // Ce que chacun paie déjà : les deux taux, côte à côte.
     // « ≈ 52 % » : le rapport dit « close to » 52 % ; les 27 % des milliardaires, eux, sont fermes (« only pay 27% »).
     const bar = (label, fact, about = '') => h('p', { className: 'barre' }, h('span', {}, label),
       h('i', { style: `--part: ${fact.valeur}` }), h('b', {}, `${about}${fact.valeur} %`));
     const fourth = most && billionaires && step('juste', 'Ce que chacun paie déjà',
       h('div', { className: 'barres' }, bar('Presque tout le monde', most, '≈ '), bar('Les milliardaires', billionaires)),
       'Tous impôts et cotisations compris, en part du revenu, en 2016.', [most, billionaires]);
-    const after = [second, third, fourth].filter(Boolean);
+    // Après la taxe, ce que ça paierait en tête (sans exemple tiré : les 2 % eux-mêmes), d'où vient l'argent dessous.
+    const after = [third, second, fourth].filter(Boolean);
+    after[0].classList.add('titre');
     after.forEach((li, i) => {
       li.hidden = true;
       li.style.setProperty('--rang', i);
@@ -271,8 +274,18 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pi
       clearTimeout(rainTimer); // les dividendes sont tombés, ou ne tombent plus : ils ne retombent pas pendant l'envol
       finish('rain');
       animate('fly', 1300);
-      panel.classList.add('faite'); // même écran : le récit continue sous la fortune
-      after.forEach((li) => { li.hidden = false; });
+      // Même écran, deuxième temps : la fortune s'efface du récit, ce que ça paierait prend sa place. Effets réduits : d'un coup.
+      const swap = () => {
+        first.hidden = true;
+        after.forEach((li) => { li.hidden = false; });
+        panel.classList.add('faite');
+      };
+      const still = document.body.classList.contains('sobre') || matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (still) swap();
+      else {
+        first.classList.add('part');
+        setTimeout(swap, SWAP);
+      }
       goldKey.hidden = false;
       // Le bouton suivant mène au bilan du niveau : un slogan de manif, tiré au hasard.
       const slogan = pick('slogan', SLOGANS);
