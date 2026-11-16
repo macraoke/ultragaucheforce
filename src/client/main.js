@@ -78,7 +78,7 @@ function setMode(next) {
   hud.setVisible(next === 'playing' || next === 'paused' || next === 'card');
   hud.live = next === 'playing'; // en pause ou sous un carton, la spéciale ne clignote pas
   document.body.classList.toggle('en-jeu', next === 'playing');
-  radio.setVisible(next !== 'playing' && next !== 'card');
+  radio.setVisible(next !== 'playing' && next !== 'card', next === 'playing' || next === 'paused' || next === 'card');
   renderer.demo = next === 'menu';
   input.release();
   input.active = next === 'playing';
@@ -323,8 +323,11 @@ addEventListener('pointerdown', () => audio.unlock(), true);
 const unblockRadio = () => setTimeout(() => radio.unblock(), 100);
 addEventListener('pointerup', unblockRadio, true);
 addEventListener('keydown', unblockRadio, true);
-// Lancé hors ligne (métro, train), le jeu retrouve Radio Manif quand le réseau revient.
-addEventListener('online', () => applyOptions());
+// Le réseau revient (métro, train) : Radio Manif aussi, même si le jeu a été lancé hors ligne.
+addEventListener('online', () => {
+  radio.reconnected();
+  applyOptions();
+});
 const PHONE = 950; // plus grand côté d'un téléphone, en pixels : au-delà (tablette, ordinateur tactile), on ne pivote pas
 
 function layout() {

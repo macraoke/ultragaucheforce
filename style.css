@@ -610,14 +610,23 @@ body.tactile .atelier input[type='text'], body.tactile .atelier select, body.tac
 #radio strong { font: 900 .85rem/1 var(--titre); text-transform: uppercase; letter-spacing: .05em; color: var(--or); }
 #radio iframe { display: block; width: 100%; height: 76px; border: 0; margin: 4px 0; }
 #radio p { margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-/* Lecture refusée par le navigateur : le panneau se réduit à son bouton de relance ; hors du menu, il passe à côté de la pause. */
-#radio .relance { display: block; font-size: .8rem; padding: .5em .8em; }
+/* Téléphone couché : le lecteur de SoundCloud en une ligne (son « mini » lecteur), sous les boutons du menu. */
+html.bas #radio strong { display: none; }
+html.bas #radio iframe { height: 20px; margin: 0 0 4px; }
+/* Lecture refusée, ou lecteur injoignable : un bouton de relance à la place du titre de la piste.
+   Au menu et en pause, le lecteur reste à l'écran : son propre bouton lecture marche partout. */
+#radio .relance { display: block; width: 100%; margin-top: 4px; font-size: .72rem; padding: .35em .6em; }
 #radio .relance[hidden] { display: none; }
-#radio.bloquee { width: auto; padding: 0; background: none; border: 0; box-shadow: none; }
-#radio.bloquee > :not(.relance) { position: absolute; left: -9999px; }
-#radio.bloquee.cache, body:not([data-ecran='menu']) #radio.bloquee { left: auto; right: calc(max(10px, env(safe-area-inset-right)) + 44px); top: 8px; bottom: auto; }
-#radio.bloquee.cache .relance, body:not([data-ecran='menu']) #radio.bloquee .relance { font-size: .7rem; padding: .45em .7em; }
-html.pivote #radio.bloquee.cache, html.pivote body:not([data-ecran='menu']) #radio.bloquee { right: calc(max(10px, env(safe-area-inset-bottom)) + 44px); }
+#radio.bloquee p { display: none; }
+/* En pause, dans la marge à droite de l'écran de pause, sous le bouton pause. */
+body:has(#ecran > .pause) #radio.bloquee { left: auto; right: max(10px, env(safe-area-inset-right)); top: 52px; bottom: auto; width: min(320px, calc(var(--vw, 1vw) * 50 - 190px - 24px)); }
+html.bas body:has(#ecran > .pause) #radio.bloquee { width: min(320px, calc(var(--vw, 1vw) * 50 - 280px - 24px)); padding: 4px; }
+html.pivote body:has(#ecran > .pause) #radio.bloquee { right: max(10px, env(safe-area-inset-bottom)); }
+/* En partie, seul le bouton reste, à côté du bouton pause. Ailleurs (Atelier, Collection…), rien ne s'affiche. */
+#radio.bloquee.partie.cache { left: auto; right: calc(max(10px, env(safe-area-inset-right)) + 44px); top: 8px; bottom: auto; width: auto; padding: 0; background: none; border: 0; box-shadow: none; }
+#radio.bloquee.partie.cache > :not(.relance) { position: absolute; left: -9999px; }
+#radio.bloquee.partie.cache .relance { margin: 0; width: auto; font-size: .7rem; padding: .45em .7em; }
+html.pivote #radio.bloquee.partie.cache { right: calc(max(10px, env(safe-area-inset-bottom)) + 44px); }
 
 .fin .pancarte { margin-top: 12px; padding: .6em .8em; background: var(--papier); color: var(--nuit); transform: rotate(-1deg); font-family: var(--titre); text-transform: uppercase; }
 .fin .pancarte small { font: 400 .75rem var(--texte); text-transform: none; }

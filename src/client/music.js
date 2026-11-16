@@ -5,9 +5,9 @@
 //
 // Le lecteur ne prévient pas toujours qu'une piste ne joue pas : une piste retirée envoie ERROR,
 // une piste chiffrée sans module de lecture n'envoie rien, une lecture refusée faute de geste du
-// joueur envoie PAUSE aussitôt. La Radio attend donc que la lecture avance vraiment : une piste qui
-// ne démarre pas cède la place à une autre ; une lecture refusée montre le bouton de relance, et le
-// prochain toucher la relance.
+// joueur envoie PAUSE aussitôt. La Radio attend donc que la lecture avance vraiment. Une piste
+// morte cède la place à une autre ; une lecture refusée montre le bouton de relance, et le
+// prochain toucher la relance ; un réseau lent, on l'attend.
 
 import { h, link } from './dom.js';
 
@@ -16,9 +16,13 @@ const PLAYER = 'https://w.soundcloud.com/player/';
 // Options du lecteur. `widget.load()` les réécrit en « true » ou « false » : la couleur n'y figure pas.
 const OPTIONS = { auto_play: true, hide_related: true, show_comments: false, show_reposts: false, show_teaser: false };
 const VOLUME = 45;
-/** Le temps laissé à une piste pour démarrer, en millisecondes. */
+/** Le temps laissé au lecteur pour charger une piste (et lui-même, la première fois), réseau lent compris. */
+export const LOAD_TIMEOUT = 45000;
+/** Une fois la piste chargée, le temps laissé à la lecture pour partir avant qu'on demande au lecteur où il en est. */
 export const START_TIMEOUT = 10000;
-const CONNECT_TIMEOUT = 20000;
+const RETRY_DELAY = 4000;
+const PROBE_DELAY = 3000;
+const MAX_WAITS = 6; // le lecteur dit « je joue » mais rien n'avance : six délais, une minute
 const EVENTS = ['READY', 'PLAY', 'PLAY_PROGRESS', 'PAUSE', 'FINISH', 'ERROR'];
 
 /**
@@ -44,6 +48,18 @@ export function chooseTrack(tracks, { slot, named = null, failed = new Set(), av
   return null;
 }
 
+/** Le cadre du lecteur SoundCloud pour une première piste. */
+export function frameAttributes(track) {
+  const params = new URLSearchParams({ url: track.url, color: '#e43b44', ...OPTIONS });
+  return {
+    title: 'Radio Manif — lecteur SoundCloud',
+    // `encrypted-media` : certaines pistes sont chiffrées ; sans ce droit, le lecteur les charge mais reste muet.
+    allow: 'autoplay; encrypted-media',
+    scrolling: 'no',
+    src: `${PLAYER}?${params}`,
+  };
+}
+
 export class Radio {
   /**
    * @param {HTMLElement | null} box  le petit panneau où vit le lecteur (visible dans les menus)
@@ -62,17 +78,17 @@ export class Radio {
     };
     this.view = this.env.view || new RadioPanel(box);
     this.view.onAsk = () => this.onAsk();
-    this.view.onRetry = () => this.unblock();
+    this.view.onRetry = () => this.retry();
     this.enabled = false;
-    this.status = 'off'; // off | loading | playing | paused | blocked
+    this.status = 'off'; // off | loading | playing | paused | blocked (refusée, attend un geste) | unreachable (lecteur injoignable)
     this.widget = null;
     this.connecting = null;
     this.current = null; // la piste chargée (ou en train de l'être)
     this.slot = 'menu';
     this.named = null;
     this.chosenFor = null; // le moment pour lequel `current` a été choisie
-    this.failed = new Set(); // pistes qui n'ont pas voulu jouer pendant cette visite
-    this.attempt = null; // une lecture demandée, pas encore confirmée : { track, refused, retried, loaded }
+    this.failed = new Set(); // pistes qui n'ont pas voulu jouer ; le retour du réseau leur rend leur chance
+    this.attempt = null; // une lecture demandée, pas encore confirmée : { track, loaded, refused, retried, waits }
     this.timer = null;
     this.ownPause = false; // la pause vient de nous (musique coupée) : son PAUSE n'est pas un refus
     this.hidden = false;
@@ -101,6 +117,7 @@ export class Radio {
     this.slot = slot;
     this.named = named;
     if (!this.enabled) return;
+    if (this.status === 'unreachable') return; // le bouton ou le retour du réseau réessaieront
     const live = this.status === 'playing' || this.status === 'loading';
     if (again && live) return; // « Recommencer » : la même musique continue
     const track = this.choose();
@@ -120,7 +137,7 @@ export class Radio {
     this.status = 'loading';
     this.ownPause = false;
     // Tant que le lecteur n'a pas fini de charger cette piste, ce qu'il annonce vient de la précédente.
-    this.watch(track, { loaded: !this.widget && !this.connecting });
+    this.watch(track, { loaded: false });
     this.render();
     if (this.widget) return this.widget.load(track.url, { ...OPTIONS, callback: () => this.loaded(track) });
     if (this.connecting) return; // le lecteur arrive : il prendra la piste courante une fois prêt
@@ -135,14 +152,16 @@ export class Radio {
         widget.pause();
       } else if (this.current !== track) this.start(this.current); // une autre piste a été demandée entre-temps
     }, () => {
-      if (this.connecting !== pending) return;
-      // Pas de réseau, lecteur bloqué : on joue sans musique. Le bouton de Radio Manif réessaiera.
-      this.connecting = null;
-      this.cancelWatch();
-      this.view.unmount();
-      this.status = 'blocked';
-      this.render();
+      if (this.connecting === pending) this.unreachable();
     });
+  }
+
+  /** Le lecteur a chargé la piste demandée : à partir de maintenant, on attend qu'elle parte. */
+  loaded(track) {
+    this.widget?.setVolume(VOLUME);
+    if (this.attempt?.track !== track || this.attempt.loaded) return;
+    this.attempt.loaded = true;
+    this.arm(START_TIMEOUT);
   }
 
   /** Reprend la piste chargée. */
@@ -163,16 +182,16 @@ export class Radio {
     this.widget.pause();
   }
 
-  /** Le lecteur a chargé la piste demandée. */
-  loaded(track) {
-    this.widget?.setVolume(VOLUME);
-    if (this.attempt?.track === track) this.attempt.loaded = true;
+  watch(track, { loaded = true, retried = false } = {}) {
+    this.cancelWatch();
+    this.attempt = { track, loaded, refused: false, retried, waits: 0 };
+    this.arm(loaded ? START_TIMEOUT : LOAD_TIMEOUT);
   }
 
-  watch(track, { retried = false, loaded = true } = {}) {
-    this.cancelWatch();
-    this.attempt = { track, refused: false, retried, loaded };
-    this.timer = this.env.later(() => this.timeout(track), START_TIMEOUT);
+  arm(ms) {
+    if (this.timer !== null) this.env.cancel(this.timer);
+    const attempt = this.attempt;
+    this.timer = this.env.later(() => this.timeout(attempt), ms);
   }
 
   cancelWatch() {
@@ -181,14 +200,45 @@ export class Radio {
     this.attempt = null;
   }
 
-  /** La piste n'a pas démarré à temps. */
-  timeout(track) {
+  /** Le délai est écoulé sans que la lecture avance : on demande au lecteur où il en est. */
+  timeout(attempt) {
     this.timer = null;
-    // Onglet caché : le navigateur peut retenir la lecture. On jugera au retour.
-    if (this.attempt?.track !== track || this.hidden) return;
+    // Onglet caché : le navigateur peut retenir la lecture. Le délai repartira au retour.
+    if (this.attempt !== attempt || this.hidden) return;
+    // Ni le lecteur ni la piste n'ont répondu : réseau coupé, SoundCloud bloqué.
+    if (!attempt.loaded) return this.unreachable();
     // Refusée par le navigateur, ou personne n'a encore touché la page : on attend un geste.
-    if (this.attempt.refused || !this.env.activated()) return this.block();
-    this.fail(track);
+    if (attempt.refused || !this.env.activated()) return this.block();
+    this.probe((state) => {
+      if (this.attempt !== attempt) return;
+      if (state === 'dead') return this.fail(attempt.track);
+      if (state === 'paused') {
+        // Chargée mais arrêtée, sans refus annoncé : on la relance une fois, puis on passe à une autre.
+        if (attempt.retried) return this.fail(attempt.track);
+        attempt.retried = true;
+        this.widget.play();
+        return this.arm(RETRY_DELAY);
+      }
+      // Le lecteur dit qu'il joue, ou ne répond pas encore : réseau lent, on patiente.
+      if (++attempt.waits > MAX_WAITS) return this.fail(attempt.track);
+      this.arm(START_TIMEOUT);
+    });
+  }
+
+  /** Où en est le lecteur : « dead » (pas de piste), « paused », ou « busy » (il joue, ou ne répond pas). */
+  probe(done) {
+    const widget = this.widget;
+    let answered = false;
+    const answer = (state) => {
+      if (answered) return;
+      answered = true;
+      done(state);
+    };
+    const late = this.env.later(() => answer('busy'), PROBE_DELAY);
+    widget.getCurrentSound((sound) => widget.isPaused((paused) => {
+      this.env.cancel(late);
+      answer(!sound ? 'dead' : paused ? 'paused' : 'busy');
+    }));
   }
 
   /** Une piste qui ne joue pas (retirée, privée, chiffrée sans module de lecture) : on passe à une autre. */
@@ -202,6 +252,17 @@ export class Radio {
   block() {
     this.cancelWatch();
     this.status = 'blocked';
+    this.render();
+  }
+
+  /** Le lecteur ne répond pas : on joue sans musique. Le bouton, ou le retour du réseau, réessaieront. */
+  unreachable() {
+    this.cancelWatch();
+    if (!this.widget) {
+      this.connecting = null;
+      this.view.unmount();
+    }
+    this.status = 'unreachable';
     this.render();
   }
 
@@ -219,12 +280,33 @@ export class Radio {
     this.render();
   }
 
+  /** Le bouton de Radio Manif : relance une lecture refusée, ou retente un lecteur injoignable. */
+  retry() {
+    if (!this.enabled) return;
+    if (this.status === 'blocked') return this.unblock();
+    if (this.status !== 'unreachable') return;
+    // La musique du moment présent (le jeu a pu avancer entre-temps), chargée à neuf.
+    const track = this.choose();
+    if (!track) return this.block();
+    this.chosenFor = `${this.slot}|${this.named}`;
+    this.start(track);
+  }
+
+  /** Le réseau revient : les pistes écartées retrouvent leur chance, et un chargement resté en plan repart. */
+  reconnected() {
+    this.failed.clear();
+    if (!this.enabled) return;
+    if (this.status === 'unreachable') return this.retry();
+    if (this.status === 'loading' && this.widget && !this.attempt?.loaded) this.start(this.current);
+  }
+
   /** Ce que le lecteur SoundCloud annonce. */
   event(name, data = {}) {
     if (!this.enabled) return;
-    if (this.attempt && !this.attempt.loaded) return; // encore la piste d'avant
-    // Une erreur pendant le chargement : la piste est morte. (Une fois la lecture partie, on la laisse jouer.)
+    // Une erreur après une demande de piste : elle est morte, une autre tout de suite.
+    // (Le lecteur l'annonce avant même d'avoir fini de charger.)
     if (name === 'ERROR') return this.attempt && this.fail(this.attempt.track);
+    if (this.attempt && !this.attempt.loaded) return; // encore la piste d'avant
     if (name === 'FINISH') {
       const next = this.choose(this.current);
       return next ? this.start(next) : this.block();
@@ -263,13 +345,19 @@ export class Radio {
     this.hidden = hidden;
     if (!this.enabled) return;
     if (hidden) return void (this.wanted = this.status === 'playing' || this.status === 'loading');
-    if (this.wanted && this.status !== 'playing' && this.current && !this.failed.has(this.current.id)) this.resume();
+    if (this.attempt && this.timer === null) this.arm(this.attempt.loaded ? START_TIMEOUT : LOAD_TIMEOUT); // délai tombé onglet caché
+    const stopped = this.status === 'paused' || this.status === 'blocked';
+    if (this.wanted && stopped && this.current && !this.failed.has(this.current.id)) this.resume();
     this.wanted = false;
   }
 
-  /** Pendant l'action, le lecteur continue de jouer mais quitte l'écran. */
-  setVisible(on) {
-    this.view.setVisible(on);
+  /**
+   * Pendant l'action, le lecteur continue de jouer mais quitte l'écran.
+   * @param {boolean} on  le panneau peut se montrer (menus, pause)
+   * @param {boolean} inGame  une partie est en cours (le bouton pause est à l'écran)
+   */
+  setVisible(on, inGame = false) {
+    this.view.setVisible(on, inGame);
   }
 
   render(possible = this.tracks.length > 0 && this.env.online()) {
@@ -300,8 +388,8 @@ class RadioPanel {
     this.enabled = enabled;
     this.box.hidden = !possible;
     if (!possible) return;
-    const blocked = enabled && status === 'blocked';
-    this.box.classList.toggle('bloquee', Boolean(this.frame) && blocked);
+    const stuck = enabled && (status === 'blocked' || status === 'unreachable');
+    this.box.classList.toggle('bloquee', Boolean(this.frame) && stuck);
     if (!this.frame) {
       // Tant que le joueur n'a rien demandé, aucun lecteur n'est chargé : juste un bouton.
       // (Musique demandée mais lecteur injoignable : le même bouton réessaie.)
@@ -311,38 +399,34 @@ class RadioPanel {
       this.box.replaceChildren(ask, h('p', {}, 'Musique par SoundCloud'));
       return;
     }
-    this.retry.hidden = !blocked;
+    this.retry.hidden = !stuck;
     const label = track ? `${track.titre} — ${track.artiste}` : '';
     if (this.caption.textContent !== label) this.caption.replaceChildren(track ? link(track.url, label) : '');
   }
 
-  setVisible(on) {
+  setVisible(on, inGame) {
     this.box.classList.toggle('cache', !on);
+    this.box.classList.toggle('partie', inGame);
   }
 }
 
 /** Charge le lecteur SoundCloud dans le panneau, avec sa première piste. */
 function connectWidget(track, onEvent, view) {
   return new Promise((resolve, reject) => {
-    const params = new URLSearchParams({ url: track.url, color: '#e43b44', ...OPTIONS });
-    // `encrypted-media` : certaines pistes sont chiffrées ; sans ce droit, le lecteur les charge mais reste muet.
-    const frame = h('iframe', { title: 'Radio Manif — lecteur SoundCloud', allow: 'autoplay; encrypted-media', scrolling: 'no', src: `${PLAYER}?${params}` });
+    const frame = h('iframe', frameAttributes(track));
     view.mount(frame);
-    const late = setTimeout(() => reject(new Error('lecteur SoundCloud muet')), CONNECT_TIMEOUT);
     const bind = () => {
+      // Un portail captif peut servir une page à la place du script : pas de lecteur, pas d'erreur de chargement.
+      if (!window.SC?.Widget) return reject(new Error('lecteur SoundCloud introuvable'));
       const widget = window.SC.Widget(frame);
       const names = window.SC.Widget.Events;
       for (const name of EVENTS) widget.bind(names[name], (data) => onEvent(name, data));
-      widget.bind(names.READY, () => {
-        clearTimeout(late);
-        resolve(widget);
-      });
+      widget.bind(names.READY, () => resolve(widget));
     };
     if (window.SC?.Widget) return bind();
     const script = h('script', { src: API });
     script.onload = bind;
     script.onerror = () => {
-      clearTimeout(late);
       script.remove();
       reject(new Error('lecteur SoundCloud injoignable'));
     };
