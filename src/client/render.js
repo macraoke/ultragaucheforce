@@ -7,7 +7,7 @@ import { sprite } from './sprites.js';
 
 const TILE = 16;
 const FONT = "Impact, Haettenschweiler, 'Arial Narrow Bold', 'HelveticaNeue-CondensedBlack', 'Roboto Condensed', sans-serif";
-const SKIES = {
+export const SKIES = {
   campagne: ['#6fc4ee', '#d5f0f7'],
   ville: ['#8ea2c0', '#e3e6ee'],
   citadelle: ['#2b1741', '#b13e53'],

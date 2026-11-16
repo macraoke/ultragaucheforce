@@ -406,17 +406,51 @@ html.bas .panneau.taxe { padding-block: 10px; }
 .taxe .services { display: flex; justify-content: center; gap: 24px; font-size: clamp(2rem, 8vmin, 3.4rem); filter: grayscale(1) brightness(.45); transition: filter .8s .6s; }
 .taxe .services.allumes { filter: none; }
 
-/* atelier */
-.panneau.atelier { width: min(100%, 1100px); }
-.atelier .etabli { display: grid; grid-template-columns: minmax(0, 2fr) minmax(200px, 1fr); gap: 14px; }
-.atelier textarea { width: 100%; height: min(calc(var(--vh, 1vh) * 52), 460px); background: #10111c; color: #a7f070; border: 3px solid var(--encre); padding: 10px; font: 13px/1.15 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: pre; overflow: auto; resize: vertical; user-select: text; -webkit-user-select: text; }
-.atelier aside { font-size: .8rem; max-height: min(calc(var(--vh, 1vh) * 60), 520px); overflow: auto; }
-.atelier aside h3:first-child { margin-top: 0; }
-.atelier code { background: var(--encre); padding: .1em .4em; }
-.atelier .etat { font-weight: 700; }
-.atelier .rapport p { margin: .3em 0; padding: .4em .6em; background: var(--rouge-sombre); font-size: .82rem; }
-.atelier button:disabled { opacity: .4; cursor: not-allowed; }
-@media (max-width: 720px) { .atelier .etabli { grid-template-columns: 1fr; } }
+/* atelier : tout l'écran, la carte au centre, la palette à gauche */
+#ecran:has(> .atelier) { place-items: stretch; background: var(--nuit); padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+.panneau.atelier { width: 100%; height: 100%; max-height: none; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 6px; padding: 6px; border: 0; box-shadow: none; overflow: hidden; line-height: 1.2; }
+.atelier [hidden] { display: none !important; }
+.atelier button { font-size: .8rem; padding: .5em .7em; border-width: 2px; box-shadow: 2px 2px 0 var(--rouge); }
+.atelier button:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--rouge); }
+.atelier button.discret { box-shadow: none; }
+.atelier button.discret:hover { background: var(--encre); }
+.atelier button[aria-pressed='true'], .atelier button.discret[aria-pressed='true']:hover { background: var(--or); color: var(--nuit); border-color: var(--or); }
+.atelier button:disabled { opacity: .35; cursor: not-allowed; }
+.atelier input[type='text'], .atelier select, .atelier textarea { min-width: 0; background: #10111c; color: var(--papier); border: 2px solid var(--encre); padding: .35em .5em; font: inherit; }
+.atelier input[type='checkbox'] { width: 1.2em; height: 1.2em; vertical-align: -.2em; accent-color: var(--rouge); }
+.atelier .case { padding: 0; font-size: .8rem; }
+.atelier .barre { display: flex; gap: 6px; align-items: center; }
+.atelier .barre .pousse { flex: 1; }
+.atelier .etabli { position: relative; display: grid; grid-template-columns: clamp(152px, 16vw, 190px) minmax(0, 1fr); gap: 6px; min-height: 0; }
+.atelier .palette { display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto; gap: 6px; min-height: 0; }
+.atelier .outils { display: flex; gap: 4px; }
+.atelier .outils button { flex: 1; padding: .25em 0; font: 1.15rem/1.1 var(--texte); }
+.atelier .groupes { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; }
+.atelier .groupes button { grid-column: span 2; padding: .55em 0; font-size: .66rem; }
+.atelier .groupes button:nth-child(n + 4) { grid-column: span 3; }
+.atelier .choix { display: grid; grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); gap: 4px; align-content: start; min-height: 0; overflow-y: auto; }
+.atelier .choix button { display: block; aspect-ratio: 1; padding: 2px; background: var(--encre); border-color: #0006; box-shadow: none; }
+.atelier .choix button[aria-pressed='true'] { background: var(--papier); border-color: var(--or); }
+.atelier .choix canvas { display: block; width: 100%; height: 100%; }
+.atelier .plan { position: relative; min-height: 0; overflow: hidden; background: #10111c; border: 2px solid var(--encre); }
+.atelier .plan > canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
+.atelier .plan.main > canvas { cursor: grab; }
+.atelier .zoom { position: absolute; right: 6px; bottom: 6px; display: flex; gap: 4px; }
+.atelier .zoom button { width: 2.3em; padding: .4em 0; }
+.atelier .reglages { position: absolute; z-index: 2; left: 0; top: 0; max-height: 100%; width: min(290px, 100%); overflow: auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; padding: 10px; background: var(--nuit); border: 2px solid var(--blanc); font-size: .85rem; }
+.atelier .reglages .ligne { display: flex; align-items: center; gap: 6px; }
+.atelier .reglages .ligne > span { flex: 0 0 4.2em; }
+.atelier .reglages .ligne > input, .atelier .reglages .ligne > select, .atelier .reglages .ligne > button { flex: 1; min-width: 0; padding: .45em .3em; }
+.atelier .fiche { position: absolute; inset: 0; z-index: 3; display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 6px; padding: 6px; background: var(--nuit); }
+.atelier .fiche textarea { color: #a7f070; font: 12px/1.15 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: pre; overflow: auto; resize: none; }
+.atelier .fiche .bas { display: flex; gap: 6px; align-items: center; font-size: .85rem; }
+.atelier .etat { display: flex; gap: 10px; align-items: center; min-height: 2em; font-size: .85rem; }
+.atelier .etat .outil { flex: none; color: var(--or); font-weight: 700; }
+.atelier .etat .message { flex: 1; min-width: 0; }
+.atelier .etat .alerte { max-width: 100%; padding: .35em .6em; background: var(--rouge-sombre); color: var(--blanc); border: 0; box-shadow: none; font: 700 .82rem/1.2 var(--texte); letter-spacing: 0; text-transform: none; text-align: left; }
+.atelier .etat .ecrire { display: flex; align-items: center; gap: 6px; }
+.atelier .etat .ecrire input { flex: 1; }
+body.tactile .atelier input[type='text'], body.tactile .atelier select, body.tactile .atelier textarea { font-size: 16px; }
 
 /* Radio Manif */
 #radio { position: fixed; right: max(10px, env(safe-area-inset-right)); bottom: max(10px, env(safe-area-inset-bottom)); z-index: 30; width: min(320px, calc(100vw - 20px)); background: var(--nuit); border: 3px solid var(--blanc); box-shadow: 4px 4px 0 var(--rouge); padding: 6px 8px; font-size: .72rem; }
