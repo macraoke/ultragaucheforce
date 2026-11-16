@@ -744,6 +744,10 @@ body.tactile .suivante::after { content: ''; position: absolute; top: -5px; left
 .radio-pause .titre { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; opacity: .85; }
 .radio-pause .suivante { font-size: 1rem; }
 body.tactile .radio-pause .suivante { min-width: 44px; min-height: 36px; }
+/* Écran bas (téléphone couché) : ⏭ pas plus haut que « Pause », la pause tient sans défiler ; au doigt, sa zone
+   transparente garde ses 44×44 px. */
+html.bas .radio-pause .suivante { font-size: .8rem; padding: .15em .5em; border-width: 2px; box-shadow: 2px 2px 0 var(--rouge); }
+html.bas body.tactile .radio-pause .suivante { min-width: 36px; min-height: 0; }
 body.tactile .radio-pause kbd { display: none; }
 /* Téléphone couché : le lecteur de SoundCloud en une ligne (son « mini » lecteur), sous les boutons du menu. */
 html.bas #radio strong { display: none; }
