@@ -110,7 +110,8 @@ export class Screens {
     const stop = (id, i) => {
       const lv = niveaux[id];
       const best = this.save.records[id];
-      const line = [lv.accroche, best ? `✊ ${best.toLocaleString('fr-FR')}` : ''].filter(Boolean).join(' · ');
+      // L'accroche dit le lieu ; sans elle (un niveau dessiné dans l'Atelier), l'étape crédite son auteur.
+      const line = [lv.accroche || (lv.auteur && `par ${lv.auteur}`), best ? `✊ ${best.toLocaleString('fr-FR')}` : ''].filter(Boolean).join(' · ');
       const play = this.button('Jouer', () => this.go.play(id));
       if (id === next) ahead = play;
       return h('li', { className: this.save.termines[id] ? 'faite' : '' },
