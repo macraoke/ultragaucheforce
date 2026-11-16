@@ -998,6 +998,29 @@ test('« Suivant » au boss et au menu : un autre tirage ; passer Monarch saute 
   assert.equal(s.radio.current.ou, 'boss');
 });
 
+test('« Suivant » sur Ryukken : ni Ryukken, ni Monarch qui la ramènerait trente secondes plus tard', async () => {
+  // Relecture : Monarch pouvait sortir du tirage, et à sa fin, Ryukken revenait.
+  const monarch = bundle.musiques['abattez-la-citadelle'];
+  const ryukken = bundle.musiques['abattez-la-citadelle-ryukken'];
+  const s = setup({ list: real, random: seeded(21) });
+  await s.on();
+  s.radio.play('boss');
+  for (let i = 0; i < 200; i++) {
+    while (s.radio.current !== monarch) s.radio.next();
+    s.ready(); // le premier chargement rappelle, Monarch se charge
+    s.ready();
+    s.playing();
+    s.emit('FINISH'); // l'extrait de Monarch fini, Ryukken suit
+    assert.equal(s.radio.current, ryukken);
+    s.ready();
+    s.playing();
+    s.radio.next();
+    assert.ok(s.radio.current !== monarch && s.radio.current !== ryukken, `essai ${i} : ${s.radio.current.id}`);
+    s.ready();
+    s.playing();
+  }
+});
+
 test('« Suivant » pendant un chargement : pas de second chargement, la piste demandée se charge au rappel', async () => {
   const s = setup({ list: [...tracks, T('jeu-c', 'jeu')] });
   await s.on();
