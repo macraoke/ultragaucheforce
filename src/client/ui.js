@@ -386,7 +386,8 @@ export class Screens {
 
   pause() {
     this.show('liste etroit pause',
-      h('h2', {}, 'Pause'),
+      // À droite du titre, la piste de Radio Manif et ⏭ (masquée si la musique est coupée ou refusée).
+      h('div', { className: 'entete' }, h('h2', {}, 'Pause'), this.go.radio?.()),
       this.keys(),
       this.button('Reprendre', () => this.go.resume(), 'gros'),
       this.editButton(),

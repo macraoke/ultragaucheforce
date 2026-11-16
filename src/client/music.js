@@ -126,6 +126,7 @@ export class Radio {
     this.view = this.env.view || new RadioPanel(box);
     this.view.onAsk = () => this.onAsk();
     this.view.onRetry = () => this.retry();
+    this.view.onNext = () => this.next();
     this.enabled = false;
     this.status = 'off'; // off | loading | playing | paused | blocked (refusée, attend un geste) | unreachable (lecteur injoignable)
     this.widget = null;
@@ -538,8 +539,34 @@ export class Radio {
     this.view.setVisible(on, inGame);
   }
 
+  /** « Suivant » a un sens : la musique joue, se charge, ou le joueur l'a mise en pause. Coupée ou refusée, non. */
+  canSkip() {
+    return this.enabled && Boolean(this.current) && ['playing', 'loading', 'paused'].includes(this.status);
+  }
+
+  /**
+   * « Suivant » : la piste d'après, selon le moment. En niveau, la suivante du sac : la piste passée compte comme
+   * entendue. Au menu et au boss, un autre tirage. Une piste passée n'appelle pas sa suite (`puis`) : passer
+   * Monarch saute Ryukken. Pendant un chargement, la piste demandée se charge au rappel du précédent.
+   */
+  next() {
+    if (!this.canSkip()) return;
+    const skipped = this.current;
+    this.lastHeard.set(this.moment(), skipped);
+    this.heardNow(skipped);
+    const track = this.choose(skipped);
+    if (!track) return;
+    this.chosenFor = `${this.slot}|${this.named}`;
+    this.start(track);
+  }
+
+  /** La ligne « ♪ piste ⏭ » du menu de pause (rien sans lecteur à l'écran, dans les tests). */
+  controls() {
+    return this.view.mini ?? null;
+  }
+
   render(possible = this.tracks.length > 0 && this.env.online()) {
-    this.view.show({ possible, enabled: this.enabled, status: this.status, track: this.current });
+    this.view.show({ possible, enabled: this.enabled, status: this.status, track: this.current, skip: this.canSkip() });
   }
 }
 
@@ -561,25 +588,41 @@ class RadioPanel {
     const screen = document.getElementById('ecran');
     if (screen) new MutationObserver(() => this.fit()).observe(screen, { childList: true });
     addEventListener('resize', () => requestAnimationFrame(() => this.fit()));
+    // « ♪ piste ⏭ » dans le menu de pause : ui.js l'y pose, elle se tient à jour d'ici.
+    this.miniTitle = h('span', { className: 'titre' });
+    this.mini = h('div', { className: 'radio-pause', hidden: true },
+      h('span', { className: 'note' }, '♪'), this.miniTitle, this.skipButton('Piste suivante (N)'), h('kbd', {}, 'N'));
+  }
+
+  /** ⏭ : la piste suivante. */
+  skipButton(title = 'Piste suivante') {
+    const button = h('button', { type: 'button', className: 'suivante', title, onclick: () => this.onNext() }, '⏭︎');
+    button.setAttribute('aria-label', 'Piste suivante');
+    return button;
   }
 
   mount(frame) {
     this.frame = frame;
     this.caption = h('p', {});
+    this.skip = this.skipButton();
     // Le texte se raccourcit selon la place : « ▶ Relancer la musique », « ▶ Relancer », ou « ▶♪ » sous le bouton pause.
     this.retry = h('button', { type: 'button', className: 'relance', hidden: true, title: 'Relancer la musique', onclick: () => this.onRetry() },
       '▶', h('span', { className: 'mot' }, ' Relancer'), h('span', { className: 'suite' }, ' la musique'), h('span', { className: 'note' }, '♪'));
-    this.box.replaceChildren(h('strong', {}, 'Radio Manif'), frame, this.caption, this.retry);
+    this.box.replaceChildren(h('strong', {}, 'Radio Manif'), frame, h('div', { className: 'piste' }, this.caption, this.skip), this.retry);
   }
 
   unmount() {
     this.frame = null;
     this.box.replaceChildren();
+    this.mini.hidden = true;
   }
 
-  show({ possible, enabled, status, track }) {
+  show({ possible, enabled, status, track, skip = false }) {
     this.enabled = enabled;
     this.box.hidden = !possible;
+    this.mini.hidden = !(possible && this.frame && skip);
+    if (this.miniTitle.textContent !== (track?.titre ?? '')) this.miniTitle.textContent = track?.titre ?? '';
+    this.mini.title = track ? `Radio Manif : ${track.titre} — ${track.artiste}` : '';
     if (!possible) return;
     const stuck = enabled && (status === 'blocked' || status === 'unreachable');
     this.box.classList.toggle('bloquee', Boolean(this.frame) && stuck);
@@ -593,6 +636,7 @@ class RadioPanel {
       return;
     }
     this.retry.hidden = !stuck;
+    this.skip.hidden = !skip;
     const label = track ? `${track.titre} — ${track.artiste}` : '';
     if (this.caption.textContent !== label) this.caption.replaceChildren(track ? link(track.url, label) : '');
     this.fit();
