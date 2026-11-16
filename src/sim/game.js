@@ -230,7 +230,8 @@ export class Game {
       }
     }
     if (team !== 'ordre' && this.boss && near(this.boss)) this.hurtBoss(damage);
-    const harmless = team === 'ordre' && this.truce; // une grenade encore en l'air au cessez-le-feu
+    // Au cessez-le-feu, ce que l'ordre a lancé ne blesse plus : une grenade encore en l'air, un tonneau qu'elle fait sauter.
+    const harmless = this.truce && (team === 'ordre' || credit === 'ordre');
     if (team !== 'luttes' && !harmless && !hero.dead && near(hero)) this.hurtHero(1, { x, kind: 'explosion' });
     if (team !== 'ordre') {
       for (const cage of this.props) {
@@ -473,7 +474,8 @@ export class Game {
       this.sfx('palier', this.hero.x);
       this.headline();
       // Une poubelle prend feu et une équipe télé vient la filmer : elle compte parmi les renforts du palier.
-      this.reinforce(this.ignite() ? 1 : 2);
+      // Au cessez-le-feu, plus de renfort, ni d'équipe venue filmer.
+      if (!this.truce) this.reinforce(this.ignite() ? 1 : 2);
     }
   }
 
