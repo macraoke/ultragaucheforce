@@ -609,8 +609,12 @@ function play(r, game, frames) {
     shot.set(`manifestant ${i}`, r.spot(m, i)?.x);
     return marcher(m, i);
   };
+  let signs = null;
   r.board = (text, x, y, opts) => {
-    if (opts?.size === 4.6) shot.set(`« ${text} »`, x);
+    if (opts?.size === 4.6) {
+      shot.set(`« ${text} »`, x);
+      signs.push({ text, box: r.textBox(text, x, y, 4.6, opts.width) });
+    }
     return board(text, x, y, opts);
   };
   for (const dt of frames) {
@@ -622,9 +626,12 @@ function play(r, game, frames) {
       r.follow(game);
     }
     shot = new Map();
+    signs = [];
     r.tick(dt);
     r.draw(game, dt);
-    seen.push({ cx: r.cx, at: shot });
+    // Les textes flottants tels qu'ils sont écrits à cette image (visibles tant qu'il leur reste du temps).
+    const texts = r.floaters.filter((f) => f.t > 0).map((f) => ({ text: f.text, box: r.textBox(f.text, f.x - r.cx, f.y - r.cy, f.size, 150) }));
+    seen.push({ cx: r.cx, at: shot, signs, texts });
   }
   Object.assign(r, { actor, marcher, board });
   return seen;
@@ -646,4 +653,31 @@ test('en marche, le héros, sa manif et ses pancartes ne tremblent pas à l’é
     assert.ok(where.has('héros') && [...where.keys()].some((k) => k.startsWith('«')), `${cadence} : le héros et des pancartes levées`);
     for (const [who, xs] of where) assert.equal(xs.size, 1, `${cadence} : ${who} dessiné à ${[...xs].join(', ')}`);
   }
+});
+
+test('en marche, un texte flottant ne fait baisser aucune pancarte levée : il passe au-dessus d’elle', () => {
+  // Deux fois la même marche ; dans la seconde, un « + 30 » posé dans la rue, juste devant une pancarte levée.
+  const [alone, crossed] = [false, true].map((withText) => {
+    const { game, r } = march();
+    const warm = play(r, game, Array(240).fill(DT));
+    const [first] = warm.at(-1).signs;
+    assert.ok(first, 'une pancarte levée');
+    if (withText) r.float({ x: first.box.x1 + r.cx + 30, y: (first.box.y0 + first.box.y1) / 2 + r.cy, text: '+ 30', t: 1.8, color: '#f6c21c', size: 11, gain: true });
+    return play(r, game, Array(90).fill(DT));
+  });
+  const up = (shot) => new Set(shot.signs.map((s) => s.text));
+  let met = 0;
+  crossed.forEach((shot, k) => {
+    for (const t of shot.texts) {
+      for (const s of shot.signs) {
+        assert.ok(!overlap(t.box, s.box), `image ${k} : « ${t.text} » sur « ${s.text} »`);
+        if (t.box.x0 < s.box.x1 && t.box.x1 > s.box.x0) met++; // à l'aplomb d'une pancarte levée : il la croise
+      }
+    }
+    if (!k) return;
+    // Levée à l'image d'avant, encore levée sans le texte : elle l'est aussi avec lui.
+    for (const text of up(crossed[k - 1])) if (up(alone[k]).has(text)) assert.ok(up(shot).has(text), `image ${k} : « ${text} » baissée par le texte`);
+  });
+  assert.ok(met > 20, `le texte croise les pancartes (${met} fois)`);
+  assert.ok(crossed.at(-1).texts.some((t) => t.text === '+ 30'), 'et reste écrit');
 });

@@ -356,8 +356,14 @@ export class Renderer {
     // Le héros se lit au premier coup d'œil : aucune pancarte ne se lève devant lui ni juste au-dessus de sa tête.
     const { hero } = game;
     if (!hero.dead) this.boxes.push({ x0: hero.x - 3 - cx, x1: hero.x + hero.w + 3 - cx, y0: hero.y - 8 - cy, y1: hero.y + hero.h - cy });
-    this.placeFloaters(fixed);
-    this.raiseSigns(game.cortege);
+    // Les textes qui ont leur place (un coup, une ligne qui cède) d'abord : les pancartes s'effacent devant eux.
+    // Les autres textes flottants, posés dans le monde, dérivent à l'écran quand on marche : ils ne font pas baisser
+    // une pancarte levée, ils passent au-dessus d'elle (et une pancarte baissée attend qu'ils soient passés).
+    const placed = [...fixed];
+    this.placeKept(placed);
+    const drifting = this.floaters.filter((f) => !f.keep && f.t > FADE).map((f) => this.textBox(f.text, f.x - cx, f.y - cy, f.size, 150));
+    const signs = this.raiseSigns(game.cortege, drifting);
+    this.placeLoose([...placed, ...signs], signs);
     game.cortege.forEach((m, i) => this.marcher(m, i));
     // La manif autour de lui : le repère au-dessus du héros apparaît, puis s'efface quand il en sort.
     const crowd = !hero.dead && game.cortege.some((m) => Math.abs(m.x - (hero.x + hero.w / 2)) < 3 * NEAR_HERO && Math.abs(m.y - (hero.y + hero.h)) < 24);
@@ -1176,10 +1182,13 @@ export class Renderer {
 
   /**
    * Quelles pancartes du cortège sont levées à cette image. Aucune n'en recouvre une autre ni ce qui est déjà
-   * réservé (le héros, la voix, les textes flottants, les gains des recrues), et aucune ne clignote :
+   * réservé (le héros, la voix, les coups, les gains des recrues), et aucune ne clignote :
    * levée, elle le reste SIGN_UP secondes, sauf devant un de ces textes prioritaires ; baissée, elle attend SIGN_DOWN.
+   * `drifting` : les textes flottants qui dérivent à l'écran. Ils ne font pas baisser une pancarte levée (ils passent
+   * au-dessus d'elle, voir `placeLoose`), mais une pancarte baissée ne se relève pas sous l'un d'eux.
+   * Rend les boîtes des pancartes levées.
    */
-  raiseSigns(cortege) {
+  raiseSigns(cortege, drifting = []) {
     const now = this.clock;
     const priority = this.boxes.length;
     const signs = [];
@@ -1204,12 +1213,15 @@ export class Renderer {
     const clear = (box, upTo = this.boxes.length) => !this.boxes.slice(0, upTo).some((b) => box.x0 < b.x1 && box.x1 > b.x0 && box.y0 < b.y1 && box.y1 > b.y0);
     // Pour se relever, une pancarte veut de l'air autour des textes prioritaires, surtout en dessous
     // (le héros bouge, les textes flottants montent) : sinon elle retomberait aussitôt.
-    const roomy = (box) => clear({ x0: box.x0 - 12, x1: box.x1 + 12, y0: box.y0 - 6, y1: box.y1 + 18 }, priority) && clear(box);
+    const free = (box) => !drifting.some((b) => box.x0 < b.x1 && box.x1 > b.x0 && box.y0 < b.y1 && box.y1 > b.y0);
+    const roomy = (box) => clear({ x0: box.x0 - 12, x1: box.x1 + 12, y0: box.y0 - 6, y1: box.y1 + 18 }, priority) && clear(box) && free(box);
+    const up = [];
     const keep = (sign, ok) => {
       if (ok) {
         sign.held.first ??= now; // sa première levée : son tour de nouvelle venue commence
         if (!sign.held.up) Object.assign(sign.held, { up: true, since: now });
         this.boxes.push(sign.box);
+        up.push(sign.box);
       } else if (sign.held.up) Object.assign(sign.held, { up: false, since: now });
     };
     // Celles levées depuis peu ne cèdent qu'aux textes prioritaires ; les plus anciennes ensuite ;
@@ -1221,6 +1233,7 @@ export class Renderer {
     for (const s of old) keep(s, s.turn && clear(s.box));
     for (const s of down) keep(s, s.turn && roomy(s.box));
     this.raised = new Set(signs.filter((s) => s.held.up).map((s) => s.m));
+    return up;
   }
 
   /** Un membre du cortège, avec sa pancarte, son drapeau ou sa trompette. Tout près du héros, il s'efface à demi. */
@@ -1341,18 +1354,29 @@ export class Renderer {
   /**
    * Les textes flottants ne s'empilent pas : chacun monte juste au-dessus de ceux déjà là et des textes fixes
    * (la voix d'en face, les gains des recrues). Une fois écartés, ils montent ensemble, à la même vitesse.
-   * Leurs boîtes sont réservées : les pancartes du cortège s'effacent devant eux.
+   * Au dessin, les pancartes levées se placent entre les deux temps (voir `draw`) : `placeKept`, puis `placeLoose`.
    */
   placeFloaters(fixed) {
     const placed = [...fixed];
+    this.placeKept(placed);
+    this.placeLoose(placed);
+  }
+
+  /** Un texte flottant déplacé de `dy`, avec sa boîte. */
+  shiftFloater(f, box, dy) {
+    f.y += dy;
+    box.y0 += dy;
+    box.y1 += dy;
+  }
+
+  /**
+   * Ceux qui ont leur place (`keep` : au pied d'une ligne, au bord de l'écran) ne bougent pas, et sont réservés :
+   * les pancartes du cortège s'effacent devant eux. Seule exception : un texte `keep` qui monte (« TOUCHÉ ») passe
+   * au-dessus d'une sommation plutôt que de la cacher. Leurs boîtes s'ajoutent à `placed`.
+   */
+  placeKept(placed) {
     const ceiling = this.ceiling(); // jamais sous la bande du HUD : un texte qui y arriverait s'arrête au plafond
-    const shift = (f, box, dy) => {
-      f.y += dy;
-      box.y0 += dy;
-      box.y1 += dy;
-    };
-    // Ceux qui ont leur place (`keep` : au pied d'une ligne, au bord de l'écran) ne bougent pas ; les autres passent autour.
-    // Seule exception : un texte `keep` qui monte (« TOUCHÉ ») passe au-dessus d'une sommation plutôt que de la cacher.
+    const shift = (f, box, dy) => this.shiftFloater(f, box, dy);
     const kept = [];
     for (const f of this.floaters.filter((g) => g.keep)) {
       const box = this.textBox(f.text, f.x - this.cx, f.y - this.cy, f.size, 150);
@@ -1370,14 +1394,29 @@ export class Renderer {
       placed.push(box);
       this.boxes.push(box);
     }
+  }
+
+  /**
+   * Les autres passent autour de ce qui est déjà placé (`placed`), pancartes levées comprises : au-dessus, sinon,
+   * au plafond, en dessous. Une pancarte levée reste lisible : un texte qui n'a pas trouvé de place hors de l'une
+   * d'elles (`signs`) s'efface.
+   */
+  placeLoose(placed, signs = []) {
+    const ceiling = this.ceiling();
+    const shift = (f, box, dy) => this.shiftFloater(f, box, dy);
+    const over = (box, b) => box.x0 < b.x1 && box.x1 > b.x0 && box.y0 < b.y1 && box.y1 > b.y0;
     for (const f of this.floaters.filter((g) => !g.keep)) {
       const box = this.textBox(f.text, f.x - this.cx, f.y - this.cy, f.size, 150);
-      const hit = () => placed.find((b) => box.x0 < b.x1 && box.x1 > b.x0 && box.y0 < b.y1 && box.y1 > b.y0);
+      const hit = () => placed.find((b) => over(box, b));
       for (let k = 0, other; k < 8 && (other = hit()); k++) shift(f, box, other.y0 - 1 - box.y1);
       // Trop haut : il s'arrête au plafond, et passe sous ce qui le gêne encore.
       if (box.y0 < ceiling) {
         shift(f, box, ceiling - box.y0);
         for (let k = 0, other; k < 8 && (other = hit()); k++) shift(f, box, other.y1 + 1 - box.y0);
+      }
+      if (signs.some((b) => over(box, b))) {
+        f.t = 0;
+        continue;
       }
       placed.push(box);
       if (f.t > FADE) this.boxes.push(box);
