@@ -6,7 +6,7 @@
 // touche une, elle s'ouvre en grand avec ses références (`openCard`, `collectionCard`).
 
 import { h, link, frenchDate, quoted, signature, sourceName, billions } from './dom.js';
-import { RARITIES } from '../content/rules.js';
+import { RARITIES } from '../content/rarities.js';
 import { sprite, spriteElement } from './sprites.js';
 import { isFound } from './save.js';
 

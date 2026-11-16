@@ -13,7 +13,6 @@ import { showTaxScene, draw } from './tax.js';
 import { CRS_OCTOBRE_2026 } from './blesses.js';
 import { shareImage, openShare } from './share.js';
 import { measure } from './mesure.js';
-import { showAtelier } from './atelier.js';
 import { loadSave, storeSave, discover, isFound } from './save.js';
 import { cardName, citationOfWord, levelOrder, rarityName, taxShocks } from './collection.js';
 import { registerServiceWorker } from './sw-register.js';
@@ -162,7 +161,8 @@ function start(id, level = null) {
   screens.intro(current.level, () => begin?.(), game.hero.def.id, !level);
 }
 
-function openAtelier() {
+async function openAtelier() {
+  const { showAtelier } = await import('./atelier.js'); // chargé à la demande : le menu n'en a pas besoin
   setMode('menu');
   document.body.dataset.ecran = 'atelier';
   screens.escape = showAtelier(screenRoot, { bundle, save, test: (level) => start(null, level), back: () => toMenu() });
