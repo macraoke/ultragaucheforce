@@ -4,7 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadContent } from '../tools/content.mjs';
-import { Radio, chooseTrack, poolsFor, frameAttributes, START_TIMEOUT, LOAD_TIMEOUT } from '../src/client/music.js';
+import { Radio, chooseTrack, nextLevelTrack, poolsFor, frameAttributes, START_TIMEOUT, LOAD_TIMEOUT } from '../src/client/music.js';
 
 const { bundle } = loadContent();
 const real = Object.values(bundle.musiques);
@@ -644,4 +644,21 @@ test('après l’échec de la dernière piste du sac, la piste qu’on vient d�
   s.emit('ERROR'); // chiffrée, sans module de lecture : elle échoue
   assert.ok(s.radio.failed.has('jeu-c'));
   assert.equal(s.radio.current.id, 'jeu-b', 'pas « jeu-a », qu’on vient d’entendre');
+});
+
+test('« Gabber au boss, Internationale en niveau »', () => {
+  // Valentin, 16 novembre 2026.
+  const gabber = bundle.musiques['jeunesse-emmerde-le-fn-gabber'];
+  const drill = bundle.musiques['internationale-jersey-drill'];
+  assert.equal(gabber.ou, 'boss');
+  assert.equal(drill.ou, 'jeu');
+  const random = seeded(17);
+  const boss = new Set();
+  for (let i = 0; i < 1000; i++) boss.add(chooseTrack(real, { slot: 'boss', random }).id);
+  assert.ok(boss.has(gabber.id), 'le gabber est tiré au boss, parmi les autres');
+  assert.ok(!boss.has(drill.id), 'l’Internationale jersey drill n’est plus au boss');
+  assert.ok(boss.has('abattez-la-citadelle') && !boss.has('abattez-la-citadelle-ryukken'), 'Ryukken ne vient qu’après Monarch');
+  const level = new Set();
+  for (let i = 0; i < 400; i++) level.add(nextLevelTrack(real, { slot: 'rond-point', random }).id);
+  assert.ok(level.has(drill.id) && !level.has(gabber.id), 'en niveau : l’Internationale, pas le gabber');
 });
