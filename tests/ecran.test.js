@@ -257,17 +257,28 @@ test('des pertes pour la même raison, au même endroit, font un seul texte qui 
   assert.deepEqual(r.floaters.map((f) => f.text), ['− 19 gazés', '− 3 interpellés']);
 });
 
-test('« GARDE À VUE » s’écrit quand le héros approche ; de loin, le dessin suffit', () => {
+test('« GARDE À VUE » : écrit pour une cage à l’étage du héros, et sans clignoter tant qu’elle reste à l’écran', () => {
   const r = renderer();
   const said = [];
   r.label = (text) => said.push(text);
   const cage = { kind: 'cage', x: 300, y: 150, w: 16, h: 16, on: false };
+  const show = () => { said.length = 0; r.prop(cage); return said.length > 0; };
+  // Elle entre dans l'image : le héros est au même étage, elle s'écrit.
   r.heroBox = { x: 20, y: 148, w: 12, h: 18 };
-  r.prop(cage);
-  assert.deepEqual(said, []);
-  r.heroBox = { x: 200, y: 148, w: 12, h: 18 };
-  r.prop(cage);
-  assert.deepEqual(said, ['GARDE À VUE']);
+  assert.ok(show());
+  // Le héros saute, s'éloigne d'un étage : tant qu'elle reste à l'écran, rien ne change.
+  for (const y of [100, 60, 148, 40]) {
+    r.heroBox = { x: 40, y, w: 12, h: 18 };
+    assert.ok(show(), `héros à ${y}`);
+  }
+  // Elle sort de l'image, puis revient pendant que le héros est trois étages plus bas : le dessin suffit.
+  r.cx = 400;
+  show();
+  r.cx = 0;
+  r.heroBox = { x: 40, y: 150 + 9 * 16, w: 12, h: 18 };
+  assert.ok(!show());
+  r.heroBox = { x: 300, y: 148, w: 12, h: 18 };
+  assert.ok(!show(), 'et ne s’allume pas en cours de route');
 });
 
 test('des unités identiques côte à côte n’ont qu’un écriteau ; une autre, plus loin ou différente, a le sien', () => {
@@ -279,6 +290,10 @@ test('des unités identiques côte à côte n’ont qu’un écriteau ; une autr
   assert.equal(r.first('écriteau', unit('crs', 128)), false, 'de proche en proche, toute la ligne');
   assert.equal(r.first('écriteau', unit('bac', 120)), true, 'une autre unité');
   assert.equal(r.first('écriteau', unit('crs', 260)), true, 'un autre groupe');
+  // Une unité hors de l'image n'écrit rien : elle ne prend pas l'écriteau de sa voisine visible.
+  r.groups.clear();
+  assert.equal(r.first('écriteau', unit('gm', -50)), true);
+  assert.equal(r.first('écriteau', unit('gm', -20)), true, 'la voisine visible a le sien');
 });
 
 test('la bulle du boss reste entière dans la vue, sous le HUD', () => {

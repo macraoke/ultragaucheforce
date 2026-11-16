@@ -35,7 +35,7 @@ const SIGN_TURN = 6; // secondes d'un tour : les porteurs lèvent leur pancarte 
 const SIGN_FRESH = 3; // secondes pendant lesquelles une pancarte qui vient d'arriver reste levée, hors de son tour
 const SIGN_SHARE = 2; // … un tour sur deux chacun : la moitié des pancartes levées à la fois, toutes à leur tour
 const SLOGAN_GAP = 3; // secondes entre deux slogans de recrues : les autres recrues rejoignent sans crier
-const NEAR_PROP = { x: 10 * TILE, y: 6 * TILE }; // « GARDE À VUE », « PIQUET DE GRÈVE » : écrits quand le héros approche
+const PROP_FLOOR = 7 * TILE; // « GARDE À VUE », « PIQUET DE GRÈVE » : écrits pour un accessoire à l'étage du héros (à 7 tuiles près)
 const GROUP = { x: 40, y: 24 }; // des unités identiques aussi proches font un groupe : un seul écriteau, une seule bulle, un seul « ! »
 const SAFE_TOP = 100; // pixels CSS en haut de l'écran laissés au HUD, au moins (bandeau au pouce, barre de vie du boss) ; plus s'il descend plus bas
 
@@ -57,6 +57,7 @@ export class Renderer {
     this.groups = new Map(); // à chaque image, où chaque genre de texte a déjà été écrit pour un groupe d'unités (`first`)
     this.loud = new Set(); // les unités hors service dont la bulle se lit (une par groupe)
     this.lastSlogan = -Infinity;
+    this.propSay = new WeakMap(); // accessoire → son étiquette s'écrit-elle, décidé quand il entre en entier dans l'image
     this.held = new WeakMap(); // porteur de pancarte du cortège → { up, since, label } : levée ou baissée, depuis quand
     this.raised = new Set(); // les porteurs dont la pancarte est levée à cette image
     this.particles = [];
@@ -738,6 +739,8 @@ export class Renderer {
     const seen = this.groups.get(key) ?? [];
     const x = e.x + e.w / 2;
     const y = e.y + e.h;
+    // Une unité hors de l'image n'écrit rien (voir `outside`) : elle ne prend pas la place de ses voisines visibles.
+    if (x - this.cx < -24 || x - this.cx > this.viewW + 24 || y - this.cy < -8 || y - e.h - this.cy > this.viewH + 8) return true;
     const alone = !seen.some((p) => Math.abs(p.x - x) < GROUP.x && Math.abs(p.y - y) < GROUP.y);
     seen.push({ x, y });
     this.groups.set(key, seen);
@@ -881,10 +884,18 @@ export class Renderer {
     if (p.kind === 'sortie') {
       if (p.on !== false) this.label('SORTIE ▶', x + img.width / 2, y - 9, { size: 6, color: '#1a1c2c', bg: '#f6c21c' });
     }
-    // « GARDE À VUE », « PIQUET DE GRÈVE » : on les lit en approchant ; de loin, le dessin suffit.
+    // « GARDE À VUE », « PIQUET DE GRÈVE » : écrits pour un accessoire à l'étage du héros ; plus haut ou plus bas, le dessin
+    // suffit. Décidé quand il entre en entier dans l'image, et gardé tant qu'il y reste : un saut ou un pas ne le fait
+    // ni apparaître ni disparaître.
+    if (!(p.kind === 'cage' || p.kind === 'piquet') || p.on) return;
+    const whole = x >= 0 && y >= 0 && x + img.width <= this.viewW && y + img.height <= this.viewH;
+    if (!whole) {
+      this.propSay.delete(p);
+      return;
+    }
     const h = this.heroBox;
-    const near = h && Math.abs(p.x + p.w / 2 - (h.x + h.w / 2)) < NEAR_PROP.x && Math.abs(p.y + p.h - (h.y + h.h)) < NEAR_PROP.y;
-    if (!near) return;
+    if (!this.propSay.has(p)) this.propSay.set(p, Boolean(h) && Math.abs(p.y + p.h - (h.y + h.h)) <= PROP_FLOOR);
+    if (!this.propSay.get(p)) return;
     if (p.kind === 'cage' && !p.on) this.label('GARDE À VUE', x + 8, y - 8, { size: 4.5, color: '#f4f4f4', bg: '#333c57' });
     if (p.kind === 'piquet' && !p.on) this.label('PIQUET DE GRÈVE', x + img.width / 2, y - 8, { size: 4.5, color: '#1a1c2c', bg: '#f6c21c' });
   }
