@@ -1,0 +1,9 @@
+titre: 61 gendarmes blessés, 22 ou 1 ?
+theme: ordre
+texte: Sainte-Soline, 29 octobre 2022 : 61 gendarmes blessés, dont 22 « sérieusement » selon le ministre de l'Intérieur. Le rapport du directeur général de la gendarmerie, cinq mois plus tard, écrit « dont un grièvement ».
+portee: Le premier chiffre est cité par la Défenseure des droits (décision n° 2026-158 du 7 juillet 2026) ; le second vient du rapport de la gendarmerie du 27 mars 2023. « Sérieusement » et « grièvement » ne sont pas définis dans ces pages : l'écart est de vocabulaire, il ne prouve pas qu'un des chiffres est faux.
+periode: 29 octobre 2022
+source.titre: Défenseur des droits — Décision n° 2026-158 du 7 juillet 2026 (manifestation de Sainte-Soline)
+source.url: https://juridique.defenseurdesdroits.fr/doc_num.php?explnum_id=23301
+source.nature: officielle
+verifie: 2026-11-16

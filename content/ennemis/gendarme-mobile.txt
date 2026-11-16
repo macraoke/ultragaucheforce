@@ -10,6 +10,7 @@ largeur: 12
 hauteur: 17
 fiche: sainte-soline-grenades
 fiche: gli-f4-retrait
+fiche: blesses-declares-sainte-soline
 arme.type: tir
 arme.cadence: 0.5
 arme.vitesse: 150

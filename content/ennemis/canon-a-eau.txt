@@ -9,6 +9,7 @@ fin: panne
 largeur: 32
 hauteur: 19
 fiche: canons-a-eau
+fiche: blesses-contusionnes
 arme.type: jet
 arme.duree: 1.8
 arme.pause: 2.6

@@ -1,0 +1,9 @@
+titre: 47 blessés, nature non précisée
+theme: ordre
+texte: À Sainte-Soline le 25 mars 2023, la gendarmerie compte 47 gendarmes blessés. La Défenseure des droits note que la nature de leurs blessures n'a pas été précisée : d'autres gendarmes ont « déclaré » des brûlures, des traumatismes et des traumatismes sonores.
+portee: Décision n° 2026-158 du 7 juillet 2026, qui cite le rapport du directeur général de la gendarmerie du 27 mars 2023 : six évacuations médicales, sans pronostic vital engagé. Deux gendarmes sont classés en urgence absolue (un traumatisme du bassin, une blessure par déflagration). Le bilan de la gendarmerie se dit lui-même « encore évolutif ». Le moment et les circonstances des blessures ne sont pas précisés non plus.
+periode: 25 mars 2023
+source.titre: Défenseur des droits — Décision n° 2026-158 du 7 juillet 2026 (bilan humain, Sainte-Soline)
+source.url: https://juridique.defenseurdesdroits.fr/doc_num.php?explnum_id=23301
+source.nature: officielle
+verifie: 2026-11-16

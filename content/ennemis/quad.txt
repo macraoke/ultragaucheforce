@@ -10,6 +10,7 @@ fin: panne
 largeur: 22
 hauteur: 14
 fiche: sainte-soline-dispositif
+fiche: sainte-soline-2022-blesses
 auteur: UltraGauche Force
 --- repos
 .......bbbb....bbbb.......
