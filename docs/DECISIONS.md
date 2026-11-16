@@ -128,6 +128,7 @@ Valentin, le 16 novembre 2026, après avoir joué sur son téléphone : « also 
 - **Grimper d'un geste tenu** : en l'air, le saut tenu (manche vers le haut, ou SAUT) le long d'un mur, le héros s'y accroche et grimpe ; tout en haut, il passe par-dessus, ou sur l'étage de l'autre côté de la trouée. Au clavier et à la manette, on grimpe toujours en tapant le saut : la simulation ne change pas, seuls les doigts sont lus autrement.- **TIR glissé vers le haut vise en haut**, sans sauter : le pouce qui tire n'a pas à lâcher son bouton. Une flèche au-dessus de TIR le montre.
 - **SPÉ ne part que d'un appui posé dessus**, jamais d'un pouce qui glisse depuis TIR ou SAUT. Le reste du haut de l'écran, à droite, tire en haut. Le glissement entre SAUT et TIR reste.
 - On vise en haut sans avancer, comme au clavier et à la manette : la règle est celle de la simulation, la même partout.
+- **Le héros se repère dans la manif** : une petite flèche d'or au-dessus de sa tête, seulement quand le cortège l'entoure.
 
 ## Une sauvegarde qui survit aux mises à jour
 

@@ -82,6 +82,7 @@ export class Renderer {
     this.flowers = []; // [x, y, poussée] : la fleur de chaque unité hors service à cette image
     this.hurt = null; // { t, hp, max } : le héros vient d'être touché (ce qu'il lui reste s'affiche au-dessus de lui)
     this.edge = 0; // liseré rouge autour de l'image quand le héros est touché
+    this.crowded = 0; // le repère au-dessus du héros, au milieu de la manif : de 0 (absent) à 1
     this.lastParry = -1;
     this.watch = new WeakMap(); // état précédent de chaque unité, pour le « ! » quand elle repère le héros
     this.shake = 0;
@@ -344,6 +345,9 @@ export class Renderer {
     this.placeFloaters(fixed);
     this.raiseSigns(game.cortege);
     game.cortege.forEach((m, i) => this.marcher(m, i));
+    // La manif autour de lui : le repère au-dessus du héros apparaît, puis s'efface quand il en sort.
+    const crowd = !hero.dead && game.cortege.some((m) => Math.abs(m.x - (hero.x + hero.w / 2)) < 3 * NEAR_HERO && Math.abs(m.y - (hero.y + hero.h)) < 24);
+    this.crowded = this.reduced ? Number(crowd) : Math.max(0, Math.min(1, this.crowded + (crowd ? 4 : -2) * dt));
     for (const e of game.enemies) this.enemy(e, e === talker);
     this.combatMiddle(); // ceux qui quittent la manif ou la rejoignent
     if (game.boss) this.boss(game.boss);
@@ -551,6 +555,24 @@ export class Renderer {
     const dy = -Math.round(3 * Math.sin(jolt * Math.PI));
     this.actor(h, rows, { flash: h.flash > 0, alpha: pale ? (this.reduced ? 0.6 : 0.4) : 1, dx, dy });
     if (this.hurt) this.pips(h, rows.length);
+    else if (this.crowded > 0 && !this.demo) this.marker(h, rows.length);
+  }
+
+  /** Au milieu de la manif, une petite flèche d'or au-dessus de la tête du héros : c'est lui. */
+  marker(h, height) {
+    const { ctx } = this;
+    const x = Math.round(h.x + h.w / 2 - this.cx);
+    const y = Math.round(h.y + h.h - height - 6 - this.cy);
+    ctx.globalAlpha = this.crowded;
+    ctx.fillStyle = '#1a1c2c';
+    ctx.fillRect(x - 3, y - 1, 7, 3);
+    ctx.fillRect(x - 2, y + 2, 5, 1);
+    ctx.fillRect(x - 1, y + 3, 3, 1);
+    ctx.fillStyle = '#f6c21c';
+    ctx.fillRect(x - 2, y, 5, 1);
+    ctx.fillRect(x - 1, y + 1, 3, 1);
+    ctx.fillRect(x, y + 2, 1, 1);
+    ctx.globalAlpha = 1;
   }
 
   /** Ce qu'il reste au héros qui vient d'être touché : un carré par coup encaissable, le dernier perdu clignote. */
