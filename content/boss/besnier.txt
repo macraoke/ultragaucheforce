@@ -7,7 +7,9 @@ largeur: 30
 hauteur: 40
 vitesse: 40
 citation: besnier-discret
-fiche: lactalis-accord-fiscal
+fiche: lactalis-chiffre-d-affaires
+# D'où vient le nom : le profil Forbes, https://www.forbes.com/profile/emmanuel-besnier/ (lu le 16 novembre 2026).
+origine: Forbes écrit qu'on l'a appelé, « thanks to his disdain for the press », « the invisible billionaire » : le milliardaire invisible. Lui parle de discrétion.
 # Assis sur sa fortune tant que sa vie n'est pas passée sous les sept dixièmes.
 assis: oui
 leve: 0.7
