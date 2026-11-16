@@ -711,6 +711,84 @@ test('dans le vrai jeu, une nasse de CRS affiche son décompte, qui suit la nass
   assert.deepEqual(written, [], 'levée, plus de décompte');
 });
 
+// ---------------------------------------------------------------- les cœurs, le boss vaincu
+
+test('le boss vaincu, un policier à pied près de qui passe le héros émet des cœurs rouges et violets, qui montent et s’effacent', () => {
+  const r = renderer();
+  const said = [];
+  r.label = (text) => said.push(text);
+  const unit = (id, x, extra = {}) => {
+    const def = bundle.ennemis[id];
+    return { def, x, y: 150 - def.hauteur, w: def.largeur, h: def.hauteur, facing: -1, state: 'patrol', ...extra };
+  };
+  const crs = unit('crs', 110);
+  const enemies = [
+    crs, unit('bac', 300), // un policier loin du héros
+    unit('bfm', 96), unit('canon-a-eau', 120), unit('faux-jeune', 104), // près de lui, mais ni de l'ordre, ni à pied
+  ];
+  const game = { truce: false, hero: { x: 100, y: 134, w: 12, h: 16, dead: false }, enemies };
+  const frames = (n, g = game) => {
+    for (let i = 0; i < n; i++) {
+      r.tick(1 / 60);
+      r.love(g);
+    }
+  };
+  frames(60);
+  assert.equal(r.hearts.length, 0, 'tant que le boss tient, pas de cœur');
+  game.truce = true;
+  frames(1);
+  assert.equal(r.hearts.length, 1, 'le boss vaincu, un cœur tout de suite, au-dessus du CRS');
+  const [first] = r.hearts;
+  assert.ok(Math.abs(first.x - (crs.x + crs.w / 2)) <= 4 && first.y < crs.y, 'au-dessus de sa tête');
+  frames(59);
+  assert.ok(r.hearts.length >= 4 && r.hearts.length <= 5, `un cœur toutes les 0,25 s : ${r.hearts.length}`);
+  assert.deepEqual(r.hearts.slice(0, 4).map((h) => h.rows[1][2]), ['R', 'm', 'R', 'm'], 'rouge, violet, rouge, violet');
+  assert.ok(first.y < crs.y - 14, 'il monte');
+  game.hero.x = 200; // le héros s'éloigne
+  frames(90);
+  assert.equal(r.hearts.length, 0, 'ils se sont effacés, et aucun autre n’est venu');
+  assert.deepEqual(said, [], 'rien d’écrit');
+  // Le même policier, assis en grève : il en émet aussi. Le héros mort : non.
+  crs.state = 'done';
+  game.hero.x = 100;
+  frames(1);
+  assert.equal(r.hearts.length, 1);
+  game.hero.dead = true;
+  frames(90);
+  assert.equal(r.hearts.length, 0, 'le héros tombé, plus de cœur');
+});
+
+test('dans le vrai jeu, après la chute du boss, le héros qui passe devant une compagnie de CRS les fait émettre des cœurs', () => {
+  const width = 90;
+  const rows = Array.from({ length: 14 }, (_, y) => {
+    if (y >= 12) return 'T'.repeat(width);
+    if (y === 11) return `..D${'.'.repeat(17)}c${'.'.repeat(50)}Y${'.'.repeat(width - 72)}`;
+    return '.'.repeat(width);
+  });
+  const level = { titre: 'trêve', manchette: [], panneaux: {}, legende: { c: { type: 'ennemi', id: 'crs' } }, boss: '', heros: 'zucman', cortege: false, fond: 'ville', carte: rows };
+  const lovers = (truce) => {
+    const game = new Game(bundle, 'treve', { level, seed: 3, invincible: true });
+    const r = renderer();
+    r.snap(game);
+    if (truce) game.hurtBoss(game.boss.hp);
+    let most = 0;
+    for (let i = 0; i < 240; i++) {
+      game.step({ right: true });
+      game.events.length = 0;
+      r.follow(game);
+      r.tick(DT);
+      r.draw(game, DT);
+      most = Math.max(most, r.hearts.length);
+    }
+    return { most, game };
+  };
+  const calm = lovers(false);
+  assert.equal(calm.most, 0, 'le boss debout, pas de cœur');
+  const won = lovers(true);
+  assert.equal(won.game.truce, true);
+  assert.ok(won.most >= 3, `le boss vaincu, des cœurs : ${won.most}`);
+});
+
 // ---------------------------------------------------------------- lisibilité et travail inutile
 
 test('sur téléphone, un petit texte du monde grandit jusqu’à onze pixels à l’écran', () => {

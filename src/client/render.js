@@ -57,6 +57,17 @@ const FOLLOW = { x: 9 / 60, y: 7 / 60 }; // part du chemin vers le héros que la
 const KETTLE_SIZE = 10; // le décompte de la nasse, en pixels du jeu : il se lit de loin
 const KETTLE_LAST = 5; // les dernières secondes du décompte passent à l'or
 const overlaps = (a, b) => a.x0 < b.x1 && a.x1 > b.x0 && a.y0 < b.y1 && a.y1 > b.y0;
+// Le boss vaincu, un policier près de qui passe le héros émet de petits cœurs, rouges et violets (voir `love`).
+const LOVE_NEAR = { x: 36, y: 24 }; // à cette distance du héros, au plus (de centre à centre, de pieds à pieds)
+const LOVE_EVERY = 0.25; // secondes entre deux cœurs d'un même policier : trois quand le héros passe devant lui
+const LOVE_LIFE = 1.3; // secondes : le cœur monte, puis s'efface
+const MAX_HEARTS = 48;
+const HEARTS = [
+  ['.kk.kk.', 'kwRkRRk', 'kRRRRRk', '.kRRRk.', '..kRk..', '...k...'],
+  ['.kk.kk.', 'kwmkmmk', 'kmmmmmk', '.kmmmk.', '..kmk..', '...k...'],
+];
+/** Un policier : une unité de l'ordre, à pied. */
+const isPolice = (def) => def.camp === 'ordre' && def.deplacement === 'marche';
 // Valentin, 16 novembre 2026 : « Le gain d'abord : les gains, « +1 », « ON REPART D'ICI » et les noms de spéciale passent
 // toujours : la pancarte qu'ils touchent se baisse un instant. Les slogans, eux, laissent la pancarte levée. »
 const leads = (f) => Boolean(f.gain || f.lead);
@@ -91,6 +102,8 @@ export class Renderer {
     this.runners = []; // manifestants qui quittent la manif en courant (dispersés, interpellés)
     this.rings = []; // le « pop » d'une unité qui passe hors service
     this.flowers = []; // [x, y, poussée] : la fleur de chaque unité hors service à cette image
+    this.hearts = []; // { x, y, t, color, sway } : les cœurs des policiers, le boss vaincu (voir `love`)
+    this.loved = new WeakMap(); // policier → { at, n } : quand il a émis son dernier cœur (`clock`), et combien
     this.hurt = null; // { t, hp, max } : le héros vient d'être touché (ce qu'il lui reste s'affiche au-dessus de lui)
     this.edge = 0; // liseré rouge autour de l'image quand le héros est touché
     this.crowded = 0; // le repère au-dessus du héros, au milieu de la manif : de 0 (absent) à 1
@@ -133,6 +146,7 @@ export class Renderer {
     this.floaters = [];
     this.runners = [];
     this.rings = [];
+    this.hearts = [];
     this.hurt = null;
     this.edge = 0;
     this.shake = 0;
@@ -306,6 +320,11 @@ export class Renderer {
     this.runners = this.runners.filter((r) => r.t > 0);
     for (const r of this.rings) r.t -= dt;
     this.rings = this.rings.filter((r) => r.t > 0);
+    for (const h of this.hearts) {
+      h.t -= dt;
+      h.y -= 22 * dt;
+    }
+    this.hearts = this.hearts.filter((h) => h.t > 0);
     if (this.hurt && (this.hurt.t -= dt) <= 0) this.hurt = null;
     this.edge = Math.max(0, this.edge - dt);
   }
@@ -391,6 +410,7 @@ export class Renderer {
       ctx.fillStyle = p.color;
       ctx.fillRect(Math.round(p.x - cx), Math.round(p.y - cy), p.s, p.s);
     }
+    this.love(game);
     this.combatAfter(); // larmes par-dessus le gaz, fleurs et « pop » des unités hors service, liseré du coup reçu
     for (const d of game.decors) if (this.bundle.decors[d.id]?.devant) this.decor(d);
 
@@ -470,6 +490,39 @@ export class Renderer {
     }
     for (const f of this.floaters) if (f.keep) this.reserve(f.text, f.x - cx, f.y - cy, f.size || 7, 150);
     if (this.hurt && !hero.dead) this.reserve('■ ■ ■', hero.x + hero.w / 2 - cx, hero.y - 14 - cy, 7, 0);
+  }
+
+  /**
+   * Le boss vaincu, l'ordre cesse le feu : un policier (une unité de l'ordre, à pied) près de qui passe le héros
+   * émet de petits cœurs, rouges et violets, qui montent au-dessus de sa tête et s'effacent. Rien d'écrit.
+   */
+  love(game) {
+    const { hero } = game;
+    if (game.truce && !hero.dead) {
+      const hx = hero.x + hero.w / 2;
+      const feet = hero.y + hero.h;
+      for (const e of game.enemies) {
+        if (!isPolice(e.def) || this.hearts.length >= MAX_HEARTS) continue;
+        if (Math.abs(e.x + e.w / 2 - hx) > LOVE_NEAR.x || Math.abs(e.y + e.h - feet) > LOVE_NEAR.y) continue;
+        const last = this.loved.get(e) ?? { at: -Infinity, n: 0 };
+        if (this.clock - last.at < LOVE_EVERY) continue;
+        this.loved.set(e, { at: this.clock, n: last.n + 1 }); // chacun les siens : rouge, violet, rouge…
+        const tall = (e.def.sprites.fin || e.def.sprites.repos)?.length ?? e.h;
+        this.hearts.push({
+          x: e.x + e.w / 2 + (Math.random() - 0.5) * 8, y: e.y + e.h - tall - 3, t: LOVE_LIFE,
+          rows: HEARTS[last.n % HEARTS.length], sway: Math.random() * Math.PI * 2,
+        });
+      }
+    }
+    const { ctx } = this;
+    for (const h of this.hearts) {
+      const img = sprite(h.rows, this.palette);
+      const age = LOVE_LIFE - h.t;
+      const sway = this.reduced ? 0 : Math.sin(h.sway + age * 6) * 1.5;
+      ctx.globalAlpha = Math.min(1, h.t / 0.5); // il s'efface sur sa dernière demi-seconde
+      ctx.drawImage(img, Math.round(h.x + sway - img.width / 2 - this.cx), Math.round(h.y - img.height - this.cy));
+    }
+    ctx.globalAlpha = 1;
   }
 
   /** Après les unités : les manifestants qui s'en vont ou accourent. */
