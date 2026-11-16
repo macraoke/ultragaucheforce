@@ -19,6 +19,19 @@ const SCROLL = 4.5; // vitesse de défilement d'une ligne trop longue, en hauteu
 const HYSTERIA = 2; // le cran où la chaîne ne lâche plus sa citation : plus de rotation
 // Une rafale de notes du même genre se replie en une seule : « 3 pancartes débloquées ».
 const FOLDS = { pancartes: 'pancartes débloquées', cartes: 'cartes débloquées' };
+const LINE_BAR_X = 260; // la barre de vie d'une ligne s'affiche quand le héros arrive à cette distance d'elle…
+const LINE_BAR_Y = 112; // …et à peu près à sa hauteur (distances fixes : la même sur tous les écrans)
+
+/** La ligne qui tient (`ligne.vie`) la plus proche du héros, s'il arrive devant elle. */
+function lineAhead(game) {
+  const { hero } = game;
+  if (!hero || hero.dead) return null;
+  const hx = hero.x + hero.w / 2;
+  const near = (e) => Math.abs(e.x + e.w / 2 - hx) < LINE_BAR_X && Math.abs(e.y + e.h - (hero.y + hero.h)) < LINE_BAR_Y;
+  return game.enemies
+    .filter((e) => e.def.ligne?.vie > 0 && e.blocking && e.state !== 'done' && near(e))
+    .sort((a, b) => Math.abs(a.x + a.w / 2 - hx) - Math.abs(b.x + b.w / 2 - hx))[0] ?? null;
+}
 
 /** Secondes de jeu à l'écran pour une note : le temps de la lire. */
 export const readTime = (text) => Math.min(4, Math.max(2.5, 1.5 + text.length * 0.035));
@@ -561,8 +574,10 @@ export class Hud {
     // Un panneau demande la spéciale : la puce et le bouton SPÉ clignotent jusqu'à ce qu'elle serve.
     const { ask, on: asking } = askSpecial(this.ask, game, this.live);
     this.ask = ask;
+    const fighting = Boolean(boss?.active && boss.state !== 'gone');
+    const line = fighting ? null : lineAhead(game); // la ligne devant laquelle on arrive : sa vie remplace la barre du boss
     const state = [hero.def.id, hero.hp, game.stack.join(), hero.charges, game.panicLevel, Math.round(game.panic), game.crowd,
-      boss?.active && boss.state !== 'gone' ? boss.hp : -1, this.device, asking].join('|');
+      fighting ? boss.hp : -1, line ? `${line.def.id}:${line.x}:${Math.ceil(line.hp)}` : '', this.device, asking].join('|');
     if (state === this.last) return; // on ne touche au DOM que si quelque chose a changé
     this.last = state;
     this.q('hud-heros').textContent = hero.def.nom;
@@ -614,12 +629,15 @@ export class Hud {
     gauge.dataset.niveau = level;
     gauge.style.setProperty('--part', `${Math.round(((Math.min(100, game.panic) - from) / (to - from)) * 100)}%`);
     gauge.setAttribute('aria-label', `Panique de la chaîne : ${PANIC_NAMES[level]}`);
+    // La barre de vie du haut : celle du boss pendant le combat, sinon celle de la ligne devant laquelle on arrive.
     const bar = this.q('hud-boss');
-    const fighting = Boolean(boss?.active && boss.state !== 'gone');
-    bar.hidden = !fighting;
+    bar.hidden = !fighting && !line;
     if (fighting) {
       bar.querySelector('b').textContent = boss.def.nom;
       bar.querySelector('i').style.width = `${Math.max(0, (boss.hp / boss.hpMax) * 100)}%`;
+    } else if (line) {
+      bar.querySelector('b').textContent = line.def.nom;
+      bar.querySelector('i').style.width = `${Math.max(0, (line.hp / line.def.ligne.vie) * 100)}%`;
     }
   }
 

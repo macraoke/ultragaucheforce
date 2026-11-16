@@ -123,15 +123,15 @@ Le but du joueur : arriver toujours plus nombreux.
 
 ## Les lignes
 
-Une unité qui porte `debordement` (le barrage, le blindé, la grille) est une ligne : on ne la casse pas, on ne la saute pas, elle cède quand le héros arrive assez nombreux. Le nombre s'affiche au-dessus d'elle.
+Une unité qui porte `ligne.vie` (le barrage, le blindé, la grille) est une ligne : on ne la saute pas, on la casse. Sa vie s'affiche en haut de l'écran quand on arrive devant elle. Les tracts l'entament ; la manif la pousse, d'autant plus fort qu'elle est nombreuse.
 
 Elle arrête les deux camps. Une unité posée derrière y reste tant qu'elle tient : ni sa charge ni ses tirs ne passent, seulement ses grenades, par-dessus.
 
-Devant une ligne qui tient, des passants rejoignent peu à peu : personne ne reste coincé. Pour que ce soit un choix et non une attente, placez avant elle de quoi la déborder, et davantage en hauteur pour qui explore.
+Personne ne reste coincé : même seul, on finit par la casser à coups de tracts. Pour que ce soit un choix et non une attente, placez avant elle de quoi grossir la manif, et davantage en hauteur pour qui explore.
 
 ## La nasse
 
-Un `N` sur la carte, `nasse.ennemi` dans l'en-tête. Quand le héros passe sur le `N`, deux lignes apparaissent à neuf cases de chaque côté et se referment. La nasse est levée si le héros en sort (par les toits, par un tunnel), si une ligne cède, ou au bout de vingt secondes.
+Un `N` sur la carte, `nasse.ennemi` dans l'en-tête. Quand le héros passe sur le `N`, deux lignes apparaissent à neuf cases de chaque côté et se referment. La nasse est levée si le héros en sort (par les toits, par un tunnel), si l'une des deux lignes est hors service, ou au bout de vingt secondes. Ses lignes sont des unités, pas des obstacles : on les met hors service comme les autres, à coups de tracts (un bouclier les pare de face) ; la manif, prise dedans, ne les pousse pas.
 
 Il faut du sol plat de chaque côté du `N`, et une issue en hauteur ou en sous-sol.
 
@@ -168,8 +168,8 @@ Au même endroit, c'est toujours la même pancarte. Modèles : [`banderole`](../
 - Écartez les tonneaux de deux cases : assez près pour la réaction en chaîne, assez loin pour qu'on la voie. Un tonneau ouvre le sol sur deux rangées : une cave juste dessous devient un raccourci.
 - **Des gardes à vue sur le chemin** : on part avec un seul personnage, les autres en sortent.
 - **Des recrues sur le chemin au sol** avant chaque ligne : le robot joueur ne monte pas les chercher.
-- Une ligne (barrage, grille) se contourne par-dessous si le sol se creuse. Pour qu'elle ne cède qu'au nombre, posez-la sur du socle.
-- Trois à six minutes suffisent : un sauvetage, une ligne à déborder, un passage à casser, la sortie.
+- Une ligne (barrage, grille) se contourne par-dessous si le sol se creuse. Pour qu'il faille la casser, posez-la sur du socle.
+- Trois à six minutes suffisent : un sauvetage, une ligne à casser, un passage à creuser, la sortie.
 - Un panneau, c'est un conseil en quelques mots. Il s'affiche quand on passe devant, et reste lisible un instant après.
 
 ## Les murs du fond (facultatif)

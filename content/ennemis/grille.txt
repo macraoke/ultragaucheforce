@@ -1,4 +1,4 @@
-# Une ligne : elle ne cède que devant le nombre.
+# Une ligne : elle a une vie. Les tracts l'entament, la manif la pousse, d'autant plus fort qu'elle est nombreuse.
 nom: La grille de la Citadelle
 pv: 3
 vitesse: 0
@@ -8,7 +8,8 @@ fin: panne
 camp: pouvoir
 largeur: 32
 hauteur: 32
-debordement: 500
+ligne.vie: 150
+ligne.poussee: 10
 citation: macron-viennent-me-chercher
 auteur: UltraGauche Force
 --- repos

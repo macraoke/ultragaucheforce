@@ -1,14 +1,14 @@
-# Une ligne : on ne la casse pas, on la déborde. « debordement » : combien il faut être.
+# Une ligne : elle a une vie. Les tracts l'entament, la manif la pousse, d'autant plus fort qu'elle est nombreuse.
 nom: Le barrage
 pv: 3
 vitesse: 0
 deplacement: fixe
 reaction: rien
-bouclier: oui
 fin: greve
 largeur: 32
 hauteur: 18
-debordement: 200
+ligne.vie: 60
+ligne.poussee: 10
 citation: macron-la-foule
 fiche: rio-conseil-etat
 fiche: nasse-conseil-etat

@@ -139,63 +139,75 @@ test('force du nombre : plus la manif est grande, plus les tracts portent', () =
   assert.ok(hits >= 1 && Math.abs(hits - Math.round(hits)) < 1e-6, 'chaque tract enlève au boss un point multiplié par la force');
 });
 
-// ---------------------------------------------------------------- débordement
+// ---------------------------------------------------------------- les lignes : une vie, et la manif qui pousse
 
-test('débordement : la ligne tient, insensible et infranchissable, puis cède quand on est assez nombreux', () => {
-  const game = settle(play(flat({
-    cortege: true, legende: { l: enemy('ligne') },
-    draw: (put, ground) => put(ground, 12, 'l'),
-  })));
+const wall = ({ draw = (put, ground) => put(ground, 12, 'l'), legende = {}, ...extra } = {}) => flat({
+  cortege: true, legende: { l: enemy('ligne'), ...legende }, draw, ...extra,
+});
+
+test('ligne : tant qu’elle a de la vie, elle tient : ni en marchant, ni en sautant, ni par la spéciale', () => {
+  const game = settle(play(wall()));
   const { hero } = game;
   const line = game.enemies[0];
   assert.ok(line.blocking);
-
-  let events = run(game, 200, (i) => ({ right: true, fire: true, jump: i % 40 < 20 }));
+  assert.equal(line.hp, line.def.ligne.vie, 'une vie de ligne, pas les « pv » d’une unité');
+  run(game, 200, (i) => ({ right: true, jump: i % 40 < 20 }));
   assert.ok(hero.x + hero.w <= line.x + 0.001, 'ni en marchant, ni en sautant');
-  assert.equal(line.hp, line.def.pv, 'les tracts ne l’entament pas');
   assert.notEqual(line.state, 'done');
-  const blocked = of(events, 'blocked');
-  assert.ok(blocked.length >= 2 && blocked.length <= 3, 'un rappel de temps en temps, pas à chaque image');
-  assert.deepEqual({ need: blocked[0].need, crowd: blocked[0].crowd, joined: blocked[0].joined }, { need: 30, crowd: 12, joined: 2 },
-    'dix au départ, deux passants rejoignent (4 % de trente) : le client le montre');
   game.step({ special: true });
   run(game, 30);
-  assert.notEqual(line.state, 'stunned', 'la spéciale ne la fait pas reculer non plus');
+  assert.notEqual(line.state, 'stunned', 'la spéciale ne la fait pas reculer');
   assert.equal(line.x, line.home.x);
   assert.ok(LINE_REACH > hero.def.saut * TILE, 'le barrage monte plus haut que le plus haut des sauts');
+});
 
-  game.addCrowd(20);
-  events = run(game, 5, { right: true });
-  assert.equal(of(events, 'overrun').length, 1);
-  assert.equal(line.state, 'done', 'débordée : elle se range');
+test('ligne : la manif au contact la pousse, d’autant plus vite qu’elle est nombreuse', () => {
+  const push = (manif) => {
+    const game = settle(play(wall({ manif })));
+    const line = game.enemies[0];
+    let from = -1;
+    let steps = 0;
+    for (; steps < 60 * 60 && line.state !== 'done'; steps++) {
+      run(game, 1, { right: true });
+      if (from < 0 && line.push > 0) from = steps;
+    }
+    assert.equal(line.state, 'done', `${manif} manifestants finissent par la faire céder`);
+    return steps - from;
+  };
+  const vie = fixtureBundle().ennemis.ligne.ligne.vie;
+  const { poussee } = fixtureBundle().ennemis.ligne.ligne;
+  const small = push(50);
+  const big = push(500);
+  // `ligne.poussee` points de vie par seconde pour cent manifestants : 5 par seconde à 50, 50 à 500.
+  assert.ok(Math.abs(small - (vie / ((poussee * 50) / 100)) * 60) <= 2, `à 50, en ${small} pas`);
+  assert.ok(Math.abs(big - (vie / ((poussee * 500) / 100)) * 60) <= 2, `à 500, en ${big} pas`);
+  assert.ok(big * 5 < small, 'dix fois plus nombreuse, elle passe dix fois plus vite');
+});
+
+test('ligne : plus rien ne la fait céder d’un coup : ni un nombre atteint au loin, ni son propre camp ; elle s’use petit à petit', () => {
+  const game = settle(play(wall({ width: 80, manif: 1000, draw: (put, ground) => put(ground, 40, 'l') })));
+  const line = game.enemies[0];
+  const vie = line.def.ligne.vie;
+  run(game, 600);
+  assert.equal(line.hp, vie, 'mille manifestants, mais loin d’elle : rien ne bouge');
+  game.explode(line.x + line.w / 2, line.y + line.h / 2, 30, { team: 'ordre', friendly: true, damage: 5 });
+  game.hurtEnemy(line, 10, 'ordre');
+  assert.equal(line.hp, vie, 'les coups de son propre camp n’y font rien');
+  assert.notEqual(line.state, 'done');
+
+  const seen = [];
+  const events = run(game, 600, (i, g) => {
+    if (line.state !== 'done') seen.push(line.hp);
+    return { right: true };
+  });
+  const worn = seen.filter((hp) => hp < vie);
+  assert.ok(worn.length >= 20, `elle s’use sur ${worn.length} pas, pas d’un coup`);
+  assert.ok(worn.every((hp, i) => i === 0 || hp < worn[i - 1]), 'sa vie ne fait que baisser');
+  assert.equal(of(events, 'overrun').length, 1, 'à zéro, elle cède');
   assert.equal(line.blocking, false);
   assert.equal(game.stats.overrun, 1);
   run(game, 60, { right: true });
-  assert.ok(hero.x > line.x + line.w, 'la manif passe');
-});
-
-test('débordement : jamais d’impasse, des passants rejoignent la manif devant la ligne jusqu’à ce qu’elle cède', () => {
-  const game = settle(play(flat({
-    cortege: true, legende: { l: enemy('ligne') },
-    draw: (put, ground) => put(ground, 12, 'l'),
-  })));
-  assert.equal(game.crowd, 10);
-  const events = run(game, 60 * 30, { right: true });
-  assert.equal(of(events, 'overrun').length, 1, 'trente manifestants finissent par être là');
-  assert.ok(game.crowd >= 30);
-  assert.ok(of(events, 'blocked').length >= 8, 'mais il faut insister : recruter va bien plus vite');
-});
-
-test('débordement : une ligne loin du héros attend qu’il arrive pour céder', () => {
-  const game = settle(play(flat({
-    width: 80, cortege: true, manif: 500, legende: { l: enemy('ligne') },
-    draw: (put, ground) => put(ground, 40, 'l'),
-  })));
-  run(game, 60);
-  assert.notEqual(game.enemies[0].state, 'done');
-  const events = run(game, 400, { right: true });
-  assert.equal(of(events, 'overrun').length, 1);
-  assert.equal(of(events, 'blocked').length, 0, 'assez nombreux : on ne bute jamais dessus');
+  assert.ok(game.hero.x > line.x + line.w, 'la manif passe');
 });
 
 // ---------------------------------------------------------------- nasse
@@ -243,7 +255,7 @@ test('nasse : elle prend fin si une ligne cède ou si le héros en sort par le h
   const broken = settle(play(nasse('ligne', { cortege: true }), { invincible: true }));
   run(broken, 260, { right: true });
   assert.ok(broken.kettle, 'nasse en cours');
-  broken.addCrowd(100);
+  broken.addCrowd(300); // la manif pousse la ligne qui la retient
   let events = run(broken, 300, { right: true });
   assert.deepEqual(of(events, 'kettle'), [{ type: 'kettle', state: 'end', reason: 'broken' }]);
   assert.ok(of(events, 'overrun').length >= 1);

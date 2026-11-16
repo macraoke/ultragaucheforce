@@ -196,7 +196,8 @@ auteur: ton pseudo
 | `bouclier` | pare les tirs de face | `oui`, `non` |
 | `contact` | dégâts au toucher ; une ruée blesse toujours | 0 à 3 |
 | `panique` | points de panique par seconde quand elle « cadre », ou quand le héros est dans son faisceau | 0 à 30 |
-| `debordement` | une ligne : elle ne cède que devant ce nombre de manifestants | 0 à 5000 |
+| `ligne.vie` | une ligne : ses points de vie ; 0, ce n'est pas une ligne | 0 à 5000 |
+| `ligne.poussee` | une ligne : les points de vie que lui retirent cent manifestants qui poussent, par seconde | 0 à 50, 10 par défaut |
 | `interpelle` | combien de manifestants elle emmène quand elle atteint le cortège, une fois toutes les deux secondes et demie | 0 à 20 |
 | `fin` | à zéro point de vie | `greve`, `panne` (elle fume) |
 | `camp` | à qui elle appartient ; seules les unités de l'ordre comptent dans le bilan des blessés | `ordre` (par défaut), `medias`, `pouvoir` |
@@ -208,11 +209,11 @@ auteur: ton pseudo
 
 L'arme est facultative. Pour placer l'unité, un niveau la déclare dans sa légende : `c: compagnie-d-intervention`.
 
-Ce que le joueur voit, sans rien régler : une unité touchée blanchit et recule d'un pixel, puis montre sa jauge ; un bouclier de face ou une ligne arrête le coup (« PARÉ », des étincelles), mais pas le souffle d'une explosion ; sonnée, des étoiles tournent autour de sa tête ; gazée par son propre camp, elle pleure et tousse (« KOF ! ») ; quand elle repère le héros, un « ! » ; hors service, « EN GRÈVE ! » ou « EN PANNE », puis son `ecriteau` quelques secondes.
+Ce que le joueur voit, sans rien régler : une unité touchée blanchit et recule d'un pixel, puis montre sa jauge ; un bouclier de face arrête le coup (« PARÉ », des étincelles), mais pas le souffle d'une explosion ; sonnée, des étoiles tournent autour de sa tête ; gazée par son propre camp, elle pleure et tousse (« KOF ! ») ; quand elle repère le héros, un « ! » ; hors service, « EN GRÈVE ! » ou « EN PANNE », puis son `ecriteau` quelques secondes.
 
-### Une ligne : `debordement`
+### Une ligne : `ligne.vie`
 
-Tant que la manif compte moins de monde, la ligne tient : les tracts ne lui font rien et on ne la saute pas. Au-dessus d'elle (au pouce, à son pied), « ✊ 312 / 500 » et une jauge disent où en est la manif ; hors de l'image, le même compteur attend au bord de l'écran. Elle arrête aussi l'autre camp : ses unités au sol ne la traversent pas, ni en marchant, ni en chargeant, ni en fonçant, et un tir qui la touche s'y écrase, comme un tract. Les grenades en cloche passent par-dessus, ce qui vole passe au-dessus. Elle cède dès que le héros arrive devant elle assez nombreux, et s'ouvre : plus personne n'est arrêté. Devant une ligne qui tient, des passants rejoignent la manif peu à peu (« + 20 passants ») ; si elle perd du monde en attendant, il en vient de plus en plus : on finit toujours par passer, mais recruter va bien plus vite.
+Une ligne a une vie, comme le boss : quand le héros arrive devant elle, sa barre s'affiche en haut de l'écran, avec son nom. Les tracts l'entament, le souffle et les spéciales aussi ; les coups de son propre camp n'y font rien. Quand le héros arrive dessus, la manif pousse : chaque seconde, `ligne.poussee` points de vie par centaine de manifestants. Plus elle est nombreuse, plus elle pousse fort, et la ligne tremble. Tant qu'elle a de la vie, elle tient : on ne la saute pas, ses unités au sol ne la traversent pas, ni en marchant, ni en chargeant, ni en fonçant, et un tir qui la touche s'y écrase. Les grenades en cloche passent par-dessus, ce qui vole passe au-dessus. À zéro, elle cède et s'ouvre : plus personne n'est arrêté. Rien d'autre ne la fait céder.
 
 Modèles : [`barrage`](../content/ennemis/barrage.txt), [`centaure`](../content/ennemis/centaure.txt), [`grille`](../content/ennemis/grille.txt).
 

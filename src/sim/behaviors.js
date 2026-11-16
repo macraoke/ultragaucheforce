@@ -222,6 +222,14 @@ export const ENEMY_GROUPS = {
       disperse: [0, 30, 5], // pour cent du cortège dispersé quand la charge le traverse
     },
   },
+  ligne: {
+    doc: 'Une ligne (barrage, grille, blindé) : infranchissable tant qu’elle a de la vie. Les coups de la manif l’entament,'
+      + ' et la manif la pousse quand le héros arrive dessus : d’autant plus fort qu’elle est nombreuse.',
+    params: {
+      vie: [0, 5000, 0], // points de vie de la ligne ; 0 : l'unité n'est pas une ligne
+      poussee: [0, 50, 10], // points de vie retirés par seconde, pour cent manifestants, quand la manif pousse
+    },
+  },
   faisceau: {
     doc: 'Réaction « projecteur » : le cône de lumière.',
     params: {

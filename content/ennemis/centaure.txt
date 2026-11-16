@@ -1,4 +1,4 @@
-# Un blindé : les tracts ne lui font rien, il ne cède que devant le nombre.
+# Un blindé : une ligne qui a une vie. Les tracts l'entament, la manif le pousse, d'autant plus fort qu'elle est nombreuse.
 nom: Le Centaure
 pv: 20
 vitesse: 14
@@ -8,7 +8,8 @@ vue: 230
 fin: panne
 largeur: 32
 hauteur: 20
-debordement: 150
+ligne.vie: 50
+ligne.poussee: 10
 fiche: centaure-blindes
 arme.type: tir
 arme.cadence: 0.3

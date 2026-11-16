@@ -1,6 +1,6 @@
 // Les automates de l'ordre : UNE seule mise en œuvre, entièrement pilotée par la fiche
-// (déplacement, réaction, vue, bouclier, arme, répliques, sommations, débordement).
-// États : sleep → patrol ⇄ alert, stunned (étourdi), done (en grève, en panne ou débordé : décor inoffensif).
+// (déplacement, réaction, vue, bouclier, arme, répliques, sommations, ligne).
+// États : sleep → patrol ⇄ alert, stunned (étourdi), done (en grève, en panne ou cassée : décor inoffensif).
 //
 // Ce que le client peut dessiner en plus du personnage :
 //   flash     secondes de silhouette blanche : un coup qui porte (hitDir : son sens, -1 ou 1)
@@ -8,6 +8,8 @@
 //   daze      pendant l'étourdissement : 'choc' (onde, bousculade) ou 'gaz' (ses propres lacrymogènes)
 //   blocking  la ligne tient : infranchissable pour le héros et les unités au sol d'en face, sur LINE_REACH pixels
 //             au-dessus d'elle ; les tirs qui la touchent s'y écrasent, les grenades en cloche passent par-dessus
+//   push      une ligne (`ligne.vie`) que la manif pousse : les points de vie qu'elle perd par seconde (0 sinon) ;
+//             `hp` est sa vie, sur `def.ligne.vie`
 //   aim       { x, y, t } pendant une visée (LBD) : le tir part vers ce point dans t secondes
 //   jet       { x, y, length, dir } pendant un jet de canon à eau
 //   beam      { x, y, w, lit } faisceau du projecteur : centré en x, posé au sol en y ; lit = le héros est dedans
@@ -25,7 +27,7 @@ const WAKE_X = 300; // distances FIXES de réveil : jamais la taille de l'écran
 const WAKE_Y = 170; // pour que la partie soit la même sur tous les appareils
 const FRAME_RANGE = 70; // portée du cadrage du drone
 export const LINE_REACH = 112; // hauteur du barrage au-dessus d'une ligne qui tient : aucun saut ne passe
-const OVERRUN_RANGE = 72; // une ligne cède quand la manif, assez nombreuse, arrive à cette distance
+const PUSH_RANGE = 72; // la manif pousse une ligne quand le héros arrive à cette distance
 const PASS = 200; // une moto dépasse le héros d'autant avant de faire demi-tour
 const SOMMATION = 1; // secondes par sommation
 const WIND_UP = 0.5; // élan avant une charge sans sommation
@@ -36,14 +38,17 @@ const FILM_DISTANCE = 34; // l'équipe télé se plante à cette distance du feu
 const FILM_PANIC = 0.3; // filmer un feu fait monter la panique, mais doucement : cette part de `panique`
 const ARREST_PAUSE = 2.5; // secondes entre deux interpellations d'une même unité
 
+/** Une ligne (`ligne.vie` sur sa fiche) : un obstacle qui a une vie, qu'on entame et qu'on pousse. */
+export const isLine = (def) => def.ligne?.vie > 0;
+
 export function createEnemy(def, cx, feetY, extra = {}) {
   return {
     x: cx - def.largeur / 2, y: feetY - def.hauteur, w: def.largeur, h: def.hauteur, vx: 0, vy: 0, facing: -1,
-    def, state: 'sleep', hp: def.pv, animTime: 0, flash: 0, hitDir: 0, parry: 0, daze: null, arrest: 0, bubble: null,
-    home: { x: cx - def.largeur / 2, y: feetY - def.hauteur }, cooldown: 0.6, stun: 0, kick: 0, lost: 0, talk: 0,
-    framing: false, onGround: false, hitX: 0, hitY: 0,
-    blocking: def.debordement > 0, aim: null, jet: null, beam: null, rush: null, rope: null,
-    warned: false, known: false, turn: 0, nag: 0, spot: 0, drops: 0, ...extra,
+    def, state: 'sleep', hp: isLine(def) ? def.ligne.vie : def.pv, animTime: 0, flash: 0, hitDir: 0, parry: 0, daze: null,
+    arrest: 0, bubble: null, home: { x: cx - def.largeur / 2, y: feetY - def.hauteur }, cooldown: 0.6, stun: 0, kick: 0,
+    lost: 0, talk: 0, framing: false, onGround: false, hitX: 0, hitY: 0,
+    blocking: isLine(def), push: 0, aim: null, jet: null, beam: null, rush: null, rope: null,
+    warned: false, known: false, turn: 0, spot: 0, drops: 0, ...extra,
   };
 }
 
@@ -53,6 +58,25 @@ const say = (e, text, t = 2) => {
 
 /** Ni recul ni étourdissement pour une ligne qui tient ou un véhicule. */
 export const sturdy = (e) => e.blocking || e.def.deplacement === 'vehicule';
+
+/**
+ * Une ligne perd de la vie : sous les coups de la manif (tracts, souffle, spéciales) ou poussée par elle.
+ * À zéro, elle cède et s'ouvre. Rien d'autre ne la fait céder : ni un nombre atteint, ni les coups de son propre camp.
+ */
+export function wearLine(game, e, amount) {
+  if (!(amount > 0) || e.state === 'done') return;
+  e.hp -= amount;
+  if (e.hp > 0) return;
+  e.hp = 0;
+  standDown(e);
+  e.push = 0;
+  e.overrun = true; // cassée : le client l'ouvre en grand
+  game.stats.overrun++;
+  if (e.def.camp === 'ordre') game.stats.overrunOrder++;
+  game.emit('overrun', { x: e.x + e.w / 2, y: e.y, feet: e.y + e.h, crowd: game.crowd });
+  game.sfx('debordement', e.x);
+  game.discover('ennemi', e.def.id);
+}
 
 /** La ligne se range (débordée, ou nasse levée) : un décor inoffensif de plus, sans passer par la panne. */
 export function standDown(e) {
@@ -123,7 +147,6 @@ export function updateEnemy(game, e, dt) {
   e.flash = Math.max(0, e.flash - dt);
   e.parry = Math.max(0, e.parry - dt);
   e.arrest = Math.max(0, e.arrest - dt);
-  e.nag = Math.max(0, e.nag - dt);
   if (e.bubble && (e.bubble.t -= dt) <= 0) e.bubble = null;
   e.jet = null; // recalculés à chaque pas
   e.beam = null;
@@ -135,18 +158,13 @@ export function updateEnemy(game, e, dt) {
     return fall(game, e, dt); // même un drone en panne finit par terre
   }
 
-  // Une ligne qui tient (débordement, nasse) : insensible et infranchissable.
-  // Elle cède quand la manif, assez nombreuse, arrive sur elle.
-  e.blocking = def.debordement > 0 || Boolean(e.kettle);
-  if (def.debordement > 0 && game.crowd >= def.debordement && Math.abs(dx) < OVERRUN_RANGE && Math.abs(dy) < LINE_REACH) {
-    standDown(e);
-    e.overrun = true; // débordée : le client l'ouvre en grand
-    game.stats.overrun++;
-    if (def.camp === 'ordre') game.stats.overrunOrder++;
-    game.emit('overrun', { x: e.x + e.w / 2, y: e.y, feet: e.y + e.h, need: def.debordement, crowd: game.crowd });
-    game.sfx('debordement', e.x);
-    game.discover('ennemi', def.id);
-    return;
+  // Une ligne qui tient (`ligne.vie`, ou une nasse) : infranchissable.
+  // Une ligne à vie : quand le héros arrive dessus, la manif pousse, d'autant plus fort qu'elle est nombreuse.
+  e.blocking = isLine(def) || Boolean(e.kettle);
+  e.push = isLine(def) && !hero.dead && Math.abs(dx) < PUSH_RANGE && Math.abs(dy) < LINE_REACH ? (def.ligne.poussee * game.crowd) / 100 : 0;
+  if (e.push > 0) {
+    wearLine(game, e, e.push * dt);
+    if (e.state === 'done') return;
   }
   if (e.rope) {
     // Déposé par l'hélicoptère : il descend tout droit, puis agit comme les autres.

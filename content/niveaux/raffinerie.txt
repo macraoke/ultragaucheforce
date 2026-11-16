@@ -9,7 +9,7 @@ cortege: oui
 manif: 3
 heros: ecoterroriste
 
-panneau.1: Assez nombreux, le barrage cède
+panneau.1: Tracts et manif : le barrage cède
 panneau.2: [bas] + [tirer] : creuser
 
 g: gendarme-mobile

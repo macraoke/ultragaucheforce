@@ -256,9 +256,9 @@ function facts(kind, item) {
     const w = item.arme;
     const traits = [item.bouclier && 'bouclier', w?.gaz > 0 && 'lacrymogènes', w?.vise > 0 && 'LBD', w?.type === 'jet' && 'canon à eau',
       w?.mots?.length && 'tire des mots', item.reaction === 'charge' && 'charge', item.reaction === 'fonce' && 'fonce',
-      item.reaction === 'projecteur' && 'projecteur', item.deplacement === 'vol' && 'vole',
-      item.debordement > 0 && `cède devant ${item.debordement} manifestants`].filter(Boolean);
-    return [[hearts(Math.min(item.pv, 10)), item.pv > 10 ? ` ×${item.pv}` : ''], traits.join(' · ')];
+      item.reaction === 'projecteur' && 'projecteur', item.deplacement === 'vol' && 'vole'].filter(Boolean);
+    const pv = item.ligne?.vie > 0 ? item.ligne.vie : item.pv; // une ligne : sa vie de ligne
+    return [[hearts(Math.min(pv, 10)), pv > 10 ? ` ×${pv}` : ''], traits.join(' · ')];
   }
   if (kind === 'boss') return [`Fortune : ${billions(item.fortune.montant)} d’euros`];
   if (kind === 'recrues') return [item.multiplie > 1 ? `Manif × ${item.multiplie}` : `+ ${item.apport} dans la manif`];
