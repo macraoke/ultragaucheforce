@@ -17,7 +17,7 @@ import { loadSave, storeSave, discover, isFound } from './save.js';
 import { cardName, citationOfWord, levelOrder, rarityName, taxShocks } from './collection.js';
 import { registerServiceWorker } from './sw-register.js';
 
-const bundle = await (await fetch('content.json')).json();
+const bundle = await (await (window.contentRequest ?? fetch('content.json'))).json(); // partie dès index.html
 const save = loadSave();
 const screenRoot = document.getElementById('ecran');
 const audio = new Audio(bundle);

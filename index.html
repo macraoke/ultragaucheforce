@@ -21,6 +21,8 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icone-192.png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <!-- Le contenu part dès la lecture de la page, sans attendre la feuille de style ni les modules ; main.js reprend cette requête. -->
+  <script>window.contentRequest = fetch('content.json');</script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="jeu">

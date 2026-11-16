@@ -27,11 +27,10 @@ test('le build produit un site complet, installable et jouable hors-ligne', (t) 
   // La balise qui autorise l'enregistrement du service worker.
   const page = read('index.html').toString();
   assert.match(page, new RegExp(`<meta name="ugf-build" content="${version}">`));
-  // Ce que le menu attend est demandé dès la page lue ; l'Atelier, lui, se charge à la demande.
-  const preloaded = [...page.matchAll(/<link rel="modulepreload" href="([^"]+)">/g)].map((m) => m[1]);
+  // Les modules du menu sont annoncés dès la page lue (sans service worker), d'après ses imports.
+  const preloaded = JSON.parse(page.match(/for \(const href of (\[[^\]]*\])\)/)[1]);
   for (const path of ['src/client/main.js', 'src/client/ui.js', 'src/client/collection.js', 'src/sim/game.js']) assert.ok(preloaded.includes(path), `${path} est annoncé`);
   assert.ok(preloaded.every((path) => files.includes(path)), 'chaque module annoncé est dans le build');
-  assert.match(page, /<link rel="preload" href="content.json" as="fetch" crossorigin>/);
 
   // Le contenu assemblé, sans la liste d'erreurs du serveur de développement.
   const bundle = JSON.parse(read('content.json'));

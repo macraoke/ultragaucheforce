@@ -69,16 +69,15 @@ export function build(outDir = join(ROOT, 'dist')) {
   const version = hash.digest('hex').slice(0, 12);
 
   // La balise que `sw-register.js` cherche : sans elle (en développement), pas de service worker.
-  // Puis tout ce qu'il faut pour le menu, demandé dès la lecture de la page : le contenu et les modules.
-  const page = files.get('index.html').toString();
+  let page = files.get('index.html').toString();
   if (!page.includes('</head>')) throw new Error('index.html : balise </head> introuvable.');
-  const entry = page.match(/<script type="module" src="([^"]+)"/)?.[1];
-  const head = [
-    `<meta name="ugf-build" content="${version}">`,
-    '<link rel="preload" href="content.json" as="fetch" crossorigin>',
-    ...startupModules(files, entry).map((path) => `<link rel="modulepreload" href="${path}">`),
-  ];
-  files.set('index.html', Buffer.from(page.replace('</head>', `${head.map((line) => `  ${line}\n`).join('')}</head>`)));
+  page = page.replace('</head>', `  <meta name="ugf-build" content="${version}">\n</head>`);
+  // Les modules du menu, annoncés dès la lecture de la page, avant la feuille de style qui ferait attendre
+  // le script. Seulement sans service worker (première visite) : sous lui, ils sont déjà en cache, et les
+  // annoncer ralentirait le menu.
+  const modules = JSON.stringify(startupModules(files, page.match(/<script type="module" src="([^"]+)"/)?.[1]));
+  const announce = `<script>if (!navigator.serviceWorker?.controller) for (const href of ${modules}) document.head.append(Object.assign(document.createElement('link'), { rel: 'modulepreload', href }));</script>`;
+  files.set('index.html', Buffer.from(page.replace('<link rel="stylesheet"', `${announce}\n  <link rel="stylesheet"`)));
 
   const precache = [...files.keys()].filter((path) => !ONLINE_ONLY.includes(path)).sort();
   const worker = readFileSync(join(ROOT, 'tools/sw-template.js'), 'utf8')
