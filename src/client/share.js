@@ -143,16 +143,32 @@ export async function openShare(canvas, { text, url, button }) {
   host.append(overlay); // posé tout de suite : un second appui pendant la fabrication de l'image ne fait rien
   const file = await toFile(canvas);
   if (!file || !overlay.isConnected) return overlay.remove();
-  const close = () => overlay.remove();
+  const opener = document.activeElement; // « Partager » : le clavier y revient à la fermeture
+  const close = () => {
+    document.removeEventListener('keydown', onKey, true);
+    overlay.remove();
+    if (opener?.isConnected) opener.focus({ preventScroll: true });
+  };
+  // Tant que le calque est ouvert, Échap le ferme où que soit le focus, et Tab reste dedans.
+  const onKey = (e) => {
+    if (!overlay.isConnected) return document.removeEventListener('keydown', onKey, true); // l'écran a changé sous lui
+    const inside = [...overlay.querySelectorAll('a[href], button')];
+    if (e.key === 'Escape') {
+      e.stopPropagation(); // Échap ferme le calque, pas l'écran
+      e.preventDefault();
+      close();
+    } else if (e.key === 'Tab' && inside.length) {
+      const at = inside.indexOf(document.activeElement);
+      const next = inside[(at + (e.shiftKey ? -1 : 1) + inside.length) % inside.length] || inside[0];
+      e.preventDefault();
+      next.focus({ preventScroll: true });
+    }
+  };
   const picture = canvas.toDataURL('image/png'); // une adresse « data: » : rien à libérer quand l'écran change
   const native = Boolean(navigator.canShare?.({ files: [file] }));
   const send = () => navigator.share({ files: [file], text, url }).catch(() => {}); // partage annulé : rien à dire
   overlay.onclick = (e) => e.target === overlay && close();
-  overlay.onkeydown = (e) => {
-    if (e.key !== 'Escape') return;
-    e.stopPropagation(); // Échap ferme le calque, pas l'écran
-    close();
-  };
+  document.addEventListener('keydown', onKey, true);
   overlay.append(h('div', { className: 'cadre' },
     h('img', { src: picture, alt: text, width: SIZE, height: SIZE }),
     h('div', { className: 'pied' },

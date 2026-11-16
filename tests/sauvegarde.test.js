@@ -100,6 +100,18 @@ test('un champ abîmé ne bloque pas le jeu, et sa valeur d’origine est gardé
   assert.equal(isFound(save, 'heros', 'zucman'), false, 'on peut jouer');
 });
 
+test('un numéro de version abîmé dans le stockage ne bloque pas l’enregistrement', () => {
+  for (const version of [1.5, '3', 0, null]) {
+    const disk = storage({ ...structuredClone(old.v1), version });
+    const save = loadSave();
+    assert.equal(isReadOnly(save), false, `version ${version}`);
+    assert.equal(discover(save, 'heros', 'apres-coup'), true);
+    assert.equal(disk.read().version, VERSION, `version ${version} : réécrite proprement`);
+    assert.ok(disk.read().decouvertes.includes('heros:apres-coup'));
+    assert.equal(isReadOnly(save), false);
+  }
+});
+
 test('une sauvegarde illisible est mise de côté, pas écrasée', () => {
   const disk = storage('{"decouvertes": ["heros:zucman"');
   const save = loadSave();

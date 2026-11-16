@@ -228,6 +228,9 @@ test('deux lignes ne partagent pas un identifiant : même texte, ou « était: �
   expectError(errorsOf('content/pancartes/essai.txt', 'UNE FOIS\nUNE FOIS\n'), { line: 2, message: /existe déjà \(content\/pancartes\/essai\.txt, ligne 1\)/ });
   expectError(errorsOf('content/pancartes/essai.txt', `${first}\n`), { line: 1, message: /existe déjà/ });
   expectError(errorsOf('content/pancartes/essai.txt', `AUTRE TEXTE | vue à Paris | était: ${first}\n`), { line: 1, message: /existe déjà/ });
+  // le même texte affiché sous deux identifiants : le jeu ne saurait jamais débloquer la seconde
+  expectError(errorsOf('content/pancartes/essai.txt', 'NOUVEAU TEXTE | c | était: VIEUX TEXTE\nNOUVEAU TEXTE | d\n'), { line: 2, message: /existe déjà \(content\/pancartes\/essai\.txt, ligne 1\)/ });
+  expectError(errorsOf('content/pancartes/essai.txt', 'NOUVEAU TEXTE | c | était: VIEUX TEXTE\nVIEUX TEXTE | d\n'), { line: 2, message: /existe déjà/ });
 });
 
 test('décor écrit : « ecrit » vaut pancarte ou tag', () => {

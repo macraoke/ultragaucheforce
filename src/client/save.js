@@ -26,6 +26,8 @@ const DEFAULTS = {
 };
 
 const shape = (value) => (Array.isArray(value) ? 'liste' : value === null ? 'rien' : typeof value);
+/** Le numéro de version d'une sauvegarde : un entier à partir de 1 ; tout le reste vaut 1. */
+const versionOf = (save) => (Number.isInteger(save?.version) && save.version >= 1 ? save.version : 1);
 
 /**
  * Une sauvegarde lue, de n'importe quelle version, devient celle d'aujourd'hui. Rien n'est retiré :
@@ -34,7 +36,7 @@ const shape = (value) => (Array.isArray(value) ? 'liste' : value === null ? 'rie
  */
 export function upgrade(stored) {
   let save = shape(stored) === 'object' ? { ...stored } : {};
-  const from = Number.isInteger(save.version) && save.version >= 1 ? save.version : 1;
+  const from = versionOf(save);
   for (let v = from; v < VERSION; v++) save = MIGRATIONS[v - 1](save);
   const out = { ...structuredClone(DEFAULTS), ...save, version: Math.max(from, VERSION) };
   for (const [key, start] of Object.entries(DEFAULTS)) {
@@ -47,7 +49,7 @@ export function upgrade(stored) {
 }
 
 /** Écrite par une version plus récente du jeu : cette version-ci la lit, mais n'y écrit pas, pour ne rien abîmer. */
-export const isReadOnly = (save) => save.version > VERSION;
+export const isReadOnly = (save) => versionOf(save) > VERSION;
 
 export function loadSave() {
   let raw = null;
@@ -90,8 +92,8 @@ export function storeSave(save, { erase = false } = {}) {
   try {
     const now = JSON.parse(localStorage.getItem(KEY));
     if (shape(now) === 'object') {
-      if (now.version > VERSION) {
-        save.version = now.version; // un onglet plus récent est passé par là : on n'écrase pas son travail
+      if (versionOf(now) > VERSION) {
+        save.version = versionOf(now); // un onglet plus récent est passé par là : on n'écrase pas son travail
         return false;
       }
       if (!erase) fold(save, upgrade(now));

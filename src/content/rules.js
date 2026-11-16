@@ -535,7 +535,7 @@ export function buildContent(files) {
   }
 
   const fiches = [];
-  const lineIds = Object.fromEntries(LINE_FOLDERS.map((dir) => [dir, new Map()])); // identifiant → où il est déjà pris
+  const lineIds = Object.fromEntries(LINE_FOLDERS.map((dir) => [dir, new Map()])); // identifiant ou texte → où il est déjà pris
   for (const file of files) {
     const m = file.path.match(/^content\/([a-z]+)\/([^/]+)\.txt$/);
     if (!m || file.text === null) continue;
@@ -555,10 +555,11 @@ export function buildContent(files) {
         }
         // Un texte corrigé garde son identifiant : celui de sa première écriture, noté « était: … ».
         // Le déblocage des joueurs et la rareté le suivent. Deux lignes ne partagent jamais un identifiant.
+        // Ni son identifiant ni son texte : le jeu retrouve une pancarte par ce qui est écrit dessus.
         const id = was || texte;
-        const twin = lineIds[dir].get(id);
+        const twin = lineIds[dir].get(id) || lineIds[dir].get(texte);
         if (twin) report(line, `Cette ligne existe déjà (${twin.file}, ligne ${twin.line}) : même texte, ou un « était: » qui reprend celui d’une autre.`);
-        else lineIds[dir].set(id, { file: file.path, line });
+        else for (const name of [id, texte]) lineIds[dir].set(name, { file: file.path, line });
         bundle[dir].push({ id, texte, credit, rarete: rarityOf(id) });
       }
       continue;
