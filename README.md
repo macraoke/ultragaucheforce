@@ -13,9 +13,9 @@ Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les platea
 - **Faire grossir la manif.** Une soignante, un cheminot, une intersyndicale : chaque recrue compte, une assemblée générale double tout.
 - **Déborder.** Un barrage ne se casse pas : il cède devant le nombre.
 - **Creuser, grimper.** Tout le décor se détruit. Sous la rue, le métro, les catacombes, la salle des coffres ; au-dessus, six étages et les toits.
-- **Libérer.** On part avec un seul personnage. Chaque camarade sorti de garde à vue rejoint l'équipe et se joue tout de suite ; quand il tombe, on repart avec le précédent.
+- **Libérer.** On part avec un seul personnage, tiré au hasard la première fois. Chaque camarade sorti de garde à vue rejoint l'équipe et se joue tout de suite ; quand il tombe, on repart avec le précédent.
 - **Débloquer.** Les gens qui rejoignent la manif portent parfois une pancarte : commune, rare, épique ou légendaire. Toutes ont été vues en manif.
-- **Taxer.** Le boss est assis sur sa fortune. On en prend 2 % : de quoi payer, par exemple, 64 000 enseignants. Les comparaisons changent à chaque partie.
+- **Taxer.** Au bout de chaque niveau, un ultra-riche est assis sur sa fortune : lequel, le hasard le dit. On en prend 2 % : de quoi payer, par exemple, 64 000 enseignants. Les comparaisons et les faits changent à chaque partie.
 
 <details>
 <summary>Plus de captures</summary>
@@ -32,8 +32,8 @@ Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les platea
 | ![Le duplex de BFM-TV](docs/captures/duplex-bfm.jpg) | ![PANIQUE TV](docs/captures/panique-bandeau.jpg) |
 | ![Le menu](docs/captures/menu.jpg) | ![L'ouverture d'un niveau](docs/captures/ouverture.jpg) |
 | ![Un camarade libéré](docs/captures/carton-heros.jpg) | ![Fin de niveau](docs/captures/fin-de-niveau.jpg) |
-| ![La fortune, à l'échelle](docs/captures/taxe-fortune.jpg) | ![Ce que 2 % paieraient](docs/captures/taxe-ce-que-ca-paie.jpg) |
-| ![Et c'est juste](docs/captures/taxe-juste.jpg) | ![La Collection : les pancartes débloquées et leur rareté](docs/captures/collection-grille.jpg) |
+| ![La fortune, à l'échelle](docs/captures/taxe-fortune.jpg) | ![Ce que 2 % paieraient, et un fait](docs/captures/taxe-ce-que-ca-paie.jpg) |
+| ![Le plan de campagne](docs/captures/plan-de-campagne.jpg) | ![La Collection : les pancartes débloquées et leur rareté](docs/captures/collection-grille.jpg) |
 | ![Une pancarte débloquée](docs/captures/collection-carte.jpg) | ![L'appel au vote](docs/captures/appel-au-vote.jpg) |
 | ![L'Atelier : on dessine son niveau](docs/captures/atelier.jpg) | ![Sur téléphone](docs/captures/mobile-paysage.jpg) |
 | ![Fin de niveau sur téléphone](docs/captures/mobile-fin-de-niveau.jpg) | |

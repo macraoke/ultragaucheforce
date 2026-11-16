@@ -297,12 +297,14 @@ addEventListener('touchstart', () => {
   layout();
 }, { once: true, passive: true });
 // Au premier toucher, on demande le plein écran, puis le paysage : là où le navigateur le permet.
-addEventListener('pointerup', (e) => {
-  if (e.pointerType !== 'touch' || document.fullscreenElement) return;
+addEventListener('pointerup', function ask(e) {
+  if (e.pointerType !== 'touch') return; // un clic de souris d'abord ne doit pas user la demande
+  removeEventListener('pointerup', ask);
+  if (document.fullscreenElement) return;
   document.documentElement.requestFullscreen?.({ navigationUI: 'hide' })
     ?.then(() => screen.orientation?.lock?.('landscape'))
     .catch(() => {}); // refusé (iPhone, réglage du navigateur) : le pivot de la page fait le travail
-}, { once: true });
+});
 
 // Crochet de débogage (`?debug`) : piloter et inspecter la partie sans jouer en temps réel.
 if (new URLSearchParams(location.search).has('debug')) {

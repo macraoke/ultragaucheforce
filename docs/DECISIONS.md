@@ -76,15 +76,12 @@ Chaque fiche de `content/` devient une carte, trouvée en la croisant dans le je
 
 ## La fortune, assise
 
-Le boss est assis sur sa fortune, dans le niveau comme dans la scène de fin : un tas de liasses à l'échelle. La scène avance d'un bouton à l'autre, un grand nombre et une phrase à chaque fois :
+Chaque niveau finit devant un ultra-riche, assis sur sa fortune : un tas de liasses à l'échelle. Lequel ? Le hasard le dit à chaque partie. Puis on le taxe, en deux écrans :
 
-- **L'échelle, face à quelqu'un de très bien payé** : un chirurgien, pas le Smic. Une liasse vaut mille ans de ses revenus.
-- **Ce que la fortune rapporte** : ses dividendes d'une année, pour répondre d'avance à « flux et stocks ».
-- **Les 2 %** : moins que ces seuls dividendes.
-- **Qui paie combien** : la part des revenus qui part en impôts, pour presque tout le monde et pour les milliardaires.
-- **Ce que ça finance** : des postes d'enseignants.
+- **La fortune, à l'échelle de quelqu'un** (« 670 000 ans de revenus d'un chirurgien ») et ce qu'elle rapporte en un an, pour répondre d'avance à « flux et stocks ».
+- **Ce que 2 % paieraient** (« 64 000 enseignants »), au plus, puisque l'impôt est différentiel ; et un fait frappant sur les inégalités.
 
-Le public visé est autant la classe moyenne que les jeunes.
+L'échelle, l'exemple et le fait se tirent au hasard dans un dictionnaire de fiches sourcées (`compare`, `finance`, `choc`). Le public visé est autant la classe moyenne que les jeunes : c'est une manif virtuelle, elle doit apprendre quelque chose à chacun.
 
 ## Itération 3
 
@@ -100,9 +97,10 @@ Le public visé est autant la classe moyenne que les jeunes.
 
 - **Des niveaux en hauteur et en profondeur** : sol épais qu'on creuse partout, galeries, caves, métro, immeubles à étages. Le héros tire aussi vers le bas et vers le haut.
 - **Les pancartes se débloquent** : toutes se valent, avec ou sans source ; chacune a une rareté tirée de son texte ; les gens qui rejoignent la manif en portent parfois une, tirée au hasard.
-- **Une pile de personnages** : on part avec un seul, tiré au hasard la première fois, choisi ensuite. Chacun encaisse quelques coups, et sa tête se vide à l'écran : pas de cœurs. Quand il tombe, le précédent prend sa place ; pile vide, niveau perdu. Chaque camarade libéré rejoint la pile ; son carton de déblocage ne joue que la première fois.
+- **Une pile de personnages** : on part avec un seul, tiré au hasard la première fois, choisi ensuite. Chacun encaisse quelques coups : une barre de vie sous la pile, pas de cœurs. Quand il tombe, le précédent prend sa place ; pile vide, niveau perdu. Chaque camarade libéré rejoint la pile, avec son grand carton.
 - **Le score, c'est la manif** : sa taille à l'arrivée, avec un record par niveau.
-- **La taxe, par un dictionnaire** : à qui comparer la fortune, ce que 2 % paieraient ; des fiches sourcées, tirées au hasard à chaque partie.
+- **Le hasard partout** : le boss, le personnage de départ, les camarades libérés, les pancartes, et dans la scène de taxe l'échelle, l'exemple et le fait choc.
+- **Un plan de campagne** : une seule liste d'étapes ; un niveau déposé est une étape comme une autre.
 - **Des écrans courts** : un écran, une idée ; ce qui précise se déplie. Une citation est simplement signée, et sa signature mène à la source.
 - **L'Atelier se dessine** : une palette d'images, on peint, on essaie.
 
