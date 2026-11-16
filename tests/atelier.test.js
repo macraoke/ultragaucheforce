@@ -228,6 +228,8 @@ test('agrandir puis réduire du même côté rend la même carte', () => {
   for (const [name, text] of levels) {
     const model = readLevel(text);
     for (const side of ['haut', 'bas', 'gauche', 'droite']) {
+      const tall = side === 'haut' || side === 'bas';
+      if (tall ? model.rows.length + 5 > 60 : model.rows[0].length + 5 > 400) continue; // déjà à la taille maximale
       const back = resize(resize(model, side, 5, defaults), side, -5, defaults);
       assert.equal(writeLevel(back), text, `${name}, ${side}`);
     }
