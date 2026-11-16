@@ -147,13 +147,13 @@ function start(id, level = null) {
   hud.reset();
   if (!begin && !again) won = []; // un changement de héros sur le carton d'ouverture garde ce qui a déjà été débloqué
   if (id) collect('niveaux', id, true);
-  if (id && !again) measure('niveau lancé', { niveau: id });
   collect('citations', current.level.citation, true);
   collect('heros', game.hero.def.id, true);
   collectCortege();
   setMode('paused');
   begin = () => {
     begin = null;
+    if (id) measure('niveau lancé', { niveau: id }); // chaque vraie partie, rejouée ou non ; pas un changement de héros sur le carton
     setMode('playing');
     radio.play(current.level.musique || current.id);
   };
@@ -175,6 +175,7 @@ function togglePause() {
 }
 
 async function win() {
+  begin = null;
   setMode('over');
   audio.play('victoire');
   const { level, id } = current;
@@ -252,6 +253,7 @@ function handle(events) {
     } else if (e.type === 'won') win();
     else if (e.type === 'lost') {
       if (!custom) measure('niveau perdu', { niveau: current.id, manif: game.crowd, secondes: Math.round(game.time) });
+      begin = null;
       setMode('over');
       screens.lost();
     }

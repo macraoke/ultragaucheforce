@@ -169,7 +169,8 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pi
       yearly > 0 && h('p', { className: 'qui' }, `Rien qu’en dividendes, elle rapporte ${billions(yearly)} milliards par an.`), legend);
     // Après : ce que 2 % paieraient (au plus : l'impôt est différentiel), et un fait frappant.
     const result = use ? `${round(count)} ${use.finance}` : `Au plus ${billions(tax)} milliards par an`;
-    const said = { result, caption: `2 % de la fortune de ${owner}${use ? (use.ponctuel ? ', en un an' : ', chaque année') : ''} :` };
+    // L'image à partager garde la réserve de l'écran : « jusqu'à », puisque l'impôt est différentiel.
+    const said = { result, caption: use ? `2 % de la fortune de ${owner}, ${use.ponctuel ? 'en un an' : 'chaque année'}, c’est jusqu’à :` : `2 % de la fortune de ${owner} :` };
     const after = h('div', { className: 'detail apres', hidden: true },
       h('p', { className: 'resultat' }, result),
       h('p', { className: 'qui' }, use

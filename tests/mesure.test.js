@@ -9,7 +9,7 @@ test('mesure : un événement, un numéro de visite, pas de profil', () => {
   const sent = payload('niveau terminé', { niveau: 'bismillah', manif: 382 });
   assert.equal(sent.event, 'niveau terminé');
   assert.equal(sent.properties.$process_person_profile, false, 'aucun profil de personne côté PostHog');
-  assert.deepEqual(Object.keys(sent.properties).sort(), ['$lib', '$process_person_profile', 'manif', 'niveau']);
+  assert.deepEqual(Object.keys(sent.properties).sort(), ['$geoip_disable', '$lib', '$process_person_profile', 'manif', 'niveau']);
   assert.equal(payload('a').distinct_id, payload('b').distinct_id, 'le même numéro le temps de la page');
   assert.match(sent.distinct_id, /^[\w-]{8,}$/);
 });

@@ -535,6 +535,7 @@ export function buildContent(files) {
   }
 
   const fiches = [];
+  const lineIds = Object.fromEntries(LINE_FOLDERS.map((dir) => [dir, new Map()])); // identifiant → où il est déjà pris
   for (const file of files) {
     const m = file.path.match(/^content\/([a-z]+)\/([^/]+)\.txt$/);
     if (!m || file.text === null) continue;
@@ -542,16 +543,22 @@ export function buildContent(files) {
     const report = reporter(file.path);
     if (LINE_FOLDERS.includes(dir)) {
       for (const { text, line } of parseLines(file.text)) {
-        const [texte, credit = '', more = ''] = text.split('|').map((s) => s.trim());
+        // « TEXTE | où et quand — adresse », puis au besoin « | était: l'ancien texte ».
+        const [texte, ...rest] = text.split('|').map((s) => s.trim());
+        const at = rest.findIndex((s) => /^était\s*:/.test(s));
+        const was = at < 0 ? undefined : rest.splice(at, 1)[0].replace(/^était\s*:\s*/, '');
+        const credit = rest.shift() ?? '';
+        if (rest.length || was === '') report(line, 'Une ligne s’écrit « TEXTE | où et quand — adresse », puis au besoin « | était: l’ancien texte ». Il y a une barre « | » de trop, ou rien après « était: ».');
         const address = credit.split(' — ')[1]; // crédit : « où et quand — adresse de la source »
         if (address !== undefined && !/^https:\/\/\S+$/.test(address)) {
           report(line, 'Après « — », il faut l’adresse de la source : elle commence par https://');
         }
         // Un texte corrigé garde son identifiant : celui de sa première écriture, noté « était: … ».
-        // Le déblocage des joueurs et la rareté le suivent.
-        const was = more.match(/^était\s*:\s*(.+)$/)?.[1];
-        if (more && !was) report(line, 'Après la deuxième barre, on écrit « était: » puis l’ancien texte de la ligne.');
-        const id = was ?? texte;
+        // Le déblocage des joueurs et la rareté le suivent. Deux lignes ne partagent jamais un identifiant.
+        const id = was || texte;
+        const twin = lineIds[dir].get(id);
+        if (twin) report(line, `Cette ligne existe déjà (${twin.file}, ligne ${twin.line}) : même texte, ou un « était: » qui reprend celui d’une autre.`);
+        else lineIds[dir].set(id, { file: file.path, line });
         bundle[dir].push({ id, texte, credit, rarete: rarityOf(id) });
       }
       continue;

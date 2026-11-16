@@ -215,6 +215,19 @@ test('une pancarte corrigée garde son identifiant et sa rareté : « était: »
     id: 'ON TE MAI 86', texte: 'ON TE MAI 68', credit: 'vue à Paris, mars 2023 — https://exemple.org/page', rarete: rarityOf('ON TE MAI 86'),
   });
   expectError(errorsOf('content/pancartes/essai.txt', 'UNE PANCARTE | vue à Paris | autre chose\n'), { line: 1, message: /était:/ });
+  expectError(errorsOf('content/pancartes/essai.txt', 'UNE PANCARTE | vue à Paris | était: AVANT | encore\n'), { line: 1, message: /de trop/ });
+  expectError(errorsOf('content/pancartes/essai.txt', 'UNE PANCARTE | vue à Paris | était:\n'), { line: 1, message: /rien après/ });
+  // sans crédit : « était: » juste après le texte
+  const bare = buildContent(withFile('content/pancartes/essai.txt', 'TEXTE CORRIGÉ SANS CRÉDIT | était: TEXTE D’AVANT SANS CRÉDIT\n'));
+  assert.deepEqual(bare.errors.map(formatError), []);
+  assert.deepEqual(bare.bundle.pancartes.at(-1), { id: 'TEXTE D’AVANT SANS CRÉDIT', texte: 'TEXTE CORRIGÉ SANS CRÉDIT', credit: '', rarete: rarityOf('TEXTE D’AVANT SANS CRÉDIT') });
+});
+
+test('deux lignes ne partagent pas un identifiant : même texte, ou « était: » déjà pris', () => {
+  const first = loadContent().bundle.pancartes[0].texte;
+  expectError(errorsOf('content/pancartes/essai.txt', 'UNE FOIS\nUNE FOIS\n'), { line: 2, message: /existe déjà \(content\/pancartes\/essai\.txt, ligne 1\)/ });
+  expectError(errorsOf('content/pancartes/essai.txt', `${first}\n`), { line: 1, message: /existe déjà/ });
+  expectError(errorsOf('content/pancartes/essai.txt', `AUTRE TEXTE | vue à Paris | était: ${first}\n`), { line: 1, message: /existe déjà/ });
 });
 
 test('décor écrit : « ecrit » vaut pancarte ou tag', () => {

@@ -3,6 +3,7 @@
 // le jeu continue avec une sauvegarde en mémoire.
 
 const KEY = 'ugf:sauvegarde'; // préfixé : le domaine peut être partagé avec d'autres pages
+const UNREAD = 'ugf:sauvegarde:illisible'; // une sauvegarde qu'on n'a pas su lire reste ici, telle quelle
 
 /** Le format de la sauvegarde. Il ne change qu'avec une fonction de passage dans `MIGRATIONS`. */
 export const VERSION = 1;
@@ -24,36 +25,92 @@ const DEFAULTS = {
   brouillon: '',
 };
 
+const shape = (value) => (Array.isArray(value) ? 'liste' : value === null ? 'rien' : typeof value);
+
 /**
  * Une sauvegarde lue, de n'importe quelle version, devient celle d'aujourd'hui. Rien n'est retiré :
  * ce que cette version du jeu ne connaît pas (une fiche partie, un champ d'une version plus récente) est gardé tel quel.
+ * Un champ qui n'a pas la bonne forme reprend sa valeur de départ ; l'original reste dans `ecartes`.
  */
 export function upgrade(stored) {
-  let save = stored && typeof stored === 'object' ? stored : {};
-  for (let v = save.version ?? 1; v < VERSION; v++) save = MIGRATIONS[v - 1](save);
-  return {
-    ...structuredClone(DEFAULTS), ...save,
-    options: { ...DEFAULTS.options, ...save.options },
-    version: Math.max(save.version ?? 1, VERSION),
-  };
+  let save = shape(stored) === 'object' ? { ...stored } : {};
+  const from = Number.isInteger(save.version) && save.version >= 1 ? save.version : 1;
+  for (let v = from; v < VERSION; v++) save = MIGRATIONS[v - 1](save);
+  const out = { ...structuredClone(DEFAULTS), ...save, version: Math.max(from, VERSION) };
+  for (const [key, start] of Object.entries(DEFAULTS)) {
+    if (shape(out[key]) === shape(start)) continue;
+    out.ecartes = { ...out.ecartes, [key]: out[key] };
+    out[key] = structuredClone(start);
+  }
+  out.options = { ...DEFAULTS.options, ...out.options };
+  return out;
 }
+
+/** Écrite par une version plus récente du jeu : cette version-ci la lit, mais n'y écrit pas, pour ne rien abîmer. */
+export const isReadOnly = (save) => save.version > VERSION;
 
 export function loadSave() {
-  let stored = null;
+  let raw = null;
   try {
-    stored = JSON.parse(localStorage.getItem(KEY));
+    raw = localStorage.getItem(KEY);
   } catch {
-    // stockage illisible ou interdit : on repart des valeurs par défaut
+    return upgrade(null); // stockage interdit : sauvegarde en mémoire
   }
-  return upgrade(stored);
+  try {
+    return upgrade(JSON.parse(raw));
+  } catch {
+    // Illisible, ou un passage de version a échoué : on la met de côté sans y toucher, et on repart de zéro.
+    try {
+      localStorage.setItem(UNREAD, raw);
+    } catch {
+      // stockage plein : tant pis pour la copie
+    }
+    return upgrade(null);
+  }
 }
 
-export function storeSave(save) {
+/**
+ * Ce qu'un autre onglet a écrit entre-temps rejoint cette sauvegarde : l'union des découvertes, le meilleur record,
+ * tout niveau terminé. Le reste (options, héros choisi) est à celui qui écrit en dernier.
+ */
+export function fold(save, other) {
+  for (const key of other.decouvertes) if (!save.decouvertes.includes(key)) save.decouvertes.push(key);
+  for (const [id, crowd] of Object.entries(other.records)) if (!(save.records[id] >= crowd)) save.records[id] = crowd;
+  for (const [id, done] of Object.entries(other.termines)) if (done) save.termines[id] = true;
+  return save;
+}
+
+/**
+ * @param {object} save
+ * @param {{erase?: boolean}} o  `erase` : le joueur efface sa progression, on ne reprend pas ce qui est stocké
+ * @returns {boolean} vrai si la sauvegarde a été écrite
+ */
+export function storeSave(save, { erase = false } = {}) {
+  if (isReadOnly(save)) return false;
+  try {
+    const now = JSON.parse(localStorage.getItem(KEY));
+    if (shape(now) === 'object') {
+      if (now.version > VERSION) {
+        save.version = now.version; // un onglet plus récent est passé par là : on n'écrase pas son travail
+        return false;
+      }
+      if (!erase) fold(save, upgrade(now));
+    }
+  } catch {
+    // rien de lisible à reprendre
+  }
   try {
     localStorage.setItem(KEY, JSON.stringify(save));
+    return true;
   } catch {
-    // tant pis : la partie reste jouable
+    return false; // tant pis : la partie reste jouable
   }
+}
+
+/** Le joueur efface sa progression ; ses options et son brouillon restent. */
+export function eraseProgress(save) {
+  Object.assign(save, { termines: {}, records: {}, decouvertes: [], vues: {}, heros: '' });
+  return storeSave(save, { erase: true });
 }
 
 const key = (kind, id) => `${kind}:${id}`;

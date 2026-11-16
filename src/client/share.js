@@ -38,7 +38,8 @@ function fit(ctx, text, { x, y, width, height, max, min = 22, rows = 2, color = 
     ctx.font = `${size}px ${font}`;
     lines = wrap(ctx, text, width);
   } while (size > min && (lines.length > rows || lines.length * size * GAP > height));
-  lines = lines.slice(0, rows);
+  if (lines.length > rows) lines = [...lines.slice(0, rows - 1), `${lines[rows - 1]}…`]; // trop long même en petit : on le dit
+
   ctx.fillStyle = color;
   ctx.textAlign = align;
   const top = y + (height - lines.length * size * GAP) / 2;
@@ -131,24 +132,31 @@ const toFile = (canvas) => new Promise((resolve) =>
 
 /**
  * Montre l'image, puis l'envoie par le partage de l'appareil ; là où il n'existe pas, on l'enregistre.
+ * Un seul calque à la fois ; il prend le clavier, et Échap le ferme.
  * @param {HTMLCanvasElement} canvas
  * @param {{text: string, url: string, button: (label: string, action: () => void, className?: string) => HTMLElement}} o
  */
 export async function openShare(canvas, { text, url, button }) {
+  const host = document.getElementById('ecran') || document.body;
+  if (host.querySelector('.partage')) return;
+  const overlay = h('div', { className: 'carte-ouverte partage' });
+  host.append(overlay); // posé tout de suite : un second appui pendant la fabrication de l'image ne fait rien
   const file = await toFile(canvas);
-  if (!file) return;
-  const address = URL.createObjectURL(file);
-  const close = () => {
-    overlay.remove();
-    URL.revokeObjectURL(address);
-  };
+  if (!file || !overlay.isConnected) return overlay.remove();
+  const close = () => overlay.remove();
+  const picture = canvas.toDataURL('image/png'); // une adresse « data: » : rien à libérer quand l'écran change
   const native = Boolean(navigator.canShare?.({ files: [file] }));
   const send = () => navigator.share({ files: [file], text, url }).catch(() => {}); // partage annulé : rien à dire
-  const overlay = h('div', { className: 'carte-ouverte partage', onclick: (e) => e.target === overlay && close() },
-    h('div', { className: 'cadre' },
-      h('img', { src: address, alt: text, width: SIZE, height: SIZE }),
-      h('div', { className: 'pied' },
-        native ? button('Envoyer', send, 'gros') : h('a', { className: 'bouton gros', href: address, download: file.name }, 'Enregistrer l’image'),
-        button('Fermer', close, 'discret'))));
-  (document.getElementById('ecran') || document.body).append(overlay);
+  overlay.onclick = (e) => e.target === overlay && close();
+  overlay.onkeydown = (e) => {
+    if (e.key !== 'Escape') return;
+    e.stopPropagation(); // Échap ferme le calque, pas l'écran
+    close();
+  };
+  overlay.append(h('div', { className: 'cadre' },
+    h('img', { src: picture, alt: text, width: SIZE, height: SIZE }),
+    h('div', { className: 'pied' },
+      native ? button('Envoyer', send, 'gros') : h('a', { className: 'bouton gros', href: picture, download: file.name }, 'Enregistrer l’image'),
+      button('Fermer', close, 'discret'))));
+  overlay.querySelector('.gros').focus({ preventScroll: true });
 }

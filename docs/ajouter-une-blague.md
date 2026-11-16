@@ -37,7 +37,7 @@ Une faute dans un texte déjà dans le jeu : corrigez-la, et gardez l'ancien tex
 LE TEXTE CORRIGÉ | vue à Lyon, janv. 2023 — https://adresse-de-l-article | était: LE TEXTE D'AVANT
 ```
 
-Les joueurs qui l'avaient débloquée la gardent, et sa rareté ne change pas.
+Les joueurs qui l'avaient débloquée la gardent, et sa rareté ne change pas. S'il y a déjà un `était:` au bout de la ligne, n'y touchez pas : c'est le tout premier texte qui compte.
 
 ## Une pancarte, un slogan
 

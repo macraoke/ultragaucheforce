@@ -4,7 +4,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
-import { upgrade, VERSION, isFound } from '../src/client/save.js';
+import { upgrade, VERSION, isFound, isReadOnly, storeSave, loadSave, discover, eraseProgress } from '../src/client/save.js';
 import { loadContent } from '../tools/content.mjs';
 import { allCards, cardKey } from '../src/client/collection.js';
 
@@ -35,6 +35,77 @@ test('ce que le jeu ne connaît pas reste dans la sauvegarde', () => {
   assert.deepEqual(save.plusTard, { a: 1 }, 'un champ inconnu');
   assert.ok(isFound(save, 'heros', 'parti-du-jeu'), 'une fiche retirée : si elle revient, elle est encore débloquée');
   assert.equal(upgrade({ ...old.v1, version: VERSION + 3 }).version, VERSION + 3, 'une sauvegarde plus récente que le jeu garde son numéro');
+});
+
+/** Un stockage de navigateur pour les tests ; `write` peut le remplir depuis « un autre onglet ». */
+function storage(initial = null) {
+  const data = new Map(initial === null ? [] : [['ugf:sauvegarde', typeof initial === 'string' ? initial : JSON.stringify(initial)]]);
+  globalThis.localStorage = { getItem: (k) => (data.has(k) ? data.get(k) : null), setItem: (k, v) => data.set(k, String(v)) };
+  return { read: () => JSON.parse(data.get('ugf:sauvegarde') ?? 'null'), raw: (k) => data.get(k), write: (v) => data.set('ugf:sauvegarde', JSON.stringify(v)) };
+}
+
+test('une sauvegarde plus récente que le jeu se lit, mais ne se réécrit pas', () => {
+  const newer = { ...structuredClone(old.v1), version: VERSION + 1, debloques: { zucman: true } };
+  const disk = storage(newer);
+  const save = loadSave();
+  assert.ok(isReadOnly(save));
+  assert.equal(discover(save, 'ennemis', 'jamais-vu'), true, 'la partie continue en mémoire');
+  assert.equal(storeSave(save), false);
+  assert.deepEqual(disk.read(), newer, 'le stockage est intact');
+});
+
+test('un onglet resté sur l’ancien jeu n’écrase pas ce qu’un onglet plus récent vient d’écrire', () => {
+  const disk = storage(old.v1);
+  const save = loadSave(); // l'ancien onglet a lu la version 1
+  const newer = { ...structuredClone(old.v1), version: VERSION + 1, debloques: { zucman: true } };
+  disk.write(newer); // entre-temps, le jeu mis à jour a écrit sa version
+  discover(save, 'heros', 'tout-neuf');
+  assert.deepEqual(disk.read(), newer);
+  assert.ok(isReadOnly(save), 'il passe en lecture seule');
+});
+
+test('deux onglets : ce que l’autre a débloqué n’est pas perdu', () => {
+  const disk = storage(old.v1);
+  const here = loadSave();
+  const there = loadSave();
+  discover(there, 'heros', 'debloque-ailleurs');
+  there.records.bismillah = 9999;
+  there.termines.ailleurs = true;
+  storeSave(there);
+  discover(here, 'ennemis', 'debloque-ici');
+  const stored = disk.read();
+  for (const key of ['heros:debloque-ailleurs', 'ennemis:debloque-ici', ...old.v1.decouvertes]) assert.ok(stored.decouvertes.includes(key), key);
+  assert.equal(stored.records.bismillah, 9999, 'le meilleur record');
+  assert.equal(stored.termines.ailleurs, true);
+  assert.equal(new Set(stored.decouvertes).size, stored.decouvertes.length, 'sans doublon');
+});
+
+test('effacer sa progression efface vraiment, options gardées', () => {
+  const disk = storage({ ...structuredClone(old.v1), options: { son: false } });
+  const save = loadSave();
+  assert.equal(eraseProgress(save), true);
+  assert.deepEqual(disk.read().decouvertes, []);
+  assert.deepEqual(disk.read().records, {});
+  assert.equal(disk.read().options.son, false);
+});
+
+test('un champ abîmé ne bloque pas le jeu, et sa valeur d’origine est gardée de côté', () => {
+  for (const version of [0, -1, 1.5, '2', null]) assert.equal(upgrade({ ...old.v1, version }).version, VERSION, `version ${version}`);
+  const save = upgrade({ ...structuredClone(old.v1), decouvertes: { a: 1 }, termines: null, records: 'x', options: [] });
+  assert.deepEqual(save.decouvertes, []);
+  assert.deepEqual(save.termines, {});
+  assert.deepEqual(save.records, {});
+  assert.equal(save.options.son, true);
+  assert.deepEqual(save.ecartes, { decouvertes: { a: 1 }, termines: null, records: 'x', options: [] });
+  assert.equal(isFound(save, 'heros', 'zucman'), false, 'on peut jouer');
+});
+
+test('une sauvegarde illisible est mise de côté, pas écrasée', () => {
+  const disk = storage('{"decouvertes": ["heros:zucman"');
+  const save = loadSave();
+  assert.deepEqual(save.decouvertes, []);
+  assert.equal(disk.raw('ugf:sauvegarde:illisible'), '{"decouvertes": ["heros:zucman"');
+  assert.equal(storeSave(save), true, 'on repart de zéro');
 });
 
 test('pas de sauvegarde, ou une sauvegarde illisible : on repart de zéro, sans planter', () => {
