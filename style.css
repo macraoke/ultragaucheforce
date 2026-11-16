@@ -585,6 +585,13 @@ article.carte.cachee h3 { letter-spacing: .2em; }
 .biblio .onglets button:not(.discret) .jauge i { background: var(--rouge); }
 .pastille { display: inline-block; width: .6em; height: .6em; margin-left: .35em; border-radius: 50%; background: var(--rouge); vertical-align: .1em; }
 
+.biblio .raretes { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 .8em; }
+.biblio .raretes:empty { display: none; }
+.biblio .raretes button { font-size: .8rem; padding: .35em .7em; border-left: 6px solid var(--gris, #888); }
+.biblio .raretes button.rarete-1 { border-left-color: var(--rare); }
+.biblio .raretes button.rarete-2 { border-left-color: var(--epique); }
+.biblio .raretes button.rarete-3 { border-left-color: var(--or); }
+.biblio .raretes button small { opacity: .8; }
 .grille-album { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
 button.carte-mini { position: relative; display: grid; grid-template-rows: auto 60px 2.3em; gap: 4px; height: 128px; min-width: 0; padding: 6px 6px 5px; overflow: hidden; background: var(--papier); color: var(--nuit); border: 3px solid var(--nuit); border-radius: 8px; box-shadow: 3px 3px 0 var(--rouge); font: 700 .68rem/1.15 var(--texte); letter-spacing: 0; text-transform: none; text-align: center; }
 button.carte-mini:hover { background: var(--blanc); }

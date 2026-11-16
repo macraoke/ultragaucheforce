@@ -42,7 +42,7 @@ export function allCards(bundle) {
 /** Le nom affiché d'une carte, quel que soit son rayon. */
 export const cardName = (item) => item.nom || item.titre || item.auteur || item.texte;
 
-/** L'identifiant d'une carte : celui de sa fiche ; une pancarte n'a que son texte. */
+/** L'identifiant d'une carte : celui de sa fiche ; pour une pancarte ou un bandeau, son premier texte. */
 export const cardId = (item) => item.id;
 
 /** La clé d'une carte dans la sauvegarde : « rayon:identifiant ». */
@@ -326,14 +326,25 @@ export const progress = (found, total) =>
  * La grille d'un rayon : des cartes compactes ; on en touche une, elle s'ouvre.
  * `actionsFor(carte)` : les boutons à montrer au pied d'une carte trouvée (« Jouer avec »).
  */
-export function shelfGrid(bundle, shelf, save = null, actionsFor = () => []) {
-  return h('div', { className: 'grille-album' }, allCards(bundle).filter((c) => c.shelf === shelf).map((c) => {
-    const found = !save || isFound(save, c.kind, cardId(c.item));
-    return miniCard(bundle, c, {
+export function shelfGrid(bundle, shelf, save = null, actionsFor = () => [], rarity = null) {
+  const cards = allCards(bundle).filter((c) => c.shelf === shelf && (rarity === null || c.item.rarete === rarity))
+    .map((c) => ({ c, found: !save || isFound(save, c.kind, cardId(c.item)) }));
+  // Ce qu'on a débloqué d'abord : avec des centaines de pancartes, les siennes ne se cherchent pas.
+  return h('div', { className: 'grille-album' }, [...cards.filter((x) => x.found), ...cards.filter((x) => !x.found)].map(({ c, found }) =>
+    miniCard(bundle, c, {
       found, fresh: Boolean(save) && found && isFresh(save, c),
       onOpen: () => openCard(bundle, c, { found, actions: found ? actionsFor(c) : [] }),
-    });
-  }));
+    })));
+}
+
+/** Par rareté, combien de cartes débloquées sur combien, dans ce rayon ? Vide si le rayon n'a pas de rareté. */
+export function rarityCounts(bundle, save, shelf) {
+  const cards = allCards(bundle).filter((c) => c.shelf === shelf && c.item.rarete !== undefined);
+  if (!cards.length) return [];
+  return RARITIES.map((name, rarity) => {
+    const mine = cards.filter((c) => c.item.rarete === rarity);
+    return { rarity, name, total: mine.length, found: mine.filter((c) => !save || isFound(save, c.kind, cardId(c.item))).length };
+  });
 }
 
 /**

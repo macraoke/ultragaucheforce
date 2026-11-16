@@ -5,7 +5,7 @@ import { h, link, signature } from './dom.js';
 import { spriteElement } from './sprites.js';
 import { REPO, VERSION, REFERENCES } from './config.js';
 import { storeSave, isFound } from './save.js';
-import { SHELVES, VOTE_FICHES, allCards, collectionCount, isFresh, levelOrder, markSeen, openCard, progress, shelfGrid, wonCards } from './collection.js';
+import { SHELVES, VOTE_FICHES, allCards, collectionCount, isFresh, levelOrder, markSeen, openCard, progress, rarityCounts, shelfGrid, wonCards } from './collection.js';
 import { livesStack } from './lives.js';
 import { PANIC_STEPS } from '../sim/game.js';
 
@@ -100,7 +100,7 @@ export class Screens {
    * L'album : un rayon par onglet, des cartes compactes qu'on ouvre d'un toucher.
    * Ce qui n'a pas encore été croisé en jouant reste en silhouette.
    */
-  collection(tab = SHELVES[0].id) {
+  collection(tab = SHELVES[0].id, rarity = null) {
     const { bundle, save } = this;
     const all = collectionCount(bundle, save);
     const fresh = new Set(allCards(bundle).filter((c) => isFound(save, c.kind, c.item.id) && isFresh(save, c)).map((c) => c.shelf));
@@ -115,7 +115,10 @@ export class Screens {
         const label = [shelf.titre, ' ', h('small', {}, `${found}/${total}`), fresh.has(shelf.id) && shelf.id !== tab && h('i', { className: 'pastille' }), progress(found, total)];
         return this.button(label, () => this.collection(shelf.id), shelf.id === tab ? '' : 'discret');
       })),
-      h('div', { className: 'contenu album' }, shelfGrid(bundle, tab, save, actionsFor)),
+      h('div', { className: 'raretes' }, rarityCounts(bundle, save, tab).reverse().map((r) => this.button(
+        [`${r.name}s `, h('small', {}, `${r.found}/${r.total}`)],
+        () => this.collection(tab, rarity === r.rarity ? null : r.rarity), `rarete-${r.rarity}${rarity === r.rarity ? '' : ' discret'}`))),
+      h('div', { className: 'contenu album' }, shelfGrid(bundle, tab, save, actionsFor, rarity)),
       h('div', { className: 'pied' }, this.back(() => this.go.back())));
     markSeen(save, tab); // affichées avec leur badge « Nouveau » cette fois-ci, plus la prochaine
     storeSave(save);
