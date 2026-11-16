@@ -334,16 +334,18 @@ test('nasse : elle prend fin si une ligne cède ou si le héros en sort par le h
 });
 
 /**
- * Une rue à trois étages : une passerelle un étage au-dessus (rangée 7), la rue (rangée 11), le métro dessous
- * (rangée 15), et un trou dans la chaussée, juste après le repère, pour y descendre.
+ * Une rue à trois étages : une passerelle un étage au-dessus (rangée 7), la rue (rangée 11, une case de terre sur
+ * l'acier), le métro dessous (sol en rangée 16), et une trémie dans la chaussée, juste après le repère, pour y descendre.
  */
 function storeys() {
   const W = 70;
-  const grid = Array.from({ length: 16 }, () => Array(W).fill('.'));
+  const grid = Array.from({ length: 17 }, () => Array(W).fill('.'));
   const put = (row, col, text) => [...text].forEach((c, i) => { grid[row][col + i] = c; });
-  put(15, 0, 'A'.repeat(W));
-  put(11, 0, 'A'.repeat(W));
-  put(11, 33, '..'); // le trou vers le métro
+  put(16, 0, 'A'.repeat(W));
+  put(11, 0, 'T'.repeat(W));
+  put(12, 0, 'A'.repeat(W));
+  put(11, 33, '..'); // la trémie vers le métro
+  put(12, 33, '..');
   put(7, 18, 'A'.repeat(36)); // la passerelle, un étage au-dessus de la rue
   put(10, 2, 'D');
   put(10, 30, 'N');
@@ -381,7 +383,19 @@ test('nasse : elle ne tient que l’étage de ses lignes ; monter d’un étage 
   below.hero.x = 33 * TILE + 2;
   events = run(below, 60);
   assert.deepEqual(of(events, 'kettle'), [{ type: 'kettle', state: 'end', reason: 'out' }], 'descendu au métro, la nasse est levée');
-  assert.ok(below.hero.y + below.hero.h > 12 * TILE, 'il est bien sous la rue');
+  assert.ok(below.hero.y + below.hero.h > 13 * TILE, 'il est bien sous la rue');
+
+  // Un trou d'une case sous ses pieds ne le fait pas sortir : ni creusé par lui, ni laissé par une grenade.
+  const dug = kettled();
+  events = run(dug, 60 * 3, { down: true, fire: true });
+  assert.ok(dug.hero.y + dug.hero.h > dug.kettle?.y, 'il est dans son trou');
+  assert.equal(of(events, 'kettle').length, 0, 'creuser une case n’en sort pas');
+  const blown = kettled();
+  const feet = blown.hero.y + blown.hero.h;
+  blown.explode(blown.hero.x + blown.hero.w / 2, feet + TILE / 2, 10, { team: 'ordre', terrain: 9 });
+  events = run(blown, 60);
+  assert.ok(blown.hero.y + blown.hero.h > feet, 'la grenade a creusé la chaussée sous lui');
+  assert.equal(of(events, 'kettle').length, 0, 'un trou de grenade n’en sort pas');
 
   // Le barrage d'une ligne de nasse s'arrête à son étage : au-dessus, rien ne retient ; dedans, on ne passe pas.
   const wall = kettled();

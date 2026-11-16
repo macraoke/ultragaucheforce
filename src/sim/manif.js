@@ -180,16 +180,25 @@ export function standingAt(world, cx, nearY) {
 
 /**
  * Les pieds sont-ils à l'étage dont `ground` est le sol : posés dessus, ou en l'air moins d'un étage (KETTLE_FLOOR)
- * au-dessus ? C'est la zone de la nasse, en hauteur : une bande posée sur le sol de ses lignes.
+ * au-dessus ? C'est là que le repère « N » se déclenche.
  */
 export const onFloor = (feet, ground) => feet > ground - KETTLE_FLOOR && feet <= ground + TILE / 2;
+
+/**
+ * Le héros est-il sorti de l'étage de la nasse, dont `ground` est le sol ? Posé un étage au-dessus, ou descendu d'un
+ * étage entier (métro, galerie). Un saut n'en sort pas, un trou d'une case non plus (creusé, ou laissé par une grenade).
+ */
+export const offFloor = (hero, ground) => {
+  const feet = hero.y + hero.h;
+  return feet >= ground + KETTLE_FLOOR || (hero.onGround && feet <= ground - KETTLE_FLOOR);
+};
 
 /**
  * La nasse : quand le héros passe un repère « N », à son étage, des lignes apparaissent des deux côtés et se referment.
  * Avec `nasse.rythme` dans l'en-tête du niveau, elle revient aussi d'elle-même, toutes les tant de secondes,
  * là où le héros se trouve (au sol, hors combat de boss).
  * Elle ne tient que l'étage de ses lignes. Jamais une impasse : elle prend fin si le héros en sort (sur le côté,
- * à l'étage au-dessus, ou en dessous : métro, galerie, trou creusé), si une ligne cède, ou au bout de NASSE_TIME.
+ * à l'étage au-dessus, ou un étage plus bas : métro, galerie), si une ligne cède, ou au bout de NASSE_TIME.
  * `game.kettle` = null | { x, y, t, limit, x0, x1 } (y : le sol de ses lignes ; x0 et x1 : leurs bords intérieurs).
  */
 export function updateKettle(game, dt) {
@@ -216,13 +225,10 @@ export function updateKettle(game, dt) {
   const outerLeft = left.length ? Math.min(...left.map((e) => e.x)) : k.x0;
   const outerRight = right.length ? Math.max(...right.map((e) => e.x + e.w)) : k.x1;
 
-  // Sorti de son étage : posé à l'étage au-dessus, ou descendu plus bas que le sol de ses lignes. Un saut n'en sort pas.
-  const feet = hero.y + hero.h;
-  const away = feet > k.y + TILE / 2 || (hero.onGround && !onFloor(feet, k.y));
   let reason = null;
   if (k.t >= k.limit) reason = 'time';
   else if ((k.closed.left && !left.length) || (k.closed.right && !right.length)) reason = 'broken';
-  else if (!hero.dead && (cx < outerLeft || cx > outerRight || away)) reason = 'out';
+  else if (!hero.dead && (cx < outerLeft || cx > outerRight || offFloor(hero, k.y))) reason = 'out';
   if (!reason) return;
   for (const e of k.units) {
     if (e.state === 'done') continue;
