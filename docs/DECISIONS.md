@@ -129,6 +129,8 @@ Tout est sur l'appareil du joueur ; une mise à jour ne lui fait rien perdre.
 `npm run build` ajoute le service worker, les icônes et le contenu assemblé. En développement, aucun cache.
 
 - Tout le jeu est mis en cache d'un bloc, sous un nom tiré de l'empreinte des fichiers : jamais deux versions mélangées.
+- Le service worker revalide auprès du serveur (`no-cache`) : ce que la page vient de recevoir n'est pas retéléchargé. L'image des aperçus de lien (`apercu.jpg`) reste en ligne, hors du cache.
+- La page annonce tout ce que le menu attend, le contenu et les modules : la liste est tirée des `import` par le build. L'Atelier se charge à son ouverture.
 - Une mise à jour attend le feu vert du joueur, depuis le menu. Jamais en pleine partie.
 - Chemins relatifs partout : le jeu marche dans un sous-dossier, comme sur GitHub Pages.
 - Le service worker ignore tout ce qui part vers un autre site.

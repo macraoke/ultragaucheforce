@@ -25,7 +25,14 @@ test('le build produit un site complet, installable et jouable hors-ligne', (t) 
   assert.ok(bytes < 2_000_000, `le jeu reste léger (${bytes} octets)`);
 
   // La balise qui autorise l'enregistrement du service worker.
-  assert.match(read('index.html').toString(), new RegExp(`<meta name="ugf-build" content="${version}">`));
+  const page = read('index.html').toString();
+  assert.match(page, new RegExp(`<meta name="ugf-build" content="${version}">`));
+  // Ce que le menu attend est demandé dès la page lue ; l'Atelier, lui, se charge à la demande.
+  const preloaded = [...page.matchAll(/<link rel="modulepreload" href="([^"]+)">/g)].map((m) => m[1]);
+  for (const path of ['src/client/main.js', 'src/client/ui.js', 'src/client/collection.js', 'src/sim/game.js']) assert.ok(preloaded.includes(path), `${path} est annoncé`);
+  for (const path of ['src/client/atelier.js', 'src/content/rules.js']) assert.ok(!preloaded.includes(path), `${path} n'est pas chargé au démarrage`);
+  assert.ok(preloaded.every((path) => files.includes(path)), 'chaque module annoncé est dans le build');
+  assert.match(page, /<link rel="preload" href="content.json" as="fetch" crossorigin>/);
 
   // Le contenu assemblé, sans la liste d'erreurs du serveur de développement.
   const bundle = JSON.parse(read('content.json'));
@@ -54,7 +61,7 @@ test('le build produit un site complet, installable et jouable hors-ligne', (t) 
   }
   assert.ok(!precache.includes('sw.js'), 'le service worker ne se précharge pas lui-même');
   assert.ok(precache.every((p) => !p.startsWith('/') && !p.includes('://')), 'chemins relatifs : compatible avec un sous-dossier');
-  assert.deepEqual(precache, files.filter((p) => p !== 'sw.js'), 'tout ce qui est servi est préchargé');
+  assert.deepEqual(precache, files.filter((p) => p !== 'sw.js' && p !== 'apercu.jpg'), 'tout ce qui est servi est préchargé, sauf l’image des aperçus de lien');
   // Une mise à jour n'est jamais imposée : skipWaiting n'existe que sur demande du menu.
   assert.equal(worker.match(/skipWaiting\(\)/g).length, 1);
   assert.match(worker, /event\.data === 'SKIP_WAITING'\) self\.skipWaiting\(\)/);
