@@ -1383,7 +1383,8 @@ export class Renderer {
 
   /**
    * Quelles pancartes du cortège sont levées à cette image. Aucune n'en recouvre une autre ni ce qui est déjà
-   * réservé (le héros, la voix, les coups, les gains des recrues), et aucune ne clignote :
+   * réservé (le héros, la voix, les coups, les gains des recrues), aucune ne passe sous la bande du HUD (barre de vie
+   * comprise), et aucune ne clignote :
    * levée, elle le reste SIGN_UP secondes, sauf devant un de ces textes prioritaires ; baissée, elle attend SIGN_DOWN.
    * `drifting` : les textes flottants qui dérivent à l'écran. Ils ne font pas baisser une pancarte levée (ils passent
    * au-dessus d'elle, voir `placeLoose`), mais une pancarte baissée ne se relève pas sous l'un d'eux.
@@ -1418,6 +1419,10 @@ export class Renderer {
     // Et de l'air sur les côtés des pancartes déjà levées (SIGN_GAP) : quand le cortège piétine, elles ne se touchent pas.
     const roomy = (box) => clear({ x0: box.x0 - 12, x1: box.x1 + 12, y0: box.y0 - 6, y1: box.y1 + 18 }, priority)
       && !this.boxes.slice(priority).some((b) => box.x0 - SIGN_GAP < b.x1 && box.x1 + SIGN_GAP > b.x0 && box.y0 < b.y1 && box.y1 > b.y0) && free(box);
+    // Jamais sous la bande du HUD (barre de vie du boss ou d'une ligne comprise) : une pancarte qui la toucherait se
+    // baisse ; pour se relever, elle veut deux pixels d'air sous elle : la caméra qui sautille ne la fait pas clignoter.
+    const ceiling = this.ceiling();
+    const below = (box, air = 0) => box.y0 - air >= ceiling;
     const up = [];
     const keep = (sign, ok) => {
       if (ok) {
@@ -1432,8 +1437,8 @@ export class Renderer {
     // Puis les baissées depuis assez longtemps se relèvent là où il reste de la place.
     const raised = signs.filter((s) => s.held.up).sort((a, b) => a.held.since - b.held.since);
     const down = signs.filter((s) => !s.held.up && now - s.held.since >= SIGN_DOWN);
-    for (const s of raised) keep(s, (s.turn || now - s.held.since < SIGN_UP) && clear(s.box));
-    for (const s of down) keep(s, s.turn && roomy(s.box));
+    for (const s of raised) keep(s, (s.turn || now - s.held.since < SIGN_UP) && clear(s.box) && below(s.box));
+    for (const s of down) keep(s, s.turn && roomy(s.box) && below(s.box, 2));
     this.raised = new Set(signs.filter((s) => s.held.up).map((s) => s.m));
     return up;
   }

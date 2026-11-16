@@ -220,6 +220,30 @@ test('devant le héros, une pancarte se baisse tout de suite', () => {
   assert.ok(!r.raised.has(cortege[0]));
 });
 
+test('une pancarte ne se lève jamais sous la bande du HUD, barre de vie comprise : elle se baisse, puis se relève sans clignoter', () => {
+  // Au soir du 49-3, « NI HÉROS, NI ESCLAVE » se levait sur la barre de vie du barrage et cachait « BARRAGE ».
+  const r = renderer();
+  const cortege = crowd(1);
+  const [m] = cortege;
+  const frame = (clock) => {
+    r.clock = clock;
+    r.boxes = [];
+    r.raiseSigns(cortege);
+    return r.raised.has(m);
+  };
+  assert.ok(frame(0), 'sous un HUD bas : levée');
+  const s = r.spot(m, 0);
+  const sign = r.textBox(m.label, s.hand, s.top, 4.6, s.width);
+  const hudAt = (ceiling) => { r.hudBottom = ceiling * r.ratio - 4; }; // le plafond tombe là, en pixels du jeu
+  hudAt(sign.y0 + 2); // la barre de vie d'une ligne apparaît et descend jusque sur elle
+  assert.ok(!frame(0.1), 'sous la barre de vie : baissée');
+  hudAt(sign.y0 - 1); // elle remonte d'un rien
+  assert.ok(!frame(1), 'un pixel d’air : toujours baissée, pas de clignotement');
+  hudAt(sign.y0 - 8);
+  assert.ok(frame(1.5), 'assez d’air : elle se relève');
+  assert.ok(frame(1.6) && r.textBox(m.label, s.hand, s.top, 4.6, s.width).y0 >= r.ceiling(), 'et reste sous la bande');
+});
+
 test('les porteurs lèvent leur pancarte à tour de rôle : une sur deux à la fois, toutes à leur tour', () => {
   const r = renderer();
   // Neuf porteurs bien espacés : rien ne les gêne, seul leur tour décide.
