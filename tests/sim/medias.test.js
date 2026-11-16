@@ -45,7 +45,7 @@ test('palier de panique : une poubelle prend feu, une équipe télé vient la fi
   assert.equal(crew.def.id, 'equipe');
 
   run(game, 400); // le héros ne bouge pas, à huit cases du feu
-  assert.ok(Math.abs(centre(crew) - fire.x) <= 31, `l’équipe s’est plantée devant le feu (à ${Math.abs(centre(crew) - fire.x).toFixed(0)} px)`);
+  assert.ok(Math.abs(centre(crew) - fire.x) <= 35, `l’équipe s’est plantée devant le feu (à ${Math.abs(centre(crew) - fire.x).toFixed(0)} px)`);
   assert.ok(crew.framing, 'elle filme');
   assert.equal(crew.facing, Math.sign(fire.x - centre(crew)), 'tournée vers le feu');
   assert.ok(Math.abs(centre(hero) - centre(crew)) > 70, 'le héros est hors de son champ : ce n’est pas lui qu’elle cadre');

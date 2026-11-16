@@ -275,26 +275,47 @@ body.sobre #hud-manif.grossit { animation: none; }
 #hud-boss { position: absolute; left: 50%; top: 3.2em; transform: translateX(-50%); width: min(60%, 420px); text-align: center; }
 #hud-boss span { display: block; height: .8em; margin-top: .25em; background: var(--nuit); border: 2px solid var(--blanc); }
 #hud-boss i { display: block; height: 100%; background: var(--or); transition: width .15s; }
-body.sobre #hud-panique i { animation: none; }
 @keyframes clignote { 50% { opacity: .55; } }
 
-/* Bandeau PANIQUE TV */
-#bandeau { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; display: flex; align-items: stretch; font: 900 clamp(.75rem, 2.6vmin, 1.25rem)/1 var(--titre); text-transform: uppercase; letter-spacing: .03em; pointer-events: none; overflow: hidden; }
-#bandeau strong { display: flex; align-items: center; gap: .5em; background: var(--rouge); color: var(--blanc); padding: .35em .6em; white-space: nowrap; }
-/* La jauge de panique est celle de la chaîne : elle vit à côté de son nom. */
-#hud-panique { position: relative; width: 6.2em; height: 1.4em; background: var(--nuit); border: 2px solid var(--blanc); overflow: hidden; font-size: .8em; }
-#hud-panique i { position: absolute; inset: 0 auto 0 0; background: #38b764; transition: width .3s; }
-#hud-panique[data-niveau='1'] i { background: var(--or); }
-#hud-panique[data-niveau='2'] i { background: var(--rouge-sombre); animation: clignote .5s steps(2) infinite; }
-#hud-panique b { position: relative; display: block; text-align: center; line-height: 1.3em; color: var(--blanc); text-shadow: 0 1px 0 var(--nuit); }
-#bandeau em { background: var(--nuit); color: var(--or); padding: .5em .6em; font-style: normal; white-space: nowrap; }
-#bandeau[data-alerte] em { background: var(--or); color: var(--nuit); }
-#bandeau > span { flex: 1; min-width: 0; background: var(--blanc); color: var(--nuit); padding: .5em .8em; white-space: nowrap; overflow: hidden; }
-#bandeau > span i { display: inline-block; font-style: normal; animation: defile 4.5s linear .8s both; }
-@keyframes defile { to { transform: translateX(var(--decalage, 0)); } }
+/* Bandeau PANIQUE TV : un bandeau de chaîne d'info. Le logo, le niveau de panique de la chaîne, l'étiquette, le fil. */
+#bandeau { --fond: var(--blanc); --encre-fil: var(--nuit); --filet: var(--rouge); position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; display: flex; align-items: stretch; height: 2.2em; font: 900 clamp(.75rem, 2.6vmin, 1.25rem)/1 var(--titre); text-transform: uppercase; letter-spacing: .03em; pointer-events: none; overflow: hidden; background: var(--nuit); color: var(--blanc); border-top: .16em solid var(--filet); box-shadow: 0 -.12em 0 var(--nuit); transition: border-color .3s; }
 #bandeau[hidden], #hud[hidden], #hud-boss[hidden] { display: none; }
-#bandeau.entre { animation: bandeau-entre .3s cubic-bezier(.2, 1.3, .4, 1); }
+/* Le logo de la chaîne, bord droit en biseau, et son point « direct ». */
+#bandeau .chaine { position: relative; z-index: 1; flex: none; display: flex; align-items: center; gap: .35em; background: var(--rouge); color: var(--blanc); padding: 0 1.15em 0 .6em; margin-right: -.65em; white-space: nowrap; clip-path: polygon(0 0, 100% 0, calc(100% - .65em) 100%, 0 100%); transition: background .3s, color .3s; }
+#bandeau .chaine b { background: var(--blanc); color: var(--rouge); padding: .12em .28em .08em; transition: background .3s, color .3s; }
+#bandeau .chaine i { width: .5em; height: .5em; border-radius: 50%; background: var(--blanc); animation: clignote 1.2s steps(2) infinite; }
+/* Le niveau de panique est celui de la chaîne : trois crans. Les crans passés sont pleins ; celui en cours porte son nom et se remplit. */
+#hud-panique { flex: none; display: flex; align-items: center; gap: .22em; background: var(--nuit); padding: 0 .6em 0 1.1em; }
+#hud-panique i { --cran: #38b764; box-sizing: border-box; display: grid; place-items: center; min-width: .9em; height: 1.5em; overflow: hidden; border: .16em solid rgb(244 244 244 / .4); font-size: .68em; font-style: normal; white-space: nowrap; color: transparent; width: .9em; }
+#hud-panique i:nth-child(2) { --cran: var(--or); }
+#hud-panique i:nth-child(3) { --cran: var(--rouge); }
+#hud-panique[data-niveau='1'] i:nth-child(1), #hud-panique[data-niveau='2'] i:nth-child(-n+2) { background: var(--cran); border-color: var(--cran); }
+#hud-panique[data-niveau='0'] i:nth-child(1), #hud-panique[data-niveau='1'] i:nth-child(2), #hud-panique[data-niveau='2'] i:nth-child(3) { width: auto; padding: 0 .55em; border-color: var(--cran); color: var(--blanc); text-shadow: 0 .12em 0 var(--nuit), .12em 0 0 var(--nuit), -.12em 0 0 var(--nuit), 0 -.12em 0 var(--nuit); background: linear-gradient(to right, var(--cran) var(--part, 0%), transparent var(--part, 0%)); }
+#hud-panique[data-niveau='2'] i:nth-child(3) { animation: clignote .5s steps(2) infinite; }
+/* L'étiquette : d'où vient ce qui passe à l'antenne. */
+#bandeau em { flex: none; display: flex; align-items: center; background: var(--encre); color: var(--or); padding: 0 .65em; font-style: normal; white-space: nowrap; }
+#bandeau[data-alerte] em { background: var(--or); color: var(--nuit); }
+/* Le fil : une ligne ; trop longue, elle défile jusqu'à son dernier mot. */
+#bandeau .fil { flex: 1; min-width: 0; display: flex; align-items: center; background: var(--fond); color: var(--encre-fil); padding: 0 .8em; white-space: nowrap; overflow: hidden; transition: background .3s, color .3s; }
+#bandeau .fil i { display: inline-block; font-style: normal; animation: defile 4.5s linear 1.2s both; }
+@keyframes defile { to { transform: translateX(var(--decalage, 0)); } }
+/* Effets réduits : rien ne défile, la ligne se replie en plus petit. */
+#bandeau .fil.replie { white-space: normal; }
+#bandeau .fil.replie i { animation: none; font-size: var(--corps, .62em); line-height: 1.08; letter-spacing: 0; }
+/* La couleur du bandeau suit le niveau de la chaîne : blanc, jaune, rouge. */
+#bandeau[data-niveau='1'] { --fond: #ffe08a; --filet: var(--or); }
+#bandeau[data-niveau='2'] { --fond: var(--rouge); --encre-fil: var(--blanc); --filet: var(--blanc); }
+#bandeau[data-niveau='2'] .chaine { background: var(--blanc); color: var(--rouge); }
+#bandeau[data-niveau='2'] .chaine b { background: var(--rouge); color: var(--blanc); }
+#bandeau[data-niveau='2'] .chaine i { background: var(--rouge); animation-duration: .5s; }
+#bandeau[data-niveau='2'][data-alerte] em { background: var(--nuit); color: var(--or); }
+/* Une alerte tombe : le fil se déroule depuis l'étiquette, qui clignote. */
+#bandeau.entre .fil { animation: bandeau-deroule .4s ease-out; }
+#bandeau.entre em { animation: clignote .22s steps(2) 3; }
+@keyframes bandeau-deroule { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
 @keyframes bandeau-entre { from { transform: translateY(100%); } }
+body.sobre #bandeau *, body.sobre #bandeau.entre * { animation: none; }
+@media (prefers-reduced-motion: reduce) { #bandeau *, #bandeau.entre * { animation: none; } }
 
 #toasts { position: absolute; left: 10px; top: 4.6em; z-index: 6; display: grid; gap: 6px; pointer-events: none; }
 #toasts p.rarete-1 { border-left-color: var(--rare); }
@@ -318,7 +339,7 @@ body.tactile.en-jeu #tactile { display: block; position: absolute; inset: 0; z-i
 /* Au pouce : le HUD s'écarte des encoches et le bandeau passe en haut, hors des pouces. */
 body.tactile #hud .gauche { left: max(10px, env(safe-area-inset-left)); }
 body.tactile #hud .droite { right: max(10px, env(safe-area-inset-right)); }
-body.tactile #bandeau { bottom: auto; top: 4.4em; }
+body.tactile #bandeau { bottom: auto; top: 5.3em; }
 body.tactile #toasts { top: 8em; left: max(10px, env(safe-area-inset-left)); }
 html.pivote body.tactile #hud .gauche, html.pivote body.tactile #toasts { left: max(10px, env(safe-area-inset-top)); }
 html.pivote body.tactile #hud .droite { right: max(10px, env(safe-area-inset-bottom)); }

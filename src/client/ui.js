@@ -7,8 +7,12 @@ import { REPO, VERSION, REFERENCES } from './config.js';
 import { storeSave, isFound } from './save.js';
 import { SHELVES, VOTE_FICHES, allCards, collectionCount, isFresh, levelOrder, markSeen, openCard, progress, shelfGrid, wonCards } from './collection.js';
 import { livesStack } from './lives.js';
+import { PANIC_STEPS } from '../sim/game.js';
 
 const MENTION = 'Satire citoyenne, libre et collaborative.';
+const PANIC_NAMES = ['calme', 'alerte', 'hystérie']; // les trois crans de la chaîne
+const AIRTIME = 9; // secondes d'antenne d'une citation qui tient sur le fil
+const SCROLL = 4.5; // vitesse de défilement d'une ligne trop longue, en hauteurs de lettre par seconde
 
 export class Screens {
   /**
@@ -305,7 +309,8 @@ export class Hud {
     this.q = (id) => document.getElementById(id);
     this.last = '';
     this.bannerTimer = 0;
-    this.rotation = 0;
+    this.rotation = 0; // minuterie de la prochaine citation
+    this.airtime = AIRTIME; // secondes d'antenne de la ligne affichée
     this.turn = 0;
     this.onQuote = () => {}; // une vraie citation passe à l'antenne : la Collection la note
     // Le fil permanent de PANIQUE TV : de vraies déclarations, datées et signées.
@@ -322,19 +327,25 @@ export class Hud {
     this.nextQuote();
   }
 
-  /** Le bandeau reste à l'antenne pendant toute la partie. */
+  /** Le bandeau reste à l'antenne pendant toute la partie ; le fil tourne tant qu'aucune alerte ne l'interrompt. */
   setVisible(on) {
+    const el = this.q('bandeau');
+    const shown = !el.hidden;
     this.el.hidden = !on;
-    this.q('bandeau').hidden = !on;
-    clearInterval(this.rotation);
-    if (on) this.rotation = setInterval(() => this.q('bandeau').dataset.alerte || this.nextQuote(), 9000);
+    el.hidden = !on;
+    clearTimeout(this.rotation);
+    if (!on) return;
+    if (!shown) this.fit(); // on ne mesure une ligne que lorsqu'elle est à l'écran
+    if (!el.dataset.alerte) this.rotation = setTimeout(() => this.nextQuote(), this.airtime * 1000);
   }
 
   nextQuote() {
     const quote = this.quotes[this.turn++ % Math.max(1, this.quotes.length)];
     if (!quote) return;
-    this.show(`« ${quote.texte} » — ${quote.auteur}, ${quote.date.slice(0, 4)}`, 'Ils l’ont dit', 8.5);
+    this.show(`« ${quote.texte} » — ${quote.auteur}, ${quote.date.slice(0, 4)}`, 'Ils l’ont dit', AIRTIME);
     this.onQuote(quote.id);
+    clearTimeout(this.rotation);
+    if (!this.q('bandeau').hidden) this.rotation = setTimeout(() => this.nextQuote(), this.airtime * 1000);
   }
 
   update(game) {
@@ -362,11 +373,15 @@ export class Hud {
       }
       this.crowd = game.crowd;
     }
-    // La panique est celle de la chaîne : sa jauge vit dans le bandeau, à côté de son nom.
+    // La panique est celle de la chaîne : trois crans dans le bandeau, celui en cours se remplit,
+    // et tout le bandeau change de couleur avec lui.
+    const level = game.panicLevel;
     const gauge = this.q('hud-panique');
-    gauge.dataset.niveau = game.panicLevel;
-    gauge.querySelector('i').style.width = `${Math.min(100, game.panic)}%`;
-    gauge.querySelector('b').textContent = ['Calme', 'Alerte', 'Hystérie'][game.panicLevel];
+    const [from, to] = [[0, ...PANIC_STEPS][level], [...PANIC_STEPS, 100][level]];
+    this.q('bandeau').dataset.niveau = level;
+    gauge.dataset.niveau = level;
+    gauge.style.setProperty('--part', `${Math.round(((Math.min(100, game.panic) - from) / (to - from)) * 100)}%`);
+    gauge.setAttribute('aria-label', `Panique de la chaîne : ${PANIC_NAMES[level]}`);
     const bar = this.q('hud-boss');
     const fighting = Boolean(boss?.active && boss.state !== 'gone');
     bar.hidden = !fighting;
@@ -385,23 +400,57 @@ export class Hud {
     el.classList.remove('entre');
     void el.offsetWidth; // relance l'animation
     el.classList.add('entre');
+    clearTimeout(this.rotation); // l'alerte interrompt le fil…
     clearTimeout(this.bannerTimer);
     this.bannerTimer = setTimeout(() => {
       delete el.dataset.alerte;
-      this.nextQuote();
-    }, seconds * 1000);
+      this.nextQuote(); // … qui reprend après elle
+    }, this.airtime * 1000);
   }
 
-  /** Affiche une ligne dans le bandeau ; si elle est trop longue, elle défile. */
+  /**
+   * Affiche une ligne dans le bandeau, pour `seconds` secondes au moins.
+   * Trop longue pour le fil, elle défile jusqu'à son dernier mot, et reste à l'antenne le temps qu'il faut.
+   */
   show(text, label, seconds) {
     const el = this.q('bandeau');
     el.querySelector('em').textContent = label;
-    const line = el.querySelector(':scope > span'); // le texte qui défile, pas la jauge
-    const inner = h('i', {}, text);
-    line.replaceChildren(inner);
-    const overflow = inner.scrollWidth - line.clientWidth + 24;
-    inner.style.setProperty('--decalage', `${-Math.max(0, overflow)}px`);
-    inner.style.animationDuration = `${Math.max(2, seconds - 2)}s`;
+    el.querySelector('.fil').replaceChildren(h('i', {}, text));
+    this.seconds = seconds;
+    this.fit();
+  }
+
+  /** Ajuste la ligne affichée à la largeur du fil, et fixe son temps d'antenne (`this.airtime`). */
+  fit() {
+    const line = this.q('bandeau').querySelector('.fil');
+    const inner = line.firstElementChild;
+    this.airtime = this.seconds ?? AIRTIME;
+    if (!inner) return;
+    line.classList.remove('replie');
+    inner.style.animation = 'none'; // sans défilement tant qu'on ne sait pas s'il en faut un
+    const style = getComputedStyle(line);
+    const room = line.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+    const over = inner.scrollWidth - room;
+    if (room <= 0 || over <= 0) return; // bandeau masqué, ou la ligne tient
+    const still = document.body.classList.contains('sobre') || matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (still) {
+      // Effets réduits : la ligne se replie, en réduisant le corps jusqu'à ce qu'elle tienne dans le bandeau.
+      line.classList.add('replie');
+      for (const size of [0.86, 0.74, 0.62, 0.54, 0.46, 0.4]) {
+        line.style.setProperty('--corps', `${size}em`);
+        if (inner.offsetHeight <= line.clientHeight) break;
+      }
+      this.airtime += 2;
+      return;
+    }
+    const em = parseFloat(style.fontSize);
+    const travel = over + em; // jusqu'au dernier mot, avec un peu d'air
+    const time = travel / (em * SCROLL);
+    inner.style.setProperty('--decalage', `${-travel}px`);
+    void inner.offsetWidth; // relance le défilement depuis le début
+    inner.style.animation = '';
+    inner.style.animationDuration = `${time.toFixed(2)}s`;
+    this.airtime = Math.max(this.airtime, 1.2 + time + 1.6); // une pause avant, le défilement, une pause après
   }
 
   /** Une note en haut à gauche ; trois au plus à la fois. `tone` : une classe (la rareté d'une pancarte). */

@@ -28,7 +28,7 @@ const WIND_UP = 0.5; // élan avant une charge sans sommation
 const AIM_LOCK = 0.25; // la visée se fige juste avant le tir : on peut l'esquiver
 const ROPE_SPEED = 140; // descente à la corde, pixels par seconde
 const SPOT_TIME = 1.5; // secondes passées dans le faisceau avant une dépose de renforts
-const FILM_DISTANCE = 30; // l'équipe télé se plante à cette distance du feu qu'elle filme
+const FILM_DISTANCE = 34; // l'équipe télé se plante à cette distance du feu qu'elle filme
 const FILM_PANIC = 0.3; // filmer un feu fait monter la panique, mais doucement : cette part de `panique`
 
 export function createEnemy(def, cx, feetY, extra = {}) {
