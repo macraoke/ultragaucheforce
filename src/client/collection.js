@@ -136,8 +136,8 @@ export function whereToFind(bundle, kind, item) {
   const speakers = [...Object.values(bundle.heros), ...Object.values(bundle.ennemis)];
   switch (kind) {
     case 'niveaux': return [item.titre];
-    // Un personnage jouable peut ouvrir un niveau (au hasard la première fois) ou sortir de n'importe quelle garde à vue.
-    case 'heros': return item.statut === 'jouable' ? ['dans une garde à vue'] : titles((lv) => lv.heros === item.id || lv.camarades.includes(item.id));
+    // Un personnage jouable peut ouvrir un niveau (au hasard la première fois) ou se libérer en chemin, dans n'importe lequel.
+    case 'heros': return item.statut === 'jouable' ? ['dans n’importe quel niveau'] : titles((lv) => lv.heros === item.id || lv.camarades.includes(item.id));
     case 'boss': {
       // Tiré au hasard au bout de chaque niveau qui a un boss : aucun niveau n'est à nommer plus qu'un autre.
       const fights = levels.filter((lv) => bossesOf(bundle, lv).length);
@@ -172,10 +172,12 @@ const CIRCUMSTANCE = /^(dans|au|aux|en|à|sur) /;
 
 /**
  * La ligne d'indice d'une carte. Cachée : « À découvrir dans la manif », « À découvrir : Le rond-point ».
- * Trouvée (un personnage) : « Vu dans une garde à vue », « Vu dans : Le rond-point, La raffinerie bloquée ».
+ * Trouvée (un personnage) : « Vu au bout de n’importe quel niveau », « Vu dans : Le rond-point, La raffinerie bloquée ».
+ * Un héros jouable se libère en chemin : « À libérer dans n’importe quel niveau », qu'on l'ait déjà ou non.
  */
-export function hintLine(where, found) {
+export function hintLine(where, found, kind = '') {
   if (!where.length) return found ? '' : 'À découvrir';
+  if (kind === 'heros' && CIRCUMSTANCE.test(where[0])) return `À libérer ${where[0]}`;
   if (CIRCUMSTANCE.test(where[0])) return `${found ? 'Vu' : 'À découvrir'} ${where[0]}`;
   return found ? `Vu dans : ${where.join(', ')}` : `À découvrir : ${where[0]}`;
 }
@@ -293,7 +295,7 @@ export function collectionCard(bundle, card, found = true) {
   if (!found) {
     return h('article', { className: `carte ${kind} cachee` }, head, picture,
       h('h3', {}, '???'),
-      h('p', { className: 'indice' }, hintLine(where, false)));
+      h('p', { className: 'indice' }, hintLine(where, false, kind)));
   }
   return h('article', { className: `carte ${kind}` }, head, art && picture,
     h('h3', {}, kind === 'pancartes' || kind === 'manchettes' ? quoted(item.texte) : cardName(item)),
@@ -302,7 +304,7 @@ export function collectionCard(bundle, card, found = true) {
     item.origine && h('p', { className: 'origine' }, item.origine),
     art ? references(bundle, item) : textBody(kind, item),
     facts(kind, item).filter(Boolean).map((line) => h('p', { className: 'stats' }, line)),
-    where.length && ['heros', 'recrues', 'ennemis', 'boss'].includes(kind) ? h('p', { className: 'indice' }, hintLine(where, true)) : null);
+    where.length && ['heros', 'recrues', 'ennemis', 'boss'].includes(kind) ? h('p', { className: 'indice' }, hintLine(where, true, kind)) : null);
 }
 
 /**
