@@ -1,0 +1,17 @@
+# Tir tendu à l'horizontale ; s'il atteint le cortège, deux manifestants touchés.
+nom: Viseur
+pv: 2
+deplacement: fixe
+reaction: tire
+vue: 300
+fin: greve
+arme.type: tir
+arme.cadence: 1
+arme.vitesse: 200
+arme.portee: 400
+arme.degats: 1
+arme.terrain: 0
+arme.touche: 2
+--- repos
+kk
+kk

@@ -48,8 +48,8 @@ On ne gagne pas en tirant plus, mais en arrivant plus nombreux.
 
 - **Le nombre est la ressource** : chaque recrue ajoute du monde, une assemblée générale multiplie. Plus on est nombreux, plus les tracts font de dégâts.
 - **Une ligne cède au nombre**, pas aux coups : barrage, blindé, grille. Explorer pour recruter devient le cœur du niveau.
-- **Jamais d'impasse** : devant une ligne qui tient, des passants rejoignent peu à peu. Une nasse est levée au bout de vingt secondes.
-- **Disperser, pas éliminer** : une charge ou du gaz dispersent une part de la manif ; une unité finit hors service, un boss s'éjecte.
+- **Jamais d'impasse** : devant une ligne qui tient, des passants rejoignent peu à peu, et d'autant plus que la manif perd du monde en attendant. Une nasse est levée au bout de vingt secondes.
+- **Disperser, pas éliminer** : une charge ou du gaz dispersent une part de la manif, la BAC interpelle ; on lit combien et pourquoi (« − 12 gazés »). Une unité finit hors service, un boss s'éjecte.
 
 ## En face : des unités réelles
 

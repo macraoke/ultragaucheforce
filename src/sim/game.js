@@ -8,14 +8,20 @@
 //   sfx {id, x} · shake {force} · headline {text} · heroCard {hero} · card {id} · debris {x, y, color, n}
 //   bubble {x, y, text} · explosion {x, y, r} · panic {level} · checkpoint · death · respawn
 //   boss {state: 'enter' | 'phase' | 'stand' | 'defeated'} · won · lost
-//   recruit {id, n, crowd, x, y} · dispersed {n, crowd} · overrun {x, y} · blocked {x, need, crowd}
+//   hurt {x, y, kind, hp, max, dir} : le héros est touché (kind : 'tir' | 'gaz' | 'charge' | 'contact' | 'explosion')
+//   parry {x, y, line} : un bouclier ou une ligne qui tient arrête un coup · down {x, y, end} : une unité hors service
+//   recruit {id, n, crowd, x, y} · overrun {x, y, feet, need, crowd} : une ligne cède
+//   blocked {x, y, feet, need, crowd, joined, dir} : le héros bute sur une ligne qui tient ; `joined` passants arrivent
+//   dispersed {n, crowd, reason, x, y, gone} : la manif perd du monde (reason : 'charge' | 'gaz' | 'chute' | 'interpelle'
+//     | 'touche' ; gone : où étaient les manifestants qui ne sont plus dessinés, six au plus)
 //   kettle {state: 'start', x} puis {state: 'end', reason: 'out' | 'broken' | 'time'} · drop {x, y, n}
 //   discover {kind: 'heros' | 'ennemi' | 'recrue' | 'boss' | 'mot', id} : une seule fois par partie
 //
 // La manif et le maintien de l'ordre :
 //   crowd        nombre de manifestants (entier, jamais plafonné) ; `cortege` en dessine 40 au plus
 //   recruits     [{ id, def, x, y, w, h, joined, animTime }] : à rejoindre en les touchant ou en leur tendant un tract
-//   addCrowd(n)  des gens rejoignent · disperse(part) en disperse une part (jamais sous 1 avec un cortège)
+//   addCrowd(n)  des gens rejoignent · disperse(part, raison) en disperse une part · loseCrowd(n, raison) en retire n
+//                (jamais sous 1 avec un cortège)
 //   power()      multiplicateur des dégâts des projectiles du héros : le nombre fait la force
 //   kettle       null | { x, t, limit, x0, x1 } : nasse en cours (x0, x1 = bords intérieurs des lignes)
 //   Ennemis : blocking, aim, jet, beam, rush, rope (voir enemy.js) · boss.seated (voir boss.js)
@@ -26,13 +32,13 @@
 import { makeRng } from './rng.js';
 import { TILE } from './world.js';
 import { hitsSolid, overlap } from './physics.js';
-import { updateHero, setHeroDef } from './hero.js';
+import { updateHero, setHeroDef, FEEL } from './hero.js';
 import { createEnemy, updateEnemy, sturdy, LINE_REACH } from './enemy.js';
 import { updateProjectiles } from './projectile.js';
 import { updateBoss, hurtBoss } from './boss.js';
 import { loadLevel, toList, playable } from './level.js';
 import { updateProps } from './props.js';
-import { updateRecruits, updateCortege, syncCortege, updateKettle, drawSign, bringSigns } from './manif.js';
+import { updateRecruits, updateCortege, syncCortege, visibleCortege, updateKettle, drawSign, bringSigns } from './manif.js';
 
 export const DT = 1 / 60;
 
@@ -45,6 +51,9 @@ const RESPAWN_DELAY = 0.8;
 const TRAIL_LENGTH = 600;
 const MAX_EVENTS = 400;
 const NAG = 2; // secondes entre deux rappels « vous n'êtes pas assez nombreux »
+const PASSERS = 0.04; // devant une ligne qui tient, à chaque rappel, cette part du nombre voulu rejoint la manif…
+const PASSERS_BOOST = 64; // …et jusqu'à 64 fois plus quand la manif ne progresse plus (elle perd du monde en attendant)
+const PARRY = 0.25; // secondes pendant lesquelles un coup paré se voit sur le bouclier ou la ligne
 
 export class Game {
   /**
@@ -200,17 +209,19 @@ export class Game {
     if (team !== 'ordre' || friendly) {
       for (const e of this.enemies) {
         if (e.state === 'done' || !near(e)) continue;
-        this.hurtEnemy(e, damage, credit === 'ordre' ? 'ordre' : 'luttes');
+        const away = Math.sign(e.x + e.w / 2 - x || 1);
+        this.hurtEnemy(e, damage, credit === 'ordre' ? 'ordre' : 'luttes', away);
         if (e.state === 'done' || sturdy(e)) continue; // une ligne qui tient ou un véhicule : ni recul ni étourdissement
-        if (push) e.kick = Math.sign(e.x + e.w / 2 - x || 1) * push;
+        if (push) e.kick = away * push;
         if (stun && e.state !== 'sleep') {
           e.state = 'stunned';
           e.stun = Math.max(e.stun, stun);
+          e.daze = 'choc'; // sonné : des étoiles, pas des larmes
         }
       }
     }
     if (team !== 'ordre' && this.boss && near(this.boss)) this.hurtBoss(damage);
-    if (team !== 'luttes' && !hero.dead && near(hero)) this.hurtHero(1);
+    if (team !== 'luttes' && !hero.dead && near(hero)) this.hurtHero(1, { x, kind: 'explosion' });
     if (team !== 'ordre') {
       for (const cage of this.props) {
         if (cage.kind !== 'cage' || cage.on || !near(cage)) continue;
@@ -230,12 +241,13 @@ export class Game {
       if (e.state === 'done' || e.state === 'sleep' || sturdy(e) || !inGas(e)) continue;
       e.state = 'stunned';
       e.stun = Math.max(e.stun, 1);
+      e.daze = 'gaz'; // gazé par ses propres grenades : il pleure et tousse, il ne fait plus rien
     }
     if (!hero.dead && inGas(hero)) {
       hero.gasTime += DT;
       if (hero.gasTime >= 1) {
         hero.gasTime = 0;
-        this.hurtHero(1);
+        this.hurtHero(1, { kind: 'gaz' });
       }
     } else {
       hero.gasTime = Math.max(0, hero.gasTime - DT);
@@ -253,38 +265,63 @@ export class Game {
 
   // ------------------------------------------------------------ coups reçus
 
-  hurtHero(amount) {
+  /**
+   * Le héros est touché. `from` dit par quoi : `kind` ('tir', 'gaz', 'charge', 'contact', 'explosion')
+   * et d'où (`x`, ou `dir` : le sens du coup). Il blanchit un instant, puis clignote le temps de souffler.
+   * Le recul est dessiné par le client, dans le sens `dir` : la partie, elle, ne bouge pas le héros
+   * (un vrai recul le jetait dans les trous et sous les charges : le robot gagnait un quart de parties en moins).
+   */
+  hurtHero(amount, from = {}) {
     const { hero } = this;
     if (hero.dead || amount <= 0 || this.invincible || hero.invuln > 0) return;
     // Un personnage encaisse quelques coups (`pv` de sa fiche) ; au dernier, le précédent de la pile prend sa place.
     hero.hp -= amount;
-    hero.invuln = 1.4;
+    hero.invuln = FEEL.hurtInvuln;
+    hero.flash = FEEL.hurtFlash;
+    const kind = from.kind || 'tir';
+    const cx = hero.x + hero.w / 2;
+    const dir = from.dir || Math.sign(cx - (from.x ?? cx)) || -hero.facing;
+    this.emit('hurt', { x: cx, y: hero.y, kind, hp: Math.max(0, hero.hp), max: hero.def.pv, dir });
     this.sfx('degat', hero.x);
-    this.emit('shake', { force: 4 });
+    this.emit('shake', { force: 5 });
     if (hero.hp <= 0) this.killHero();
   }
 
-  /** Un automate ne meurt pas : à zéro, il se met en grève ou tombe en panne. */
-  hurtEnemy(e, amount, team = 'luttes') {
+  /**
+   * Un automate ne meurt pas : à zéro, il se met en grève ou tombe en panne.
+   * `dir` : le sens du coup (le dessin recule d'un pixel de ce côté).
+   */
+  hurtEnemy(e, amount, team = 'luttes', dir = 0) {
     if (e.state === 'done' || amount <= 0) return;
     if (e.def.debordement > 0) {
-      e.flash = 0.05; // la ligne tient : seul le nombre la fait céder
+      this.parry(e, e.x + e.w / 2, true); // la ligne tient : seul le nombre la fait céder
       return;
     }
     e.hp -= amount;
     e.flash = 0.12;
+    e.hitDir = dir;
     if (e.state === 'sleep') e.state = 'patrol';
-    if (e.hp > 0) return this.sfx('impact', e.x);
+    if (e.hp > 0) return this.sfx('touche', e.x);
     const strike = e.def.fin === 'greve';
     e.hp = 0;
     e.state = 'done';
     e.kick = 0;
     e.framing = false;
+    e.daze = null;
+    e.flash = 0.2;
     e.bubble = { text: strike ? 'EN GRÈVE !' : 'EN PANNE', t: 2.5 };
     // Le bilan des « blessés » ne compte que les unités de l'ordre : ni un duplex, ni un ministre.
     if (e.def.camp === 'ordre') this.stats[team === 'ordre' ? 'breakdownsBySelf' : 'breakdownsByPlayer']++;
     this.sfx(strike ? 'greve' : 'panne', e.x);
+    this.emit('down', { x: e.x + e.w / 2, y: e.y + e.h / 2, end: strike ? 'greve' : 'panne' });
     this.emit('debris', { x: e.x + e.w / 2, y: e.y + e.h / 2, color: 'h', n: 5 });
+  }
+
+  /** Un bouclier de face ou une ligne qui tient arrête le coup : ça se voit et ça s'entend, mais rien n'est entamé. */
+  parry(e, x, line = false) {
+    e.parry = PARRY;
+    this.emit('parry', { x, y: e.y + e.h * 0.4, line });
+    this.sfx('pare', x);
   }
 
   hurtBoss(amount) {
@@ -312,7 +349,7 @@ export class Game {
     hero.dead = true;
     hero.clones = [];
     this.stats.deaths++;
-    this.disperse(0.15); // sans son héros, une partie de la manif se disperse
+    this.disperse(0.15, 'chute', { x: hero.x + hero.w / 2, y: hero.y }); // sans son héros, une partie de la manif se disperse
     this.emit('death', {});
     this.sfx('mort', hero.x);
     if (!this.invincible) this.stack.pop();
@@ -328,7 +365,7 @@ export class Game {
     const { hero } = this;
     const next = this.bundle.heros?.[this.stack.at(-1)] || hero.def; // le personnage du dessus de la pile
     setHeroDef(hero, next, this.checkpoint.x, this.checkpoint.y);
-    Object.assign(hero, { vx: 0, vy: 0, dead: false, invuln: 2, gasTime: 0, onGround: false });
+    Object.assign(hero, { vx: 0, vy: 0, dead: false, invuln: 2, flash: 0, gasTime: 0, onGround: false });
     this.emit('respawn', { hero: next.id });
   }
 
@@ -507,17 +544,30 @@ export class Game {
 
   /**
    * Personne ne meurt dans la manif : une charge, un nuage de gaz ou la chute du héros en « dispersent » une part.
-   * Avec un cortège, il reste toujours au moins une personne. Renvoie le nombre de dispersés.
+   * `reason` dit pourquoi (voir l'événement `dispersed`), `at` où ({ x, y }). Renvoie le nombre de dispersés.
    */
-  disperse(share) {
+  disperse(share, reason = 'charge', at = null) {
+    if (!(share > 0)) return 0;
+    return this.loseCrowd(Math.max(1, Math.round(this.crowd * share)), reason, at);
+  }
+
+  /**
+   * La manif perd `n` personnes : dispersées, gazées, touchées ou interpellées.
+   * Avec un cortège, il reste toujours au moins une personne. Renvoie le nombre de partis.
+   */
+  loseCrowd(n, reason = 'charge', at = null) {
     const floor = this.level.cortege ? 1 : 0;
-    const n = Math.min(this.crowd - floor, Math.max(1, Math.round(this.crowd * share)));
-    if (!(share > 0) || n <= 0) return 0;
-    this.crowd -= n;
-    this.stats.dispersed += n;
+    const lost = Math.min(this.crowd - floor, Math.round(n));
+    if (!(lost > 0)) return 0;
+    // Ceux qu'on ne dessinera plus : le client les fait partir en courant.
+    const gone = this.cortege.slice(visibleCortege(this.crowd - lost)).slice(0, 6).map((m) => ({ x: m.x, y: m.y, facing: m.facing }));
+    this.crowd -= lost;
+    this.stats.dispersed += lost;
     syncCortege(this);
-    this.emit('dispersed', { n, crowd: this.crowd });
-    return n;
+    const { hero } = this;
+    const where = at ?? this.cortege[0] ?? { x: hero.x + hero.w / 2, y: hero.y };
+    this.emit('dispersed', { n: lost, crowd: this.crowd, reason, x: where.x, y: where.y, gone });
+    return lost;
   }
 
   /** Le nombre fait la force : multiplicateur des dégâts des projectiles du héros (1 quand il est seul). */
@@ -552,9 +602,22 @@ export class Game {
       hero.vx = 0;
       if (e.def.debordement > 0 && e.nag <= 0) {
         e.nag = NAG;
-        this.emit('blocked', { x: e.x + e.w / 2, need: e.def.debordement, crowd: this.crowd });
+        const need = e.def.debordement;
         // Jamais d'impasse : devant une ligne qui tient, des passants rejoignent la manif, peu à peu.
-        if (this.crowd < e.def.debordement) this.addCrowd(Math.ceil(e.def.debordement * 0.04));
+        // Si elle n'a pas grossi depuis (gazée, interpellée pendant qu'elle attend), il en vient deux fois plus,
+        // puis quatre fois… : aucune perte ne peut la tenir indéfiniment sous le nombre voulu.
+        let joined = 0;
+        if (this.crowd < need) {
+          e.boost = this.crowd > (e.best ?? -1) ? 1 : Math.min(PASSERS_BOOST, (e.boost || 1) * 2);
+          e.best = Math.max(e.best ?? -1, this.crowd);
+          const base = Math.ceil(need * PASSERS);
+          joined = Math.max(base, Math.min(need - this.crowd, base * e.boost));
+          this.addCrowd(joined);
+        }
+        this.emit('blocked', {
+          x: e.x + e.w / 2, y: e.y, feet: hero.y + hero.h, need, crowd: this.crowd, joined,
+          dir: Math.sign(hero.x + hero.w / 2 - (e.x + e.w / 2)) || -1, // de quel côté de la ligne est le héros
+        });
       }
     }
   }

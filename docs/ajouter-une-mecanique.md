@@ -60,7 +60,8 @@ speciale.force: 400
 - Pas de navigateur : ni `document`, ni `window`, ni son, ni dessin.
 - Pas de hasard ni d'horloge du système : `game.rng` et le pas fixe `DT`. Même graine, mêmes actions, même partie.
 - Du bruit, une secousse, un texte : `game.sfx('nom-du-son', x)` et `game.emit('shake' | 'bubble' | 'debris' | …, données)`. Le client fait le reste.
-- La manif : `game.crowd` la compte, `game.addCrowd(n)` la fait grossir, `game.disperse(part)` en disperse une part.
+- La manif : `game.crowd` la compte, `game.addCrowd(n)` la fait grossir, `game.disperse(part, raison, lieu)` en disperse une part, `game.loseCrowd(n, raison, lieu)` en retire `n` ; la raison (`charge`, `gaz`, `chute`, `interpelle`, `touche`) s'affiche : « − 12 dispersés ».
+- Le héros touché : `game.hurtHero(n, { kind, x })`, où `kind` dit par quoi (`tir`, `gaz`, `charge`, `contact`, `explosion`) et `x` d'où : son dessin recule à l'opposé.
 - Une rencontre à noter dans la Collection : `game.discover('ennemi', identifiant)`.
 - Des distances fixes, jamais la taille de l'écran.
 - Une tuile ne se crée jamais dans une case occupée par un personnage (`game.actorsIn`).

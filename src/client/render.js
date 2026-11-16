@@ -15,6 +15,15 @@ export const SKIES = {
   citadelle: ['#2b1741', '#b13e53'],
 };
 const MAX_PARTICLES = 260;
+// Ce qu'on lit au-dessus du héros touché : par quoi.
+const HURT_WORDS = { gaz: 'GAZÉ', charge: 'CHARGÉ', contact: 'BOUSCULÉ' };
+// Ce qu'on lit quand la manif perd du monde : pourquoi (au singulier, au pluriel).
+const LOSS_WORDS = {
+  charge: ['dispersé', 'dispersés'], chute: ['dispersé', 'dispersés'], gaz: ['gazé', 'gazés'],
+  interpelle: ['interpellé', 'interpellés'], touche: ['touché', 'touchés'],
+};
+const WARNS = new Set(['tire', 'fonce', 'charge', 'projecteur']); // les réactions qui annoncent un danger par un « ! »
+const ECRITEAU = 6; // secondes pendant lesquelles une unité hors service montre son écriteau (après « EN GRÈVE ! »)
 
 export class Renderer {
   constructor(canvas, textCanvas, bundle) {
@@ -31,6 +40,12 @@ export class Renderer {
     this.scale = 2;
     this.particles = [];
     this.floaters = [];
+    this.runners = []; // manifestants qui quittent la manif en courant (dispersés, interpellés)
+    this.rings = []; // le « pop » d'une unité qui passe hors service
+    this.hurt = null; // { t, hp, max } : le héros vient d'être touché (ce qu'il lui reste s'affiche au-dessus de lui)
+    this.edge = 0; // liseré rouge autour de l'image quand le héros est touché
+    this.lastParry = -1;
+    this.watch = new WeakMap(); // état précédent de chaque unité, pour le « ! » quand elle repère le héros
     this.shake = 0;
     this.reduced = false;
     this.anchor = 0.62; // hauteur des pieds du héros à l'écran (0 = haut, 1 = bas) : on voit ce qu'il y a sous terre
@@ -65,6 +80,10 @@ export class Renderer {
   snap(game) {
     this.particles = [];
     this.floaters = [];
+    this.runners = [];
+    this.rings = [];
+    this.hurt = null;
+    this.edge = 0;
     this.shake = 0;
     this.sign = { text: '', t: 0 };
     const t = this.target(game);
@@ -108,13 +127,70 @@ export class Renderer {
         this.floaters.push({ x: e.x, y: e.y - 10, text: '+1', t: 2.4, color: '#f6c21c', size: 20 });
         this.burst(e.x, e.y, '#f6c21c', 14, 90);
       } else if (e.type === 'overrun') {
-        this.floaters.push({ x: e.x, y: e.y - 12, text: 'ON EST LÀ !', t: 1.8, color: '#f6c21c', size: 10 }); // « On est là, même si Macron le veut pas »
+        // La ligne cède : le compteur au-dessus du seuil, le cri, des confettis, et elle s'ouvre (voir `opening`).
+        // Au pouce, le haut de l'image est aux notes de déblocage : tout se dit au pied de la ligne, sans monter.
+        const low = this.thumbs && e.feet;
+        this.floaters.push({ x: e.x, y: low ? e.feet + 18 : e.y - 22, rise: low ? 0 : 14, text: 'ON EST LÀ !', t: 2.2, color: '#f6c21c', size: 12, keep: true }); // « On est là, même si Macron le veut pas »
+        if (e.need) {
+          this.floaters.push({ x: e.x, y: low ? e.feet + 4 : e.y - 8, rise: low ? 0 : 14, text: `✊ ${e.crowd.toLocaleString('fr-FR')} / ${e.need.toLocaleString('fr-FR')}`,
+            t: 2.2, color: '#f4f4f4', bg: '#257953', size: 7.5, keep: true });
+        }
+        this.rings.push({ x: e.x, y: e.y + 10, t: 0.3, color: '#f6c21c' });
         this.burst(e.x, e.y, '#94b0c2', 10, 70);
+        this.burst(e.x, e.y, '#f6c21c', 12, 110);
+        this.burst(e.x, e.y, '#f4f4f4', 8, 90);
+        this.shake = Math.max(this.shake, 5);
       } else if (e.type === 'checkpoint') {
         // Le piquet de grève rejoint la manif, et c'est d'ici qu'on repartira.
         this.floaters.push({ x: e.x + TILE / 2, y: e.y - 14, text: '+ 10', t: 1.8, color: '#f6c21c', size: 11 });
         this.floaters.push({ x: e.x + TILE / 2, y: e.y - 28, text: 'ON REPART D’ICI', t: 2.2, color: '#f4f4f4', size: 8 });
         this.burst(e.x + TILE / 2, e.y, '#f6c21c', 10, 70);
+      } else if (e.type === 'blocked') {
+        // Le héros bute sur une ligne qui tient : combien il en manque, et les passants qui arrivent par derrière.
+        // Au pouce, sous le compteur, au pied de la ligne : là où les notes de déblocage ne passent jamais.
+        const low = this.thumbs;
+        const short = e.need - e.crowd;
+        if (short > 0) {
+          this.floaters.push({ x: e.x, y: low ? e.feet + 24 : e.y - 24, rise: low ? 0 : 14, text: `IL EN MANQUE ${short.toLocaleString('fr-FR')}`,
+            t: 1.6, color: '#f4f4f4', bg: '#e43b44', size: 6.5, keep: true });
+        }
+        if (e.joined > 0) {
+          const from = e.x + e.dir * 60;
+          this.floaters.push({ x: from, y: low ? e.feet + 36 : e.y - 6, rise: low ? 0 : 14, text: `+ ${e.joined.toLocaleString('fr-FR')} passants`,
+            t: 1.8, color: '#f6c21c', size: 8, keep: true });
+          for (let k = 0; k < Math.min(4, Math.ceil(e.joined / 6)); k++) {
+            this.runners.push({ x: from + e.dir * (90 + k * 14), y: e.feet, dir: -e.dir, t: 0.9, n: k, join: true });
+          }
+        }
+      } else if (e.type === 'respawn') {
+        this.hurt = null;
+      } else if (e.type === 'hurt') {
+        // Le héros touché : par quoi au-dessus de lui, ce qu'il lui reste, un liseré rouge, des éclats du côté du coup.
+        this.hurt = { t: 1.2, hp: e.hp, max: e.max, dir: e.kind === 'gaz' ? 0 : e.dir };
+        this.edge = 0.35;
+        this.floaters.push({ x: e.x, y: e.y - 16, text: HURT_WORDS[e.kind] || 'TOUCHÉ', t: 1, color: '#e43b44', size: 8, keep: true });
+        this.burst(e.x - e.dir * 4, e.y + 8, '#f4f4f4', 6, 70); // des éclats blancs et jaunes : rien qui ressemble à du sang
+        this.burst(e.x - e.dir * 4, e.y + 8, '#f6c21c', 6, 50);
+      } else if (e.type === 'parry') {
+        // Paré : des étincelles sur le bouclier ; on le dit une fois de temps en temps, pas à chaque tract.
+        this.burst(e.x, e.y, '#f4f4f4', 4, 60);
+        this.burst(e.x, e.y, '#94b0c2', 3, 40);
+        if (!e.line && this.clock - this.lastParry > 0.8) {
+          this.lastParry = this.clock;
+          this.floaters.push({ x: e.x, y: e.y - 6, text: 'PARÉ', t: 0.8, color: '#f4f4f4', size: 6.5 });
+        }
+      } else if (e.type === 'down') {
+        this.rings.push({ x: e.x, y: e.y, t: 0.3, color: e.end === 'greve' ? '#f6c21c' : '#f4f4f4' });
+        this.burst(e.x, e.y, e.end === 'greve' ? '#f6c21c' : '#94b0c2', 8, 80);
+      } else if (e.type === 'dispersed') {
+        // La manif perd du monde : combien et pourquoi, au même style que les « + 20 », et ceux qui s'en vont.
+        const [one, many] = LOSS_WORDS[e.reason] || LOSS_WORDS.charge;
+        // Hors de l'image (la queue du cortège) : le texte attend au bord de l'écran, avec une flèche (voir `combatBefore`).
+        this.floaters.push({ x: e.x, y: e.y - 8, wx: e.x, edge: true, text: `− ${e.n.toLocaleString('fr-FR')} ${e.n > 1 ? many : one}`, t: 1.8, color: '#e43b44', size: 9, keep: true });
+        for (const m of e.gone || []) {
+          const dir = e.reason === 'interpelle' ? Math.sign(e.x - m.x) || 1 : Math.sign(m.x - e.x) || -m.facing || 1;
+          this.runners.push({ x: m.x, y: m.y, dir, t: 0.9, n: this.runners.length });
+        }
       }
     }
   }
@@ -139,9 +215,18 @@ export class Renderer {
     this.particles = this.particles.filter((p) => p.t > 0);
     for (const f of this.floaters) {
       f.t -= dt;
-      f.y -= 14 * dt;
+      f.y -= (f.rise ?? 14) * dt;
     }
     this.floaters = this.floaters.filter((f) => f.t > 0);
+    for (const r of this.runners) {
+      r.t -= dt;
+      r.x += r.dir * (r.join ? 110 : 70) * dt;
+    }
+    this.runners = this.runners.filter((r) => r.t > 0);
+    for (const r of this.rings) r.t -= dt;
+    this.rings = this.rings.filter((r) => r.t > 0);
+    if (this.hurt && (this.hurt.t -= dt) <= 0) this.hurt = null;
+    this.edge = Math.max(0, this.edge - dt);
   }
 
   // ---------------------------------------------------------------- dessin
@@ -176,8 +261,10 @@ export class Renderer {
       .sort((a, b) => Math.abs(a.x - game.hero.x) - Math.abs(b.x - game.hero.x))[0];
     // Une seule voix à la fois, et les pancartes du cortège s'effacent devant elle.
     if (talker) this.reserve(talker.bubble.text, talker.x + talker.w / 2 - cx, talker.y - 10 - cy, 5.5, 80);
+    this.combatBefore(game); // les coups se lisent : les pancartes du cortège s'effacent devant eux
     game.cortege.forEach((m, i) => this.marcher(m, i));
     for (const e of game.enemies) this.enemy(e, e === talker);
+    this.combatMiddle(game); // ceux qui quittent la manif ou la rejoignent, les lignes hors de l'image
     if (game.boss) this.boss(game.boss);
     this.hero(game.hero);
     for (const p of game.projectiles) this.projectile(p);
@@ -186,10 +273,11 @@ export class Renderer {
       ctx.fillStyle = p.color;
       ctx.fillRect(Math.round(p.x - cx), Math.round(p.y - cy), p.s, p.s);
     }
+    this.combatAfter(); // larmes par-dessus le gaz, « pop » des unités hors service, liseré du coup reçu
     for (const d of game.decors) if (this.bundle.decors[d.id]?.devant) this.decor(d);
 
     for (const f of this.floaters) {
-      this.label(f.text, f.x - cx, f.y - cy, { size: f.size || 7, color: f.color, alpha: Math.min(1, f.t * 2), width: 150 });
+      this.label(f.text, f.x - cx, f.y - cy, { size: f.size || 7, color: f.color, bg: f.bg, alpha: Math.min(1, f.t * 2), width: 150 });
     }
     // Le panneau devant lequel on passe, avec les touches de l'appareil en cours ; dépassé, il reste lisible un instant.
     if (game.sign) this.sign = { text: game.sign, t: SIGN_LINGER };
@@ -200,6 +288,48 @@ export class Renderer {
       const lines = this.wrap(text, 7, 190).length;
       this.board(text, this.viewW / 2, this.signTop + (lines - 1) * 7 * 1.1, { alpha: Math.min(1, this.sign.t * 2) });
     }
+  }
+
+  // ---------------------------------------------------------------- les coups, lisibles
+
+  /** Avant le cortège : ce qui dit un coup garde sa place ; les pancartes s'effacent devant. */
+  combatBefore(game) {
+    const { cx, cy } = this;
+    const { hero } = game;
+    this.thumbs = document.body.classList.contains('tactile');
+    this.weepers = []; // les gazés : leurs larmes passent par-dessus le nuage (voir `combatAfter`)
+    // Une perte hors de l'image : son texte se pose au bord, du côté où elle a eu lieu, avec une flèche.
+    for (const f of this.floaters) {
+      if (!f.edge) continue;
+      f.base ??= f.text;
+      this.tctx.font = `${f.size || 7}px ${FONT}`;
+      const half = this.tctx.measureText(`◀ ${f.base}`).width / 2 + 4;
+      const side = f.wx < cx + half ? -1 : f.wx > cx + this.viewW - half ? 1 : 0;
+      f.x = Math.max(cx + half, Math.min(cx + this.viewW - half, f.wx));
+      f.y = Math.max(cy + 40, Math.min(cy + this.viewH - 30, f.y));
+      f.text = side < 0 ? `◀ ${f.base}` : side > 0 ? `${f.base} ▶` : f.base;
+    }
+    for (const f of this.floaters) if (f.keep) this.reserve(f.text, f.x - cx, f.y - cy, f.size || 7, 150);
+    if (this.hurt && !hero.dead) this.reserve('■ ■ ■', hero.x + hero.w / 2 - cx, hero.y - 14 - cy, 7, 0);
+    // « EN GRÈVE ! », « EN PANNE » : le temps qu'on les lise.
+    for (const e of game.enemies) {
+      if (e.state !== 'done' || !e.bubble) continue;
+      const rows = e.def.sprites.fin || e.def.sprites.repos;
+      this.reserve(e.bubble.text, e.x + e.w / 2 - cx, e.y + e.h - rows.length - cy - 9, 6, 0);
+    }
+  }
+
+  /** Après les unités : les manifestants qui s'en vont ou accourent, et la ligne qui attend hors de l'image. */
+  combatMiddle(game) {
+    for (const r of this.runners) this.runner(r);
+    if (!this.demo) this.lineAhead(game);
+  }
+
+  /** Par-dessus tout le reste du monde. */
+  combatAfter() {
+    for (const [e, x, top] of this.weepers) this.tears(e, x, top);
+    for (const r of this.rings) this.ring(r);
+    if (this.edge > 0) this.redEdge();
   }
 
   background(kind, cx, cy) {
@@ -304,10 +434,10 @@ export class Renderer {
   }
 
   /** Dessine un sprite posé au sol, centré sur la boîte de collision de son acteur. */
-  actor(a, rows, { flip = a.facing < 0, flash = false, alpha = 1, dy = 0 } = {}) {
+  actor(a, rows, { flip = a.facing < 0, flash = false, alpha = 1, dx = 0, dy = 0, dim = false } = {}) {
     if (!rows) return;
-    const img = sprite(rows, this.palette, flip, flash);
-    const x = Math.round(a.x + a.w / 2 - img.width / 2 - this.cx);
+    const img = sprite(rows, this.palette, flip, flash, dim && !flash);
+    const x = Math.round(a.x + a.w / 2 - img.width / 2 - this.cx + dx);
     const y = Math.round(a.y + a.h - img.height - this.cy + dy);
     if (x > this.viewW || y > this.viewH || x + img.width < 0 || y + img.height < 0) return;
     if (alpha !== 1) this.ctx.globalAlpha = alpha;
@@ -325,17 +455,59 @@ export class Renderer {
     const s = h.def.sprites;
     const rows = h.anim === 'saut' ? s.saut || s.marche1 || s.repos : this.frames(s, h.anim === 'marche', h.animTime);
     for (const c of h.clones || []) this.actor(c, rows, { flip: c.facing < 0, alpha: 0.55 });
-    const blink = h.invuln > 0 && Math.floor(this.clock * 14) % 2;
-    if (!blink) this.actor(h, rows);
+    // Touché : blanc un instant, puis il pâlit et revient, lentement, tant qu'il ne craint rien. Il ne disparaît jamais.
+    // Effets réduits : il reste pâle, sans clignoter, et ne sursaute pas.
+    const safe = h.flash <= 0 && h.invuln > 0;
+    const pale = safe && (this.reduced || Math.floor(this.clock * 7) % 2);
+    // Et son dessin recule de quelques pixels, à l'opposé du coup, avec un petit sursaut, le temps d'un quart de seconde.
+    const jolt = this.hurt && !this.reduced ? Math.max(0, this.hurt.t - 0.95) / 0.25 : 0;
+    const dx = Math.round((this.hurt?.dir || 0) * 4 * jolt);
+    const dy = -Math.round(3 * Math.sin(jolt * Math.PI));
+    this.actor(h, rows, { flash: h.flash > 0, alpha: pale ? (this.reduced ? 0.6 : 0.4) : 1, dx, dy });
+    if (this.hurt) this.pips(h, rows.length);
+  }
+
+  /** Ce qu'il reste au héros qui vient d'être touché : un carré par coup encaissable, le dernier perdu clignote. */
+  pips(h, height) {
+    const { ctx } = this;
+    const { hp, max } = this.hurt;
+    const size = 3;
+    const width = max * (size + 1) - 1;
+    const x0 = Math.round(h.x + h.w / 2 - width / 2 - this.cx);
+    const y0 = Math.round(h.y + h.h - height - 6 - this.cy);
+    ctx.fillStyle = '#1a1c2c';
+    ctx.fillRect(x0 - 1, y0 - 1, width + 2, size + 2);
+    for (let i = 0; i < max; i++) {
+      const lost = i >= hp;
+      if (lost && i === hp && !this.reduced && Math.floor(this.clock * 10) % 2) continue; // celui qu'on vient de perdre clignote
+      ctx.fillStyle = lost ? '#e43b44' : '#38b764';
+      if (lost && i > hp) ctx.fillStyle = '#566c86';
+      ctx.fillRect(x0 + i * (size + 1), y0, size, size);
+    }
   }
 
   enemy(e, speaks = false) {
     const s = e.def.sprites;
+    const cx = e.x + e.w / 2 - this.cx;
     if (e.state === 'done') {
-      this.actor(e, s.fin || s.repos);
-      const cx = e.x + e.w / 2 - this.cx;
-      if (e.def.ecriteau) this.label(e.def.ecriteau, cx, e.y - 9 - this.cy, { size: 5, color: '#1a1c2c', bg: '#f4f4f4' });
-      if (e.def.fin === 'panne' && Math.floor(this.clock * 3 + e.x) % 3 === 0) this.burst(e.x + e.w / 2, e.y, '#94b0c2', 1, 12);
+      // Hors service : son dessin de fin, sinon le sien éteint ; « EN GRÈVE ! » ou « EN PANNE » le temps de le lire, puis son écriteau.
+      const rows = s.fin || s.repos;
+      if (e.overrun) this.opening(e, rows);
+      else this.actor(e, rows, { flash: e.flash > 0, dim: !s.fin });
+      const top = e.y + e.h - rows.length - this.cy;
+      const seen = this.watch.get(e) ?? { state: e.state, at: -9 };
+      seen.down ??= this.clock;
+      this.watch.set(e, seen);
+      const since = this.clock - seen.down;
+      if (e.bubble) {
+        const pop = Math.max(0, e.bubble.t - 2.3) * 12; // il claque, puis se pose
+        const strike = e.def.fin === 'greve';
+        this.label(e.bubble.text, cx, top - 9, { size: 6 + pop, color: '#1a1c2c', bg: strike ? '#f6c21c' : '#94b0c2' });
+      } else if (e.def.ecriteau && !e.overrun && since < ECRITEAU) {
+        // Son écriteau, un moment, puis il s'efface : l'écran ne se remplit pas d'unités à l'arrêt.
+        this.label(e.def.ecriteau, cx, e.y - 9 - this.cy, { size: 5, color: '#1a1c2c', bg: '#f4f4f4', alpha: Math.min(1, ECRITEAU - since) });
+      }
+      if (e.def.fin === 'panne' && !e.overrun && Math.floor(this.clock * 3 + e.x) % 3 === 0) this.burst(e.x + e.w / 2, e.y, '#94b0c2', 1, 12);
       return;
     }
     const moving = e.state === 'patrol' || e.state === 'alert' || e.def.deplacement === 'vol';
@@ -343,21 +515,209 @@ export class Renderer {
     if (e.jet) this.jet(e.jet);
     // Un plateau de télé ne se retourne pas : son enseigne resterait à l'envers.
     const set = e.def.deplacement === 'fixe' && e.def.reaction === 'cadre';
-    this.actor(e, this.frames(s, moving, e.animTime, e.def.deplacement === 'vol' ? 14 : 7), { flash: e.flash > 0, ...(set && { flip: false }) });
+    const stunned = e.state === 'stunned';
+    const rows = this.frames(s, moving && !stunned, e.animTime, e.def.deplacement === 'vol' ? 14 : 7);
+    // Touché : blanc, et le dessin recule d'un pixel ou deux dans le sens du coup. Gazé : il tousse, il tremble.
+    const still = this.reduced; // effets réduits : le blanc suffit, le dessin ne bouge pas
+    const flinch = e.flash > 0 && !still ? (e.hitDir || 0) * (e.flash > 0.06 ? 2 : 1) : 0;
+    const cough = !still && stunned && e.daze === 'gaz' && Math.floor(this.clock * 12 + e.x) % 3 === 0 ? 1 : 0;
+    this.actor(e, rows, { flash: e.flash > 0, dx: flinch + cough, ...(set && { flip: false }) });
+    const top = e.y + e.h - (rows?.length || e.h) - this.cy;
     if (e.aim) this.aim(e);
     if (e.rush?.phase === 'ruee') {
       this.ctx.fillStyle = '#f4f4f4';
       for (let k = 0; k < 3; k++) this.ctx.fillRect(Math.round(e.x + (e.facing > 0 ? -8 - k * 5 : e.w + 4 + k * 5) - this.cx), Math.round(e.y + 3 + k * 5 - this.cy), 4, 1);
     }
-    // Une ligne qui tient affiche combien il faut être pour la déborder.
-    if (e.blocking && e.def.debordement > 0) {
-      const enough = this.crowd >= e.def.debordement;
-      this.label(`✊ ${e.def.debordement.toLocaleString('fr-FR')}`, e.x + e.w / 2 - this.cx, e.y - (speaks ? 22 : 10) - this.cy,
-        { size: 6.5, color: '#f4f4f4', bg: enough ? '#257953' : '#e43b44' });
-    }
-    if (e.state === 'stunned') this.label('✶ ✶', e.x + e.w / 2 - this.cx, e.y - 5 - this.cy, { size: 6, color: '#f6c21c' });
+    // Une ligne qui tient : où en est la manif face au nombre qu'il faut, en chiffres et en jauge.
+    if (e.blocking && e.def.debordement > 0) this.lineCount(e, cx, e.y - this.cy, speaks);
+    else if (e.hp < e.def.pv && e.hp > 0) this.gauge(e, cx, top - 5);
+    if (stunned && e.daze === 'gaz') this.weepers.push([e, cx, top]); // dessinés par-dessus le nuage qui les a gazés
+    else if (stunned) this.stars(e, cx, top);
+    else this.warn(e, cx, top);
     if (e.def.reaction === 'cadre' && e.state === 'alert' && (!e.film || e.framing)) this.viewfinder(e);
-    if (speaks) this.label(e.bubble.text, e.x + e.w / 2 - this.cx, e.y - 10 - this.cy, { size: 5.5, color: '#1a1c2c', bg: '#f4f4f4', width: 80 });
+    if (speaks) this.label(e.bubble.text, cx, e.y - 10 - this.cy, { size: 5.5, color: '#1a1c2c', bg: '#f4f4f4', width: 80 });
+  }
+
+  /**
+   * Au-dessus d'une ligne qui tient : « ✊ 312 / 500 » et une jauge qui se remplit, rouge tant qu'on n'est pas assez,
+   * verte quand on l'est. Quand le héros bute dessus ou qu'un tract s'y écrase, le compteur sursaute.
+   */
+  lineCount(e, cx, top, speaks) {
+    const need = e.def.debordement;
+    const part = Math.min(1, this.crowd / need);
+    const enough = part >= 1;
+    const bumped = !this.reduced && (e.nag > 1.65 || e.parry > 0.15);
+    const text = `✊ ${this.crowd.toLocaleString('fr-FR')} / ${need.toLocaleString('fr-FR')}`;
+    // Au pouce, le compteur se lit au pied de la ligne : le haut de l'image est aux notes de déblocage.
+    const base = e.y + e.h - this.cy;
+    const y = this.thumbs ? base + 4 : top - (speaks ? 30 : 18);
+    this.label(text, cx + (bumped && e.nag > 1.65 ? Math.round(Math.sin(this.clock * 60)) : 0), y,
+      { size: 7 + (bumped ? 1.5 : 0), color: '#f4f4f4', bg: enough ? '#257953' : '#e43b44' });
+    const { ctx } = this;
+    const width = 36;
+    const x = Math.round(cx - width / 2);
+    const by = Math.round(this.thumbs ? base + 17 : top - 7);
+    ctx.fillStyle = '#1a1c2c';
+    ctx.fillRect(x - 1, by - 1, width + 2, 5);
+    ctx.fillStyle = '#566c86';
+    ctx.fillRect(x, by, width, 3);
+    ctx.fillStyle = enough ? '#38b764' : part > 0.66 ? '#f6c21c' : '#e43b44';
+    ctx.fillRect(x, by, Math.max(1, Math.round(width * part)), 3);
+  }
+
+  /** Une ligne qui tient, hors de l'écran mais pas loin : son compteur au bord de l'image, du côté où elle attend. */
+  lineAhead(game) {
+    const { hero } = game;
+    const hx = hero.x + hero.w / 2;
+    const left = this.cx;
+    const right = this.cx + this.viewW;
+    const exit = game.props.find((p) => p.kind === 'sortie');
+    const forward = exit && exit.x < hero.x ? -1 : 1; // seulement celles qui attendent sur le chemin de la sortie
+    const line = game.enemies
+      .filter((e) => e.blocking && e.def.debordement > 0 && e.state !== 'done' && (forward > 0 ? e.x > right : e.x + e.w < left)
+        && Math.abs(e.x + e.w / 2 - hx) < this.viewW * 2 && Math.abs(e.y + e.h - (hero.y + hero.h)) < this.viewH)
+      .sort((a, b) => Math.abs(a.x - hx) - Math.abs(b.x - hx))[0];
+    if (!line) return;
+    const need = line.def.debordement;
+    const ahead = line.x > right;
+    const count = `✊ ${this.crowd.toLocaleString('fr-FR')} / ${need.toLocaleString('fr-FR')}`;
+    const text = ahead ? `${count} ▶` : `◀ ${count}`;
+    this.tctx.font = `6.5px ${FONT}`;
+    const half = this.tctx.measureText(text).width / 2 + 4;
+    // À hauteur du héros : au pouce, entre le bouton SPÉ au-dessus et TIR en dessous.
+    const y = Math.max(40, Math.min(this.viewH - 40, hero.y + hero.h * 0.3 - this.cy));
+    this.label(text, ahead ? this.viewW - half - 2 : half + 2, y,
+      { size: 6.5, color: '#f4f4f4', bg: this.crowd >= need ? '#257953' : '#e43b44' });
+  }
+
+  /**
+   * Une ligne débordée s'ouvre : une grille ou un barrage s'écarte en deux et s'efface, laissant son dessin de fin ;
+   * un blindé recule et s'éteint.
+   */
+  opening(e, rows) {
+    const { ctx } = this;
+    const seen = this.watch.get(e) ?? { state: e.state, at: -9 };
+    seen.opened ??= this.clock;
+    // Le sens du recul se décide une fois, quand elle cède : elle ne saute pas d'un côté à l'autre quand le héros la dépasse.
+    seen.away ??= Math.sign(e.x + e.w / 2 - (this.heroBox.x + this.heroBox.w / 2)) || 1;
+    this.watch.set(e, seen);
+    const k = Math.min(1, (this.clock - seen.opened) / 0.6);
+    const ease = 1 - (1 - k) ** 2;
+    const standing = sprite(e.def.sprites.repos, this.palette, e.facing < 0);
+    const x = Math.round(e.x + e.w / 2 - standing.width / 2 - this.cx);
+    const y = Math.round(e.y + e.h - standing.height - this.cy);
+    if (x > this.viewW + 40 || x + standing.width < -40) return;
+    if (e.def.deplacement !== 'fixe') {
+      ctx.drawImage(sprite(rows, this.palette, e.facing < 0, false, !e.def.sprites.fin), x + Math.round(ease * 18 * seen.away), y);
+      return;
+    }
+    if (ease > 0) this.actor(e, rows, { alpha: ease, dim: !e.def.sprites.fin });
+    if (k >= 1) return;
+    ctx.globalAlpha = 1 - ease;
+    const half = Math.floor(standing.width / 2);
+    const gap = Math.round(ease * (half + 6));
+    ctx.drawImage(standing, 0, 0, half, standing.height, x - gap, y, half, standing.height);
+    ctx.drawImage(standing, half, 0, standing.width - half, standing.height, x + half + gap, y, standing.width - half, standing.height);
+    ctx.globalAlpha = 1;
+  }
+
+  /** La vie qui reste à une unité déjà touchée : une jauge courte au-dessus d'elle. */
+  gauge(e, cx, y) {
+    const { ctx } = this;
+    const width = Math.max(8, Math.min(20, Math.round(e.w * 0.8)));
+    const x = Math.round(cx - width / 2);
+    const left = e.hp / e.def.pv;
+    ctx.fillStyle = '#1a1c2c';
+    ctx.fillRect(x - 1, Math.round(y) - 1, width + 2, 4);
+    ctx.fillStyle = left > 0.5 ? '#f6c21c' : left > 0.25 ? '#ef7d57' : '#e43b44';
+    ctx.fillRect(x, Math.round(y), Math.max(1, Math.round(width * left)), 2);
+  }
+
+  /** Sonné (onde, bousculade) : des étoiles tournent autour de sa tête ; elles clignotent quand il va reprendre. */
+  stars(e, cx, top) {
+    if (e.stun < 0.4 && !this.reduced && Math.floor(this.clock * 12) % 2) return;
+    const { ctx } = this;
+    const rx = Math.max(6, e.w / 2 + 2);
+    for (let k = 0; k < 3; k++) {
+      const a = (this.reduced ? 0.5 : this.clock * 7) + (k * Math.PI * 2) / 3; // effets réduits : elles ne tournent pas
+      const x = Math.round(cx + Math.cos(a) * rx);
+      const y = Math.round(top + 2 + Math.sin(a) * 2); // autour de la tête, sous sa jauge
+      ctx.fillStyle = '#1a1c2c';
+      ctx.fillRect(x - 2, y - 1, 5, 3);
+      ctx.fillRect(x - 1, y - 2, 3, 5);
+      ctx.fillStyle = Math.sin(a) > 0 ? '#f6c21c' : '#ef7d57';
+      ctx.fillRect(x - 1, y, 3, 1);
+      ctx.fillRect(x, y - 1, 1, 3);
+    }
+  }
+
+  /** Gazé par ses propres lacrymogènes : il pleure, il tousse, il ne fait plus rien. */
+  tears(e, cx, top) {
+    const { ctx } = this;
+    const eyes = top + Math.min(5, Math.round(e.h * 0.3));
+    for (const side of [-1, 1]) {
+      // Deux larmes par œil, l'une derrière l'autre, qui coulent jusqu'au menton.
+      for (const lag of [0, 4.5]) {
+        const fall = (this.clock * 16 + lag + (side > 0 ? 2 : 0) + e.x) % 9;
+        const x = Math.round(cx + side * 3 - (side < 0 ? 1 : 0));
+        const y = Math.round(eyes + fall);
+        ctx.fillStyle = '#1a1c2c';
+        ctx.fillRect(x - 1, y, 3, 4);
+        ctx.fillStyle = '#41a6f6';
+        ctx.fillRect(x, y, 1, 3);
+        ctx.fillStyle = '#9be7f5';
+        ctx.fillRect(x, y, 1, 1);
+      }
+    }
+    if (Math.floor(this.clock * 2.5 + e.x) % 2) this.label('KOF !', cx, top - 9, { size: 6, color: '#f4f4f4' });
+  }
+
+  /** Une unité qui repère le héros le fait savoir : un « ! » rouge, le temps d'un battement. */
+  warn(e, cx, top) {
+    const seen = this.watch.get(e) ?? { state: e.state, at: -9 };
+    if (e.state === 'alert' && seen.state !== 'alert' && WARNS.has(e.def.reaction) && this.clock - seen.at > 2) seen.at = this.clock;
+    seen.state = e.state;
+    this.watch.set(e, seen);
+    const age = this.clock - seen.at;
+    if (age > 0.7) return;
+    const jump = age < 0.12 && !this.reduced ? (0.12 - age) * 30 : 0;
+    const above = e.hp < e.def.pv ? 7 : 0; // au-dessus de sa jauge, s'il en a une
+    this.label('!', cx, top - 10 - above - jump, { size: 10, color: '#e43b44' });
+  }
+
+  /** Un manifestant qui s'en va en courant et s'efface, ou un passant qui accourt rejoindre la manif (`join`). */
+  runner(r) {
+    if (!r.join && r.t < 0.35 && Math.floor(this.clock * 16) % 2) return;
+    const body = this.bundle.decors[r.n % 2 ? 'manifestant-2' : 'manifestant'];
+    if (!body) return;
+    const step = Math.floor(this.clock * 12 + r.n) % 2 && body.sprites.image2;
+    const img = sprite(step ? body.sprites.image2 : body.sprites.image, this.palette, r.dir < 0);
+    this.ctx.globalAlpha = r.join ? Math.min(1, (0.9 - r.t) * 5, r.t * 4) : Math.min(1, r.t * 2);
+    this.ctx.drawImage(img, Math.round(r.x - img.width / 2 - this.cx), Math.round(r.y - img.height - this.cy - Math.abs(Math.sin(r.t * 14)) * 2));
+    this.ctx.globalAlpha = 1;
+  }
+
+  /** Le « pop » d'une unité qui passe hors service : un cercle qui s'ouvre. */
+  ring(r) {
+    const { ctx } = this;
+    ctx.globalAlpha = Math.min(1, r.t * 4);
+    ctx.strokeStyle = r.color;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(Math.round(r.x - this.cx) + 0.5, Math.round(r.y - this.cy) + 0.5, 4 + (0.3 - r.t) * 50, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  }
+
+  /** Le liseré rouge du coup reçu, sur les bords de l'image. */
+  redEdge() {
+    const { ctx, viewW: W, viewH: H } = this;
+    ctx.fillStyle = `rgb(228 59 68 / ${(Math.min(1, this.edge / 0.35) * 0.7).toFixed(2)})`;
+    const b = 3;
+    ctx.fillRect(0, 0, W, b);
+    ctx.fillRect(0, H - b, W, b);
+    ctx.fillRect(0, b, b, H - 2 * b);
+    ctx.fillRect(W - b, b, b, H - 2 * b);
   }
 
   /** Un trait d'un pixel entre deux points du monde. */

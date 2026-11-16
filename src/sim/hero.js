@@ -17,11 +17,14 @@ export const FEEL = {
   wallJump: 0.8, // part du saut normal quand on rebondit sur un mur
   groundAccel: 14, // la vitesse de course est atteinte en 1/14 s
   airAccel: 9,
+  // Touché : il devient blanc un instant, puis clignote sans rien craindre (le recul est dessiné par le client).
+  hurtFlash: 0.15, // secondes de silhouette blanche
+  hurtInvuln: 1.4, // secondes d'invulnérabilité, qui clignotent
 };
 
 export function createHero(def, cx, feetY) {
   const hero = {
-    x: 0, y: 0, w: 0, h: 0, vx: 0, vy: 0, facing: 1, aim: 0, onGround: false, onWall: 0, hp: 0, invuln: 0,
+    x: 0, y: 0, w: 0, h: 0, vx: 0, vy: 0, facing: 1, aim: 0, onGround: false, onWall: 0, hp: 0, invuln: 0, flash: 0,
     def: null, charges: 0, anim: 'repos', animTime: 0, clones: [], dead: false,
     coyote: 0, buffer: 0, cut: true, cooldown: 0, gasTime: 0, hitX: 0, hitY: 0,
   };
@@ -123,4 +126,5 @@ export function updateHero(game, hero, input, dt) {
   hero.animTime = anim === hero.anim ? hero.animTime + dt : 0;
   hero.anim = anim;
   hero.invuln = Math.max(0, hero.invuln - dt);
+  hero.flash = Math.max(0, hero.flash - dt);
 }

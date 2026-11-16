@@ -3,6 +3,9 @@
 // États : sleep → patrol ⇄ alert, stunned (étourdi), done (en grève, en panne ou débordé : décor inoffensif).
 //
 // Ce que le client peut dessiner en plus du personnage :
+//   flash     secondes de silhouette blanche : un coup qui porte (hitDir : son sens, -1 ou 1)
+//   parry     secondes pendant lesquelles un coup arrêté par le bouclier ou la ligne se voit
+//   daze      pendant l'étourdissement : 'choc' (onde, bousculade) ou 'gaz' (ses propres lacrymogènes)
 //   blocking  la ligne tient : infranchissable pour le héros, sur LINE_REACH pixels au-dessus d'elle
 //   aim       { x, y, t } pendant une visée (LBD) : le tir part vers ce point dans t secondes
 //   jet       { x, y, length, dir } pendant un jet de canon à eau
@@ -30,11 +33,12 @@ const ROPE_SPEED = 140; // descente à la corde, pixels par seconde
 const SPOT_TIME = 1.5; // secondes passées dans le faisceau avant une dépose de renforts
 const FILM_DISTANCE = 34; // l'équipe télé se plante à cette distance du feu qu'elle filme
 const FILM_PANIC = 0.3; // filmer un feu fait monter la panique, mais doucement : cette part de `panique`
+const ARREST_PAUSE = 2.5; // secondes entre deux interpellations d'une même unité
 
 export function createEnemy(def, cx, feetY, extra = {}) {
   return {
     x: cx - def.largeur / 2, y: feetY - def.hauteur, w: def.largeur, h: def.hauteur, vx: 0, vy: 0, facing: -1,
-    def, state: 'sleep', hp: def.pv, animTime: 0, flash: 0, bubble: null,
+    def, state: 'sleep', hp: def.pv, animTime: 0, flash: 0, hitDir: 0, parry: 0, daze: null, arrest: 0, bubble: null,
     home: { x: cx - def.largeur / 2, y: feetY - def.hauteur }, cooldown: 0.6, stun: 0, kick: 0, lost: 0, talk: 0,
     framing: false, onGround: false, hitX: 0, hitY: 0,
     blocking: def.debordement > 0, aim: null, jet: null, beam: null, rush: null, rope: null,
@@ -86,6 +90,8 @@ export function updateEnemy(game, e, dt) {
   const flying = def.deplacement === 'vol';
   e.animTime += dt;
   e.flash = Math.max(0, e.flash - dt);
+  e.parry = Math.max(0, e.parry - dt);
+  e.arrest = Math.max(0, e.arrest - dt);
   e.nag = Math.max(0, e.nag - dt);
   if (e.bubble && (e.bubble.t -= dt) <= 0) e.bubble = null;
   e.jet = null; // recalculés à chaque pas
@@ -103,9 +109,10 @@ export function updateEnemy(game, e, dt) {
   e.blocking = def.debordement > 0 || Boolean(e.kettle);
   if (def.debordement > 0 && game.crowd >= def.debordement && Math.abs(dx) < OVERRUN_RANGE && Math.abs(dy) < LINE_REACH) {
     standDown(e);
+    e.overrun = true; // débordée : le client l'ouvre en grand
     game.stats.overrun++;
     if (def.camp === 'ordre') game.stats.overrunOrder++;
-    game.emit('overrun', { x: e.x + e.w / 2, y: e.y });
+    game.emit('overrun', { x: e.x + e.w / 2, y: e.y, feet: e.y + e.h, need: def.debordement, crowd: game.crowd });
     game.sfx('debordement', e.x);
     game.discover('ennemi', def.id);
     return;
@@ -126,7 +133,10 @@ export function updateEnemy(game, e, dt) {
     e.aim = null;
     e.rush = null;
     e.stun -= dt;
-    if (e.stun <= 0) e.state = 'patrol';
+    if (e.stun <= 0) {
+      e.state = 'patrol';
+      e.daze = null;
+    }
     e.vx = e.kick;
     e.kick *= 0.85;
     if (flying) e.x += e.vx * dt;
@@ -217,14 +227,22 @@ export function updateEnemy(game, e, dt) {
   else if (firing) shoot(game, e, dt);
   else e.aim = null;
 
-  const touch = e.rush?.phase === 'ruee' ? Math.max(1, def.contact) : def.contact;
+  // Une unité qui « interpelle » (la BAC) et atteint le cortège emmène quelques manifestants, puis souffle un peu.
+  if (def.interpelle > 0 && e.arrest <= 0 && game.cortege.some((m) => m.x > e.x && m.x < e.x + e.w && m.y > e.y && m.y - 16 < e.y + e.h)) {
+    e.arrest = ARREST_PAUSE;
+    game.loseCrowd(def.interpelle, 'interpelle', { x: e.x + e.w / 2, y: e.y });
+  }
+
+  const rushing = e.rush?.phase === 'ruee';
+  const touch = rushing ? Math.max(1, def.contact) : def.contact;
   if (touch > 0 && !hero.dead && hero.invuln <= 0 && overlap(e, hero)) {
-    game.hurtHero(touch);
+    game.hurtHero(touch, { x: e.x + e.w / 2, kind: rushing ? 'charge' : 'contact' });
     if (def.deplacement === 'moto' || sturdy(e)) return; // la moto file, la ligne et le véhicule ne reculent pas
     // Après avoir bousculé le héros, l'automate recule et reste sonné : on a le temps de réagir.
     e.kick = Math.sign(e.x + e.w / 2 - (hero.x + hero.w / 2) || 1) * 160;
     e.state = 'stunned';
     e.stun = Math.max(e.stun, 1.6);
+    e.daze = 'choc';
   }
 }
 
@@ -331,7 +349,7 @@ function charge(game, e, dt, dx, alert) {
     // La charge traverse le cortège : une part de la manif se disperse (une fois par charge).
     if (!r.hit && game.cortege.some((m) => m.x > e.x && m.x < e.x + e.w && m.y > e.y && m.y - 16 < e.y + e.h)) {
       r.hit = true;
-      game.disperse(c.disperse / 100);
+      game.disperse(c.disperse / 100, 'charge', { x: e.x + e.w / 2, y: e.y });
     }
     return r.dir * c.vitesse;
   }
