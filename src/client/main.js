@@ -48,8 +48,7 @@ function applyOptions() {
   audio.enabled = save.options.son;
   renderer.reduced = save.options.sobre;
   document.body.classList.toggle('sobre', save.options.sobre); // la feuille de style coupe ses animations
-  radio.setEnabled(save.options.musique);
-  if (save.options.musique) radio.play(mode === 'playing' && current ? current.level.musique || current.id : 'menu');
+  radio.setEnabled(save.options.musique); // la Radio sait où en est le jeu : elle reprend la musique du moment
 }
 
 const screens = new Screens(screenRoot, {
@@ -79,7 +78,7 @@ function setMode(next) {
   hud.setVisible(next === 'playing' || next === 'paused' || next === 'card');
   hud.live = next === 'playing'; // en pause ou sous un carton, la spéciale ne clignote pas
   document.body.classList.toggle('en-jeu', next === 'playing');
-  radio.setVisible(next !== 'playing' && next !== 'card');
+  radio.setVisible(next !== 'playing' && next !== 'card', next === 'playing' || next === 'paused' || next === 'card');
   renderer.demo = next === 'menu';
   input.release();
   input.active = next === 'playing';
@@ -158,7 +157,7 @@ function start(id, level = null) {
     begin = null;
     if (id) measure('niveau lancé', { niveau: id }); // chaque vraie partie, rejouée ou non ; pas un changement de héros sur le carton
     setMode('playing');
-    radio.play(current.level.musique || current.id);
+    radio.play(current.id, current.level.musique);
   };
   screens.intro(current.level, () => begin?.(), game.hero.def.id, !level);
 }
@@ -318,6 +317,17 @@ input.onAny = () => audio.unlock();
 input.onDevice = () => screens.open && screens.refreshKeys(); // un carton ou une pause ouverts redisent les touches
 document.getElementById('pause').onclick = togglePause;
 addEventListener('pointerdown', () => audio.unlock(), true);
+// Une musique que le navigateur a refusé de lancer sans geste repart au prochain toucher, clic ou touche.
+// Juste après le geste, pas pendant : si ce geste lance un niveau, la piste du niveau passe d'abord.
+// (Un dixième de seconde : le geste compte encore pour le navigateur.)
+const unblockRadio = () => setTimeout(() => radio.unblock(), 100);
+addEventListener('pointerup', unblockRadio, true);
+addEventListener('keydown', unblockRadio, true);
+// Le réseau revient (métro, train) : Radio Manif aussi, même si le jeu a été lancé hors ligne.
+addEventListener('online', () => {
+  radio.reconnected();
+  applyOptions();
+});
 const PHONE = 950; // plus grand côté d'un téléphone, en pixels : au-delà (tablette, ordinateur tactile), on ne pivote pas
 
 function layout() {
@@ -345,6 +355,7 @@ document.addEventListener('visibilitychange', () => {
   last = performance.now();
   acc = 0;
   if (document.hidden && mode === 'playing' && !window.__ugf) togglePause(); // pas en débogage : on pilote onglet caché
+  radio.setHidden(document.hidden); // coupée par le système pendant ce temps (téléphone verrouillé), la musique reprend au retour
 });
 if (matchMedia('(pointer: coarse)').matches) {
   document.body.classList.add('tactile');

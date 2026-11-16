@@ -371,7 +371,8 @@ function buildSound(f, ctx, report) {
 }
 
 function buildMusic(f, ctx, report) {
-  const out = readFields(f, { titre: req(), artiste: req(), url: url(true), ou: str('partout'), ...CREDITS }, report);
+  // `puis` : la piste qui suit celle-ci quand elle finit (un extrait, puis la version entière).
+  const out = readFields(f, { titre: req(), artiste: req(), url: url(true), ou: str('partout'), puis: str(), ...CREDITS }, report);
   noSections(f, report);
   if (out.url && !out.url.startsWith('https://soundcloud.com/')) {
     report(f.lineOf('url'), '« url » doit être une piste SoundCloud (https://soundcloud.com/…).');
@@ -618,6 +619,7 @@ export function buildContent(files) {
   refs('niveaux', 'fiches', (n) => n.fiche);
   refs('niveaux', 'citations', (n) => n.citation);
   refs('niveaux', 'musiques', (n) => n.musique);
+  refs('musiques', 'musiques', (m) => m.puis);
   for (const b of Object.values(bundle.boss)) {
     const ally = b.attaques?.invocation?.ennemi;
     if (ally && !has(bundle.ennemis, ally)) reporter(`content/boss/${b.id}.txt`)(1, `« invocation.ennemi: ${ally} » : cet ennemi n'existe pas.`);
