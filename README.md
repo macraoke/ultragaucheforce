@@ -30,11 +30,12 @@ Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les platea
 | ![Millevaches : la base sous le rond-point](docs/captures/millevaches-base.jpg) | ![Millevaches : la grange et sa cave](docs/captures/millevaches-grange.jpg) |
 | ![Millevaches : la mine](docs/captures/millevaches-mine.jpg) | ![Millevaches : le château d'eau](docs/captures/millevaches-chateau-d-eau.jpg) |
 | ![Millevaches : la méga-bassine](docs/captures/millevaches-bassine.jpg) | ![Millevaches : l'hélicoptère](docs/captures/millevaches-helicoptere.jpg) |
-| ![Le duplex de BFM-TV](docs/captures/duplex-bfm.jpg) | ![PANIQUE TV](docs/captures/panique-bandeau.jpg) |
+| ![Une équipe télé filme la poubelle qui brûle](docs/captures/feu-de-poubelle.jpg) | ![PANIQUE TV en pleine hystérie](docs/captures/panique-bandeau.jpg) |
+| ![Le duplex de BFM-TV](docs/captures/duplex-bfm.jpg) | ![La fortune, à l'échelle](docs/captures/taxe-fortune.jpg) |
 | ![Le menu](docs/captures/menu.jpg) | ![L'ouverture d'un niveau](docs/captures/ouverture.jpg) |
 | ![Un camarade libéré](docs/captures/carton-heros.jpg) | ![Fin de niveau](docs/captures/fin-de-niveau.jpg) |
-| ![La fortune, à l'échelle](docs/captures/taxe-fortune.jpg) | ![Ce que 2 % paieraient, et un fait](docs/captures/taxe-ce-que-ca-paie.jpg) |
-| ![Le plan de campagne](docs/captures/plan-de-campagne.jpg) | ![La Collection : les pancartes débloquées et leur rareté](docs/captures/collection-grille.jpg) |
+| ![Ce que 2 % paieraient, et un fait](docs/captures/taxe-ce-que-ca-paie.jpg) | ![Le plan de campagne](docs/captures/plan-de-campagne.jpg) |
+| ![La Collection : les pancartes débloquées et leur rareté](docs/captures/collection-grille.jpg) | |
 | ![Une pancarte débloquée](docs/captures/collection-carte.jpg) | ![L'appel au vote](docs/captures/appel-au-vote.jpg) |
 | ![L'Atelier : on dessine son niveau](docs/captures/atelier.jpg) | ![Sur téléphone](docs/captures/mobile-paysage.jpg) |
 | ![Fin de niveau sur téléphone](docs/captures/mobile-fin-de-niveau.jpg) | |
