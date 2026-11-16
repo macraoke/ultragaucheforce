@@ -117,8 +117,8 @@ function collect(kind, id, quiet = false) {
   const item = lines ? bundle[kind].find((p) => p.texte === id) : bundle[kind]?.[id];
   if (!item || !discover(save, kind, item.id)) return;
   won.push(`${kind}:${item.id}`);
-  if (kind === 'pancartes') hud.toast(`Pancarte ${rarityName(item)} débloquée : « ${short(item.texte)} »`, `rarete-${item.rarete}`);
-  else if (!quiet) hud.toast(`Débloqué : ${cardName(item)}`);
+  if (kind === 'pancartes') hud.toast(`Pancarte ${rarityName(item)} débloquée : « ${short(item.texte)} »`, `rarete-${item.rarete}`, 'pancartes');
+  else if (!quiet) hud.toast(`Débloqué : ${cardName(item)}`, '', 'cartes');
   collect('citations', item.citation, true);
   for (const fiche of [item.fiche].flat()) collect('fiches', fiche, true);
 }

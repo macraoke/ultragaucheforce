@@ -13,8 +13,31 @@ import { PANIC_STEPS } from '../sim/game.js';
 
 const MENTION = 'Satire citoyenne, libre et collaborative.';
 const PANIC_NAMES = ['calme', 'alerte', 'hystérie']; // les trois crans de la chaîne
-const AIRTIME = 9; // secondes d'antenne d'une citation qui tient sur le fil
+const AIRTIME = 15; // secondes d'antenne d'une citation qui tient sur le fil
 const SCROLL = 4.5; // vitesse de défilement d'une ligne trop longue, en hauteurs de lettre par seconde
+const HYSTERIA = 2; // le cran où la chaîne ne lâche plus sa citation : plus de rotation
+// Une rafale de notes du même genre se replie en une seule : « 3 pancartes débloquées ».
+const FOLDS = { pancartes: 'pancartes débloquées', cartes: 'cartes débloquées' };
+
+/** Secondes de jeu à l'écran pour une note : le temps de la lire. */
+export const readTime = (text) => Math.min(4, Math.max(2.5, 1.5 + text.length * 0.035));
+
+/**
+ * Range une note dans la file d'attente. Si une note du même genre (`group`) attend déjà, elles se replient
+ * en une seule, « 2 pancartes débloquées », quelle que soit leur rareté ; le bord prend la couleur de la plus rare.
+ */
+export function queueNote(notes, { text, tone = '', group = '' }) {
+  const waiting = group && notes.find((n) => n.group === group);
+  if (!waiting) {
+    notes.push({ text, tone, group, count: 1 });
+    return notes;
+  }
+  waiting.count++;
+  waiting.text = `${waiting.count} ${FOLDS[group]}`;
+  const rank = (t) => Number(/rarete-(\d)/.exec(t)?.[1] ?? -1);
+  if (rank(tone) > rank(waiting.tone)) waiting.tone = tone;
+  return notes;
+}
 
 /** « CC-BY-SA-3.0 » → « CC BY-SA 3.0 » : à l'écran, toutes les licences s'écrivent de la même façon. */
 export const licenceName = (id) => id.replace(/^CC-/, 'CC ').replace(/-(\d+(?:\.\d+)*)$/, ' $1');
@@ -426,6 +449,9 @@ export class Hud {
     this.rotation = 0; // minuterie de la prochaine citation
     this.airtime = AIRTIME; // secondes d'antenne de la ligne affichée
     this.turn = 0;
+    this.level = 0; // le cran de panique de la chaîne
+    this.notes = []; // notes en attente : une seule à l'écran à la fois
+    this.note = null; // { el, until } : la note affichée, et jusqu'à quand (temps de jeu)
     this.onQuote = () => {}; // une vraie citation passe à l'antenne : la Collection la note
     this.device = 'clavier'; // l'appareil dont la puce de la spéciale montre la touche
     this.ask = null; // un panneau a demandé la spéciale (voir `askSpecial`)
@@ -440,8 +466,11 @@ export class Hud {
     this.pile = '';
     this.crowd = 0;
     this.ask = null;
+    this.level = 0;
     clearTimeout(this.bannerTimer);
     delete this.q('bandeau').dataset.alerte; // une alerte interrompue ne fige pas le fil de la partie suivante
+    this.notes = [];
+    this.note = null;
     this.q('toasts').replaceChildren();
     this.nextQuote();
   }
@@ -455,7 +484,13 @@ export class Hud {
     clearTimeout(this.rotation);
     if (!on) return;
     if (!shown) this.fit(); // on ne mesure une ligne que lorsqu'elle est à l'écran
-    if (!el.dataset.alerte) this.rotation = setTimeout(() => this.nextQuote(), this.airtime * 1000);
+    if (!el.dataset.alerte) this.schedule();
+  }
+
+  /** La prochaine citation, dans `airtime` secondes ; en hystérie, la chaîne garde celle qu'elle a. */
+  schedule() {
+    clearTimeout(this.rotation);
+    if (!this.q('bandeau').hidden && this.level < HYSTERIA) this.rotation = setTimeout(() => this.nextQuote(), this.airtime * 1000);
   }
 
   nextQuote() {
@@ -463,11 +498,11 @@ export class Hud {
     if (!quote) return;
     this.show(`« ${quote.texte} » — ${quote.auteur}, ${quote.date.slice(0, 4)}`, 'Ils l’ont dit', AIRTIME);
     this.onQuote(quote.id);
-    clearTimeout(this.rotation);
-    if (!this.q('bandeau').hidden) this.rotation = setTimeout(() => this.nextQuote(), this.airtime * 1000);
+    this.schedule();
   }
 
   update(game) {
+    this.pump(game.time);
     const { hero, boss } = game;
     const special = hero.def.speciale;
     // Un panneau demande la spéciale : la puce et le bouton SPÉ clignotent jusqu'à ce qu'elle serve.
@@ -515,6 +550,10 @@ export class Hud {
     // La panique est celle de la chaîne : trois crans dans le bandeau, celui en cours se remplit,
     // et tout le bandeau change de couleur avec lui.
     const level = game.panicLevel;
+    if (level !== this.level) {
+      this.level = level;
+      if (level >= HYSTERIA) clearTimeout(this.rotation); // en hystérie, la citation reste à l'antenne
+    }
     const gauge = this.q('hud-panique');
     const [from, to] = [[0, ...PANIC_STEPS][level], [...PANIC_STEPS, 100][level]];
     this.q('bandeau').dataset.niveau = level;
@@ -592,12 +631,24 @@ export class Hud {
     this.airtime = Math.max(this.airtime, 1.2 + time + 1.6); // une pause avant, le défilement, une pause après
   }
 
-  /** Une note en haut à gauche ; trois au plus à la fois. `tone` : une classe (la rareté d'une pancarte). */
-  toast(text, tone = '') {
-    const note = h('p', { className: tone }, text);
-    const box = this.q('toasts');
-    while (box.children.length > 1) box.firstChild.remove(); // deux notes à la fois, pas plus : l'écran reste au jeu
-    box.append(note);
-    setTimeout(() => note.remove(), 4200);
+  /**
+   * Une note : elles passent une à une, le temps d'être lues. `tone` : une classe (la rareté d'une pancarte).
+   * `group` (une clé de FOLDS) : si une note du même genre attend déjà, les deux se replient en « 2 pancartes débloquées ».
+   */
+  toast(text, tone = '', group = '') {
+    queueNote(this.notes, { text, tone, group });
+  }
+
+  /** Fait passer les notes, au temps de jeu `now` : rien ne défile pendant une pause ou un carton. */
+  pump(now) {
+    if (this.note && now >= this.note.until) {
+      this.note.el.remove();
+      this.note = null;
+    }
+    if (this.note || !this.notes.length) return;
+    const next = this.notes.shift();
+    const el = h('p', { className: next.tone }, next.text);
+    this.q('toasts').append(el);
+    this.note = { el, until: now + readTime(next.text) };
   }
 }
