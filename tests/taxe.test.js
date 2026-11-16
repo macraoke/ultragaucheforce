@@ -63,8 +63,7 @@ test('taxe : chaque fiche du dictionnaire donne un nombre affichable avec chaque
     }
     for (const use of taxUses(bundle)) {
       const { count } = taxNumbers(boss.fortune.montant, taxScales(bundle)[0], use);
-      // Une petite fortune (10,8 milliards) paie moins de dix Canadair : « 2 Canadair » reste un nombre affichable.
-      assert.ok(count >= 1, `${boss.id} / ${use.id} : ${count} ${use.finance}`);
+      assert.ok(count >= 1,`${boss.id} / ${use.id} : ${count} ${use.finance}`);
       assert.ok(perYear(use) > 0);
     }
   }

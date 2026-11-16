@@ -1,0 +1,11 @@
+texte: Je ne veux pas être le seul à payer, alors que je suis déjà seul à agir pour le pouvoir d'achat.
+auteur: Rodolphe Saadé
+fonction: PDG de CMA CGM
+date: 2022-07-20
+contexte: Audition devant les commissions du Sénat de l'aménagement du territoire et des affaires économiques, en plein débat sur la taxation des superprofits, à propos d'un éventuel changement de la taxe au tonnage.
+categorie: puissants
+note: Phrase du compte rendu officiel du Sénat, qui est rédigé et non un mot à mot de la vidéo. Juste avant, il dit : « Ce ne serait pas honnête pour ce fleuron du transport maritime en France ! »
+source.titre: Sénat — Commission de l'aménagement du territoire et du développement durable : compte rendu de la semaine du 18 juillet 2022 (audition de Rodolphe Saadé, 20 juillet 2022)
+source.url: https://www.senat.fr/compte-rendu-commissions/20220718/atdd.html
+source.nature: officielle
+verifie: 2026-11-16
