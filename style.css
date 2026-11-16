@@ -449,7 +449,7 @@ html.bas .fin .pied button.gros { font-size: 1.15rem; }
 .vote .appel { font: 900 clamp(3rem, 16vmin, 8rem)/.9 var(--titre); text-transform: uppercase; color: var(--or); margin: .1em 0 .2em; transform: rotate(-2deg); }
 .vote .dates { font: 900 clamp(1.1rem, 4vmin, 2rem)/1.1 var(--titre); text-transform: uppercase; letter-spacing: .04em; margin: 0 0 .8em; }
 .vote .dates a { color: var(--blanc); }
-body.tactile .vote .dates a { display: inline-block; padding-block: .45em; } /* au pouce : une cible de 40 pixels */
+body.tactile .vote .dates a { display: inline-flex; align-items: center; min-height: 40px; } /* au pouce : une cible de 40 pixels */
 .vote nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 1em; }
 .vote .pied { justify-content: center; }
 .panneau .mention { font-size: .8rem; opacity: .9; }
@@ -463,8 +463,9 @@ body.tactile .vote .dates a { display: inline-block; padding-block: .45em; } /* 
 details { margin: .5em 0; }
 details summary { cursor: pointer; font-weight: 700; }
 /* À propos, au pouce : chaque lien et chaque rubrique est une cible de 40 pixels au moins. */
-body.tactile .apropos a, body.tactile .apropos summary { display: inline-block; padding-block: .55em; }
-body.tactile .apropos summary { display: list-item; }
+/* Un lien reste en ligne : son rembourrage agrandit la cible sans écarter les lignes du texte. */
+body.tactile .apropos a { padding-block: .7em; }
+body.tactile .apropos summary { padding-block: .55em; }
 details.portee { font-size: .82rem; opacity: .9; }
 details.portee p { margin: .3em 0 0; }
 html.bas .intro .tv { margin-bottom: 6px; font-size: .9rem; }
@@ -706,8 +707,9 @@ html.bas .carte-ouverte.partage .pied { flex-direction: column; margin-top: 0; }
 body.sobre .debloquees .carte-mini, body.sobre .carte-ouverte article.carte { animation: none; }
 @media (prefers-reduced-motion: reduce) { .debloquees .carte-mini, .carte-ouverte article.carte { animation: none; } }
 .carte-ouverte article.carte > * { flex-shrink: 0; } /* trop haute pour l'écran : elle défile, elle ne s'écrase pas */
-/* Trop haute, elle le dit : une flèche reste en bas tant qu'il reste à lire. */
-.carte-ouverte article.carte.defile::after { content: '▼ Faire défiler'; position: sticky; bottom: -10px; flex-shrink: 0; height: 2.6em; margin: -2.6em -10px -10px; display: grid; place-items: end center; padding-bottom: 6px; background: linear-gradient(rgb(239 230 207 / 0), var(--papier) 60%); color: var(--rouge-sombre); font: 900 .8rem/1 var(--titre); letter-spacing: .05em; text-transform: uppercase; pointer-events: none; }
+/* « Fermer » se pose sur l'album : un fond plein, la miniature dessous ne se voit pas à travers. */
+.carte-ouverte:not(.partage) .pied button.discret { background: var(--nuit); }
+.carte-ouverte:not(.partage) .pied button.discret:hover { background: var(--encre); }
 html.bas .carte-ouverte .cadre { width: min(100%, 560px); }
 /* Écran bas (téléphone) : la carte prend toute la hauteur, « Fermer » passe à côté, l'image à gauche du texte. */
 html.bas .carte-ouverte:not(.partage) { padding: 8px max(8px, env(safe-area-inset-right)) 8px max(8px, env(safe-area-inset-left)); }
@@ -718,7 +720,6 @@ html.bas .carte-ouverte article.carte > * { margin-bottom: 5px; }
 html.bas .carte-ouverte article.carte > :not(header, .vignette) { display: flow-root; } /* le texte se range à côté de l'image */
 html.bas .carte-ouverte article.carte > .vignette { float: left; width: 34%; height: 128px; margin: 0 10px 5px 0; }
 html.bas .carte-ouverte article.carte.niveaux > .vignette { float: none; width: auto; height: 64px; margin-right: 0; }
-html.bas .carte-ouverte article.carte.defile::after { display: block; text-align: center; padding-top: 1.4em; }
 /* Écran bas : l'en-tête, les rayons et les filtres se serrent, une rangée entière de cartes reste en vue. */
 html.bas .panneau.biblio { padding-block: 10px; }
 html.bas .biblio h2 { font-size: 1.3rem; margin-bottom: .25em; }
@@ -726,8 +727,8 @@ html.bas .biblio > .jauge { height: 6px; margin: 0 0 .5em; }
 html.bas .biblio .onglets { gap: 6px; margin: 0 0 .5em; }
 html.bas .biblio .onglets button { font-size: .74rem; padding: .45em .65em .85em; }
 html.bas .biblio .raretes { margin-bottom: .5em; }
-/* Au pouce, les filtres de rareté se touchent sans viser. */
-body.tactile .biblio .raretes button { min-height: 40px; }
+/* Au pouce, les rayons et les filtres de rareté se touchent sans viser. */
+body.tactile .biblio .onglets button, body.tactile .biblio .raretes button { min-height: 40px; }
 
 /* ------------------------------------------------------------------ choix du héros, +1, pile de vies */
 

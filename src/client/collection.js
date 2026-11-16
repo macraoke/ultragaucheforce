@@ -357,10 +357,6 @@ export function openCard(bundle, card, { found = true, actions = [] } = {}) {
   overlay.setAttribute('aria-label', found ? cardName(card.item) : 'Carte à découvrir');
   document.addEventListener('keydown', onKey, true);
   (document.getElementById('ecran') || document.body).append(overlay);
-  // Trop haute pour l'écran, la carte le dit : une flèche en bas, jusqu'à ce qu'on ait tout lu.
-  const more = () => article.classList.toggle('defile', article.scrollTop + article.clientHeight < article.scrollHeight - 4);
-  article.addEventListener('scroll', more, { passive: true });
-  more();
   overlay.querySelector('.fermer').focus({ preventScroll: true });
   return overlay;
 }
