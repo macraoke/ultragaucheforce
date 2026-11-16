@@ -1,0 +1,10 @@
+titre: 1,6 million de personnes renoncent aux soins
+theme: richesses
+texte: En 2017, 1,6 million de personnes ont renoncé à des soins médicaux ; les personnes pauvres en conditions de vie ont trois fois plus de risques d'y renoncer.
+portee: Donnée ancienne (2017), France métropolitaine, 16 ans ou plus, soins médicaux (enquête SRCV de l'Insee). « Pauvres en conditions de vie » est une définition par les privations, pas par le revenu. Le « trois fois » vaut à caractéristiques comparables ; dans une zone très sous-dotée en médecins généralistes, le risque est « plus de huit fois supérieur ».
+periode: 2017 (publié en juillet 2021)
+choc: oui
+source.titre: DREES — Renoncement aux soins : la faible densité médicale est un facteur aggravant pour les personnes pauvres
+source.url: https://www.drees.solidarites-sante.gouv.fr/sites/default/files/2021-07/ER1200.pdf
+source.nature: officielle
+verifie: 2026-11-16

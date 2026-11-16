@@ -1,0 +1,11 @@
+titre: 2 000 enseignants, 75 millions
+theme: richesses
+texte: 75 millions d'euros : c'est « le coût moyen de 2 000 enseignants sur une année pleine », dit le rapporteur du budget de l'enseignement scolaire au Sénat. Soit 37 500 euros par enseignant et par an.
+portee: Rapport général n° 139 (2025-2026), tome III, annexe 13, sur le projet de loi de finances pour 2026, déposé le 24 novembre 2025. Coût budgétaire pour l'État, avancé à l'appui d'un amendement d'économie ; la phrase est celle du rapporteur à l'examen en commission, reproduite dans le rapport, qui ne dit pas si les pensions sont comprises. La division est la nôtre.
+periode: projet de loi de finances pour 2026
+valeur: 37500
+finance: enseignants
+source.titre: Sénat — Projet de loi de finances pour 2026 : Enseignement scolaire (rapport général n° 139, annexe 13)
+source.url: https://www.senat.fr/rap/l25-139-313/l25-139-313_mono.html
+source.nature: officielle
+verifie: 2026-11-16

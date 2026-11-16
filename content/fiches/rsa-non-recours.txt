@@ -1,0 +1,10 @@
+titre: RSA : 33 % à 37 % de non-recours
+theme: richesses
+texte: Fin 2021, entre 33 % et 37 % des foyers éligibles au RSA ne le perçoivent pas, soit 560 000 foyers.
+portee: Estimation en fourchette, France métropolitaine, logement ordinaire. Le chapeau donne « 560 000 foyers sociaux éligibles » et « environ un million de personnes ». La DREES nuance : les non-recourants ont « en moyenne, un statut socio-économique moins défavorisé que les recourants » et, pour 42 % d'entre eux, le montant non perçu est de 200 euros ou moins par mois.
+periode: dernier trimestre 2021 (publié en mai 2026)
+choc: oui
+source.titre: DREES — Non-recours au RSA : plus d'un tiers des foyers éligibles ne le percevaient pas fin 2021
+source.url: https://drees.solidarites-sante.gouv.fr/publications-communique-de-presse/etudes-et-resultats/260506-non-recours-au-rsa-fin-2021
+source.nature: officielle
+verifie: 2026-11-16

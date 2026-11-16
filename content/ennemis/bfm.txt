@@ -1,0 +1,34 @@
+# Il ne blesse personne : il cadre le héros, et la panique monte. Ses répliques sont de vrais bandeaux de la chaîne.
+nom: Le duplex de BFM-TV
+pv: 2
+vitesse: 34
+deplacement: marche
+reaction: cadre
+vue: 170
+panique: 3
+fin: panne
+camp: medias
+largeur: 18
+hauteur: 17
+fiche: bandeau-fallait-il-l-interdire
+replique: MANIF ANTI-POLICE : FALLAIT-IL L'INTERDIRE ?
+replique: DÉPUTÉE FRAPPÉE ? UNE VIDÉO SÈME LE TROUBLE
+auteur: UltraGauche Force
+--- repos
+....TTTT......kkkk..
+...TTTTTT....kkkkkk.
+...ssssss....ssssHHH
+...skssks....sksHHHH
+...ssssss....sssHHcH
+....ssss......ssHHHH
+...BBBBBB....KKKKKK.
+..BBBwwBBB..KKKKKKKK
+..BBBwwBBBb.KKKKKKKK
+..BBBBBBBsb.KKKKKKKK
+..BBBBBBB.k.KKKKKKK.
+...BBBBBB.k..KKKKKK.
+...nnnnnn....nnnnnn.
+...nn..nn....nn..nn.
+...nn..nn....nn..nn.
+...nn..nn....nn..nn.
+..kkk.kkk...kkk.kkk.

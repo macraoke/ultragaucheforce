@@ -1,0 +1,11 @@
+texte: Il faut dire stop aux tyranno-gauchistes.
+auteur: Éric Ciotti
+date: 2026-11-03
+contexte: Message publié sur X, à propos de CNews. Il se poursuit ainsi : « Interdire CNews reviendrait à remettre en cause l'utilité de la démocratie ! »
+categorie: diabolisation
+mot: TYRANNO-GAUCHISTES
+note: Le héros Le TyrannoGauchiste lui doit son nom.
+source.titre: X — Éric Ciotti (@eciotti), 3 novembre 2026
+source.url: https://x.com/eciotti/status/2117691180028932335
+source.nature: officielle
+verifie: 2026-11-16

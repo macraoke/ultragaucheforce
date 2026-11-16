@@ -1,0 +1,11 @@
+titre: Une bourse : 6 335 euros au plus
+theme: richesses
+texte: La bourse sur critères sociaux d'un étudiant varie entre 1 454 et 6 335 euros par an pour l'année universitaire 2023-2024.
+portee: Le montant de l'échelon le plus haut, versé sur dix mois. Ce n'est pas le montant moyen : un tiers des boursiers sont à l'échelon le plus bas. Ni l'exonération de droits d'inscription ni les aides au logement ne sont comptées.
+periode: année universitaire 2023-2024
+valeur: 6335
+finance: bourses étudiantes à l'échelon le plus haut
+source.titre: SIES — Note d'information n° 25.08 sur la réforme des bourses sur critères sociaux (juin 2025)
+source.url: https://www.enseignementsup-recherche.gouv.fr/sites/default/files/2025-06/ni-sies-2025-08-36957.pdf
+source.nature: officielle
+verifie: 2026-11-16

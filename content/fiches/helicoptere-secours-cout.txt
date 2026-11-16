@@ -1,0 +1,12 @@
+titre: Un hélicoptère de secours : 12,41 millions
+theme: richesses
+texte: Un hélicoptère de secours H145 de la sécurité civile est estimé à 12,41 millions d'euros : 446,98 millions pour 36 appareils, selon le rapporteur du budget au Sénat.
+portee: L'achat de l'appareil, marché engagé en 2023, livraisons jusqu'en 2029. Ni l'équipage, ni l'entretien, ni les bases ne sont comptés.
+periode: marché de 2023
+valeur: 12410000
+finance: hélicoptères de secours
+ponctuel: oui
+source.titre: Sénat — Rapport général n° 139 (2025-2026), annexe 28b : Sécurité civile
+source.url: https://www.senat.fr/rap/l25-139-328-2/l25-139-328-21.pdf
+source.nature: officielle
+verifie: 2026-11-16

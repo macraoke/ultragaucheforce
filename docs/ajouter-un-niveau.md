@@ -1,15 +1,19 @@
 # Ajouter un niveau
 
-Un fichier texte : un en-tête, puis une carte où un caractère vaut une case.
+On le dessine dans le jeu, on l'essaie, on le propose. Le niveau lui-même est un fichier texte : un en-tête, puis une carte où un caractère vaut une case.
 
 ## Le plus simple : l'Atelier
 
 1. Dans le jeu, ouvrez **Atelier**.
-2. Modifiez le modèle. Les erreurs s'affichent au fil de la frappe, ligne et colonne comprises.
-3. **Tester** lance votre niveau tout de suite.
-4. **Proposer sur GitHub** ouvre la page de création du fichier, déjà remplie. Niveau trop long pour un lien ? Il est copié : collez-le dans la page qui s'ouvre.
+2. Choisissez dans la palette (Terrain, Repères, En face, La manif, Décors), puis peignez : un toucher pose, un glissé trace. Il y a une gomme, un rectangle, et une case « Mur du fond ».
+3. La carte s'agrandit par ses quatre côtés, jusqu'à 400 × 60. L'en-tête s'écrit tout seul.
+4. **Tester** lance votre niveau tout de suite. S'il manque quelque chose, l'Atelier le dit en une phrase et montre la case.
+5. **Proposer** ouvre la page GitHub de création du fichier, déjà remplie. Niveau trop long pour un lien ? Il est copié : collez-le dans la page qui s'ouvre.
 
-Sans l'Atelier : créez `content/niveaux/mon-niveau.txt` (voir [CONTRIBUER.md](../CONTRIBUER.md)).
+> [!NOTE]
+> Le bouton **Texte** montre la fiche du niveau. C'est là que se règlent les clés que la palette ne couvre pas (`citation`, `fiche`, `accroche`, `heros`, `camarades`, `musique`, `manif`, `nasse.*`).
+
+Sans l'Atelier : créez `content/niveaux/mon-niveau.txt` (voir [CONTRIBUTING.md](../CONTRIBUTING.md)).
 
 ## Un niveau complet
 
@@ -40,7 +44,7 @@ GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 ```
 
-Déposé dans `content/niveaux/`, il apparaît dans « Niveaux de la communauté ». La campagne, elle, suit l'ordre de [`content/campagne.txt`](../content/campagne.txt).
+Déposé dans `content/niveaux/`, il devient une étape du plan de campagne, à la suite des autres. [`content/campagne.txt`](../content/campagne.txt) fixe l'ordre des premières étapes.
 
 ## L'en-tête
 
@@ -54,14 +58,15 @@ Déposé dans `content/niveaux/`, il apparaît dans « Niveaux de la communauté
 | `fond` | `campagne`, `ville` ou `citadelle` |
 | `cortege` | `oui` : la manif suit le héros |
 | `manif` | combien de manifestants au départ (10 avec un cortège, sauf indication ; 5000 au plus) |
-| `panneau.1` à `panneau.9` | le texte du panneau placé par le chiffre correspondant sur la carte |
+| `panneau.1` à `panneau.9` | le texte du panneau placé par le chiffre correspondant sur la carte. Pour parler aussi au pouce : `au clavier // au pouce`, par exemple `J : lancer des tracts // TIR : lancer des tracts` |
 | un signe de légende | `b: bac` place une unité, une recrue ou un décor à chaque `b` de la carte |
-| `heros` | le héros de départ (sinon le premier disponible) |
+| `heros` | le héros avec lequel on essaie le niveau dans l'Atelier. En jeu, le joueur choisit parmi ceux qu'il a débloqués ; la première fois, le hasard choisit |
 | `camarades` | l'ordre des héros libérés, séparés par une barre verticale : `melenchotron \| zuc-man` (sinon au hasard) |
-| `boss` | l'identifiant d'un boss de `content/boss/` ; il faut alors un `Y` sur la carte |
+| `boss` | facultatif : impose un boss de `content/boss/`. Sans cette ligne, le boss du `Y` est tiré au hasard à chaque partie |
 | `nasse.ennemi` | l'unité qui forme la nasse ; obligatoire s'il y a un `N` sur la carte |
 | `nasse.nombre` | unités de chaque côté (1 à 6, défaut 3) |
 | `nasse.vitesse` | vitesse à laquelle les lignes se referment, en pixels par seconde (4 à 80, défaut 18) |
+| `nasse.rythme` | la nasse revient d'elle-même autour du héros, toutes les tant de secondes (0 à 600 ; 0, par défaut : seulement aux repères `N`) |
 | `manchette` | une alerte de PANIQUE TV propre au niveau ; répétable |
 | `intro` | le texte du carton d'ouverture, quand il n'y a pas de `citation` |
 | `musique` | une piste de `content/musiques/` |
@@ -79,7 +84,7 @@ Le niveau devient une carte de la Collection, avec sa citation et ses fiches.
 | `S` | sortie : le camion-sono (au moins une ; il occupe la case du `S` et les deux à sa droite) |
 | `K` | camarade en garde à vue : le libérer donne une vie, change de héros et amène 20 personnes |
 | `Q` | piquet de grève : point de reprise, et 10 personnes de plus |
-| `Y` | boss |
+| `Y` | l'emplacement du boss : un ultra-riche de `content/boss/`, tiré au hasard à chaque partie |
 | `N` | nasse : deux lignes se referment quand le héros passe ici |
 | `1` à `9` | panneau |
 | un signe de légende | unité, recrue ou décor déclaré dans l'en-tête |
@@ -113,7 +118,6 @@ Le but du joueur : arriver toujours plus nombreux.
 - Une **recrue** rejoint quand le héros la touche ou lui tend un tract. Son gain s'affiche au-dessus d'elle : `+ 20`, `× 2`.
 - Plus on est nombreux, plus les tracts font de dégâts.
 - Une charge, un nuage de gaz ou une chute du héros dispersent une part de la manif.
-- Le compteur affiche deux chiffres : celui des syndicats, et celui de la préfecture.
 
 ## Les lignes
 
@@ -137,32 +141,36 @@ Un fichier `content/decors/mon-decor.txt` : un dessin `image` (et `image2` pour 
 | `devant` | `oui` : dessiné devant les personnages |
 | `ecrit` | `pancarte` : le jeu écrit sur le dessin une vraie pancarte de `content/pancartes/` (une banderole) ; `tag` : il la peint au-dessus, sans fond (un mur) |
 | `ecrit.y` | hauteur du texte, en pixels depuis le haut du dessin (0 à 96, défaut 8) |
+| `brule` | `oui` : quand la panique de PANIQUE TV franchit un palier près de lui, il prend feu, et une unité télé de la légende (réaction `cadre`) vient filmer le feu plutôt que la manif. Modèle : [`poubelles`](../content/decors/poubelles.txt) |
 
 Au même endroit, c'est toujours la même pancarte. Modèles : [`banderole`](../content/decors/banderole.txt), [`tag`](../content/decors/tag.txt).
 
 ## Les règles que le robot vérifie
 
 - Au moins 8 lignes ; au plus 400 colonnes sur 60 lignes.
-- Exactement un `D`, au moins un `S`, un `Y` si et seulement si l'en-tête a un `boss`.
+- Exactement un `D`, au moins un `S`, un `Y` au plus.
 - Chaque chiffre a son `panneau.N`, chaque signe sa légende, un `N` son `nasse.ennemi`.
 - La sortie doit être atteignable : aucun mur indestructible ne doit couper la carte en deux.
 - En plus, pour la campagne : un robot joueur doit réussir à traverser le niveau.
 
 ## Conseils de construction
 
-- **Posez le sol sur du socle** (`O`) : une rangée de terre ou de pavé, puis du socle dessous. On peut alors creuser sans tomber dans le vide ni rester coincé.
+- **Du sol épais** : plusieurs rangées de terre, de pavé ou de pierre, et deux rangées de socle (`O`) tout en bas. On creuse partout, on ne tombe jamais dans le vide.
+- **Des étages et des sous-sols** : un bâtiment à planchers, une cave, une galerie. Le héros tire devant lui, et aussi vers le bas ou vers le haut quand il ne bouge pas : c'est ainsi qu'il creuse.
+- **Récompensez qui explore** : des recrues, un camarade (`K`), une assemblée générale, sur un toit ou au fond d'une galerie. Plus de monde, c'est plus de pancartes.
+- **Un mur du fond derrière chaque cavité** : sans lui, on voit le ciel à travers le sol.
 - **Tout mur se grimpe** en sautant plusieurs fois contre lui. Évitez seulement un surplomb d'acier au-dessus d'un mur à escalader.
 - Pas de trou de plus de quatre cases de large.
-- Le héros tire à l'horizontale : placez ce qui doit être détruit à sa hauteur, ou près d'un tonneau.
-- Écartez les tonneaux de deux cases : assez près pour la réaction en chaîne, assez loin pour qu'on la voie.
+- Écartez les tonneaux de deux cases : assez près pour la réaction en chaîne, assez loin pour qu'on la voie. Un tonneau ouvre le sol sur deux rangées : une cave juste dessous devient un raccourci.
+- **Des gardes à vue sur le chemin** : on part avec un seul personnage, les autres en sortent.
 - **Des recrues sur le chemin au sol** avant chaque ligne : le robot joueur ne monte pas les chercher.
-- En hauteur, ce qui récompense : une assemblée générale, un camarade à libérer.
+- Une ligne (barrage, grille) se contourne par-dessous si le sol se creuse. Pour qu'elle ne cède qu'au nombre, posez-la sur du socle.
 - Trois à six minutes suffisent : un sauvetage, une ligne à déborder, un passage à casser, la sortie.
 - Un panneau, c'est un conseil en quelques mots.
 
 ## Les murs du fond (facultatif)
 
-Pour qu'un bâtiment ait un intérieur, ajoutez après la carte une section `--- murs`, de la même taille : les tuiles qu'on y dessine s'affichent assombries, derrière l'action, sans collision. Les niveaux de la campagne s'en servent pour la grange, le métro ou la Citadelle.
+Pour qu'un bâtiment ait un intérieur, ou une cave un fond, cochez « Mur du fond » dans l'Atelier. Dans le fichier, c'est une section `--- murs` après la carte, de la même taille : les tuiles qu'on y dessine s'affichent assombries, derrière l'action, sans collision. Les niveaux de la campagne s'en servent pour la grange, le métro ou la Citadelle.
 
 ```text
 --- murs

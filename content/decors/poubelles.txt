@@ -1,5 +1,7 @@
 # Les sacs qui s'entassent pendant une grève des éboueurs.
 nom: Poubelles entassées
+# Quand la panique monte, elles prennent feu, et la télé vient filmer ça.
+brule: oui
 auteur: UltraGauche Force
 --- image
 .......................K..............

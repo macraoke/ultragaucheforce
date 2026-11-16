@@ -1,8 +1,12 @@
 // La Collection : chaque personnage, chaque lieu, chaque parole, chaque fait rencontrés en
 // jouant devient une carte, avec la référence exacte qui l'explique. Ce qu'on n'a pas encore
 // croisé reste en silhouette : jouer, c'est compléter l'album.
+//
+// Dans l'album, les cartes sont compactes et toutes de la même taille (`miniCard`) ; on en
+// touche une, elle s'ouvre en grand avec ses références (`openCard`, `collectionCard`).
 
-import { h, link, frenchDate } from './dom.js';
+import { h, link, frenchDate, signature, sourceName } from './dom.js';
+import { RARITIES } from '../content/rules.js';
 import { sprite, spriteElement } from './sprites.js';
 import { isFound } from './save.js';
 
@@ -12,8 +16,8 @@ export const SHELVES = [
   { id: 'en-face', titre: 'En face', kinds: ['ennemis', 'boss'] },
   { id: 'lieux', titre: 'Lieux', kinds: ['niveaux'] },
   { id: 'paroles', titre: 'Paroles', kinds: ['citations'] },
-  { id: 'pancartes', titre: 'Pancartes', kinds: ['pancartes'], keep: (p) => p.credit },
-  { id: 'tele', titre: 'Vu à la télé', kinds: ['manchettes'], keep: (m) => m.credit },
+  { id: 'pancartes', titre: 'Pancartes', kinds: ['pancartes'] },
+  { id: 'tele', titre: 'Vu à la télé', kinds: ['manchettes'] },
   { id: 'faits', titre: 'Faits', kinds: ['fiches'], keep: (f) => f.theme !== 'programme' },
   { id: 'propositions', titre: 'Propositions', kinds: ['fiches'], keep: (f) => f.theme === 'programme' },
   { id: 'luttes', titre: 'Luttes', kinds: ['drapeaux'] },
@@ -41,17 +45,56 @@ export const cardName = (item) => item.nom || item.titre || item.auteur || item.
 /** L'identifiant d'une carte : celui de sa fiche ; une pancarte n'a que son texte. */
 export const cardId = (item) => item.id ?? item.texte;
 
-/** Au-delà, une pancarte est trop longue pour le cortège : on la gagne à un piquet de grève. */
-export const LONG_SIGN = 26;
-export const isLongSign = (sign) => sign.texte.length > LONG_SIGN;
+/** La clé d'une carte dans la sauvegarde : « rayon:identifiant ». */
+export const cardKey = (card) => `${card.kind}:${cardId(card.item)}`;
+
+/** Les cartes qui correspondent à des clés de sauvegarde, dans l'ordre de l'album. */
+export function cardsByKeys(bundle, keys) {
+  const wanted = new Set(keys);
+  return allCards(bundle).filter((c) => wanted.has(cardKey(c)));
+}
+
+/**
+ * Trouvée depuis la dernière visite de son rayon ?
+ * `save.vues[rayon]` = nombre de découvertes au moment de cette visite.
+ */
+export function isFresh(save, card) {
+  return save.decouvertes.indexOf(cardKey(card)) >= (save.vues?.[card.shelf] ?? 0);
+}
+
+/** Le rayon vient d'être regardé : ses cartes ne sont plus nouvelles. */
+export function markSeen(save, shelf) {
+  save.vues = { ...save.vues, [shelf]: save.decouvertes.length };
+}
+
+/** Une pancarte ou un bandeau a une rareté ; les autres cartes n'en ont pas. */
+export const rarityName = (item) => (item.rarete === undefined ? '' : RARITIES[item.rarete]);
+
+/**
+ * Le plan de campagne : tous les niveaux, dans l'ordre des étapes. `content/campagne.txt` fixe les premières ;
+ * les autres suivent, par ordre de titre. Une seule catégorie : un niveau déposé est une étape comme une autre.
+ */
+export function levelOrder(bundle) {
+  const rest = Object.keys(bundle.niveaux).filter((id) => !bundle.campagne.includes(id))
+    .sort((a, b) => bundle.niveaux[a].titre.localeCompare(bundle.niveaux[b].titre, 'fr'));
+  return [...bundle.campagne, ...rest];
+}
 
 /** Les trois démarches que rappelle l'appel au vote. */
 export const VOTE_FICHES = ['presidentielle-dates', 'inscription-listes', 'procuration'];
 
 /** Les fiches que la scène de taxe apprend au joueur. */
-export const taxFiches = (bundle, boss) =>
-  ['smic', boss.fortune.fiche, 'impot-plancher', 'impot-plancher-rendement', 'impot-plancher-parcours', 'patrimoine-moitie', 'patrimoine-top10']
-    .filter((id) => bundle.fiches[id]);
+/** Le dictionnaire de la scène de taxe : à qui comparer une fortune, ce que la taxe paierait, les faits chocs. */
+export const taxScales = (bundle) => Object.values(bundle.fiches).filter((f) => f.compare && f.valeur > 0);
+export const taxUses = (bundle) => Object.values(bundle.fiches).filter((f) => f.finance && f.valeur > 0);
+export const taxShocks = (bundle) => Object.values(bundle.fiches).filter((f) => f.choc);
+
+/**
+ * Les fiches que la scène de taxe débloque : celles qu'elle a montrées. `shown` : ce qu'elle a tiré cette fois-ci
+ * (sans lui : tout le dictionnaire, pour savoir où une fiche se débloque).
+ */
+export const taxFiches = (bundle, boss, shown = [...taxScales(bundle), ...taxUses(bundle), ...taxShocks(bundle)]) =>
+  [boss.fortune.fiche, ...boss.fortune.rente, 'impot-plancher', ...shown.map((f) => f.id)].filter((id) => bundle.fiches[id]);
 
 /** La citation dont vient un mot crié en jeu (« ÉCOTERRORISME ! ») : son mot-clé, sinon ses propres mots. */
 export function citationOfWord(bundle, word) {
@@ -60,18 +103,23 @@ export function citationOfWord(bundle, word) {
   return all.find((c) => c.mot && bare.startsWith(c.mot)) || all.find((c) => c.texte.toUpperCase().includes(bare));
 }
 
+/** Les boss qu'on peut croiser dans un niveau : aucun sans repère « Y » ; celui que la fiche impose ; sinon tous. */
+export function bossesOf(bundle, level) {
+  if (!level.carte.some((row) => row.includes('Y'))) return [];
+  return Object.hasOwn(bundle.boss, level.boss || '') ? [bundle.boss[level.boss]] : Object.values(bundle.boss);
+}
+
 /** Les unités qu'on croise dans un niveau : sa légende, sa nasse, les renforts qu'elles appellent, ceux du boss. */
 function unitsOf(bundle, level) {
   const ids = new Set(Object.values(level.legende).filter((l) => l.type === 'ennemi').map((l) => l.id));
   if (level.nasse?.ennemi) ids.add(level.nasse.ennemi);
-  const called = bundle.boss[level.boss]?.attaques?.invocation?.ennemi;
-  if (called) ids.add(called);
+  for (const boss of bossesOf(bundle, level)) if (boss.attaques?.invocation?.ennemi) ids.add(boss.attaques.invocation.ennemi);
   for (const id of [...ids]) if (bundle.ennemis[id]?.renfort?.ennemi) ids.add(bundle.ennemis[id].renfort.ennemi);
   return ids;
 }
 
 /**
- * Où gagne-t-on cette carte ? L'indice affiché sous une silhouette, puis « Vu dans » sur la carte trouvée.
+ * Où débloque-t-on cette carte ? L'indice affiché sous une silhouette, puis « Vu dans » sur la carte trouvée.
  * Une liste vide voudrait dire qu'aucun chemin n'y mène : un test l'interdit.
  */
 export function whereToFind(bundle, kind, item) {
@@ -82,16 +130,14 @@ export function whereToFind(bundle, kind, item) {
   const speakers = [...Object.values(bundle.heros), ...Object.values(bundle.ennemis)];
   switch (kind) {
     case 'niveaux': return [item.titre];
-    case 'heros': return titles((lv) => lv.heros === item.id || lv.camarades.includes(item.id));
-    case 'boss': return titles((lv) => lv.boss === item.id);
+    // Un personnage jouable peut ouvrir un niveau (au hasard la première fois) ou sortir de n'importe quelle garde à vue.
+    case 'heros': return item.statut === 'jouable' ? ['dans une garde à vue'] : titles((lv) => lv.heros === item.id || lv.camarades.includes(item.id));
+    case 'boss': return titles((lv) => bossesOf(bundle, lv).includes(item));
     case 'recrues': return titles(inLegend);
     case 'ennemis': return titles((lv) => unitsOf(bundle, lv).has(item.id));
     case 'drapeaux': return levels.some((lv) => lv.cortege) ? ['dans le cortège'] : [];
     case 'manchettes': return ['PANIQUE TV'];
-    case 'pancartes': {
-      const carriers = Object.values(bundle.recrues || {}).filter((r) => r.slogan.includes(item.texte)).map((r) => r.nom);
-      return carriers.length ? carriers : [isLongSign(item) ? 'à un piquet de grève' : 'dans le cortège'];
-    }
+    case 'pancartes': return ['dans la manif']; // tirée au hasard quand des gens rejoignent le cortège
     case 'citations': {
       if (item.categorie !== 'gauche') return ['PANIQUE TV'];
       const quoting = [...characters, ...levels].filter((x) => x.citation === item.id).map(cardName);
@@ -133,20 +179,31 @@ function levelThumb(bundle, level) {
 const hearts = (n) => h('span', { className: 'coeurs' }, '♥'.repeat(n));
 const bar = (value, max) => '▮'.repeat(Math.max(1, Math.round((value / max) * 5))).padEnd(5, '▯');
 
-/** L'image d'une carte ; les paroles et les faits n'en ont pas. */
-function artOf(bundle, kind, item) {
+/** L'image d'une carte, dans un carré de `size` pixels ; les paroles et les faits n'en ont pas. */
+function artOf(bundle, kind, item, size = 120) {
   if (kind === 'niveaux') return levelThumb(bundle, item);
   if (!item.sprites) return null;
   const rows = item.sprites.portrait || item.sprites.repos || item.sprites.image;
-  const scale = Math.max(2, Math.floor(120 / Math.max(rows.length, rows[0].length)));
+  const scale = Math.max(size < 120 ? 1 : 2, Math.floor(size / Math.max(rows.length, rows[0].length)));
   return spriteElement(rows, bundle.palette, scale);
 }
 
-/** Sur une carte, la source tient en une ligne : le média, cliquable. */
-const shortSource = (item) => h('p', { className: 'source' }, 'Source : ', link(item.source.url, item.source.titre.split(' — ')[0]));
+const SIGNS = { richesses: '€', droits: '§', ordre: '!', democratie: '✓', programme: '★', luttes: '✊' };
 
-const quoteBlock = (quote) => h('blockquote', {}, `« ${quote.texte} »`,
-  h('cite', {}, `${quote.auteur}, ${frenchDate(quote.date)} · `, link(quote.source.url, 'source')));
+/** Sur une carte compacte sans dessin : le mot d'une parole, la pancarte, le bandeau, ou le signe d'un thème. */
+function emblem(kind, item) {
+  if (kind === 'citations') return h('span', { className: 'mot' }, item.mot || '« »');
+  if (kind === 'pancartes' || kind === 'manchettes') return h('span', { className: 'ecrit' }, item.texte);
+  return h('span', { className: 'signe' }, SIGNS[item.theme] || '?');
+}
+
+/** Sous une carte compacte : son nom ; pour une pancarte ou un bandeau, où et quand on l'a vu. */
+const shortName = (kind, item) => (kind === 'pancartes' || kind === 'manchettes' ? item.credit.split(' — ')[0] : cardName(item));
+
+/** Sur une carte, la source tient en une ligne : le média, cliquable. */
+const shortSource = (item) => h('p', { className: 'source' }, 'Source : ', link(item.source.url, sourceName(item)));
+
+const quoteBlock = (quote) => h('blockquote', {}, `« ${quote.texte} »`, h('cite', {}, signature(quote)));
 
 /** Les lignes « d'où ça vient » : la citation exacte et la fiche sourcée attachées à la carte. */
 function references(bundle, item) {
@@ -163,7 +220,7 @@ function references(bundle, item) {
 
 function facts(kind, item) {
   if (kind === 'heros') {
-    return [[hearts(item.pv), `  vitesse ${bar(item.vitesse, 200)}  saut ${bar(item.saut, 4.5)}`],
+    return [`encaisse ${item.pv} coups  vitesse ${bar(item.vitesse, 200)}  saut ${bar(item.saut, 4.5)}`,
       item.speciale?.nom && `Spéciale : ${item.speciale.nom}`];
   }
   if (kind === 'ennemis') {
@@ -185,14 +242,16 @@ function facts(kind, item) {
 function textBody(kind, item) {
   if (kind === 'pancartes' || kind === 'manchettes') {
     const [where, url] = item.credit.split(' — ');
-    return [h('p', { className: 'dapres' }, where), url && h('p', { className: 'source' }, link(url, 'source'))];
+    return [where && h('p', { className: 'dapres' }, where), url && h('p', { className: 'source' }, link(url, 'source'))];
   }
   if (kind === 'citations') {
     return [h('blockquote', {}, `« ${item.texte} »`),
-      h('p', { className: 'dapres' }, [item.fonction, frenchDate(item.date)].filter(Boolean).join(', ')),
-      h('p', {}, item.contexte), shortSource(item)];
+      h('p', { className: 'dapres' }, link(item.source.url, [item.fonction, frenchDate(item.date)].filter(Boolean).join(', '))),
+      item.contexte && h('details', { className: 'portee' }, h('summary', {}, 'Le contexte'), h('p', {}, item.contexte))];
   }
-  return [h('p', {}, item.texte), item.portee && h('p', { className: 'dapres' }, item.portee), shortSource(item)];
+  // Un fait tient en une phrase ; ce qu'il couvre exactement se déplie.
+  return [h('p', {}, item.texte), shortSource(item),
+    item.portee && h('details', { className: 'portee' }, h('summary', {}, 'Ce que ça couvre'), h('p', {}, item.portee))];
 }
 
 /**
@@ -204,7 +263,9 @@ export function collectionCard(bundle, card, found = true) {
   const { kind, badge, item, number } = card;
   const where = whereToFind(bundle, kind, item);
   const art = artOf(bundle, kind, item);
-  const head = h('header', {}, h('span', {}, `N° ${String(number).padStart(3, '0')}`), h('span', { className: 'genre' }, badge));
+  const rarity = found && rarityName(item);
+  const head = h('header', {}, h('span', {}, `N° ${String(number).padStart(3, '0')}`),
+    h('span', { className: `genre${rarity ? ` rarete-${item.rarete}` : ''}` }, rarity ? `${badge} · ${rarity}` : badge));
   const picture = art ? h('div', { className: 'vignette' }, art) : h('div', { className: 'vignette vide' }, found ? '' : '?');
   if (!found) {
     return h('article', { className: `carte ${kind} cachee` }, head, picture,
@@ -218,6 +279,73 @@ export function collectionCard(bundle, card, found = true) {
     art ? references(bundle, item) : textBody(kind, item),
     facts(kind, item).filter(Boolean).map((line) => h('p', { className: 'stats' }, line)),
     where.length && ['heros', 'recrues', 'ennemis', 'boss'].includes(kind) ? h('p', { className: 'indice' }, `Vu dans : ${where.join(', ')}`) : null);
+}
+
+/**
+ * Une carte compacte : numéro, image ou pictogramme, nom. Toutes de la même taille.
+ * @param {{found?: boolean, fresh?: boolean, onOpen?: Function}} options  `fresh` : badge « Nouveau »
+ */
+export function miniCard(bundle, card, { found = true, fresh = false, onOpen = null } = {}) {
+  const { kind, item, number } = card;
+  const art = artOf(bundle, kind, item, 56);
+  const rare = found && item.rarete > 0;
+  return h('button', { type: 'button', className: `carte-mini ${kind}${found ? '' : ' cachee'}${rare ? ` rarete-${item.rarete}` : ''}`, onclick: onOpen },
+    h('span', { className: 'numero' }, `N° ${String(number).padStart(3, '0')}`, rare && h('b', {}, '★'.repeat(item.rarete))),
+    fresh && h('span', { className: 'nouveau' }, 'Nouveau'),
+    h('span', { className: 'vignette' }, art || (found ? emblem(kind, item) : h('span', { className: 'signe' }, '?'))),
+    h('span', { className: 'nom' }, found ? shortName(kind, item) : '???'));
+}
+
+/**
+ * Ouvre une carte en grand, par-dessus l'écran, avec ses références.
+ * Se ferme d'un toucher à côté, avec Échap ou avec « Fermer ». `actions` : boutons ajoutés au pied.
+ */
+export function openCard(bundle, card, { found = true, actions = [] } = {}) {
+  const close = () => overlay.remove();
+  const overlay = h('div', {
+    className: 'carte-ouverte',
+    onclick: (e) => e.target === overlay && close(),
+    onkeydown: (e) => {
+      if (e.key !== 'Escape') return;
+      e.stopPropagation(); // Échap ferme la carte, pas l'écran
+      close();
+    },
+  }, h('div', { className: 'cadre' },
+    collectionCard(bundle, card, found),
+    h('div', { className: 'pied' }, actions, h('button', { type: 'button', className: 'discret fermer', onclick: close }, 'Fermer'))));
+  (document.getElementById('ecran') || document.body).append(overlay);
+  overlay.querySelector('.fermer').focus({ preventScroll: true });
+  return overlay;
+}
+
+/** Une barre de progression : trouvées sur total. */
+export const progress = (found, total) =>
+  h('span', { className: 'jauge', title: `${found} / ${total}` }, h('i', { style: `width: ${total ? Math.round((found / total) * 100) : 0}%` }));
+
+/**
+ * La grille d'un rayon : des cartes compactes ; on en touche une, elle s'ouvre.
+ * `actionsFor(carte)` : les boutons à montrer au pied d'une carte trouvée (« Jouer avec »).
+ */
+export function shelfGrid(bundle, shelf, save = null, actionsFor = () => []) {
+  return h('div', { className: 'grille-album' }, allCards(bundle).filter((c) => c.shelf === shelf).map((c) => {
+    const found = !save || isFound(save, c.kind, cardId(c.item));
+    return miniCard(bundle, c, {
+      found, fresh: Boolean(save) && found && isFresh(save, c),
+      onOpen: () => openCard(bundle, c, { found, actions: found ? actionsFor(c) : [] }),
+    });
+  }));
+}
+
+/**
+ * Ce qui a été débloqué pendant un niveau, en rangée : elles se retournent une à une.
+ * @param {string[]} keys  clés de sauvegarde, « rayon:identifiant »
+ */
+export function wonCards(bundle, keys) {
+  return h('div', { className: 'debloquees' }, cardsByKeys(bundle, keys).map((c, i) => {
+    const mini = miniCard(bundle, c, { onOpen: () => openCard(bundle, c) });
+    mini.style.animationDelay = `${Math.min(i, 30) * 70}ms`;
+    return mini;
+  }));
 }
 
 /** Combien de cartes trouvées, sur combien ? `save` nul : tout compte comme trouvé (Galerie). */

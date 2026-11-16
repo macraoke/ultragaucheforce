@@ -1,0 +1,11 @@
+# Mobilisations de soignants : pancartes vues et slogans scandés, relevés dans la presse.
+# Une ligne = une pancarte : TEXTE | où et quand — source
+BLOUSE BLANCHE, COLÈRE NOIRE | vue à Paris, mai 2020 — https://www.ici.fr/infos/societe/blouse-blanche-colere-noire-les-soignants-collent-leur-colere-sur-les-murs-de-paris-1589877172
+NI HÉROS, NI ESCLAVE | vue à Paris, mai 2020 — https://www.ici.fr/infos/societe/blouse-blanche-colere-noire-les-soignants-collent-leur-colere-sur-les-murs-de-paris-1589877172
+INFIRMIERS MÉPRISÉS, PATIENTS EN DANGER | scandé à Paris, nov. 2016 — https://www.ouest-france.fr/sante/greve-dans-les-hopitaux-les-blouses-blanches-dans-la-rue-4597396
+GRÈVER, C'EST RÊVER GRAVE. | scandé à Grenoble, juin 2020 — https://www.ici.fr/infos/sante-sciences/grenoble-nouvelle-manifestation-des-professionnels-de-sante-pour-l-hopital-public-1593530554
+L’HÔPITAL N'EST PAS À VENDRE. | vue à Grenoble, juin 2020 — https://www.ici.fr/infos/sante-sciences/grenoble-nouvelle-manifestation-des-professionnels-de-sante-pour-l-hopital-public-1593530554
+MACRON, TES MÉDAILLES, ON N'EN VEUT PAS. ON VEUT DE L'ARGENT ! | vue à Grenoble, juin 2020 — https://www.ici.fr/infos/sante-sciences/grenoble-nouvelle-manifestation-des-professionnels-de-sante-pour-l-hopital-public-1593530554
+HÔPITAL PUBLIC EN URGENCE VITALE | vue à Paris, déc. 2019 — https://www.ouest-france.fr/economie/greve/direct-greve-du-17-decembre-des-manifestations-partout-en-france-trafic-sncf-et-ratp-perturbe-6657335
+HÔPITAL EN SOUS-FRANCE | vue à Paris, déc. 2019 — https://www.ouest-france.fr/economie/greve/direct-greve-du-17-decembre-des-manifestations-partout-en-france-trafic-sncf-et-ratp-perturbe-6657335
+LA SANTÉ N’A PAS DE PRIX, LES SOIGNANTS SI | vue à Carhaix, nov. 2026 — https://www.ouest-france.fr/sante/hopital/la-sante-na-pas-de-prix-les-soignants-si-a-carhaix-un-debrayage-pour-reclamer-une-hausse-de-salaires-8310bdfa-df5e-11f1-8a68-1e9f9f2c4ff6

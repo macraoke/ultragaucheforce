@@ -5,6 +5,7 @@ vitesse: 0
 deplacement: fixe
 reaction: rien
 fin: panne
+camp: pouvoir
 largeur: 32
 hauteur: 32
 debordement: 500

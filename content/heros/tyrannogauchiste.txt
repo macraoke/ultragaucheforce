@@ -6,7 +6,7 @@ vitesse: 125
 saut: 3
 largeur: 12
 hauteur: 16
-citation: darmanin-terrorisme-intellectuel
+citation: ciotti-tyranno-gauchistes
 fiche: impots-milliardaires
 auteur: UltraGauche Force
 

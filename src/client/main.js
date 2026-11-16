@@ -11,8 +11,8 @@ import { Screens, Hud } from './ui.js';
 import { showHeroCard } from './herocard.js';
 import { showTaxScene } from './tax.js';
 import { showAtelier } from './atelier.js';
-import { loadSave, storeSave, discover } from './save.js';
-import { cardName, citationOfWord, isLongSign } from './collection.js';
+import { loadSave, storeSave, discover, isFound } from './save.js';
+import { cardName, citationOfWord, levelOrder, rarityName } from './collection.js';
 import { registerServiceWorker } from './sw-register.js';
 
 const bundle = await (await fetch('content.json')).json();
@@ -31,7 +31,7 @@ let current = null; // { id, level } du niveau en cours
 let custom = null; // niveau de l'Atelier en cours de test
 let begin = null; // le carton d'ouverture attend : fonction qui lance vraiment le niveau
 let bot = {};
-let written = []; // banderoles et tags du niveau que le héros n'a pas encore lus
+let won = []; // clés de ce qui a été débloqué depuis le début du niveau : la rangée de l'écran de fin
 let acc = 0;
 let last = performance.now();
 
@@ -44,6 +44,7 @@ radio.onAsk = () => {
 function applyOptions() {
   audio.enabled = save.options.son;
   renderer.reduced = save.options.sobre;
+  document.body.classList.toggle('sobre', save.options.sobre); // la feuille de style coupe ses animations
   radio.setEnabled(save.options.musique);
   if (save.options.musique) radio.play(mode === 'playing' && current ? current.level.musique || current.id : 'menu');
 }
@@ -64,6 +65,7 @@ const screens = new Screens(screenRoot, {
     options: () => applyOptions(),
     learn: (ids) => ids.forEach((id) => collect('fiches', id, true)),
     back: () => (mode === 'paused' ? screens.pause() : screens.menu()),
+    playing: () => mode === 'paused',
   },
 });
 
@@ -81,7 +83,7 @@ function setMode(next) {
 
 /** Fond du menu : une vraie partie, jouée par le robot de test. */
 function attract() {
-  const id = bundle.campagne[0];
+  const id = levelOrder(bundle)[0];
   if (!id) return (game = null);
   game = new Game(bundle, id, { seed: Math.floor(Math.random() * 1e9), invincible: true });
   bot = {};
@@ -98,62 +100,61 @@ function toMenu() {
   radio.play('menu');
 }
 
+/** Une note à l'écran reste courte : le texte entier est dans la Collection. */
+const short = (text, max = 44) => (text.length > max ? `${text.slice(0, max - 1).trimEnd()}…` : text);
+
 /**
  * Une rencontre : la carte entre dans la Collection, avec la citation et le fait qui l'expliquent.
  * La première fois, on l'annonce (sauf `quiet`).
  */
 function collect(kind, id, quiet = false) {
   const lines = kind === 'pancartes' || kind === 'manchettes'; // sans fiche : identifiées par leur texte
-  const item = lines ? bundle[kind].find((p) => p.credit && p.texte === id) : bundle[kind]?.[id];
+  const item = lines ? bundle[kind].find((p) => p.texte === id) : bundle[kind]?.[id];
   if (!item || !discover(save, kind, id)) return;
-  if (!quiet) hud.toast(`Nouvelle carte : ${cardName(item)}`);
+  won.push(`${kind}:${id}`);
+  if (kind === 'pancartes') hud.toast(`Pancarte ${rarityName(item)} débloquée : « ${short(item.texte)} »`, `rarete-${item.rarete}`);
+  else if (!quiet) hud.toast(`Débloqué : ${cardName(item)}`);
   collect('citations', item.citation, true);
   for (const fiche of [item.fiche].flat()) collect('fiches', fiche, true);
-  for (const slogan of item.slogan || []) collect('pancartes', slogan, true); // une recrue arrive avec ses slogans
 }
 
-/** Une pancarte trop longue pour le cortège se gagne à un piquet de grève, et à la fin d'un niveau. */
-function collectLongSign() {
-  const next = bundle.pancartes.find((p) => p.credit && isLongSign(p) && !save.decouvertes.includes(`pancartes:${p.texte}`));
-  if (next) collect('pancartes', next.texte);
-}
-
-/** Ce que porte le cortège entre dans la Collection : de vraies pancartes, les drapeaux des luttes. */
+/** Les drapeaux des luttes que porte le cortège se débloquent en les voyant. (Les pancartes, elles, se tirent au hasard.) */
 function collectCortege() {
-  for (const m of game.cortege) {
-    if (m.kind === 'pancarte') collect('pancartes', m.label, true);
-    else if (m.kind === 'drapeau') collect('drapeaux', m.label, true);
-  }
+  for (const m of game.cortege) if (m.kind === 'drapeau') collect('drapeaux', m.label, true);
 }
 
-/** Passer devant une banderole ou un tag, c'est l'avoir lu. */
-function readSigns() {
-  const { hero } = game;
-  written = written.filter((d) => {
-    if (Math.abs(d.x - hero.x) > 96 || Math.abs(d.y - hero.y) > 96) return true;
-    collect('pancartes', renderer.written(d), true);
-    return false;
-  });
+/**
+ * Le personnage de départ : celui que le joueur a choisi ; sinon un de ceux qu'il a débloqués, au hasard ;
+ * et la toute première fois, n'importe lequel, au hasard.
+ */
+function startingHero() {
+  const playable = Object.values(bundle.heros).filter((x) => x.statut === 'jouable').map((x) => x.id);
+  const mine = playable.filter((x) => isFound(save, 'heros', x));
+  if (mine.includes(save.heros)) return save.heros;
+  const pool = mine.length ? mine : playable;
+  return pool[Math.floor(Math.random() * pool.length)] ?? '';
 }
 
 function start(id, level = null) {
   custom = level;
+  const again = current?.id === (id ?? 'atelier'); // « Recommencer » : ce qui a déjà été débloqué dans ce niveau reste
   current = { id: id ?? 'atelier', level: level ?? bundle.niveaux[id] };
-  game = new Game(bundle, id, { seed: Math.floor(Math.random() * 1e9), level });
+  // Dans l'Atelier, on essaie le niveau avec le héros que dit sa fiche, pas celui de la sauvegarde.
+  game = new Game(bundle, id, { seed: Math.floor(Math.random() * 1e9), level, hero: level ? '' : startingHero() });
   renderer.snap(game);
   hud.reset();
+  if (!begin && !again) won = []; // un changement de héros sur le carton d'ouverture garde ce qui a déjà été débloqué
   if (id) collect('niveaux', id, true);
   collect('citations', current.level.citation, true);
   collect('heros', game.hero.def.id, true);
   collectCortege();
-  written = game.decors.filter((d) => bundle.decors[d.id]?.ecrit);
   setMode('paused');
   begin = () => {
     begin = null;
     setMode('playing');
     radio.play(current.level.musique || current.id);
   };
-  screens.intro(current.level, () => begin?.());
+  screens.intro(current.level, () => begin?.(), game.hero.def.id, !level);
 }
 
 function openAtelier() {
@@ -174,24 +175,26 @@ async function win() {
   setMode('over');
   audio.play('victoire');
   const { level, id } = current;
-  const boss = bundle.boss[level.boss];
+  const boss = game.boss?.def; // celui qu'on vient d'affronter : il est tiré au hasard
   if (boss?.fortune.montant) {
     const learned = await showTaxScene(screenRoot, bundle, boss, { audio, hero: game.hero.def });
     learned.forEach((f) => collect('fiches', f, true));
     collect('boss', boss.id, true);
   }
   for (const fiche of [level.fiche].flat()) collect('fiches', fiche, true);
-  collectLongSign();
-  const index = bundle.campagne.indexOf(id);
-  if (index >= 0) {
-    save.termines[id] = true;
-    storeSave(save);
-  }
+  const order = levelOrder(bundle);
+  const index = order.indexOf(id);
+  // Le score d'un niveau, c'est la taille de la manif à l'arrivée ; on garde le record.
+  const best = save.records[id] || 0;
+  if (!custom && game.crowd > best) save.records[id] = game.crowd;
+  if (index >= 0) save.termines[id] = true;
+  storeSave(save);
   screens.end({
-    level, stats: game.stats, time: game.time, announced: game.announced(), counts: game.counts(),
-    next: index >= 0 ? bundle.campagne[index + 1] : null,
-    last: index === bundle.campagne.length - 1,
+    level, stats: game.stats, time: game.time, crowd: game.crowd, won, best: custom ? null : best,
+    next: index >= 0 ? order[index + 1] : null,
+    last: index === order.length - 1,
   });
+  won = []; // rejouer ce niveau repart d'une rangée vide
 }
 
 /** Réagit aux événements émis par la simulation pendant un pas. */
@@ -214,11 +217,12 @@ function handle(events) {
       if (e.kind === 'mot') collect('citations', citationOfWord(bundle, e.id)?.id, true);
       else collect({ ennemi: 'ennemis', recrue: 'recrues' }[e.kind] || e.kind, e.id);
     } else if (e.type === 'recruit') collectCortege();
-    else if (e.type === 'checkpoint') collectLongSign();
+    else if (e.type === 'sign') collect('pancartes', e.text);
     else if (e.type === 'heroCard') {
       const hero = bundle.heros[e.hero];
       collect('heros', hero.id, true);
       collectCortege(); // les soutiens venus avec le camarade libéré
+      // Le grand carton joue à chaque libération.
       setMode('card');
       showHeroCard(bundle, hero, { audio, reduced: save.options.sobre }).then(() => {
         if (mode !== 'card') return;
@@ -252,7 +256,6 @@ function frame(now) {
       else handle(events);
     }
     if (steps === 6) acc = 0; // onglet ralenti : on ne rattrape pas le retard
-    if (!demo && written.length) readSigns();
     renderer.tick(dt);
     if (demo && game.status !== 'playing') attract();
   }
@@ -267,11 +270,23 @@ input.onPause = togglePause;
 input.onAny = () => audio.unlock();
 document.getElementById('pause').onclick = togglePause;
 addEventListener('pointerdown', () => audio.unlock(), true);
+const PHONE = 950; // plus grand côté d'un téléphone, en pixels : au-delà (tablette, ordinateur tactile), on ne pivote pas
+
 function layout() {
+  const root = document.documentElement;
+  const thumbs = document.body.classList.contains('tactile');
+  // Au pouce, sur téléphone, le jeu se joue en paysage : tenu debout, tout pivote d'un quart de tour.
+  // Pas en pleine saisie : le clavier virtuel rétrécit la fenêtre et ferait basculer l'écran.
+  const typing = ['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName);
+  if (!typing) root.classList.toggle('pivote', thumbs && innerHeight > innerWidth && innerHeight < PHONE);
+  // La hauteur visible de l'écran de jeu : les styles s'en servent à la place de `vh`, qui ignore le pivot.
+  const height = root.classList.contains('pivote') ? innerWidth : innerHeight;
+  root.style.setProperty('--vh', `${height / 100}px`);
+  root.style.setProperty('--vw', `${(root.classList.contains('pivote') ? innerHeight : innerWidth) / 100}px`);
+  root.classList.toggle('bas', height <= 480);
   renderer.resize();
-  // Au pouce et en paysage, les boutons couvrent le bas de l'écran : on remonte l'action.
-  const thumbs = document.body.classList.contains('tactile') && innerWidth > innerHeight;
-  renderer.anchor = thumbs ? 0.64 : 0.8;
+  renderer.anchor = thumbs ? 0.58 : 0.62; // les pouces occupent les coins du bas : on remonte un peu l'action
+  input.refreshTouch();
 }
 addEventListener('resize', layout);
 document.addEventListener('visibilitychange', () => {
@@ -284,6 +299,15 @@ addEventListener('touchstart', () => {
   document.body.classList.add('tactile');
   layout();
 }, { once: true, passive: true });
+// Au premier toucher, on demande le plein écran, puis le paysage : là où le navigateur le permet.
+addEventListener('pointerup', function ask(e) {
+  if (e.pointerType !== 'touch') return; // un clic de souris d'abord ne doit pas user la demande
+  removeEventListener('pointerup', ask);
+  if (document.fullscreenElement) return;
+  document.documentElement.requestFullscreen?.({ navigationUI: 'hide' })
+    ?.then(() => screen.orientation?.lock?.('landscape'))
+    .catch(() => {}); // refusé (iPhone, réglage du navigateur) : le pivot de la page fait le travail
+});
 
 // Crochet de débogage (`?debug`) : piloter et inspecter la partie sans jouer en temps réel.
 if (new URLSearchParams(location.search).has('debug')) {

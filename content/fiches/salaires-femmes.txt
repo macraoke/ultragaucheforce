@@ -1,0 +1,10 @@
+titre: Les femmes gagnent 21,8 % de moins
+theme: richesses
+texte: En 2024, dans le secteur privé, le revenu salarial moyen des femmes est inférieur de 21,8 % à celui des hommes.
+portee: Secteur privé seulement. Le revenu salarial additionne tous les salaires de l'année : l'écart inclut le temps partiel et les périodes sans emploi. La même page donne les autres mesures : « même à temps de travail identique, le salaire moyen des femmes est inférieur à celui des hommes, de 14,0 % », et 3,6 % « à emploi comparable ».
+periode: 2024 (publié le 26 février 2026)
+choc: oui
+source.titre: Insee — Écart de salaire entre femmes et hommes en 2024
+source.url: https://www.insee.fr/fr/statistiques/8743657
+source.nature: officielle
+verifie: 2026-11-16

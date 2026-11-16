@@ -17,7 +17,6 @@
 //   recruits     [{ id, def, x, y, w, h, joined, animTime }] : à rejoindre en les touchant ou en leur tendant un tract
 //   addCrowd(n)  des gens rejoignent · disperse(part) en disperse une part (jamais sous 1 avec un cortège)
 //   power()      multiplicateur des dégâts des projectiles du héros : le nombre fait la force
-//   counts()     { syndicats, prefecture } : les deux comptages
 //   kettle       null | { x, t, limit, x0, x1 } : nasse en cours (x0, x1 = bords intérieurs des lignes)
 //   Ennemis : blocking, aim, jet, beam, rush, rope (voir enemy.js) · boss.seated (voir boss.js)
 //
@@ -33,13 +32,15 @@ import { updateProjectiles } from './projectile.js';
 import { updateBoss, hurtBoss } from './boss.js';
 import { loadLevel, toList, playable } from './level.js';
 import { updateProps } from './props.js';
-import { updateRecruits, updateCortege, syncCortege, updateKettle } from './manif.js';
+import { updateRecruits, updateCortege, syncCortege, updateKettle, drawSign, bringSigns } from './manif.js';
 
 export const DT = 1 / 60;
 
-const PANIC_STEPS = [34, 67]; // seuils ALERTE puis HYSTÉRIE
+export const PANIC_STEPS = [34, 67]; // seuils ALERTE puis HYSTÉRIE
+const IGNITE_RANGE = 20 * TILE; // une poubelle ne prend feu qu'à cette distance du héros : on doit le voir
 const MAX_REINFORCEMENTS = 4; // renforts bornés : la panique ne rend jamais un niveau infaisable
 const FUSE = 0.12; // délai entre la destruction d'un tonneau et son explosion (réaction en chaîne)
+export const START_LIVES = 1; // on part avec un seul personnage : les autres sortent des gardes à vue
 const RESPAWN_DELAY = 0.8;
 const TRAIL_LENGTH = 600;
 const MAX_EVENTS = 400;
@@ -49,8 +50,10 @@ export class Game {
   /**
    * @param {object} bundle   contenu assemblé par `buildContent`
    * @param {string} levelId  identifiant dans `bundle.niveaux`
-   * @param {{seed?: number, invincible?: boolean, level?: object}} opts
-   *        `level` remplace `bundle.niveaux[levelId]` (Atelier, tests)
+   * @param {{seed?: number, invincible?: boolean, level?: object, hero?: string, lives?: number}} opts
+   *        `level` remplace `bundle.niveaux[levelId]` (Atelier, tests) ;
+   *        `hero` : le héros de départ choisi par le joueur (sinon celui du niveau) ;
+   *        `lives` : combien d'exemplaires de ce héros dans la pile de départ (un seul par défaut)
    */
   constructor(bundle, levelId, opts = {}) {
     const level = opts.level ?? bundle.niveaux?.[levelId];
@@ -60,17 +63,20 @@ export class Game {
     this.levelId = level.id ?? levelId;
     this.rng = makeRng(opts.seed ?? 1);
     this.invincible = Boolean(opts.invincible);
+    this.choice = opts.hero ?? ''; // lu par loadLevel
 
     this.events = [];
     this.status = 'playing';
     this.time = 0;
-    this.lives = 3;
+    // Les vies sont des personnages, empilés : on joue celui du dessus. Une garde à vue libérée en pose un de plus ;
+    // quand il tombe, on repart avec le suivant.
+    this.stack = [];
     this.panic = 0;
     this.panicLevel = 0;
     this.sign = null;
     this.stats = {
       breakdownsByPlayer: 0, breakdownsBySelf: 0, gassed: 0, tiles: 0, rescues: 0, tracts: 0, deaths: 0,
-      recruits: 0, dispersed: 0, overrun: 0,
+      recruits: 0, dispersed: 0, overrun: 0, overrunOrder: 0, signs: 0,
     };
 
     this.enemies = [];
@@ -79,11 +85,14 @@ export class Game {
     this.props = [];
     this.decors = [];
     this.cortege = [];
+    this.signs = []; // les pancartes arrivées dans la manif pendant cette partie, dans l'ordre
     this.boss = null;
     this.crowd = 0; // la manif : nombre de manifestants
     this.recruits = [];
     this.nasses = []; // repères « N » de la carte
+    this.fires = []; // les feux de poubelle allumés par la panique : { x, y } (centre, au sol)
     this.kettle = null;
+    this.kettleClock = 0; // secondes depuis la dernière nasse (niveaux à `nasse.rythme`)
 
     this.fuses = []; // explosions à retardement
     this.trail = []; // trace du héros, suivie par le cortège et les doubles
@@ -93,9 +102,9 @@ export class Game {
     this.headlines = 0;
     this.respawnTimer = 0;
     this.held = { jump: false, special: false };
-    this.signOffset = this.rng.int(1000);
 
     loadLevel(this); // world, hero, checkpoint, enemies, props, decors, boss
+    this.stack = Array(opts.lives ?? START_LIVES).fill(this.hero.def.id);
     this.recordTrail();
     this.addCrowd(level.manif ?? (level.cortege ? 10 : 0));
     this.discover('heros', this.hero.def.id);
@@ -108,7 +117,7 @@ export class Game {
     if (this.status !== 'playing') return;
     const input = {
       left: Boolean(actions.left), right: Boolean(actions.right), jump: Boolean(actions.jump),
-      fire: Boolean(actions.fire),
+      up: Boolean(actions.up), down: Boolean(actions.down), fire: Boolean(actions.fire),
       jumpPressed: Boolean(actions.jump) && !this.held.jump,
       specialPressed: Boolean(actions.special) && !this.held.special,
     };
@@ -247,6 +256,7 @@ export class Game {
   hurtHero(amount) {
     const { hero } = this;
     if (hero.dead || amount <= 0 || this.invincible || hero.invuln > 0) return;
+    // Un personnage encaisse quelques coups (`pv` de sa fiche) ; au dernier, le précédent de la pile prend sa place.
     hero.hp -= amount;
     hero.invuln = 1.4;
     this.sfx('degat', hero.x);
@@ -271,7 +281,8 @@ export class Game {
     e.kick = 0;
     e.framing = false;
     e.bubble = { text: strike ? 'EN GRÈVE !' : 'EN PANNE', t: 2.5 };
-    this.stats[team === 'ordre' ? 'breakdownsBySelf' : 'breakdownsByPlayer']++;
+    // Le bilan des « blessés » ne compte que les unités de l'ordre : ni un duplex, ni un ministre.
+    if (e.def.camp === 'ordre') this.stats[team === 'ordre' ? 'breakdownsBySelf' : 'breakdownsByPlayer']++;
     this.sfx(strike ? 'greve' : 'panne', e.x);
     this.emit('debris', { x: e.x + e.w / 2, y: e.y + e.h / 2, color: 'h', n: 5 });
   }
@@ -290,6 +301,11 @@ export class Game {
 
   // ------------------------------------------------------------ vies, sauvetages, reprises
 
+  /** Le nombre de vies : la hauteur de la pile de personnages. */
+  get lives() {
+    return this.stack.length;
+  }
+
   killHero() {
     const { hero } = this;
     if (hero.dead) return;
@@ -299,7 +315,7 @@ export class Game {
     this.disperse(0.15); // sans son héros, une partie de la manif se disperse
     this.emit('death', {});
     this.sfx('mort', hero.x);
-    if (!this.invincible) this.lives--;
+    if (!this.invincible) this.stack.pop();
     if (this.lives <= 0) {
       this.status = 'lost';
       this.emit('lost', {});
@@ -310,9 +326,10 @@ export class Game {
 
   respawn() {
     const { hero } = this;
-    setHeroDef(hero, hero.def, this.checkpoint.x, this.checkpoint.y);
+    const next = this.bundle.heros?.[this.stack.at(-1)] || hero.def; // le personnage du dessus de la pile
+    setHeroDef(hero, next, this.checkpoint.x, this.checkpoint.y);
     Object.assign(hero, { vx: 0, vy: 0, dead: false, invuln: 2, gasTime: 0, onGround: false });
-    this.emit('respawn', {});
+    this.emit('respawn', { hero: next.id });
   }
 
   /** Libère le camarade d'une cage : +1 vie, changement de héros, fiche « droits ». Une seule fois par cage. */
@@ -321,7 +338,6 @@ export class Game {
     cage.on = true;
     const { hero, bundle, level } = this;
     this.stats.rescues++;
-    this.lives++;
 
     // Héros suivant : la liste du niveau s'il en a une, sinon un autre héros jouable au hasard.
     let next = toList(level.camarades).map((id) => bundle.heros?.[id])[this.stats.rescues - 1];
@@ -333,8 +349,9 @@ export class Game {
     this.unstick(hero);
     hero.invuln = Math.max(hero.invuln, 1);
 
+    this.stack.push(next.id); // une vie de plus, et c'est lui qu'on joue
     this.sfx('sauvetage', cage.x);
-    this.emit('heroCard', { hero: next.id });
+    this.emit('heroCard', { hero: next.id, x: cage.x + cage.w / 2, y: cage.y });
     this.discover('heros', next.id);
     const card = Object.values(bundle.fiches || {}).find((f) => f.theme === 'droits' && !this.unlocked.includes(f.id));
     if (card) {
@@ -373,7 +390,7 @@ export class Game {
     if (this.stats.tracts === 1) {
       this.addPanic(6);
       const pool = this.banners();
-      if (pool.length) this.headline(this.rng.pick(pool)); // le premier tract fait la une, sans entamer les manchettes du niveau
+      if (pool.length) this.headline(drawSign(this, pool)); // le premier tract fait la une, sans entamer les manchettes du niveau
     }
   }
 
@@ -384,16 +401,14 @@ export class Game {
   headline(text = null) {
     const own = this.level.manchette || [];
     const pool = this.banners();
-    const pick = text ?? own[this.headlines++] ?? (pool.length ? this.rng.pick(pool) : null);
+    const pick = text ?? own[this.headlines++] ?? drawSign(this, pool);
     if (!pick) return;
     this.emit('headline', typeof pick === 'string' ? { text: pick } : { text: pick.texte, credit: pick.credit });
   }
 
-  /** Le fonds commun des alertes : les vrais bandeaux (ceux qui ont un crédit), s'il y en a. */
+  /** Le fonds commun des alertes. */
   banners() {
-    const all = this.bundle.manchettes || [];
-    const sourced = all.filter((m) => m.credit);
-    return sourced.length ? sourced : all;
+    return this.bundle.manchettes || [];
   }
 
   /** La panique ne redescend jamais ; chaque palier franchi déclenche une manchette et des renforts bornés. */
@@ -405,8 +420,52 @@ export class Game {
       this.emit('panic', { level: this.panicLevel });
       this.sfx('palier', this.hero.x);
       this.headline();
-      this.reinforce(2);
+      // Une poubelle prend feu et une équipe télé vient la filmer : elle compte parmi les renforts du palier.
+      this.reinforce(this.ignite() ? 1 : 2);
     }
+  }
+
+  /**
+   * La panique monte : le décor inflammable (`brule`) le plus proche du héros prend feu, de préférence devant lui,
+   * et une unité télé de la légende (réaction `cadre`, pas un plateau fixe) arrive pour filmer ce feu, pas la manif.
+   * @returns {boolean} vrai si une équipe a été envoyée
+   */
+  ignite() {
+    const { hero, world, bundle, level } = this;
+    const cx = hero.x + hero.w / 2;
+    const exit = this.props.find((p) => p.kind === 'sortie');
+    const ahead = exit && exit.x < hero.x ? -1 : 1;
+    const centre = (d) => d.x + (bundle.decors[d.id].sprites.image[0]?.length || TILE) / 2;
+    const reach = (d) => Math.abs(centre(d) - cx) + ((centre(d) - cx) * ahead < 0 ? IGNITE_RANGE / 2 : 0); // derrière : moins volontiers
+    const bin = this.decors
+      .filter((d) => bundle.decors?.[d.id]?.brule && !d.fire && Math.abs(centre(d) - cx) <= IGNITE_RANGE && Math.abs(d.y - (hero.y + hero.h)) <= 6 * TILE)
+      .sort((a, b) => reach(a) - reach(b))[0];
+    if (!bin) return false;
+    const fire = { x: centre(bin), y: bin.y };
+    bin.fire = fire;
+    this.fires.push(fire);
+    this.emit('fire', { x: fire.x, y: fire.y });
+
+    if (this.reinforcements >= MAX_REINFORCEMENTS) return false;
+    const crews = Object.values(level.legende || {})
+      .filter((ref) => ref.type === 'ennemi' && bundle.ennemis?.[ref.id]?.reaction === 'cadre')
+      .map((ref) => bundle.ennemis[ref.id])
+      .filter((def) => def.deplacement !== 'fixe');
+    // À pied de préférence : on voit l'équipe arriver. Sinon un drone.
+    const def = crews.find((d) => d.deplacement !== 'vol') || crews[0];
+    if (!def) return false;
+    const from = Math.max(TILE, Math.min(world.w * TILE - TILE, fire.x + ahead * 9 * TILE));
+    let feet = fire.y - 4 * TILE; // un drone arrive par les airs
+    if (def.deplacement !== 'vol') {
+      const tx = Math.floor(from / TILE);
+      let ty = Math.max(0, Math.floor(fire.y / TILE) - 4);
+      while (ty < world.h && (world.solid(tx, ty) || !world.solid(tx, ty + 1))) ty++;
+      if (ty >= world.h) return false; // pas de sol de ce côté : personne ne vient
+      feet = (ty + 1) * TILE;
+    }
+    this.spawnEnemy(def.id, from, feet, { state: 'alert', film: fire });
+    this.reinforcements++;
+    return true;
   }
 
   /** Renforts : de préférence des drones de PANIQUE TV, posés à distance fixe devant le héros. */
@@ -442,6 +501,7 @@ export class Game {
   addCrowd(n) {
     if (!(n > 0)) return;
     this.crowd += Math.round(n);
+    bringSigns(this, n);
     syncCortege(this);
   }
 
@@ -463,12 +523,6 @@ export class Game {
   /** Le nombre fait la force : multiplicateur des dégâts des projectiles du héros (1 quand il est seul). */
   power() {
     return 1 + Math.log10(1 + this.crowd) / 2;
-  }
-
-  /** Les deux comptages d'une manif. */
-  counts() {
-    // Le rapport des deux comptages de Paris, le 31 janvier 2023 : 500 000 selon la CGT, 87 000 selon la préfecture.
-    return { syndicats: this.crowd, prefecture: Math.max(1, Math.round((this.crowd * 87) / 500)) };
   }
 
   /** Signale une découverte (personnage, mot, panneau…) : une seule fois par partie. */
@@ -503,12 +557,6 @@ export class Game {
         if (this.crowd < e.def.debordement) this.addCrowd(Math.ceil(e.def.debordement * 0.04));
       }
     }
-  }
-
-  /** Le nombre de « blessés » annoncé par PANIQUE TV : il gonfle avec la panique, pas avec les faits. */
-  announced() {
-    const s = this.stats;
-    return Math.round(this.panic * 8.47 + (s.breakdownsByPlayer + s.breakdownsBySelf) * 47 + s.tracts * 0.5);
   }
 }
 

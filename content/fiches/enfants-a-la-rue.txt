@@ -1,0 +1,10 @@
+titre: 2 355 enfants sans hébergement
+theme: richesses
+texte: Dans la nuit du 18 au 19 août 2026, au moins 2 355 enfants sont restés sans solution d'hébergement après un appel au 115.
+portee: Comptage d'une seule nuit, à partir des demandes au 115 restées sans réponse ; « au moins » : les familles qui n'appellent pas ne sont pas comptées. Source associative. La page d'Unicef France qui porte le même chiffre a refusé l'accès ; seule la page de la Fédération a été lue. Le baromètre complet (PDF) n'a pas été ouvert.
+periode: nuit du 18 au 19 août 2026 (publié le 26 août 2026)
+choc: oui
+source.titre: Fédération des acteurs de la solidarité — Baromètre 2026 des Enfants à la rue
+source.url: https://www.federationsolidarite.org/ressources/barometre-des-enfants-a-la-rue-2026/
+source.nature: associative
+verifie: 2026-11-16

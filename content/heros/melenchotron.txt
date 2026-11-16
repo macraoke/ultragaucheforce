@@ -1,4 +1,5 @@
-nom: Le Mélenchotron
+nom: L'Ingénieur du chaos
+origine: Franz-Olivier Giesbert traite les insoumis d'« ingénieurs du chaos », dans Le Point, en septembre 2025.
 inspiration: Jean-Luc Mélenchon
 traitement: le tribun, en plus fort
 cri: LA RÉPUBLIQUE, C'EST MOI !
@@ -11,10 +12,10 @@ auteur: UltraGauche Force
 
 # Arme : la vague de verbe, courte portée, traverse tout.
 arme.type: tir
-arme.cadence: 3.5
+arme.cadence: 2
 arme.vitesse: 150
 arme.portee: 96
-arme.degats: 2
+arme.degats: 3
 arme.terrain: 1
 arme.perce: 1
 arme.taille: 14

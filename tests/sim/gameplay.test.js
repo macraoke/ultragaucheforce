@@ -26,7 +26,7 @@ test('sauvetage : exactement une vie de plus, un autre héros, une seule fois', 
   assert.notEqual(game.hero.def.id, before, 'le héros a changé');
   assert.equal(game.hero.hp, game.hero.def.pv, 'vie pleine');
   assert.equal(game.hero.charges, game.hero.def.speciale.charges, 'charges pleines');
-  assert.deepEqual(events.filter((e) => e.type === 'heroCard'), [{ type: 'heroCard', hero: game.hero.def.id }]);
+  assert.deepEqual(events.filter((e) => e.type === 'heroCard').map((e) => e.hero), [game.hero.def.id]);
   assert.deepEqual(events.filter((e) => e.type === 'card'), [{ type: 'card', id: 'garde-a-vue' }], 'une fiche « droits » débloquée');
   assert.ok(events.some((e) => e.type === 'sfx' && e.id === 'sauvetage'));
 
@@ -109,6 +109,31 @@ test('un héros et son arme ajoutés par un simple fichier sont jouables, sans u
   }
 });
 
+test('creuser : sans avancer, bas + tir perce sous les pieds, haut + tir perce le plafond', () => {
+  const ground = 10;
+  const lvl = () => flat({ draw: (put, row) => {
+    for (let y = row - 4; y <= row; y++) put(y, 6, 'TTTTT'); // un bloc de terre, quatre rangées au-dessus du sol d'acier
+    put(row - 5, 8, 'D');
+    put(row, 2, '.');
+  } });
+  const digger = settle(play(lvl()));
+  const top = digger.hero.y;
+  run(digger, 240, { down: true, fire: true });
+  assert.ok(digger.hero.y >= top + 4 * TILE, `le héros est descendu de ${(digger.hero.y - top) / TILE} tuiles`);
+  assert.equal(digger.world.at(8, ground), null, 'la terre sous lui a disparu jusqu’à l’acier');
+  assert.equal(digger.world.at(8, ground + 1)?.id, 'acier', 'l’acier ne se creuse pas');
+  assert.equal(digger.world.at(6, ground)?.id, 'terre', 'et il n’a creusé qu’un puits');
+
+  const walker = settle(play(lvl()));
+  run(walker, 60, { down: true, right: true, fire: true });
+  assert.equal(walker.hero.aim, 0, 'en avançant, on tire devant soi');
+  assert.equal(walker.world.at(8, ground - 4)?.id, 'terre');
+
+  const roof = settle(play(flat({ draw: (put, row) => put(row - 3, 0, 'TTTTTT') })));
+  run(roof, 60, { up: true, fire: true });
+  assert.equal(roof.world.at(2, ground - 3), null, 'le plafond est percé au-dessus de sa tête');
+});
+
 test('spéciale « onde » : repousse, étourdit et casse les planches autour', () => {
   const game = settle(play(flat({
     legende: { f: enemy('fonceur') },
@@ -168,6 +193,21 @@ test('spéciale « mur » : fait pousser des tuiles, jamais sur un personnage', 
 });
 
 // ---------------------------------------------------------------- automates
+
+test('bilan : seules les unités de l’ordre comptent parmi les « blessés », pas un duplex ni un ministre', () => {
+  const base = fixtureBundle();
+  const camera = { ...base.ennemis.statue, id: 'camera', camp: 'medias', bouclier: false };
+  const guard = { ...base.ennemis.statue, id: 'planton', bouclier: false };
+  const shoot = (id) => {
+    const bundle = { ...base, ennemis: { ...base.ennemis, camera, planton: guard } };
+    const game = settle(play(flat({ legende: { s: enemy(id) }, draw: (put, ground) => put(ground, 8, 's') }), { bundle }));
+    run(game, 120, { fire: true });
+    assert.equal(game.enemies[0].state, 'done');
+    return game.stats.breakdownsByPlayer;
+  };
+  assert.equal(shoot('planton'), 1);
+  assert.equal(shoot('camera'), 0);
+});
 
 test('bouclier : arrête les tirs de face, pas ceux de dos ni les projectiles « blindage »', () => {
   const statue = (start, bundle = fixtureBundle()) => settle(play(flat({
@@ -275,12 +315,10 @@ test('panique : premier tract, paliers, manchettes du niveau d’abord, renforts
   assert.equal(game.enemies.length, enemies + 2, 'deux renforts');
   assert.ok(game.enemies.slice(-2).every((e) => e.def.reaction === 'cadre'), 'des drones de PANIQUE TV');
 
-  const announced = game.announced();
   game.addPanic(40);
   events = game.events.splice(0);
   assert.equal(game.panicLevel, 2);
   assert.equal(events.find((e) => e.type === 'headline').text, 'MANCHETTE DU NIVEAU DEUX');
-  assert.ok(game.announced() > announced, 'le chiffre annoncé gonfle avec la panique');
 
   game.addPanic(500);
   assert.equal(game.panic, 100);
@@ -304,7 +342,7 @@ test('cortège : trois manifestants au départ, deux de plus par sauvetage, un p
   })));
   assert.equal(game.cortege.length, 3);
   assert.deepEqual(game.cortege.map((m) => m.kind), ['pancarte', 'drapeau', 'fanfare']);
-  assert.ok(['PANCARTE UN', 'PANCARTE DEUX'].includes(game.cortege[0].label));
+  assert.ok(['', 'PANCARTE UN', 'PANCARTE DEUX'].includes(game.cortege[0].label), 'une pancarte arrivée dans la manif, ou les mains vides');
   assert.equal(game.cortege[1].label, 'rouge');
   const events = run(game, 140, { right: true });
   assert.equal(game.cortege.length, 6);

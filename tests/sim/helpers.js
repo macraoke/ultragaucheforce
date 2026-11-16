@@ -38,7 +38,8 @@ export function flat({ width = 60, height = 12, draw = () => {}, ...extra } = {}
   return level(grid.map((r) => r.join('')), extra);
 }
 
-export const play = (lvl, opts = {}) => new Game(opts.bundle ?? fixtureBundle(), 'essai', { level: lvl, ...opts });
+/** Une partie sur un niveau d'essai. Trois personnages dans la pile de départ, pour éprouver les reprises. */
+export const play = (lvl, opts = {}) => new Game(opts.bundle ?? fixtureBundle(), 'essai', { level: lvl, lives: 3, ...opts });
 
 /** Avance de `steps` pas ; `actions` est un objet fixe ou une fonction (pas, partie) → actions. */
 export function run(game, steps, actions = {}) {

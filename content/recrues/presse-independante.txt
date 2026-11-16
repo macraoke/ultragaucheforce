@@ -1,0 +1,22 @@
+nom: La presse indépendante
+apport: 10
+slogan: TOUT LE MONDE VEUT FILMER LA POLICE
+fiche: filmer-la-police
+auteur: UltraGauche Force
+--- image
+...kkkk...
+..kwwwwk..
+..kkkkkk..
+..skssks..
+..ssssss..
+...ssss.HH
+..KKKKKHHc
+.KKwwKKHH.
+.KKKKKKs..
+.KKKKKK...
+..KKKKK...
+..nnnnnn..
+..nn..nn..
+..nn..nn..
+..nn..nn..
+.kkk.kkk..

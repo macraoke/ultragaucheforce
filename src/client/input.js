@@ -1,45 +1,92 @@
 // Entrées : clavier, tactile et manette, fondus en un seul état d'actions
-// { left, right, jump, fire, special } que la simulation lit à chaque pas.
+// { left, right, up, down, jump, fire, special } que la simulation lit à chaque pas.
 
 /** Touches par POSITION sur le clavier (identiques en AZERTY et QWERTY). */
 const KEYS = {
   ArrowLeft: 'left', KeyA: 'left',
   ArrowRight: 'right', KeyD: 'right',
-  Space: 'jump', ArrowUp: 'jump', KeyW: 'jump',
+  Space: 'jump', ArrowUp: 'jump up', KeyW: 'jump up', // haut : on saute, et le tir vise vers le haut
+  ArrowDown: 'down', KeyS: 'down', // bas : le tir vise vers le bas (on creuse)
   KeyJ: 'fire', KeyX: 'fire', Enter: 'fire',
   KeyK: 'special', KeyC: 'special', ShiftLeft: 'special', ShiftRight: 'special',
 };
 const PAUSE_KEYS = ['Escape', 'KeyP'];
-export const ACTIONS = ['left', 'right', 'jump', 'fire', 'special'];
+export const ACTIONS = ['left', 'right', 'up', 'down', 'jump', 'fire', 'special'];
 
 /**
- * Quelles actions sont enfoncées, étant donné les doigts posés et les boutons à l'écran ?
- * Fonction pure (testée dans Node) : chaque doigt actionne le bouton sous lui, même s'il
- * y est arrivé en glissant depuis un autre bouton.
- * @param {{x: number, y: number}[]} points
- * @param {{action: string, left: number, top: number, right: number, bottom: number}[]} buttons
- * @param {number} margin  tolérance autour de chaque bouton, en pixels
+ * Les zones tactiles, en fractions de l'écran tenu en paysage. Pas de boutons à viser : tout l'écran répond.
+ * Moitié gauche : un manche flottant, là où le pouce se pose. Moitié droite : trois cibles, la plus proche gagne.
  */
-export function touchedActions(points, buttons, margin = 14) {
+export const ZONES = {
+  split: 0.5, // frontière entre le manche et les actions
+  dead: 10, // course morte du manche, en pixels
+  reach: 44, // course utile : au-delà, le manche suit le pouce
+  lift: 0.17, // pousser le manche vers le haut de cette fraction de l'écran : saut
+  pull: 26, // tirer le manche vers le bas d'autant de pixels : le tir vise en bas (on creuse)
+  both: 26, // à peu près à égale distance de TIR et de SAUT (écart en pixels) : les deux
+  stick: { x: 0.14, y: 0.72 }, // où le manche se repose quand personne n'y touche
+  targets: [
+    { action: 'fire', x: 0.87, y: 0.72 },
+    { action: 'jump', x: 0.71, y: 0.84 },
+    { action: 'special', x: 0.9, y: 0.34 },
+  ],
+};
+
+/**
+ * Quelles actions sont enfoncées, étant donné les doigts posés ? Fonction pure, testée dans Node.
+ * @param {{x: number, y: number, ox: number, oy: number, ay?: number, stick?: boolean}[]} points  position de chaque
+ *        doigt, point où il s'est posé, `ay` : le point le plus haut d'où il redescend (sinon `oy`), et `stick` :
+ *        vrai s'il s'est posé à gauche (sinon on le déduit de `ox`)
+ * @param {{w: number, h: number}} view  taille de l'écran de jeu, en pixels
+ */
+export function touchActions(points, view) {
   const pressed = {};
   for (const p of points) {
-    let best = null;
-    let bestDistance = Infinity;
-    for (const b of buttons) {
-      if (p.x < b.left - margin || p.x > b.right + margin || p.y < b.top - margin || p.y > b.bottom + margin) continue;
-      const d = Math.hypot(p.x - (b.left + b.right) / 2, p.y - (b.top + b.bottom) / 2);
-      if (d < bestDistance) {
-        best = b;
-        bestDistance = d;
+    if (p.stick ?? p.ox < view.w * ZONES.split) {
+      const dx = p.x - p.ox;
+      const down = p.y - (p.ay ?? p.oy);
+      if (down > ZONES.pull && down > Math.abs(dx)) {
+        pressed.down = true; // tiré vers le bas : on vise sous ses pieds, sans avancer
+        continue;
       }
+      if (dx < -ZONES.dead) pressed.left = true;
+      else if (dx > ZONES.dead) pressed.right = true;
+      if (p.oy - p.y > view.h * ZONES.lift) {
+        pressed.jump = true;
+        if (Math.abs(dx) <= ZONES.dead) pressed.up = true; // poussé droit vers le haut : le tir suit
+      }
+      continue;
     }
-    if (best) pressed[best.action] = true;
+    const [first, second] = ZONES.targets
+      .map((t) => ({ action: t.action, d: Math.hypot(p.x - t.x * view.w, p.y - t.y * view.h) }))
+      .sort((m, n) => m.d - n.d);
+    pressed[first.action] = true;
+    const pair = [first.action, second.action].sort().join('+');
+    if (pair === 'fire+jump' && second.d - first.d < ZONES.both) pressed[second.action] = true; // le pouce à cheval
   }
   return pressed;
 }
 
+/**
+ * Suit un doigt d'un événement à l'autre. Son côté est fixé quand il se pose : parti de la droite, il reste une
+ * action même s'il glisse à gauche. Seul le manche déplace son origine pour suivre le pouce.
+ * @param {object | undefined} p  l'état du doigt (absent au premier contact)
+ * @param {{x: number, y: number}} at  sa position, dans le repère du jeu
+ * @param {{w: number, h: number}} view
+ */
+export function trackPoint(p, at, view) {
+  const next = { ...(p || { ox: at.x, oy: at.y, ay: at.y, stick: at.x < view.w * ZONES.split }), ...at };
+  if (!next.stick) return next;
+  // Le manche suit le pouce : on change de direction tout de suite, et on saute d'une poussée vers le haut.
+  if (Math.abs(next.x - next.ox) > ZONES.reach) next.ox = next.x - Math.sign(next.x - next.ox) * ZONES.reach;
+  if (next.y - next.oy > ZONES.dead) next.oy = next.y - ZONES.dead;
+  // Pour viser en bas, on mesure la descente depuis le point le plus haut atteint, sur la course du manche.
+  next.ay = Math.max(Math.min(next.ay, next.y), next.y - ZONES.reach);
+  return next;
+}
+
 export class Input {
-  /** @param {HTMLElement} pad  le conteneur des boutons tactiles (éléments avec data-action) */
+  /** @param {HTMLElement} pad  la surface tactile : elle couvre tout l'écran de jeu */
   constructor(pad) {
     this.pad = pad;
     this.keys = {};
@@ -62,10 +109,19 @@ export class Input {
     addEventListener('blur', () => this.release());
     document.addEventListener('visibilitychange', () => document.hidden && this.release());
 
-    // Une seule surface tactile : à chaque mouvement, on reteste tous les doigts contre tous les boutons.
+    // Les repères à l'écran : le manche et trois cibles, posés aux endroits que dit ZONES.
+    this.stick = pad.querySelector('.manche');
+    this.marks = [...pad.querySelectorAll('[data-action]')];
+    for (const mark of this.marks) {
+      const target = ZONES.targets.find((t) => t.action === mark.dataset.action);
+      mark.style.left = `${target.x * 100}%`;
+      mark.style.top = `${target.y * 100}%`;
+    }
+
     const track = (e) => {
       this.onAny();
-      this.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      const p = trackPoint(this.pointers.get(e.pointerId), this.locate(e), this.view);
+      this.pointers.set(e.pointerId, p);
       this.refreshTouch();
       e.preventDefault();
     };
@@ -87,15 +143,38 @@ export class Input {
     pad.addEventListener('contextmenu', (e) => e.preventDefault());
     // iOS : pas de zoom au pincement ni au double toucher pendant le jeu.
     document.addEventListener('gesturestart', (e) => e.preventDefault());
+    this.refreshTouch();
+  }
+
+  /** L'écran de jeu est-il pivoté d'un quart de tour (téléphone tenu debout) ? */
+  get turned() {
+    return document.documentElement.classList.contains('pivote');
+  }
+
+  /** Taille de l'écran de jeu, dans son propre repère. */
+  get view() {
+    return this.turned ? { w: innerHeight, h: innerWidth } : { w: innerWidth, h: innerHeight };
+  }
+
+  /** Position d'un doigt dans le repère du jeu. */
+  locate(e) {
+    return this.turned ? { x: e.clientY, y: innerWidth - e.clientX } : { x: e.clientX, y: e.clientY };
   }
 
   refreshTouch() {
-    const buttons = [...this.pad.querySelectorAll('[data-action]')].map((b) => {
-      const r = b.getBoundingClientRect();
-      return { action: b.dataset.action, left: r.left, top: r.top, right: r.right, bottom: r.bottom, el: b };
-    });
-    this.touch = touchedActions([...this.pointers.values()], buttons);
-    for (const b of buttons) b.el.classList.toggle('appuye', Boolean(this.touch[b.action]));
+    const { view } = this;
+    const points = [...this.pointers.values()];
+    this.touch = touchActions(points, view);
+    for (const mark of this.marks) mark.classList.toggle('appuye', Boolean(this.touch[mark.dataset.action]));
+    const thumb = points.find((p) => p.stick);
+    const at = thumb ? { x: thumb.ox, y: thumb.oy } : { x: ZONES.stick.x * view.w, y: ZONES.stick.y * view.h };
+    this.stick.style.left = `${at.x}px`;
+    this.stick.style.top = `${at.y}px`;
+    this.stick.classList.toggle('appuye', Boolean(thumb));
+    const clamp = (v) => Math.max(-ZONES.reach, Math.min(ZONES.reach, v));
+    this.stick.style.setProperty('--dx', `${thumb ? clamp(thumb.x - thumb.ox) : 0}px`);
+    const drop = !thumb ? 0 : thumb.y < thumb.oy ? thumb.y - thumb.oy : thumb.y - thumb.ay; // poussé en haut, ou tiré en bas
+    this.stick.style.setProperty('--dy', `${clamp(drop)}px`);
   }
 
   release() {
@@ -116,6 +195,8 @@ export class Input {
     return {
       left: b(14) || pad.axes[0] < -0.4,
       right: b(15) || pad.axes[0] > 0.4,
+      up: b(12) || pad.axes[1] < -0.6,
+      down: b(13) || pad.axes[1] > 0.6,
       jump: b(0),
       fire: b(2) || b(7) || b(5),
       special: b(1) || b(6) || b(4),
@@ -154,7 +235,7 @@ export class Input {
   /** L'état lu par la simulation. */
   actions() {
     const held = {};
-    for (const action of Object.values(this.keys)) held[action] = true;
+    for (const actions of Object.values(this.keys)) for (const action of actions.split(' ')) held[action] = true;
     const pad = this.gamepad();
     const out = {};
     for (const a of ACTIONS) out[a] = Boolean(held[a] || this.touch[a] || pad[a]);

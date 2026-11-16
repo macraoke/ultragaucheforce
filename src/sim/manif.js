@@ -53,7 +53,11 @@ export function joinRecruit(game, r) {
   const x = r.x + r.w / 2;
   game.stats.recruits++;
   game.addCrowd(n);
-  game.emit('recruit', { id: def.id, n, crowd: game.crowd, x, y: r.y });
+  // Une street medic soigne : elle rend des coups au personnage en jeu, sans dépasser son maximum.
+  const { hero } = game;
+  const healed = def.soin > 0 && !hero.dead ? Math.min(def.soin, hero.def.pv - hero.hp) : 0;
+  hero.hp += healed;
+  game.emit('recruit', { id: def.id, n, crowd: game.crowd, x, y: r.y, healed });
   if (def.slogan.length) game.emit('bubble', { x, y: r.y - 6, text: def.slogan[(game.stats.recruits - 1) % def.slogan.length] });
   game.sfx('recrue', x);
   game.discover('recrue', def.id);
@@ -63,6 +67,37 @@ export function joinRecruit(game, r) {
 // ---------------------------------------------------------------- cortège
 
 /** Combien de manifestants on dessine pour une foule donnée : jamais plus qu'il n'y en a, quarante au plus. */
+const ODDS = [12, 5, 2, 1]; // une légendaire sort douze fois moins qu'une commune
+const SIGN_CHANCE = 0.5; // un groupe qui arrive porte une pancarte une fois sur deux
+
+/** Tire une ligne au sort, les plus rares moins souvent (`odds` : le poids de chaque rareté). */
+export function drawSign(game, pool, odds = ODDS) {
+  let roll = game.rng.next() * pool.reduce((sum, p) => sum + (odds[p.rarete] ?? 1), 0);
+  return pool.find((p) => (roll -= odds[p.rarete] ?? 1) < 0) ?? pool.at(-1) ?? null;
+}
+
+/**
+ * Des gens rejoignent la manif : parfois, l'un d'eux porte une pancarte. C'est la seule façon d'en voir arriver une.
+ * Une tranche de vingt personnes en apporte une, une fois sur deux (au moins une tranche, quatre au plus) ; elle est
+ * tirée parmi toutes celles du jeu : nouvelle ou déjà vue, c'est le hasard.
+ */
+export function bringSigns(game, n) {
+  const groups = Math.max(1, Math.min(4, Math.round(n / 20)));
+  for (let i = 0; i < groups; i++) {
+    if (game.rng.next() >= SIGN_CHANCE) continue;
+    const sign = drawSign(game, game.bundle.pancartes || []);
+    if (!sign) return;
+    game.stats.signs++;
+    game.signs.push(sign.texte);
+    game.emit('sign', { text: sign.texte, rarity: sign.rarete });
+    // Dans le cortège qu'on voit : un porteur aux mains vides la prend, sinon elle remplace la plus ancienne.
+    const carriers = game.cortege.filter((m) => m.kind === 'pancarte');
+    const free = carriers.find((m) => !m.label);
+    if (free) free.label = sign.texte;
+    else if (carriers.length) carriers[game.stats.signs % carriers.length].label = sign.texte;
+  }
+}
+
 export const visibleCortege = (crowd) => Math.max(0, Math.min(crowd, MAX_CORTEGE, 2 + Math.ceil(crowd / 10)));
 
 /** Ajuste le cortège dessiné au nombre de manifestants (seulement si le niveau a un cortège). */
@@ -71,19 +106,14 @@ export function syncCortege(game) {
   const { hero, bundle, cortege } = game;
   const wanted = visibleCortege(game.crowd);
   if (cortege.length > wanted) cortege.length = wanted;
-  // Le cortège porte de vraies pancartes (celles qui ont un crédit), s'il y en a ; seules les courtes
-  // restent lisibles, les autres vivent dans la Collection.
-  const sourced = (bundle.pancartes || []).filter((p) => p.credit);
-  const all = sourced.length ? sourced : bundle.pancartes || [];
-  const short = all.filter((p) => p.texte.length <= 26);
-  const signs = short.length ? short : all;
   const flags = Object.keys(bundle.drapeaux || {});
   while (cortege.length < wanted) {
     const n = cortege.length;
     const kind = KINDS[n % KINDS.length];
     const turn = Math.floor(n / KINDS.length);
     let label = INSTRUMENTS[turn % INSTRUMENTS.length];
-    if (kind === 'pancarte') label = signs.length ? signs[(game.signOffset + turn) % signs.length].texte : '';
+    // Un nouveau porteur prend une pancarte déjà arrivée dans la manif, s'il en reste une que personne ne montre.
+    if (kind === 'pancarte') label = game.signs.findLast((t) => !cortege.some((m) => m.label === t)) ?? '';
     if (kind === 'drapeau') label = flags.length ? flags[turn % flags.length] : '';
     cortege.push({
       x: hero.x + hero.w / 2, y: hero.y + hero.h, facing: hero.facing, kind, label, gassed: 0, pushed: 0, shove: 0,
@@ -150,6 +180,8 @@ export function standingAt(world, cx, nearY) {
 
 /**
  * La nasse : quand le héros passe un repère « N », des lignes apparaissent des deux côtés et se referment.
+ * Avec `nasse.rythme` dans l'en-tête du niveau, elle revient aussi d'elle-même, toutes les tant de secondes,
+ * là où le héros se trouve (au sol, hors combat de boss).
  * Jamais une impasse : elle prend fin si le héros en sort par le haut, si une ligne cède, ou au bout de NASSE_TIME.
  * `game.kettle` = null | { x, t, limit, x0, x1 } (x0 et x1 : bords intérieurs des deux lignes).
  */
@@ -161,7 +193,11 @@ export function updateKettle(game, dt) {
     if (hero.dead) return;
     const feet = hero.y + hero.h;
     const mark = game.nasses.find((n) => !n.on && Math.abs(n.x - cx) <= TILE / 2 && feet <= n.y + TILE && feet >= n.y - NASSE_HEIGHT);
+    const pace = game.level.nasse?.rythme || 0;
+    game.kettleClock += dt;
     if (mark) startKettle(game, mark);
+    else if (pace > 0 && game.kettleClock >= pace && hero.onGround && !game.boss?.active) startKettle(game, { x: cx, y: feet });
+    if (game.kettle || (pace > 0 && game.kettleClock >= pace && hero.onGround && !game.boss?.active)) game.kettleClock = 0; // un essai par période
     return;
   }
   k.t += dt;
@@ -178,7 +214,11 @@ export function updateKettle(game, dt) {
   else if ((k.closed.left && !left.length) || (k.closed.right && !right.length)) reason = 'broken';
   else if (!hero.dead && (cx < outerLeft || cx > outerRight)) reason = 'out';
   if (!reason) return;
-  for (const e of k.units) if (e.state !== 'done') standDown(e); // la nasse est levée : les lignes se rangent
+  for (const e of k.units) {
+    if (e.state === 'done') continue;
+    standDown(e); // la nasse est levée : les lignes se rangent…
+    e.dismissed = true; // …et quittent les lieux quand la suivante se forme
+  }
   game.kettle = null;
   game.emit('kettle', { state: 'end', reason });
 }
@@ -188,6 +228,7 @@ function startKettle(game, mark) {
   const { level, bundle, world } = game;
   const def = bundle.ennemis?.[level.nasse?.ennemi];
   if (!def) return;
+  game.enemies = game.enemies.filter((e) => !e.dismissed); // les lignes de la nasse précédente sont reparties
   const units = [];
   for (const side of [-1, 1]) {
     for (let rank = 0; rank < level.nasse.nombre; rank++) {

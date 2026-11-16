@@ -1,0 +1,10 @@
+titre: 9,8 millions de personnes pauvres
+theme: richesses
+texte: En 2024, 9,8 millions de personnes vivent sous le seuil de pauvreté ; le taux, 15,4 %, est le plus haut depuis 1996.
+portee: France métropolitaine, personnes en logement ordinaire. Ne compte ni les personnes sans domicile, ni celles vivant en institution, ni les outre-mer. Seuil monétaire de 1 337 euros par mois pour une personne seule. Non contesté.
+periode: 2024 (publié le 9 juillet 2026)
+choc: oui
+source.titre: Insee — Niveau de vie et pauvreté en 2024
+source.url: https://www.insee.fr/fr/statistiques/9019316
+source.nature: officielle
+verifie: 2026-11-16

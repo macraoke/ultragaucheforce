@@ -1,0 +1,10 @@
+titre: 0,1 % des foyers : 25,7 % d'impôt
+theme: richesses
+texte: Le taux d'imposition moyen des 0,1 % de foyers les plus aisés est passé de 29,2 % en 2003 à 25,7 % en 2022.
+portee: Impôt sur le revenu rapporté au revenu déclaré. Ne couvre ni l'impôt sur les sociétés, ni l'impôt sur la fortune immobilière ; le détail du calcul est dans l'encadré « méthodes » de la page, non relu ligne à ligne.
+periode: 2003 et 2022
+choc: oui
+source.titre: Insee — Entre 2003 et 2022, le revenu des plus aisés augmente plus vite que celui des autres foyers mais avec une forte volatilité
+source.url: https://www.insee.fr/fr/statistiques/8612588?sommaire=8612596
+source.nature: officielle
+verifie: 2026-11-16

@@ -1,0 +1,10 @@
+titre: 0,1 % des foyers, 62 % des dividendes
+theme: richesses
+texte: En 2020, 62 % des dividendes ont été perçus par 0,1 % des foyers, soit 39 000 foyers.
+portee: Dividendes déclarés par les foyers fiscaux (23,6 milliards d'euros en 2020). Les 0,1 % sont les foyers qui perçoivent le plus de dividendes, pas les plus riches en patrimoine. Ne couvre pas les dividendes versés à des sociétés ou à des non-résidents. Donnée de 2020, non actualisée sur cette page. Le texte est signé d'un auteur, sous forme de « point de vue ».
+periode: 2020 (publié le 20 octobre 2022)
+choc: oui
+source.titre: France Stratégie — Les gros dividendes se sont maintenus en 2020, les plus-values mobilières sont en repli
+source.url: https://www.strategie-plan.gouv.fr/files/files/Publications/Points%20de%20vue/2022-10-20%20-%20Point%20de%20vue%20Gros%20dividendes%20-%20Plus-values/FS-2022-PDV_Distribution%20dividendes%20en%202020_20oct.pdf
+source.nature: officielle
+verifie: 2026-11-16

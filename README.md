@@ -4,38 +4,43 @@
 
 Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les plateaux télé la racontent : surarmée de tracts et de tomates. On part à dix place de la République, on arrive à des centaines devant la Citadelle, et on taxe la fortune qui s'y est assise. Ça se joue dans le navigateur, au clavier ou au pouce.
 
-- **Faire grossir la manif.** Une soignante, un cheminot, une intersyndicale : chaque recrue compte, une assemblée générale double tout. Le compteur donne le chiffre des syndicats, et celui de la préfecture.
+| | |
+|---|---|
+| ![La nasse se referme ; dessous, le métro](docs/captures/nasse.jpg) | ![On creuse : une paysanne attend sous le panneau](docs/captures/millevaches-creuser.jpg) |
+| ![Le métro, sous le boulevard](docs/captures/metro.jpg) | ![Un immeuble, étage par étage](docs/captures/immeuble.jpg) |
+| ![Le barrage cède à 200](docs/captures/barrage.jpg) | ![Le boss, assis sur sa fortune](docs/captures/boss-assis.jpg) |
+
+- **Faire grossir la manif.** Une soignante, un cheminot, une intersyndicale : chaque recrue compte, une assemblée générale double tout.
 - **Déborder.** Un barrage ne se casse pas : il cède devant le nombre.
-- **En face, du vrai.** CRS et leurs sommations, BAC et LBD, BRAV-M, canon à eau, hélicoptère, blindé, nasse. Un ministre, un éditorialiste.
-- **Tout est une référence.** Les pancartes ont été vues en manif, les bandeaux à la télé, les répliques ont été dites. PANIQUE TV les fait défiler, signées et datées.
-- **Collectionner.** Chaque personnage, lieu, parole, pancarte et fait croisé devient une carte, avec sa source.
-- **Taxer.** Le boss est assis sur sa fortune. On en prend 2 %. Il lui reste 98 %.
-
-| | |
-|---|---|
-| ![Place de la République : la manif part à dix](docs/captures/manif-republique.jpg) | ![Le barrage cède à 200](docs/captures/barrage.jpg) |
-| ![Le lycée bloqué : BAC, lycéennes, assemblée générale](docs/captures/lycee-bloque.jpg) | ![La nasse](docs/captures/nasse.jpg) |
-| ![Canon à eau et BRAV-M](docs/captures/canon-a-eau.jpg) | ![L'hélicoptère et son projecteur](docs/captures/millevaches-helicoptere.jpg) |
-| ![La grille de la Citadelle](docs/captures/grille.jpg) | ![Le boss, assis sur sa fortune](docs/captures/boss-assis.jpg) |
-
-![Taxer 2 % : il lui reste 98 %](docs/captures/taxe-apres.jpg)
-
-| | |
-|---|---|
-| ![La Collection : en face](docs/captures/collection-en-face.jpg) | ![La Collection : camarades](docs/captures/collection-camarades.jpg) |
-| ![La Collection : pancartes vues en manif](docs/captures/collection-pancartes.jpg) | ![Un niveau s'ouvre sur une vraie déclaration](docs/captures/ouverture.jpg) |
+- **Creuser, grimper.** Tout le décor se détruit. Sous la rue, le métro, les catacombes, la salle des coffres ; au-dessus, six étages et les toits.
+- **Libérer.** On part avec un seul personnage, tiré au hasard la première fois. Chaque camarade sorti de garde à vue rejoint l'équipe et se joue tout de suite ; quand il tombe, on repart avec le précédent.
+- **Débloquer.** Les gens qui rejoignent la manif portent parfois une pancarte : commune, rare, épique ou légendaire. Il y en a 344, toutes relevées en manif.
+- **Taxer.** Au bout de chaque niveau, un ultra-riche est assis sur sa fortune : lequel, le hasard le dit. On en prend 2 % : de quoi payer, par exemple, 64 000 enseignants. Les comparaisons et les faits changent à chaque partie.
+- **PANIQUE TV.** Un bandeau de chaîne d'info fait défiler de vraies déclarations. Quand la panique monte, une équipe télé vient filmer la poubelle qui brûle, pas la manif.
 
 <details>
 <summary>Plus de captures</summary>
 
 | | |
 |---|---|
-| ![Le menu](docs/captures/menu.jpg) | ![Carton de héros](docs/captures/carton-heros.jpg) |
-| ![Millevaches : le rond-point](docs/captures/millevaches-rond-point.jpg) | ![Millevaches : la grange](docs/captures/millevaches-grange.jpg) |
-| ![Millevaches : la méga-bassine](docs/captures/millevaches-bassine.jpg) | ![Fin de niveau : les deux comptages](docs/captures/fin-de-niveau.jpg) |
-| ![Avant l'impôt](docs/captures/taxe-avant.jpg) | ![L'appel au vote](docs/captures/appel-au-vote.jpg) |
+| ![Place de la République](docs/captures/manif-republique.jpg) | ![Le lycée bloqué](docs/captures/lycee-bloque.jpg) |
+| ![Les toits](docs/captures/toits.jpg) | ![Les catacombes](docs/captures/catacombes.jpg) |
+| ![Le canon à eau](docs/captures/canon-a-eau.jpg) | ![Le parking, sous le quartier du luxe](docs/captures/parking.jpg) |
+| ![La grille de la Citadelle](docs/captures/grille.jpg) | ![La salle des coffres](docs/captures/salle-des-coffres.jpg) |
+| ![Millevaches : la base sous le rond-point](docs/captures/millevaches-base.jpg) | ![Millevaches : la grange et sa cave](docs/captures/millevaches-grange.jpg) |
+| ![Millevaches : la mine](docs/captures/millevaches-mine.jpg) | ![Millevaches : le château d'eau](docs/captures/millevaches-chateau-d-eau.jpg) |
+| ![Millevaches : la méga-bassine](docs/captures/millevaches-bassine.jpg) | ![Millevaches : l'hélicoptère](docs/captures/millevaches-helicoptere.jpg) |
+| ![Une équipe télé filme la poubelle qui brûle](docs/captures/feu-de-poubelle.jpg) | ![PANIQUE TV en pleine hystérie](docs/captures/panique-bandeau.jpg) |
+| ![Le duplex de BFM-TV](docs/captures/duplex-bfm.jpg) | ![La fortune, à l'échelle](docs/captures/taxe-fortune.jpg) |
+| ![Le menu](docs/captures/menu.jpg) | ![L'ouverture d'un niveau](docs/captures/ouverture.jpg) |
+| ![Un camarade libéré](docs/captures/carton-heros.jpg) | ![Fin de niveau](docs/captures/fin-de-niveau.jpg) |
+| ![Ce que 2 % paieraient, et un fait](docs/captures/taxe-ce-que-ca-paie.jpg) | ![Le plan de campagne](docs/captures/plan-de-campagne.jpg) |
+| ![La Collection : les pancartes débloquées et leur rareté](docs/captures/collection-grille.jpg) | |
+| ![Une pancarte débloquée](docs/captures/collection-carte.jpg) | ![L'appel au vote](docs/captures/appel-au-vote.jpg) |
+| ![L'Atelier : on dessine son niveau](docs/captures/atelier.jpg) | ![Sur téléphone](docs/captures/mobile-paysage.jpg) |
+| ![Fin de niveau sur téléphone](docs/captures/mobile-fin-de-niveau.jpg) | |
 
-![L'Atelier : un niveau est un texte](docs/captures/atelier.jpg)
+![Téléphone tenu debout : le jeu pivote](docs/captures/mobile-tenu-debout.jpg)
 
 </details>
 
@@ -49,47 +54,57 @@ cd ultragaucheforce
 npm start
 ```
 
-Le jeu est sur http://localhost:8080, la Galerie (tout le contenu, à voir et à écouter) sur http://localhost:8080/galerie.html.
+Le jeu est sur http://localhost:8080.
 
 | | Clavier | Manette | Tactile |
 |---|---|---|---|
-| Avancer | ← → ou Q D | croix ou stick | ◀ ▶ |
-| Sauter, grimper | Espace, ↑ ou Z | A | SAUT |
+| Avancer | ← → ou Q D | croix ou stick | moitié gauche : glisser le pouce |
+| Sauter, grimper | Espace, ↑ ou Z | A | SAUT, ou pousser le pouce gauche vers le haut |
 | Tirer (maintenir) | J, X ou Entrée | X ou gâchette droite | TIR |
+| Creuser, viser en haut | ↓ ou ↑ sans avancer, puis tirer | bas ou haut, puis tirer | pouce gauche vers le bas ou le haut, puis TIR |
 | Spéciale | K, C ou Maj | B ou gâchette gauche | SPÉ |
 | Pause | Échap ou P | Start | II |
 
-Contre un mur, sautez plusieurs fois : ça grimpe.
+Sur téléphone, l'image remplit l'écran et tout l'écran répond. Le jeu se joue en paysage ; téléphone tenu debout, il pivote tout seul.
 
 ## Contribuer
 
 Tout le contenu est en fichiers texte, modifiables depuis GitHub sans rien installer.
 
-1. **Une idée** : [ouvrez une issue](https://github.com/macraoke/ultragaucheforce/issues/new/choose).
-2. **Une ligne** : [une pancarte vue en manif, un slogan, un bandeau télé](docs/ajouter-une-blague.md), avec où, quand et le lien.
-3. **Un niveau** : dessinez-le dans l'Atelier du jeu, testez, [proposez](docs/ajouter-un-niveau.md).
-4. **Une fiche** : [un héros, une recrue, une unité d'en face, un boss](docs/ajouter-un-personnage.md), [un drapeau](docs/ajouter-un-drapeau.md), [un son](docs/ajouter-un-son.md), [une citation ou un chiffre sourcé](docs/ajouter-une-source.md).
-5. **Une mécanique** : [une fonction dans le registre](docs/ajouter-une-mecanique.md).
+| Je veux ajouter… | Comment |
+|---|---|
+| une pancarte vue en manif, un slogan, un bandeau télé | [une ligne de texte](docs/ajouter-une-blague.md) |
+| un niveau | [le dessiner dans l'Atelier du jeu](docs/ajouter-un-niveau.md) |
+| un héros, une recrue, une unité d'en face, un boss | [une fiche](docs/ajouter-un-personnage.md) |
+| un drapeau, un son, une citation, un chiffre | [drapeau](docs/ajouter-un-drapeau.md) · [son](docs/ajouter-un-son.md) · [source](docs/ajouter-une-source.md) |
+| une mécanique | [une fonction](docs/ajouter-une-mecanique.md) |
+| une idée | [une issue](https://github.com/macraoke/ultragaucheforce/issues/new/choose) |
 
-Tout ce qu'on dépose devient une carte de la Collection.
-
-Le mode d'emploi : [CONTRIBUER.md](CONTRIBUER.md).
+Tout ce qu'on dépose se débloque en jouant, et se retrouve dans la Collection. Le mode d'emploi : [CONTRIBUTING.md](CONTRIBUTING.md). Ce qui entre dans le jeu : [la charte](CHARTE.md).
 
 ## Sous le capot
 
 ```text
+content/       héros, recrues, unités, niveaux, pancartes, citations, sons… en fichiers texte
 src/sim/       la simulation, pure : elle tourne aussi dans Node, pour les tests
 src/content/   lecture et validation du contenu
 src/client/    rendu, entrées, sons, écrans, Atelier, Galerie
-content/       héros, recrues, unités, niveaux, pancartes, citations, sons… en fichiers texte
 tools/         serveur local, vérification, build — zéro dépendance
 ```
 
-`npm test` lance les tests, `npm run verifier` contrôle le contenu, `npm run build` fabrique la version à héberger. Le pourquoi : [docs/DECISIONS.md](docs/DECISIONS.md).
+| Commande | Effet |
+|---|---|
+| `npm start` | le jeu sur http://localhost:8080, la Galerie sur `/galerie.html` |
+| `npm run verifier` | contrôle le contenu, en français, fichier et ligne |
+| `npm test` | les tests ; un robot traverse chaque niveau de la campagne |
+| `npm run build` | la version à héberger, dans `dist/` |
+| `npm run robot` | quarante parties par niveau jouées par le robot : un repère de difficulté |
+
+Le pourquoi : [docs/DECISIONS.md](docs/DECISIONS.md).
 
 ## Licence
 
-Code [MIT](LICENSE), contenus [CC BY-SA 4.0](content/LICENCE.md). Satire citoyenne indépendante : [la charte](CHARTE.md).
+Code [MIT](LICENSE), contenus [CC BY-SA 4.0](content/LICENCE.md).
 
 ## Clins d'œil
 

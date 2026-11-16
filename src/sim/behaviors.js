@@ -48,7 +48,11 @@ export const WEAPONS = {
       // Tir visé (LBD) : vers le point donné, sinon vers le héros au moment du tir.
       let ux = dir;
       let uy = 0;
-      if (w.vise > 0 && team === 'ordre') {
+      const upright = team === 'luttes' && shooter.aim ? shooter.aim : 0; // le héros vise en haut (-1) ou en bas (1)
+      if (upright) {
+        ux = 0;
+        uy = upright;
+      } else if (w.vise > 0 && team === 'ordre') {
         const aim = target ?? { x: game.hero.x + game.hero.w / 2, y: game.hero.y + game.hero.h / 2 };
         const ox = shooter.x + shooter.w / 2;
         const oy = y + w.taille / 2;
@@ -59,18 +63,25 @@ export const WEAPONS = {
       for (let i = 0; i < w.nombre; i++) {
         const word = w.mots?.length ? game.rng.pick(w.mots) : null;
         if (word) game.discover('mot', word); // un mot crié, par eux ou par nous, vient d'une vraie citation
-        const width = word ? Math.max(w.taille, word.length * 5) : w.taille;
+        // À la verticale, le projectile ne dépasse pas de son tireur : il passe par un puits d'une tuile,
+        // même collé à une paroi.
+        const width = upright ? Math.min(w.taille, shooter.w) : word ? Math.max(w.taille, word.length * 5) : w.taille;
+        const height = upright ? Math.min(w.taille, shooter.h) : w.taille;
         // Plusieurs projectiles : éventail régulier ; un seul : petit écart au hasard.
         const spread = w.nombre > 1 ? (i / (w.nombre - 1) - 0.5) * 2 * w.dispersion : game.rng.range(-w.dispersion, w.dispersion);
+        // À la verticale : le projectile part du crâne ou des pieds, bien dans l'axe, sans élan de cloche.
+        const from = upright
+          ? { x: shooter.x + shooter.w / 2 - width / 2, y: upright > 0 ? shooter.y + shooter.h - height : shooter.y }
+          : { x: ux >= 0 ? shooter.x + shooter.w : shooter.x - width, y };
         spawnProjectile(game, {
-          x: ux >= 0 ? shooter.x + shooter.w : shooter.x - width, y, w: width, h: w.taille,
-          vx: ux * w.vitesse, vy: uy * w.vitesse + spread - w.elan, team, word, def: shooter.def, image: w.image || 'projectile',
+          ...from, w: width, h: height,
+          vx: ux * w.vitesse + (upright ? spread : 0), vy: uy * w.vitesse + (upright ? 0 : spread - w.elan), team, word, def: shooter.def, image: w.image || 'projectile',
           gravity: w.gravite, range: w.portee, damage: w.degats, terrain: w.terrain, bounces: w.rebonds,
           explosion: w.explosion, pierce: w.perce > 0, armor: w.blindage > 0, friendly: w.fratricide > 0,
           gas: w.gaz, owner: shooter,
         });
       }
-      shooter.vx -= dir * w.recul;
+      if (!upright) shooter.vx -= dir * w.recul;
       game.sfx(w.son || 'tir', shooter.x);
     },
   },

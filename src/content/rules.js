@@ -15,13 +15,27 @@ export const MARKERS = {
   S: 'sortie (camion-sono)',
   K: 'camarade en garde à vue',
   Q: 'piquet de grève (point de reprise)',
-  Y: 'boss',
+  Y: 'boss (un ultra-riche tiré au hasard, sauf si l’en-tête en impose un)',
   N: 'nasse (les lignes se referment quand le héros passe ici)',
 };
+
+/** Les raretés d'une pancarte ou d'un bandeau, de la plus courante à la plus rare. */
+export const RARITIES = ['commune', 'rare', 'épique', 'légendaire'];
+const RARITY_STEPS = [55, 83, 96]; // sur cent lignes : 55 communes, 28 rares, 13 épiques, 4 légendaires
+
+/** La rareté d'une ligne se tire de son texte : personne ne la règle, et elle est la même pour tout le monde. */
+export function rarityOf(text) {
+  let h = 2166136261;
+  for (const c of text) h = Math.imul(h ^ c.codePointAt(0), 16777619);
+  h = Math.imul(h ^ (h >>> 15), 2246822519);
+  const roll = ((h ^ (h >>> 13)) >>> 0) % 100;
+  return RARITY_STEPS.filter((step) => roll >= step).length;
+}
 
 export const THEMES = ['richesses', 'droits', 'ordre', 'democratie', 'programme', 'luttes'];
 export const NATURES = ['officielle', 'presse', 'associative', 'militante', 'createur'];
 export const BACKDROPS = ['campagne', 'ville', 'citadelle'];
+export const CAMPS = ['ordre', 'medias', 'pouvoir']; // à qui appartient une unité : seules celles de l'ordre comptent dans le bilan des blessés
 
 // ---------------------------------------------------------------- lecteurs typés
 
@@ -201,7 +215,7 @@ function buildHero(f, ctx, report) {
 function buildEnemy(f, ctx, report) {
   const spec = {
     nom: req(), pv: num(1, 20, 2), vitesse: num(0, 200, 40), deplacement: pick(MOVES), reaction: pick(REACTIONS),
-    vue: num(32, 400, 150), bouclier: bool(), contact: num(0, 3, 0), panique: num(0, 30, 0), fin: pick(ENDINGS),
+    vue: num(32, 400, 150), bouclier: bool(), contact: num(0, 3, 0), panique: num(0, 30, 0), fin: pick(ENDINGS), camp: pick(CAMPS),
     replique: list(), largeur: num(6, 32, 12), hauteur: num(6, 32, 16),
     // `debordement` : la ligne tient (insensible, infranchissable) tant que la manif compte moins de monde.
     debordement: num(0, 5000, 0), sommation: list(), citation: str(),
@@ -218,7 +232,8 @@ function buildEnemy(f, ctx, report) {
 
 /** Une recrue : quelqu'un (ou une assemblée) qui rejoint la manif quand le héros passe ou lui tend un tract. */
 function buildRecruit(f, ctx, report) {
-  const spec = { nom: req(), apport: num(1, 500, 0), multiplie: num(1.5, 5, 0), slogan: list(), ...CARD, ...CREDITS };
+  // `soin` : combien de coups la recrue rend au personnage en jeu quand elle rejoint la manif (une street medic).
+  const spec = { nom: req(), apport: num(1, 500, 0), multiplie: num(1.5, 5, 0), soin: num(0, 3, 0), slogan: list(), ...CARD, ...CREDITS };
   const out = readFields(f, spec, report);
   if (f.has('apport') === f.has('multiplie')) {
     report(1, 'Une recrue a besoin de « apport: … » (des gens qui rejoignent) OU de « multiplie: … » (la manif est multipliée), pas les deux.');
@@ -235,6 +250,9 @@ function buildBoss(f, ctx, report) {
     nom: req(), inspiration: str(), traitement: str(), pv: num(5, 400, 60), largeur: num(16, 96, 40),
     hauteur: num(16, 96, 48), vitesse: num(0, 200, 40), citation: str(), replique: list(),
     'fortune.montant': num(0, 1000, 0), 'fortune.fiche': str(),
+    // `fortune.rente` : les fiches dont les `valeur`, multipliées, donnent ce que la fortune rapporte en un an, en euros
+    // (un dividende par action, un nombre d'actions). Chaque nombre garde ainsi sa propre source.
+    'fortune.rente': list(),
     // `assis` : il reste sur son tas, sans bouger ni charger, tant que sa vie n'est pas passée sous `leve`.
     assis: bool(), leve: num(0, 1, 0.7), ...CARD, ...CREDITS,
   };
@@ -276,8 +294,9 @@ function buildTile(f, ctx, report) {
 function buildDecor(f, ctx, report) {
   // `ecrit` : le jeu écrit dessus une vraie pancarte de `content/pancartes/`, choisie selon l'emplacement.
   // « pancarte » : texte sombre sur le dessin (banderole) ; « tag » : texte peint, sans fond (mur).
+  // `brule` : quand la panique de la chaîne franchit un palier, ce décor peut prendre feu, et une équipe télé vient le filmer.
   const spec = { nom: req(), devant: bool(), ecrit: pick(['', 'pancarte', 'tag']), 'ecrit.y': num(0, 96, 8), ...CREDITS };
-  const out = readFields(f, { nom: req(), devant: bool(), ...CREDITS }, report, (key) => key === 'ecrit' || key === 'ecrit.y');
+  const out = readFields(f, { nom: req(), devant: bool(), brule: bool(), ...CREDITS }, report, (key) => key === 'ecrit' || key === 'ecrit.y');
   out.ecrit = readValue(f, 'ecrit', spec.ecrit, report);
   out.ecritY = readValue(f, 'ecrit.y', spec['ecrit.y'], report);
   out.sprites = readSprites(f, ctx.palette, report, { required: ['image'] });
@@ -318,9 +337,20 @@ function buildCitation(f, ctx, report) {
 
 function buildFact(f, ctx, report) {
   // `valeur` : le nombre brut, quand une scène du jeu calcule avec (exemple : le Smic net mensuel).
-  const spec = { titre: req(), theme: pick(THEMES), texte: req(), portee: str(), periode: str(), valeur: num(0, 1e15, 0), ...SOURCE };
+  // Le dictionnaire de la scène de taxe : une fiche qui porte `compare` sert d'échelle à une fortune (« N ans de revenus
+  // d'un chirurgien » ; `valeur` = son revenu, `par` an ou mois) ; une fiche qui porte `finance` dit ce que la taxe
+  // paierait (« N enseignants » ; `valeur` = le coût d'un seul, par an, ou une fois pour toutes si `ponctuel`) ;
+  // une fiche marquée `choc` est un fait frappant sur les inégalités, que la scène affiche à son tour.
+  const spec = {
+    titre: req(), theme: pick(THEMES), texte: req(), portee: str(), periode: str(), valeur: num(0, 1e15, 0),
+    compare: str(), finance: str(), par: pick(['an', 'mois']), ponctuel: bool(), choc: bool(), ...SOURCE,
+  };
   noSections(f, report);
-  return readFields(f, spec, report);
+  const out = readFields(f, spec, report);
+  if ((out.compare || out.finance) && !(out.valeur > 0)) {
+    report(f.lineOf(out.compare ? 'compare' : 'finance'), 'Une comparaison a besoin de « valeur: … » : le revenu, ou le coût d’une unité, en euros.');
+  }
+  return out;
 }
 
 function buildSound(f, ctx, report) {
@@ -358,6 +388,7 @@ export function buildLevel(f, ctx, report) {
     // `citation` : la vraie phrase qui ouvre le niveau ; `fiche` (répétable) : la première sert à l'écran de fin.
     citation: str(), fiche: list(),
     manif: num(0, 5000, 0), 'nasse.ennemi': str(), 'nasse.nombre': num(1, 6, 3), 'nasse.vitesse': num(4, 80, 18),
+    'nasse.rythme': num(0, 600, 0), // secondes entre deux nasses qui reviennent d'elles-mêmes (0 : seulement aux repères « N »)
     ...CREDITS,
   };
   const isLegend = (k) => LEGEND.test(k);
@@ -413,8 +444,8 @@ export function buildLevel(f, ctx, report) {
   if (rows.length < 8) report(map.line, 'Carte trop basse : il faut au moins 8 lignes.');
   if (count.D !== 1) report(map.line, `Il faut exactement un départ « D » (ici ${count.D}).`);
   if (count.S < 1) report(map.line, 'Il faut au moins une sortie « S ».');
-  if (out.boss && count.Y !== 1) report(map.line, 'Ce niveau a un boss : place exactement un « Y » dans la carte.');
-  if (!out.boss && count.Y) report(map.line, 'La carte contient un « Y » mais l’en-tête n’a pas de ligne « boss: … ».');
+  if (count.Y > 1) report(map.line, `Un seul boss par niveau : la carte contient ${count.Y} « Y ».`);
+  if (out.boss && !count.Y) report(map.line, 'L’en-tête impose un boss : place un « Y » dans la carte, là où il attend.');
   if (count.N && !out.nasse.ennemi) report(map.line, 'La carte contient une nasse « N » : ajoute « nasse.ennemi: … » dans l’en-tête.');
   if (start && count.S && !exitReachable(rows, start, ctx.symbols)) {
     report(map.line, 'La sortie « S » est inatteignable : un mur indestructible sépare le départ de la sortie.');
@@ -516,7 +547,7 @@ export function buildContent(files) {
         if (address !== undefined && !/^https:\/\/\S+$/.test(address)) {
           report(line, 'Après « — », il faut l’adresse de la source : elle commence par https://');
         }
-        bundle[dir].push({ texte, credit });
+        bundle[dir].push({ texte, credit, rarete: rarityOf(texte) });
       }
       continue;
     }
@@ -568,7 +599,7 @@ export function buildContent(files) {
   refs('ennemis', 'citations', (e) => e.citation);
   for (const dir of ['heros', 'ennemis', 'boss', 'recrues']) refs(dir, 'fiches', (item) => item.fiche);
   refs('ennemis', 'ennemis', (e) => e.renfort.ennemi);
-  refs('boss', 'fiches', (b) => b.fortune.fiche);
+  refs('boss', 'fiches', (b) => [b.fortune.fiche, ...b.fortune.rente]);
   refs('niveaux', 'fiches', (n) => n.fiche);
   refs('niveaux', 'citations', (n) => n.citation);
   refs('niveaux', 'musiques', (n) => n.musique);

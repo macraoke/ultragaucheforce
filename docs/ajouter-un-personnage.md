@@ -99,7 +99,7 @@ speciale.etourdit: 3
 | `traitement` | en une phrase : archétype, ou nature de la caricature | |
 | `cri` | la phrase du carton de déblocage : un slogan réel ou ses propres mots | |
 | `citation`, `fiche`, `origine` | sa carte | |
-| `pv` | points de vie | 1 à 5 |
+| `pv` | combien de coups il encaisse avant de céder sa place au personnage précédent | 1 à 5 |
 | `vitesse` | pixels par seconde | 60 à 220 |
 | `saut` | hauteur du saut, en cases | 1,5 à 5 |
 | `largeur`, `hauteur` | la boîte de collision, en pixels | 6 à 16, 8 à 24 |
@@ -140,6 +140,7 @@ auteur: ton pseudo
 | `nom` | obligatoire | |
 | `apport` | combien de personnes rejoignent la manif | 1 à 500 |
 | `multiplie` | à la place d'`apport` : la manif est multipliée (une assemblée générale) | 1,5 à 5 |
+| `soin` | combien de coups elle rend au personnage en jeu en rejoignant la manif (une street medic) | 0 à 3 |
 | `slogan` | ce qu'elle lance en rejoignant : un slogan réellement scandé ou une pancarte vue ; répétable | |
 | `fiche`, `origine` | sa carte | |
 
@@ -197,6 +198,7 @@ auteur: ton pseudo
 | `panique` | points de panique par seconde quand elle « cadre », ou quand le héros est dans son faisceau | 0 à 30 |
 | `debordement` | une ligne : elle ne cède que devant ce nombre de manifestants | 0 à 5000 |
 | `fin` | à zéro point de vie | `greve`, `panne` (elle fume) |
+| `camp` | à qui elle appartient ; seules les unités de l'ordre comptent dans le bilan des blessés | `ordre` (par défaut), `medias`, `pouvoir` |
 | `ecriteau` | ce qu'on lit au-dessus d'elle une fois hors service | |
 | `replique` | une phrase qu'elle prononce ; répétable | |
 | `sommation` | réaction `charge` : dites une par une avant la première ruée ; répétable | |
@@ -251,6 +253,7 @@ Le modèle : [`content/boss/arnault-armure.txt`](../content/boss/arnault-armure.
 | `leve` | il se lève quand ses points de vie passent sous cette fraction | 0 à 1 (défaut 0,7) |
 | `fortune.montant` | en milliards d'euros | |
 | `fortune.fiche` | la fiche de `content/fiches/` qui source ce montant ; sans elle, pas de scène de taxation | |
+| `fortune.rente` | les fiches dont les `valeur`, multipliées, donnent ce que cette fortune rapporte en un an, en euros (un dividende par action, puis un nombre d'actions) ; répétable ; la scène de taxation compare ce total aux 2 % | |
 | `phase.1.jusqua` | la phase dure tant que les points de vie dépassent cette fraction | 0 à 1 |
 | `phase.1.rythme` | secondes entre deux attaques | 0,4 à 8 |
 | `phase.1.attaques` | les attaques de la phase, séparées par une barre verticale : `salve \| charge` | |

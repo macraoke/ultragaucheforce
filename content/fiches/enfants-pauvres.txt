@@ -1,0 +1,10 @@
+titre: 22,4 % des enfants sont pauvres
+theme: richesses
+texte: En 2024, 22,4 % des enfants vivent sous le seuil de pauvreté ; dans les familles monoparentales, le taux atteint 34,0 %.
+portee: Même champ que le fait 2. La page précise que le taux des enfants augmente de 0,5 point en 2024 et que celui des familles monoparentales baisse de 0,3 point. Non contesté.
+periode: 2024
+choc: oui
+source.titre: Insee — Niveau de vie et pauvreté en 2024
+source.url: https://www.insee.fr/fr/statistiques/9019316
+source.nature: officielle
+verifie: 2026-11-16

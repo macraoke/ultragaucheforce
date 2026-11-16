@@ -76,7 +76,34 @@ Chaque fiche de `content/` devient une carte, trouvée en la croisant dans le je
 
 ## La fortune, assise
 
-Le boss est assis sur sa fortune, dans le niveau comme dans la scène de fin : un tas de liasses à l'échelle, une liasse pour dix mille ans de Smic. Un seul geste, « Taxer 2 % », et un seul constat : il lui reste 98 %.
+Chaque niveau finit devant un ultra-riche, assis sur sa fortune : un tas de liasses à l'échelle. Lequel ? Le hasard le dit à chaque partie. Puis on le taxe, sur un seul écran :
+
+- **La fortune, à l'échelle de quelqu'un** (« 670 000 ans de revenus d'un chirurgien ») et ce qu'elle rapporte en un an, pour répondre d'avance à « flux et stocks ».
+- Le bouton « Taxer 2 % » fait apparaître au même endroit **ce que 2 % paieraient** (« 64 000 enseignants »), au plus, puisque l'impôt est différentiel ; et un fait frappant sur les inégalités.
+
+L'échelle, l'exemple et le fait se tirent au hasard dans un dictionnaire de fiches sourcées (`compare`, `finance`, `choc`). Le public visé est autant la classe moyenne que les jeunes : c'est une manif virtuelle, elle doit apprendre quelque chose à chacun.
+
+## Itération 3
+
+- **Le téléphone d'abord** : l'image remplit l'écran, tout l'écran répond (manche flottant à gauche, trois zones à droite), et le jeu pivote en paysage quand le téléphone est tenu debout.
+- **La panique est celle de la chaîne** : sa jauge vit dans le bandeau de PANIQUE TV, à côté de son nom. BFM-TV et CNews sont des unités qui cadrent le héros.
+- **Un seul comptage de la manif** : le chiffre de la préfecture est retiré.
+- **Les blessés, détaillés** : plus de compteur pendant la partie ; à la fin, le nombre annoncé côté forces de l'ordre, et ce qui le compose.
+- **La nasse revient d'elle-même**, sans être annoncée.
+- **On choisit son héros** parmi ceux de la Collection ; chaque camarade libéré vaut une vie de plus.
+- **La Collection se joue** : cartes à retourner, « Nouveau », progression par rayon, ce qu'on a débloqué, en fin de niveau.
+
+## Itération 4
+
+- **Des niveaux en hauteur et en profondeur** : sol épais qu'on creuse partout, galeries, caves, métro, immeubles à étages. Le héros tire aussi vers le bas et vers le haut.
+- **Les pancartes se débloquent** : toutes se valent, avec ou sans source ; chacune a une rareté tirée de son texte. Une seule façon d'en voir arriver une : une tranche de vingt personnes qui rejoint la manif en apporte une, une fois sur deux, tirée au hasard. Le cortège ne montre que celles qui sont arrivées.
+- **Une pile de personnages** : on part avec un seul, tiré au hasard la première fois, choisi ensuite. Chacun encaisse quelques coups : une barre de vie sous la pile, pas de cœurs. Quand il tombe, le précédent prend sa place ; pile vide, niveau perdu. Chaque camarade libéré rejoint la pile, avec son grand carton.
+- **Le score, c'est la manif** : sa taille à l'arrivée, avec un record par niveau.
+- **Le hasard partout** : le boss, le personnage de départ, les camarades libérés, les pancartes, et dans la scène de taxe l'échelle, l'exemple et le fait choc.
+- **Un plan de campagne** : une seule liste d'étapes ; un niveau déposé est une étape comme une autre.
+- **PANIQUE TV filme les poubelles** : quand la panique franchit un palier, une poubelle prend feu et une équipe télé vient la filmer, elle, pas la manif. Le bandeau est celui d'une chaîne d'info : logo, trois crans de panique, un fil qui défile.
+- **Des écrans courts** : un écran, une idée ; ce qui précise se déplie. Une citation est simplement signée, et sa signature mène à la source.
+- **L'Atelier se dessine** : une palette d'images, on peint, on essaie.
 
 ## Hors-ligne : seulement dans la version construite
 

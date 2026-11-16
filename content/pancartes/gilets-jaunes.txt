@@ -1,0 +1,16 @@
+# Gilets jaunes : pancartes vues et slogans scandés, relevés dans la presse.
+# Une ligne = une pancarte : TEXTE | où et quand — source
+MARRE DES VOLEURS | vue à Flers, janv. 2019 — https://www.ouest-france.fr/societe/gilets-jaunes/flers-ce-que-les-pancartes-des-gilets-jaunes-racontent-du-mouvement-6197609
+PETIT PAPA MACRON, ARRÊTE DE PRENDRE NOTRE POGNON, POUR LE FILER AUX GRANDS PATRONS | vue à Paris, déc. 2018 — https://www.ouest-france.fr/societe/gilets-jaunes/corteges-slogans-heurts-ce-qu-il-faut-retenir-de-l-acte-vii-des-gilets-jaunes-6154607
+POLICE PARTOUT, JUSTICE NULLE PART | scandé au Mans, mars 2019 — https://www.ici.fr/infos/societe/plus-de-500-gilets-jaunes-defilent-au-mans-de-nombreux-slogans-contre-les-forces-de-l-ordre-1553361655
+TROP DE SOUFFRANCE DANS CETTE SOUS-FRANCE | vue à Paris, janv. 2020 — https://www.publicsenat.fr/actualites/politique/quelques-milliers-de-gilets-jaunes-manifestent-a-paris-37-interpellations-149233
+TES HAUTS ET DÉBATS, ON N'EN VEUT PAS, MACRON DÉGAGE | scandé à Paris, janv. 2019 — https://www.publicsenat.fr/actualites/politique/les-gilets-jaunes-restent-mobilises-apres-le-lancement-du-debat-national-137068
+MACRON, TON COMPTE EST BON | vue en France (ville non précisée), janv. 2019 — https://www.publicsenat.fr/actualites/politique/les-gilets-jaunes-restent-mobilises-apres-le-lancement-du-debat-national-137068
+JE VEUX JUSTE PLUS DE DÉMOCRATIE | vue en France (ville non précisée), janv. 2019 — https://www.publicsenat.fr/actualites/politique/les-gilets-jaunes-restent-mobilises-apres-le-lancement-du-debat-national-137068
+LE ROI MACRON ET SA COUR DÉCONNENT | vue en France (ville non précisée), janv. 2019 — https://www.publicsenat.fr/actualites/politique/les-gilets-jaunes-de-nouveau-dans-la-rue-malgre-le-lancement-du-debat-national-0
+ON N'ARRÊTE PAS L'HISTOIRE AVEC DES FLASHBALL | vue en France (ville non précisée), janv. 2019 — https://www.publicsenat.fr/actualites/politique/les-gilets-jaunes-de-nouveau-dans-la-rue-malgre-le-lancement-du-debat-national-0
+INJUSTICE FISCALE, COLÈRE SOCIALE | vue à Rennes, janv. 2019 — https://www.publicsenat.fr/actualites/politique/les-gilets-jaunes-de-nouveau-dans-la-rue-malgre-le-lancement-du-debat-national-0
+C'EST BON MAINTENANT, MANU FAUT RENDRE LES CLÉS !!! | vue à Paris, déc. 2018 — https://france3-regions.franceinfo.fr/paris-ile-de-france/paris/paris-manifestation-gilets-jaunes-acte-iv-pancartes-tags-slogans-ce-que-disent-ces-mots-1589539.html
+GILET JAUNE SANS CULOTTE | vue à Paris, déc. 2018 — https://france3-regions.franceinfo.fr/paris-ile-de-france/paris/paris-manifestation-gilets-jaunes-acte-iv-pancartes-tags-slogans-ce-que-disent-ces-mots-1589539.html
+LE PEUPLE VEUT LA CHUTE DU RÉGIME | vue à Paris, déc. 2018 — https://france3-regions.franceinfo.fr/paris-ile-de-france/paris/paris-manifestation-gilets-jaunes-acte-iv-pancartes-tags-slogans-ce-que-disent-ces-mots-1589539.html
+ON A RIEN SANS RIEN, JOYEUX NOËL, MACRON EN PLS ! | vue à Paris, déc. 2018 — https://france3-regions.franceinfo.fr/paris-ile-de-france/paris/paris-manifestation-gilets-jaunes-acte-iv-pancartes-tags-slogans-ce-que-disent-ces-mots-1589539.html

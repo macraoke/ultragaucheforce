@@ -8,6 +8,7 @@ reaction: cadre
 vue: 130
 panique: 1.5
 fin: panne
+camp: medias
 largeur: 14
 hauteur: 9
 fiche: drones-manifestations

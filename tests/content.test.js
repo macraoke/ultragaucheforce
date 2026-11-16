@@ -5,7 +5,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
 import { readContentFiles, loadContent } from '../tools/content.mjs';
-import { buildContent, checkLevel, formatError } from '../src/content/rules.js';
+import { buildContent, checkLevel, formatError, rarityOf, RARITIES } from '../src/content/rules.js';
 import { Fiche, parseLines } from '../src/content/parse.js';
 
 const real = readContentFiles();
@@ -187,13 +187,21 @@ test('carte de collection : « fiche » se répète, et chaque référence doit 
   expectError(errorsOf('content/niveaux/essai.txt', opening), { message: /« citation-fantome » n'existe pas dans content\/citations\// });
 });
 
+test('rareté : tirée du texte, toujours la même, et les quatre existent dans le vrai contenu', () => {
+  const { bundle } = loadContent();
+  assert.equal(rarityOf('JEUNESSE EN FEU'), rarityOf('JEUNESSE EN FEU'));
+  const counts = RARITIES.map((_, r) => bundle.pancartes.filter((p) => p.rarete === r).length);
+  assert.ok(counts.every((n) => n > 0), `une rareté est vide : ${counts}`);
+  assert.ok(counts[0] > counts[1] && counts[1] > counts[2] && counts[2] > counts[3], `les plus rares sont les moins nombreuses : ${counts}`);
+});
+
 test('pancartes et bandeaux : le crédit suit le texte, après « | »', () => {
   const files = withFile('content/manchettes/essai.txt', '# commentaire\nUn bandeau | Chaîne, 1er janv. 2023 — https://exemple.org/page\nUn autre\n');
   const { bundle, errors } = buildContent(files);
   assert.deepEqual(errors.map(formatError), []);
   assert.deepEqual(bundle.manchettes.slice(-2), [
-    { texte: 'Un bandeau', credit: 'Chaîne, 1er janv. 2023 — https://exemple.org/page' },
-    { texte: 'Un autre', credit: '' },
+    { texte: 'Un bandeau', credit: 'Chaîne, 1er janv. 2023 — https://exemple.org/page', rarete: rarityOf('Un bandeau') },
+    { texte: 'Un autre', credit: '', rarete: rarityOf('Un autre') },
   ]);
   assert.ok(bundle.pancartes.every((p) => typeof p.texte === 'string' && typeof p.credit === 'string'));
   expectError(errorsOf('content/pancartes/essai.txt', 'UNE PANCARTE | vue à Paris — javascript:alert(1)\n'), { line: 1, message: /commence par https:\/\// });

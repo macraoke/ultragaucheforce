@@ -6,6 +6,7 @@ deplacement: fixe
 reaction: tire
 vue: 230
 fin: panne
+camp: pouvoir
 largeur: 14
 hauteur: 21
 citation: castaner-complices

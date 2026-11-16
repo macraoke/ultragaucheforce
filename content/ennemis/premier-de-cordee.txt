@@ -6,6 +6,7 @@ deplacement: fixe
 reaction: tire
 vue: 240
 fin: panne
+camp: pouvoir
 largeur: 12
 hauteur: 21
 citation: macron-premiers-de-cordee

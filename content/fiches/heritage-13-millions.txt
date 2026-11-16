@@ -1,0 +1,10 @@
+titre: 13 millions hérités, à peine 10 % d'impôt
+theme: richesses
+texte: Le 0,1 % d'héritiers qui reçoit le plus touche environ 13 millions d'euros et paie à peine 10 % de droits de succession.
+portee: Simulation, et non relevé d'impôts payés ; la note regrette « le manque de fiabilité du système d'information actuel ». Héritages et donations reçus sur toute une vie. Autre phrase utile de la même note : « L'héritage moyen du top 0,1 % représente donc environ 180 fois l'héritage médian », et la moitié d'une génération hérite de moins de 70 000 euros.
+periode: note de décembre 2021, simulations sur les données de la DGFiP
+choc: oui
+source.titre: Conseil d'analyse économique — Repenser l'héritage
+source.url: https://cae-eco.fr/static/pdf/cae-note069.pdf
+source.nature: officielle
+verifie: 2026-11-16

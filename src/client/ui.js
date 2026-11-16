@@ -1,13 +1,18 @@
 // Les écrans du jeu, en HTML : texte net à toute taille, liens cliquables vers les sources.
 // Chaque fonction remplit `#ecran` ; `close()` le vide et rend la main au jeu.
 
-import { h, link, frenchDate, sourceLine } from './dom.js';
+import { h, link, signature } from './dom.js';
 import { spriteElement } from './sprites.js';
 import { REPO, VERSION, REFERENCES } from './config.js';
-import { storeSave } from './save.js';
-import { SHELVES, VOTE_FICHES, collectionCount, collectionShelf } from './collection.js';
+import { storeSave, isFound } from './save.js';
+import { SHELVES, VOTE_FICHES, allCards, collectionCount, isFresh, levelOrder, markSeen, openCard, progress, shelfGrid, wonCards } from './collection.js';
+import { livesStack } from './lives.js';
+import { PANIC_STEPS } from '../sim/game.js';
 
 const MENTION = 'Satire citoyenne, libre et collaborative.';
+const PANIC_NAMES = ['calme', 'alerte', 'hystérie']; // les trois crans de la chaîne
+const AIRTIME = 9; // secondes d'antenne d'une citation qui tient sur le fil
+const SCROLL = 4.5; // vitesse de défilement d'une ligne trop longue, en hauteurs de lettre par seconde
 
 export class Screens {
   /**
@@ -26,7 +31,8 @@ export class Screens {
     document.body.dataset.ecran = className.split(' ')[0]; // la feuille de style sait quel écran est ouvert
     this.root.hidden = false;
     this.open = true;
-    this.root.querySelector('button, a')?.focus({ preventScroll: true });
+    // Le bouton principal prend la main (Entrée, manette) ; sinon le premier.
+    (this.root.querySelector('button.gros') || this.root.querySelector('button, a'))?.focus({ preventScroll: true });
   }
 
   close() {
@@ -54,7 +60,7 @@ export class Screens {
       h('div', { className: 'troupe' }, heroes.map((x) => spriteElement(x.sprites.repos, this.bundle.palette, 4))),
       h('nav', {},
         this.button('Jouer', () => this.go.play(this.nextLevel()), 'gros'),
-        this.button('Niveaux', () => this.levels()),
+        this.button('Campagne', () => this.levels()),
         this.button(`Collection ${collectionCount(this.bundle, this.save).found}/${collectionCount(this.bundle).total}`, () => this.collection()),
         this.button('Atelier', () => this.go.atelier()),
         h('a', { className: 'bouton', href: 'galerie.html' }, 'Galerie'),
@@ -65,44 +71,61 @@ export class Screens {
   }
 
   nextLevel() {
-    const { campagne } = this.bundle;
-    return campagne.find((id) => !this.save.termines[id]) || campagne[0];
+    const order = levelOrder(this.bundle);
+    return order.find((id) => !this.save.termines[id]) || order[0];
   }
 
+  /** Le plan de campagne : toutes les étapes, l'une après l'autre. */
   levels() {
-    const { niveaux, campagne } = this.bundle;
-    const card = (id, n) => {
+    const { niveaux } = this.bundle;
+    const stop = (id, i) => {
       const lv = niveaux[id];
-      return h('article', {},
-        h('h3', {}, n ? `${n}. ` : '', lv.titre, this.save.termines[id] ? ' ✔' : ''),
-        h('p', {}, lv.accroche),
-        h('p', {}, h('small', {}, `par ${lv.auteur}`)),
+      const best = this.save.records[id];
+      return h('li', { className: this.save.termines[id] ? 'faite' : '' },
+        h('span', { className: 'numero' }, String(i + 1)),
+        h('div', {},
+          h('h3', {}, lv.titre, this.save.termines[id] ? ' ✔' : ''),
+          h('p', {}, [lv.accroche, best ? `✊ ${best.toLocaleString('fr-FR')}` : ''].filter(Boolean).join(' · ') || `par ${lv.auteur}`)),
         this.button('Jouer', () => this.go.play(id)));
     };
-    const community = Object.keys(niveaux).filter((id) => !campagne.includes(id));
-    this.show('liste',
-      h('h2', {}, 'Campagne'),
-      h('div', { className: 'cartes' }, campagne.map((id, i) => card(id, i + 1))),
-      h('h2', {}, 'Niveaux de la communauté'),
-      community.length
-        ? h('div', { className: 'cartes' }, community.map((id) => card(id)))
-        : h('p', {}, 'Aucun pour l’instant. Le tien ? Ouvre l’Atelier : un niveau est un simple fichier texte.'),
-      h('div', { className: 'pied' }, this.back(), this.button('Ouvrir l’Atelier', () => this.go.atelier())));
+    this.show('liste plan',
+      h('h2', {}, 'Plan de campagne'),
+      h('ol', { className: 'etapes' }, levelOrder(this.bundle).map(stop)),
+      h('div', { className: 'pied' }, this.back(), this.button('Dessiner une étape', () => this.go.atelier())));
   }
 
   // ------------------------------------------------------------------ Collection
 
-  /** L'album : un rayon par onglet ; ce qui n'a pas encore été croisé en jouant reste en silhouette. */
+  /**
+   * L'album : un rayon par onglet, des cartes compactes qu'on ouvre d'un toucher.
+   * Ce qui n'a pas encore été croisé en jouant reste en silhouette.
+   */
   collection(tab = SHELVES[0].id) {
-    const all = collectionCount(this.bundle, this.save);
+    const { bundle, save } = this;
+    const all = collectionCount(bundle, save);
+    const fresh = new Set(allCards(bundle).filter((c) => isFound(save, c.kind, c.item.id ?? c.item.texte) && isFresh(save, c)).map((c) => c.shelf));
+    // Un héros déjà rencontré se joue depuis sa carte ; pas en pleine partie, où ce serait l'abandonner.
+    const actionsFor = (card) => (card.kind === 'heros' && !this.go.playing() ? [this.button('Jouer avec', () => this.playAs(card.item.id), 'gros')] : []);
     this.show('biblio',
       h('h2', {}, 'La Collection ', h('small', {}, `${all.found} / ${all.total}`)),
+      progress(all.found, all.total),
       h('div', { className: 'onglets' }, SHELVES.map((shelf) => {
-        const { found, total } = collectionCount(this.bundle, this.save, shelf.id);
-        return total ? this.button(`${shelf.titre} ${found}/${total}`, () => this.collection(shelf.id), shelf.id === tab ? '' : 'discret') : null;
+        const { found, total } = collectionCount(bundle, save, shelf.id);
+        if (!total) return null;
+        const label = [shelf.titre, ' ', h('small', {}, `${found}/${total}`), fresh.has(shelf.id) && shelf.id !== tab && h('i', { className: 'pastille' }), progress(found, total)];
+        return this.button(label, () => this.collection(shelf.id), shelf.id === tab ? '' : 'discret');
       })),
-      h('div', { className: 'contenu album' }, collectionShelf(this.bundle, tab, this.save)),
+      h('div', { className: 'contenu album' }, shelfGrid(bundle, tab, save, actionsFor)),
       h('div', { className: 'pied' }, this.back(() => this.go.back())));
+    markSeen(save, tab); // affichées avec leur badge « Nouveau » cette fois-ci, plus la prochaine
+    storeSave(save);
+  }
+
+  /** Lance le prochain niveau avec ce héros au départ. */
+  playAs(hero) {
+    this.save.heros = hero;
+    storeSave(this.save);
+    this.go.play(this.nextLevel());
   }
 
   // ------------------------------------------------------------------ options, à propos
@@ -125,33 +148,36 @@ export class Screens {
       h('h3', {}, 'Commandes'),
       h('table', {},
         h('tr', {}, h('th', {}, ''), h('th', {}, 'Clavier'), h('th', {}, 'Manette'), h('th', {}, 'Tactile')),
-        [['Avancer', '← → ou Q D', 'croix / stick', '◀ ▶'], ['Sauter, grimper', 'Espace, ↑ ou Z', 'A', 'SAUT'],
-          ['Tirer (maintenir)', 'J, X ou Entrée', 'X / gâchette droite', 'TIR'], ['Spéciale', 'K, C ou Maj', 'B / gâchette gauche', 'SPÉ'],
+        [['Avancer', '← → ou Q D', 'croix / stick', 'pouce gauche'], ['Sauter, grimper', 'Espace, ↑ ou Z', 'A', 'SAUT'],
+          ['Tirer (maintenir)', 'J, X ou Entrée', 'X / gâchette droite', 'TIR'],
+          ['Creuser, viser en haut', '↓ ou ↑, puis tirer', 'bas ou haut, puis tirer', 'pouce gauche vers le bas ou le haut'],
+          ['Spéciale', 'K, C ou Maj', 'B / gâchette gauche', 'SPÉ'],
           ['Pause', 'Échap ou P', 'Start', 'II']].map((row) => h('tr', {}, row.map((c) => h('td', {}, c))))),
-      h('p', {}, h('small', {}, 'Contre un mur, saute plusieurs fois pour l’escalader.')),
       h('div', { className: 'pied' }, this.back(() => this.go.back()),
         this.button('Effacer ma progression', () => {
           this.save.termines = {};
+          this.save.records = {};
           this.save.decouvertes = [];
+          this.save.vues = {};
+          this.save.heros = '';
           storeSave(this.save);
           this.options();
         }, 'discret')));
   }
 
   about() {
+    const fold = (title, ...body) => h('details', {}, h('summary', {}, title), ...body);
     this.show('liste',
       h('h2', {}, 'À propos'),
       h('p', {}, MENTION),
-      h('p', {}, 'Une pancarte vue en manif, une citation, un drapeau, un niveau, un personnage, un son : tout le contenu est en fichiers texte, modifiables depuis GitHub.'),
-      h('p', {}, link(REPO, 'Le dépôt'), ' · ', link(`${REPO}/blob/main/CONTRIBUER.md`, 'Contribuer'), ' · ',
+      h('p', {}, link(REPO, 'Le dépôt'), ' · ', link(`${REPO}/blob/main/CONTRIBUTING.md`, 'Contribuer'), ' · ',
         link(`${REPO}/blob/main/CHARTE.md`, 'La charte'), ' · ', h('a', { href: 'galerie.html' }, 'La Galerie')),
-      h('h3', {}, 'Références'),
-      h('ul', {}, REFERENCES.map((r) => h('li', {}, link(r.url, r.titre), ` — ${r.note}`))),
-      h('h3', {}, 'Licences et crédits'),
-      h('p', {}, 'Code : MIT. Contenus : CC BY-SA 4.0. Bruitages synthétisés avec ZzFX de Frank Force (MIT).'),
-      h('ul', {}, Object.values(this.bundle.sons).filter((s) => s.fichier).map((s) =>
-        h('li', {}, link(s.source, s.nom), ` — ${s.auteur}, ${s.licence}`))),
-      h('p', {}, h('b', {}, 'Radio Manif : '), Object.values(this.bundle.musiques).map((m, i) => [i ? ' · ' : '', link(m.url, `${m.titre} (${m.artiste})`)])),
+      fold('Références', h('ul', {}, REFERENCES.map((r) => h('li', {}, link(r.url, r.titre), ` — ${r.note}`)))),
+      fold('Crédits et licences',
+        h('p', {}, 'Code : MIT. Contenus : CC BY-SA 4.0. Bruitages synthétisés avec ZzFX de Frank Force (MIT).'),
+        h('ul', {}, Object.values(this.bundle.sons).filter((x) => x.fichier).map((x) =>
+          h('li', {}, link(x.source, x.nom), ` — ${x.auteur}, ${x.licence}`))),
+        h('p', {}, h('b', {}, 'Radio Manif : '), Object.values(this.bundle.musiques).map((m, i) => [i ? ' · ' : '', link(m.url, `${m.titre} (${m.artiste})`)]))),
       h('div', { className: 'pied' }, this.back()));
   }
 
@@ -168,16 +194,47 @@ export class Screens {
       this.button('Quitter', () => this.go.quit(), 'discret'));
   }
 
-  /** Carton d'ouverture : PANIQUE TV ouvre sur une vraie déclaration, signée, datée et sourcée. */
-  intro(level, done) {
+  /**
+   * Carton d'ouverture : PANIQUE TV ouvre sur une vraie déclaration, signée, datée et sourcée.
+   * On y choisit aussi son héros de départ, parmi ceux déjà rencontrés.
+   * @param {string} hero  identifiant du héros avec lequel la partie démarre
+   * @param {boolean} choose  faux dans l'Atelier : on essaie le niveau avec le héros de sa fiche
+   */
+  intro(level, done, hero = '', choose = true) {
     const quote = this.bundle.citations[level.citation];
+    const go = this.button('C’est parti', done, 'gros');
+    const heroes = Object.values(this.bundle.heros).filter((x) => x.statut !== 'test');
+    const mine = heroes.filter((x) => x.id === hero || isFound(this.save, 'heros', x.id)).map((x) => x.id);
+    const pick = (id) => {
+      if (id === hero) return;
+      this.audio.play('clic');
+      this.save.heros = id;
+      storeSave(this.save);
+      this.go.restart(); // la partie repart avec ce héros, et ce carton se réaffiche
+    };
     this.show('intro',
       h('div', { className: 'tv' }, h('strong', {}, 'PANIQUE TV'), h('em', {}, quote ? 'ILS L’ONT DIT' : 'ÉDITION SPÉCIALE')),
       quote ? h('p', { className: 'manchette' }, `« ${quote.texte} »`) : level.intro && h('p', { className: 'manchette' }, level.intro),
-      quote && h('p', { className: 'signature' }, `${quote.auteur}, ${frenchDate(quote.date)} · `, link(quote.source.url, 'source')),
+      quote && h('p', { className: 'signature' }, signature(quote)),
       h('h2', {}, level.titre),
       level.accroche && h('p', {}, level.accroche),
-      this.button('C’est parti', done, 'gros'));
+      choose && heroes.length > 1 && this.heroRow(heroes, mine, hero, pick),
+      go);
+    go.focus({ preventScroll: true }); // Entrée lance le niveau…
+    this.root.firstChild.onkeydown = (e) => { // … ← et → changent de héros
+      const turn = { ArrowLeft: -1, ArrowRight: 1 }[e.key];
+      if (!turn || mine.length < 2) return;
+      e.preventDefault();
+      pick(mine[(mine.indexOf(hero) + turn + mine.length) % mine.length]);
+    };
+  }
+
+  /** La rangée des héros : ceux de la Collection se choisissent, les autres restent en silhouette. */
+  heroRow(heroes, mine, current, pick) {
+    const face = (x) => spriteElement(x.sprites.portrait || x.sprites.repos, this.bundle.palette, 2);
+    return h('div', { className: 'choix-heros' }, heroes.map((x) => (mine.includes(x.id)
+      ? h('button', { type: 'button', className: x.id === current ? 'choisi' : 'discret', onclick: () => pick(x.id) }, face(x), h('span', {}, x.nom))
+      : h('span', { className: 'inconnu' }, face(x), h('span', {}, '???')))));
   }
 
   lost() {
@@ -188,31 +245,36 @@ export class Screens {
       this.button('Menu', () => this.go.quit(), 'discret'));
   }
 
-  /** Fin de niveau : les deux comptages de la manif, ce que PANIQUE TV annonce, puis un fait sourcé. */
-  end({ level, stats, time, announced, counts, next, last }) {
+  /**
+   * Fin de niveau, en un écran : la manif, le bilan des blessés tel qu'on l'annonce côté forces de l'ordre
+   * avec ce qui le compose, un fait réel à ouvrir, ce qui a été débloqué.
+   */
+  end({ level, stats, time, crowd, next, last, won = [], best = 0 }) {
     const fact = this.bundle.fiches[level.fiche?.[0]];
+    const card = fact && allCards(this.bundle).find((c) => c.kind === 'fiches' && c.item === fact);
     const minutes = `${Math.floor(time / 60)} min ${String(Math.floor(time % 60)).padStart(2, '0')} s`;
     const n = (x) => x.toLocaleString('fr-FR');
-    const line = (count, one, many) => (count ? h('li', {}, `${n(count)} ${count > 1 ? many : one}`) : null);
+    const part = (count, one, many) => (count ? `${n(count)} ${count > 1 ? many : one}` : '');
+    const hurt = stats.breakdownsBySelf + stats.breakdownsByPlayer + stats.overrunOrder;
+    const parts = [
+      part(stats.breakdownsBySelf, 'gazé par ses propres grenades', 'gazés par leurs propres grenades'),
+      part(stats.breakdownsByPlayer, 'atteint par un tract', 'atteints par un tract'),
+      part(stats.overrunOrder, 'débordé par le nombre', 'débordés par le nombre'),
+    ].filter(Boolean);
     this.show('fin',
-      h('h2', {}, 'Niveau terminé'),
-      h('p', { className: 'temps' }, `${level.titre} — ${minutes}`),
+      h('h2', {}, 'Niveau terminé ', h('small', {}, `${level.titre} · ${minutes}`)),
       h('div', { className: 'bilans' },
-        counts.syndicats ? h('article', {},
-          h('h3', {}, 'La manif'),
-          h('p', { className: 'chiffre' }, `✊ ${n(counts.syndicats)}`),
-          h('p', {}, `selon les syndicats · ${n(counts.prefecture)} selon la préfecture`)) : null,
+        h('article', {},
+          h('p', { className: 'chiffre' }, `✊ ${n(crowd)}`),
+          h('p', {}, 'dans la manif'),
+          best === null ? null : h('p', { className: 'dont' }, crowd > best ? (best ? `Record battu (${n(best)})` : 'Premier record') : `Record : ${n(best)}`)),
         h('article', { className: 'annonce' },
-          h('h3', {}, 'Selon PANIQUE TV'),
-          h('p', { className: 'chiffre' }, n(announced)),
-          h('p', {}, 'blessés annoncés à l’antenne'))),
-      h('ul', { className: 'partie' },
-        line(stats.recruits, 'recrue', 'recrues'),
-        line(stats.rescues, 'camarade libéré', 'camarades libérés'),
-        line(stats.overrun, 'ligne débordée', 'lignes débordées'),
-        line(stats.breakdownsBySelf, 'unité gazée par son propre camp', 'unités gazées par leur propre camp'),
-        line(stats.gassed, 'manifestant gazé', 'manifestants gazés')),
-      fact && h('article', { className: 'fiche' }, h('h3', {}, `Et en vrai ? ${fact.titre}`), h('p', {}, fact.texte), sourceLine(fact)),
+          h('p', { className: 'chiffre' }, n(hurt)),
+          h('p', {}, hurt > 1 ? 'blessés annoncés côté forces de l’ordre' : 'blessé annoncé côté forces de l’ordre'),
+          parts.length ? h('p', { className: 'dont' }, `dont ${parts.join(', ')}`) : null)),
+      card && h('button', { type: 'button', className: 'vrai', onclick: () => openCard(this.bundle, card) },
+        'Et en vrai ? ', h('b', {}, fact.titre)),
+      won.length ? wonCards(this.bundle, won) : null,
       h('div', { className: 'pied' },
         next && this.button('Niveau suivant', () => this.go.play(next), 'gros'),
         last && this.button('La suite', () => this.final(), 'gros'),
@@ -220,24 +282,20 @@ export class Screens {
         this.button('Menu', () => this.go.quit(), 'discret')));
   }
 
-  /** Dernier écran : un appel au vote citoyen. Des dates, des démarches, des liens — pas de consigne. */
+  /** Dernier écran : un appel au vote citoyen. Les dates, deux démarches, le programme ; pas de consigne. */
   final() {
     const f = this.bundle.fiches;
-    const steps = VOTE_FICHES.map((id) => f[id]).filter(Boolean);
+    const [dates, ...steps] = VOTE_FICHES.map((id) => f[id]).filter(Boolean);
     const programme = Object.values(f).filter((x) => x.theme === 'programme');
-    this.go.learn([...steps, ...programme].map((x) => x.id)); // ce qu'on lit ici entre dans la Collection
+    this.go.learn([dates, ...steps, ...programme].filter(Boolean).map((x) => x.id)); // ce qu'on lit ici entre dans la Collection
     this.show('vote',
-      h('h2', {}, 'La Citadelle ne tombera pas toute seule'),
-      h('p', { className: 'dates' }, 'Élection présidentielle : ', h('b', {}, 'dimanche 18 avril'), ' et ', h('b', {}, 'dimanche 2 mai 2027'), '.'),
-      h('p', { className: 'appel' }, 'Allez voter.'),
-      h('div', { className: 'cartes' },
-        steps.map((x) => h('article', {}, h('h3', {}, x.titre), h('p', {}, x.texte), sourceLine(x)))),
-      programme.length ? h('h3', {}, 'Le programme') : null,
-      programme.length ? h('ul', {}, programme.map((x) => h('li', {}, x.texte, ' ', sourceLine(x)))) : null,
-      h('p', { className: 'mention' }, 'Un jeu fait par des citoyens, en open source et collaboratif.'),
+      h('h2', { className: 'appel' }, 'Allez voter.'),
+      h('p', { className: 'dates' }, dates ? link(dates.source.url, 'Dimanche 18 avril et dimanche 2 mai 2027') : 'Dimanche 18 avril et dimanche 2 mai 2027'),
+      h('nav', {},
+        steps.map((x) => h('a', { className: 'bouton', href: x.source.url, target: '_blank', rel: 'noopener' }, x.titre)),
+        programme.length ? this.button('Le programme', () => this.collection('propositions')) : null),
       h('div', { className: 'pied' },
         this.button('Menu', () => this.go.quit(), 'gros'),
-        this.button('Collection', () => this.collection(), 'discret'),
         h('a', { className: 'bouton discret', href: REPO, target: '_blank', rel: 'noopener' }, 'Contribuer au jeu')));
   }
 }
@@ -251,7 +309,8 @@ export class Hud {
     this.q = (id) => document.getElementById(id);
     this.last = '';
     this.bannerTimer = 0;
-    this.rotation = 0;
+    this.rotation = 0; // minuterie de la prochaine citation
+    this.airtime = AIRTIME; // secondes d'antenne de la ligne affichée
     this.turn = 0;
     this.onQuote = () => {}; // une vraie citation passe à l'antenne : la Collection la note
     // Le fil permanent de PANIQUE TV : de vraies déclarations, datées et signées.
@@ -268,51 +327,61 @@ export class Hud {
     this.nextQuote();
   }
 
-  /** Le bandeau reste à l'antenne pendant toute la partie. */
+  /** Le bandeau reste à l'antenne pendant toute la partie ; le fil tourne tant qu'aucune alerte ne l'interrompt. */
   setVisible(on) {
+    const el = this.q('bandeau');
+    const shown = !el.hidden;
     this.el.hidden = !on;
-    this.q('bandeau').hidden = !on;
-    clearInterval(this.rotation);
-    if (on) this.rotation = setInterval(() => this.q('bandeau').dataset.alerte || this.nextQuote(), 9000);
+    el.hidden = !on;
+    clearTimeout(this.rotation);
+    if (!on) return;
+    if (!shown) this.fit(); // on ne mesure une ligne que lorsqu'elle est à l'écran
+    if (!el.dataset.alerte) this.rotation = setTimeout(() => this.nextQuote(), this.airtime * 1000);
   }
 
   nextQuote() {
     const quote = this.quotes[this.turn++ % Math.max(1, this.quotes.length)];
     if (!quote) return;
-    this.show(`« ${quote.texte} » — ${quote.auteur}, ${quote.date.slice(0, 4)}`, 'Ils l’ont dit', 8.5);
+    this.show(`« ${quote.texte} » — ${quote.auteur}, ${quote.date.slice(0, 4)}`, 'Ils l’ont dit', AIRTIME);
     this.onQuote(quote.id);
+    clearTimeout(this.rotation);
+    if (!this.q('bandeau').hidden) this.rotation = setTimeout(() => this.nextQuote(), this.airtime * 1000);
   }
 
   update(game) {
     const { hero, boss } = game;
-    const state = [hero.def.id, hero.hp, game.lives, hero.charges, game.panicLevel, Math.round(game.panic), game.announced(), game.crowd,
+    const state = [hero.def.id, hero.hp, game.stack.join(), hero.charges, game.panicLevel, Math.round(game.panic), game.crowd,
       boss?.active && boss.state !== 'gone' ? boss.hp : -1].join('|');
     if (state === this.last) return; // on ne touche au DOM que si quelque chose a changé
     this.last = state;
     this.q('hud-heros').textContent = hero.def.nom;
-    this.q('hud-coeurs').textContent = '♥'.repeat(Math.max(0, hero.hp)) + '♡'.repeat(Math.max(0, hero.def.pv - hero.hp));
-    this.q('hud-vies').textContent = `× ${game.lives}`;
-    this.q('hud-charges').textContent = hero.def.speciale ? '★'.repeat(hero.charges) + '☆'.repeat(Math.max(0, hero.def.speciale.charges - hero.charges)) : '';
-    // La manif : les deux comptages, comme au journal du soir.
+    this.q('hud-vies').replaceChildren(livesStack(this.bundle, game));
+    // L'attaque spéciale, par son nom, et combien il en reste.
+    const special = hero.def.speciale;
+    const charges = this.q('hud-charges');
+    charges.textContent = special ? `${(special.nom || 'Spéciale').replace(/\s*!$/, '')} × ${hero.charges}` : '';
+    charges.classList.toggle('vide', Boolean(special) && hero.charges === 0);
+    // La manif : combien on est. Le compteur sursaute quand elle grossit.
     const march = this.q('hud-manif');
     march.hidden = !game.crowd;
-    if (game.crowd) {
-      const { syndicats, prefecture } = game.counts();
-      const grew = syndicats > (this.crowd || 0);
-      this.crowd = syndicats;
-      march.querySelector('b').textContent = `✊ ${syndicats.toLocaleString('fr-FR')}`;
-      march.querySelector('small').textContent = `préfecture : ${prefecture.toLocaleString('fr-FR')}`;
-      if (grew) {
+    if (game.crowd !== this.crowd) {
+      march.textContent = `✊ ${game.crowd.toLocaleString('fr-FR')}`;
+      if (game.crowd > this.crowd) {
         march.classList.remove('grossit');
         void march.offsetWidth; // relance l'animation
         march.classList.add('grossit');
       }
+      this.crowd = game.crowd;
     }
+    // La panique est celle de la chaîne : trois crans dans le bandeau, celui en cours se remplit,
+    // et tout le bandeau change de couleur avec lui.
+    const level = game.panicLevel;
     const gauge = this.q('hud-panique');
-    gauge.dataset.niveau = game.panicLevel;
-    gauge.querySelector('i').style.width = `${Math.min(100, game.panic)}%`;
-    gauge.querySelector('b').textContent = ['Calme', 'Alerte', 'Hystérie'][game.panicLevel];
-    this.q('hud-annonce').textContent = `Blessés annoncés : ${game.announced().toLocaleString('fr-FR')}`;
+    const [from, to] = [[0, ...PANIC_STEPS][level], [...PANIC_STEPS, 100][level]];
+    this.q('bandeau').dataset.niveau = level;
+    gauge.dataset.niveau = level;
+    gauge.style.setProperty('--part', `${Math.round(((Math.min(100, game.panic) - from) / (to - from)) * 100)}%`);
+    gauge.setAttribute('aria-label', `Panique de la chaîne : ${PANIC_NAMES[level]}`);
     const bar = this.q('hud-boss');
     const fighting = Boolean(boss?.active && boss.state !== 'gone');
     bar.hidden = !fighting;
@@ -331,28 +400,65 @@ export class Hud {
     el.classList.remove('entre');
     void el.offsetWidth; // relance l'animation
     el.classList.add('entre');
+    clearTimeout(this.rotation); // l'alerte interrompt le fil…
     clearTimeout(this.bannerTimer);
     this.bannerTimer = setTimeout(() => {
       delete el.dataset.alerte;
-      this.nextQuote();
-    }, seconds * 1000);
+      this.nextQuote(); // … qui reprend après elle
+    }, this.airtime * 1000);
   }
 
-  /** Affiche une ligne dans le bandeau ; si elle est trop longue, elle défile. */
+  /**
+   * Affiche une ligne dans le bandeau, pour `seconds` secondes au moins.
+   * Trop longue pour le fil, elle défile jusqu'à son dernier mot, et reste à l'antenne le temps qu'il faut.
+   */
   show(text, label, seconds) {
     const el = this.q('bandeau');
     el.querySelector('em').textContent = label;
-    const line = el.querySelector('span');
-    const inner = h('i', {}, text);
-    line.replaceChildren(inner);
-    const overflow = inner.scrollWidth - line.clientWidth + 24;
-    inner.style.setProperty('--decalage', `${-Math.max(0, overflow)}px`);
-    inner.style.animationDuration = `${Math.max(2, seconds - 2)}s`;
+    el.querySelector('.fil').replaceChildren(h('i', {}, text));
+    this.seconds = seconds;
+    this.fit();
   }
 
-  toast(text) {
-    const note = h('p', {}, text);
-    this.q('toasts').append(note);
+  /** Ajuste la ligne affichée à la largeur du fil, et fixe son temps d'antenne (`this.airtime`). */
+  fit() {
+    const line = this.q('bandeau').querySelector('.fil');
+    const inner = line.firstElementChild;
+    this.airtime = this.seconds ?? AIRTIME;
+    if (!inner) return;
+    line.classList.remove('replie');
+    inner.style.animation = 'none'; // sans défilement tant qu'on ne sait pas s'il en faut un
+    const style = getComputedStyle(line);
+    const room = line.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+    const over = inner.scrollWidth - room;
+    if (room <= 0 || over <= 0) return; // bandeau masqué, ou la ligne tient
+    const still = document.body.classList.contains('sobre') || matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (still) {
+      // Effets réduits : la ligne se replie, en réduisant le corps jusqu'à ce qu'elle tienne dans le bandeau.
+      line.classList.add('replie');
+      for (const size of [0.86, 0.74, 0.62, 0.54, 0.46, 0.4]) {
+        line.style.setProperty('--corps', `${size}em`);
+        if (inner.offsetHeight <= line.clientHeight) break;
+      }
+      this.airtime += 2;
+      return;
+    }
+    const em = parseFloat(style.fontSize);
+    const travel = over + em; // jusqu'au dernier mot, avec un peu d'air
+    const time = travel / (em * SCROLL);
+    inner.style.setProperty('--decalage', `${-travel}px`);
+    void inner.offsetWidth; // relance le défilement depuis le début
+    inner.style.animation = '';
+    inner.style.animationDuration = `${time.toFixed(2)}s`;
+    this.airtime = Math.max(this.airtime, 1.2 + time + 1.6); // une pause avant, le défilement, une pause après
+  }
+
+  /** Une note en haut à gauche ; trois au plus à la fois. `tone` : une classe (la rareté d'une pancarte). */
+  toast(text, tone = '') {
+    const note = h('p', { className: tone }, text);
+    const box = this.q('toasts');
+    while (box.children.length > 1) box.firstChild.remove(); // deux notes à la fois, pas plus : l'écran reste au jeu
+    box.append(note);
     setTimeout(() => note.remove(), 4200);
   }
 }

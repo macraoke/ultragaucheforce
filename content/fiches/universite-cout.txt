@@ -1,0 +1,11 @@
+titre: Un an d'université : 12 460 euros
+theme: richesses
+texte: En 2025, la dépense d'éducation est de 12 460 euros par an pour un étudiant à l'université, selon le ministère de l'Éducation nationale.
+portee: Toute la dépense d'éducation rapportée à un étudiant, tous financeurs confondus : État, collectivités, entreprises, ménages. Ce n'est pas la seule dépense de l'État. Ni le logement ni les bourses ne sont comptés. Données provisoires.
+periode: 2025
+valeur: 12460
+finance: années d'études à l'université
+source.titre: DEPP — Note d'information n° 26.42 : en 2025, 199,2 milliards d'euros consacrés à l'éducation
+source.url: https://www.education.gouv.fr/sites/default/files/document/educationnationaledepp-ni-2026-42pdf-520993.pdf
+source.nature: officielle
+verifie: 2026-11-16

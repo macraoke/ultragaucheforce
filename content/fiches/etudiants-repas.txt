@@ -1,0 +1,10 @@
+titre: 34 % des étudiants sautent des repas
+theme: richesses
+texte: En 2025, 34 % des étudiants déclarent sauter régulièrement des repas par manque d'argent, et 16 % recourent à l'aide alimentaire.
+portee: Sondage déclaratif auprès de 800 étudiants (méthode des quotas), commandé par une association d'aide aux étudiants. « Régulièrement » n'est pas défini sur la page. Le chiffre de 62 % qui circule dans la presse concerne les seuls bénéficiaires de COP1, pas l'ensemble des étudiants.
+periode: 2025 (enquête en ligne du 23 avril au 12 mai 2025)
+choc: oui
+source.titre: Ifop pour COP1 — La précarité étudiante – quelle réalité en 2025 ?
+source.url: https://www.ifopgroup.com/article/la-precarite-etudiante-quelle-realite-en-2025/
+source.nature: associative
+verifie: 2026-11-16

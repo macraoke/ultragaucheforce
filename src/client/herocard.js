@@ -1,6 +1,6 @@
 // Le carton de déblocage d'un héros : volontairement démesuré.
-// Tricolore qui claque, drapeaux des luttes, portrait géant, nom énorme, vraie citation
-// sourcée, tambours et cuivres. Se ferme tout seul ou au premier toucher.
+// Tricolore qui claque, drapeaux des luttes, portrait géant, nom énorme, sa citation,
+// tambours et cuivres. Se ferme tout seul ou au premier toucher.
 
 import { spriteElement } from './sprites.js';
 import { frenchDate } from './dom.js';
@@ -45,8 +45,12 @@ export function showHeroCard(bundle, hero, { audio = null, reduced = false, resc
     const scene = el('div', 'scene');
     const portrait = el('div', 'portrait');
     const art = hero.sprites.portrait || hero.sprites.repos;
-    const scale = Math.max(3, Math.floor(Math.min(innerHeight * 0.44, innerWidth * 0.36) / art.length));
+    // La taille de l'écran de jeu : téléphone tenu debout, la page est pivotée d'un quart de tour.
+    const turned = document.documentElement.classList.contains('pivote');
+    const [vw, vh] = turned ? [innerHeight, innerWidth] : [innerWidth, innerHeight];
+    const scale = Math.max(3, Math.floor(Math.min(vh * 0.44, vw * 0.36) / art.length));
     portrait.append(spriteElement(art, bundle.palette, scale));
+    if (rescued) portrait.append(el('b', 'plus-un', '+1')); // une vie de plus
 
     const words = el('div', 'mots');
     words.append(el('div', 'tampon', rescued ? 'Camarade libéré·e !' : 'Entre en scène'));
@@ -54,7 +58,7 @@ export function showHeroCard(bundle, hero, { audio = null, reduced = false, resc
     if (hero.cri) words.append(el('p', 'cri', `« ${hero.cri} »`));
     const quote = bundle.citations[hero.citation];
     if (quote) {
-      words.append(el('p', 'source', `Vraie citation : « ${quote.texte} » — ${quote.auteur}, ${frenchDate(quote.date)}`));
+      words.append(el('p', 'source', `« ${quote.texte} » — ${quote.auteur}, ${frenchDate(quote.date)}`));
     }
     const perks = [rescued && '+1 vie', hero.speciale?.nom && `Spéciale : ${hero.speciale.nom}`].filter(Boolean);
     if (perks.length) {

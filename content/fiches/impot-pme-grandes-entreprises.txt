@@ -1,0 +1,10 @@
+titre: PME : 21,4 %. Grandes entreprises : 14,3 %
+theme: richesses
+texte: En 2022, l'impôt sur les sociétés représente 21,4 % du profit d'exploitation des PME, contre 14,3 % pour les grandes entreprises.
+portee: Taux implicite brut, c'est-à-dire l'impôt sur les sociétés hors crédits d'impôt rapporté à l'excédent net d'exploitation. Moyennes par catégorie : la page signale « une grande hétérogénéité à l'intérieur même des catégories ». Ne couvre pas les autres impôts des entreprises. Non contesté.
+periode: 2022 (publié le 2 septembre 2025)
+choc: oui
+source.titre: Insee — Le taux d'imposition implicite des profits entre 2016 et 2022 est plus élevé pour les PME que pour les grandes entreprises
+source.url: https://www.insee.fr/fr/statistiques/8630968
+source.nature: officielle
+verifie: 2026-11-16

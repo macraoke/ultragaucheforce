@@ -1,0 +1,12 @@
+titre: Dix rames de TER : 125 millions
+theme: richesses
+texte: En avril 2025, la région Auvergne-Rhône-Alpes commande dix rames de TER à deux niveaux pour environ 125 millions d'euros, annonce le constructeur Alstom. Soit 12,5 millions par rame.
+portee: Le montant de la commande passée au constructeur. Ni l'exploitation, ni l'entretien, ni les conducteurs ne sont comptés. Source industrielle, pas la délibération de la Région. La division est la nôtre.
+periode: commande du 1er avril 2025
+valeur: 12500000
+finance: rames de TER à deux niveaux
+ponctuel: oui
+source.titre: Alstom — Dix trains Regio2N supplémentaires pour la Région Auvergne-Rhône-Alpes (1er avril 2025)
+source.url: https://www.alstom.com/fr/press-releases-news/2025/4/alstom-fournira-dix-trains-regio2n-supplementaires-la-region-auvergnerhone-alpes
+source.nature: presse
+verifie: 2026-11-16

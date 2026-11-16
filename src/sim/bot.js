@@ -3,6 +3,7 @@
 //
 // Stratégie : viser le boss tant qu'il est debout, sinon la sortie ; tirer sans arrêt ;
 // sauter devant un trou, un mur, ou quand il s'y accroche ; reculer un peu s'il n'avance plus.
+// Tombé sous terre, il creuse droit devant lui ; arrivé sous son but, il perce le plafond et remonte.
 
 import { TILE } from './world.js';
 import { wallAt } from './physics.js';
@@ -28,6 +29,26 @@ export function botActions(game, memory) {
   const toward = Math.sign(goal - cx) || 1;
   const dist = Math.abs(goal - cx);
 
+  // Sous la sortie (au fond d'un cratère, d'une galerie), ou calé sous terre contre un mur qui ne se creuse pas :
+  // on perce au-dessus de soi, puis on grimpe par bonds.
+  const under = !fighting && exit && dist < 20 && h.y + h.h > exit.y + exit.h + 2; // même un cratère d'une tuile
+  m.climb = Math.max(0, (m.climb ?? 0) - 1);
+  if (m.climb > 0 || under) {
+    const phase = m.t % 90;
+    const col = Math.floor(cx / TILE);
+    const top = Math.floor(h.y / TILE);
+    let roof = false; // reste-t-il quelque chose à percer au-dessus de la tête ?
+    for (let k = 1; k <= 30 && !roof; k++) roof = game.world.solid(col, top - k);
+    if (roof && phase < 40) return { ...act, up: true }; // quarante pas à tirer vers le haut, sans bouger
+    act.fire = false; // puis on grimpe sans abîmer la paroi ; puits ouvert jusqu'au ciel : on ne s'arrête plus
+    act[toward > 0 ? 'right' : 'left'] = true;
+    // Du fond : un vrai saut, tenu jusqu'au bout. En l'air contre la paroi : de petits bonds répétés.
+    if (h.onGround && m.hold === 0) m.hold = 22;
+    else if (!h.onGround && wallAt(game.world, h, toward) && m.hold === 0 && m.t % 9 === 0) m.hold = 6;
+    act.jump = m.hold > 0;
+    return act;
+  }
+
   // Avance-t-on ? Sinon, on recule un instant et on tente la spéciale.
   if (m.fighting !== fighting || m.best === undefined || dist < m.best - 4) {
     m.best = dist;
@@ -36,8 +57,16 @@ export function botActions(game, memory) {
   } else if (++m.since > 240 && !fighting) {
     m.since = 0;
     m.best = dist + 40;
-    m.back = 45;
-    act.special = true;
+    const tx = Math.floor(cx / TILE);
+    const head = Math.floor(h.y / TILE);
+    let roofed = false; // un plafond au-dessus de la tête : on est sous terre
+    for (let k = 1; k <= 14; k++) if (game.world.solid(tx, head - k)) roofed = true;
+    const wall = game.world.at(Math.floor((cx + toward * (h.w / 2 + 3)) / TILE), Math.floor((h.y + h.h / 2) / TILE));
+    if (roofed && wall?.pv === 0) m.climb = 270; // et devant, un mur qui ne se creuse pas : on remonte
+    else {
+      m.back = 45;
+      act.special = true;
+    }
   }
 
   // Face au boss : s'il n'encaisse plus rien depuis un moment, on change d'angle (on s'approche, on saute).

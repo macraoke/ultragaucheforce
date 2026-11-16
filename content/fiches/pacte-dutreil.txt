@@ -1,0 +1,10 @@
+titre: Pacte Dutreil : 5,5 milliards en 2024
+theme: richesses
+texte: La Cour des comptes estime la dépense fiscale du pacte Dutreil à plus de 5,5 milliards d'euros en 2024, contre 1,2 milliard en 2020.
+portee: Coût, en droits de succession et de donation non perçus, de l'avantage accordé aux transmissions d'entreprises. Estimation de la Cour : la page dit que le chiffrage des documents budgétaires « n'a jamais reposé sur une méthodologie convaincante ».
+periode: 2020 à 2024 (publié le 18 novembre 2025)
+choc: oui
+source.titre: Cour des comptes — Le Pacte Dutreil : un dispositif fiscal en forte croissance à mieux cibler
+source.url: https://www.ccomptes.fr/fr/publications/le-pacte-dutreil-un-dispositif-fiscal-en-forte-croissance-mieux-cibler
+source.nature: officielle
+verifie: 2026-11-16

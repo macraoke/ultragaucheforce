@@ -1,0 +1,10 @@
+titre: 45 700 lits d'hôpital en moins depuis 2013
+theme: richesses
+texte: Fin 2024, les établissements de santé comptent 367 100 lits d'hospitalisation complète, soit 45 700 de moins que fin 2013 (-11,1 %).
+portee: Tous établissements, publics et privés. Ne compte que l'hospitalisation complète : la même phrase se poursuit par une hausse de 23 200 places d'hospitalisation partielle depuis fin 2013 (+34,2 %). La DREES explique le recul « principalement par une évolution structurelle des formes de prises en charge ». Le chiffre est sûr
+periode: fin 2013 à fin 2024 (édition 2026)
+choc: oui
+source.titre: DREES — Les capacités d'accueil en hospitalisations complète et partielle
+source.url: https://drees.solidarites-sante.gouv.fr/sites/default/files/2026-07/ES%202026%20-%20Fiche%2002%20-%20Les%20capacit%C3%A9s%20d%E2%80%99accueil%20en%20hospitalisation%20compl%C3%A8te%20et%20partielle.pdf
+source.nature: officielle
+verifie: 2026-11-16

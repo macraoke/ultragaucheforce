@@ -7,6 +7,7 @@ pv: 2
 vitesse: 135
 saut: 3.4
 fiche: impot-plancher
+fiche: impot-plancher-parcours
 auteur: UltraGauche Force
 
 # Arme : le tampon « 2 % », lent et lourd, casse murs et boucliers.

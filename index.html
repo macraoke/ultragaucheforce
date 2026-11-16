@@ -23,35 +23,30 @@
       <div id="hud" hidden>
         <div class="bloc gauche">
           <span id="hud-heros"></span>
-          <span id="hud-coeurs" aria-label="Points de vie"></span>
           <span id="hud-vies"></span>
-          <span id="hud-charges" aria-label="Charges de spéciale"></span>
-          <span id="hud-manif" hidden><b></b> <small></small></span>
+          <span id="hud-charges"></span>
+          <span id="hud-manif" hidden></span>
         </div>
         <div class="bloc droite">
-          <span id="hud-panique"><i></i><b></b></span>
-          <span id="hud-annonce"></span>
           <button id="pause" type="button" aria-label="Pause">II</button>
         </div>
         <div id="hud-boss" hidden><b></b><span><i></i></span></div>
       </div>
 
-      <div id="bandeau" hidden>
-        <strong>PANIQUE TV</strong><em>ALERTE INFO</em><span></span>
+      <div id="bandeau" hidden data-niveau="0">
+        <strong class="chaine"><i></i>PANIQUE <b>TV</b></strong>
+        <span id="hud-panique" data-niveau="0" role="img" aria-label="Panique de la chaîne : calme"><i>Calme</i><i>Alerte</i><i>Hystérie</i></span>
+        <em>ALERTE INFO</em>
+        <span class="fil"></span>
       </div>
       <div id="toasts"></div>
     </div>
 
     <div id="tactile" aria-hidden="true">
-      <div class="groupe gauche">
-        <b data-action="left">◀</b>
-        <b data-action="right">▶</b>
-      </div>
-      <div class="groupe droite">
-        <b data-action="special" class="petit">SPÉ</b>
-        <b data-action="fire">TIR</b>
-        <b data-action="jump">SAUT</b>
-      </div>
+      <i class="manche"><i></i></i>
+      <b data-action="fire">TIR</b>
+      <b data-action="jump">SAUT</b>
+      <b data-action="special">SPÉ</b>
     </div>
   </div>
 

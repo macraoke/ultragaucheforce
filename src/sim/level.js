@@ -40,14 +40,19 @@ export function loadLevel(game) {
     }
   });
 
-  // Héros de départ : celui que le niveau demande, sinon le premier héros jouable.
+  // Héros de départ : celui que le joueur a choisi, sinon celui que le niveau demande, sinon le premier héros jouable.
+  const chosen = Object.hasOwn(bundle.heros || {}, game.choice) ? bundle.heros[game.choice] : null;
   const wanted = toList(level.heros).map((id) => bundle.heros?.[id]).find(Boolean);
-  const def = wanted || playable(bundle)[0] || Object.values(bundle.heros || {})[0];
+  const def = (chosen?.statut !== 'test' && chosen) || wanted || playable(bundle)[0] || Object.values(bundle.heros || {})[0];
   if (!def) throw new Error('Aucun héros dans le contenu : ajoute une fiche dans content/heros/.');
   game.hero = createHero(def, start.x, start.y);
   game.checkpoint = start;
 
-  const bossDef = level.boss && bundle.boss?.[level.boss];
-  if (bossDef && bossAt) game.boss = createBoss(bossDef, bossAt.x, bossAt.y);
+  // Le repère « Y » est l'emplacement du boss. Lequel ? Celui que la fiche impose (`boss:`), sinon un ultra-riche
+  // tiré au hasard parmi ceux de `content/boss/` : d'une partie à l'autre, ce n'est pas le même.
+  const bosses = Object.values(bundle.boss || {});
+  const forced = Object.hasOwn(bundle.boss || {}, level.boss || '') ? bundle.boss[level.boss] : null;
+  const bossDef = bossAt && (forced || (bosses.length ? game.rng.pick(bosses) : null));
+  if (bossDef) game.boss = createBoss(bossDef, bossAt.x, bossAt.y);
   else for (const p of game.props) if (p.kind === 'sortie') p.on = true;
 }

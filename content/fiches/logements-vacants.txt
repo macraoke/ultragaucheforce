@@ -1,0 +1,10 @@
+titre: 2,9 millions de logements vacants
+theme: richesses
+texte: Au 1er janvier 2026, 2,9 millions de logements sont vacants en France hors Mayotte, soit 7,6 % du parc.
+portee: France hors Mayotte, 38,6 millions de logements. La page dit que la part des logements vacants baisse depuis 2019. Elle ne dit ni que ces logements sont habitables, ni qu'ils se trouvent là où le logement manque : le rapprochement avec les personnes sans domicile est un raccourci.
+periode: 1er janvier 2026 (publié le 30 septembre 2026)
+choc: oui
+source.titre: Insee — Parc de logements au 1er janvier 2026
+source.url: https://www.insee.fr/fr/statistiques/9055697
+source.nature: officielle
+verifie: 2026-11-16

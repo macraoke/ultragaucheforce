@@ -7,7 +7,7 @@ import { sprite } from './sprites.js';
 
 const TILE = 16;
 const FONT = "Impact, Haettenschweiler, 'Arial Narrow Bold', 'HelveticaNeue-CondensedBlack', 'Roboto Condensed', sans-serif";
-const SKIES = {
+export const SKIES = {
   campagne: ['#6fc4ee', '#d5f0f7'],
   ville: ['#8ea2c0', '#e3e6ee'],
   citadelle: ['#2b1741', '#b13e53'],
@@ -31,17 +31,17 @@ export class Renderer {
     this.floaters = [];
     this.shake = 0;
     this.reduced = false;
-    this.anchor = 0.8; // hauteur des pieds du héros à l'écran (0 = haut, 1 = bas)
+    this.anchor = 0.62; // hauteur des pieds du héros à l'écran (0 = haut, 1 = bas) : on voit ce qu'il y a sous terre
     this.demo = false; // démo du menu : pas de panneaux par-dessus le titre
     this.clock = 0;
   }
 
   /** Adapte la taille interne à la zone d'affichage : échelle entière, pixels nets, aucun bord perdu. */
   resize() {
-    const box = this.canvas.parentElement.getBoundingClientRect();
+    const box = this.canvas.parentElement; // sa taille de mise en page : la même quand tout l'écran pivote
     const dpr = window.devicePixelRatio || 1;
-    const W = Math.max(160, Math.floor(box.width * dpr));
-    const H = Math.max(120, Math.floor(box.height * dpr));
+    const W = Math.max(160, Math.floor(box.clientWidth * dpr));
+    const H = Math.max(120, Math.floor(box.clientHeight * dpr));
     let scale = Math.max(1, Math.min(Math.round(H / 216), Math.floor(W / 300)));
     while (H / scale > 280) scale++;
     this.scale = scale;
@@ -71,7 +71,8 @@ export class Renderer {
     const maxX = Math.max(0, world.w * TILE - this.viewW);
     const maxY = world.h * TILE - this.viewH;
     const x = hero.x + hero.w / 2 - this.viewW / 2 + hero.facing * 28;
-    const y = hero.y + hero.h - this.viewH * this.anchor;
+    // Quand le héros vise en haut ou en bas, la vue se décale du même côté : on voit où l'on creuse.
+    const y = hero.y + hero.h - this.viewH * this.anchor + (hero.aim || 0) * this.viewH * 0.22;
     return { x: Math.min(maxX, Math.max(0, x)), y: maxY < 0 ? maxY : Math.min(maxY, Math.max(0, y)) };
   }
 
@@ -87,11 +88,19 @@ export class Renderer {
         this.burst(e.x, e.y, '#566c86', 8, 30 + e.r);
         this.shake = Math.max(this.shake, Math.min(9, e.r / 5));
       } else if (e.type === 'shake') this.shake = Math.max(this.shake, e.force);
-      else if (e.type === 'bubble') this.floaters.push({ x: e.x, y: e.y, text: e.text, t: 1.6, color: e.color || '#f4f4f4' });
+      else if (e.type === 'fire') {
+        this.burst(e.x, e.y - 14, '#ef7d57', 12, 70);
+        this.burst(e.x, e.y - 14, '#f6c21c', 8, 50);
+      } else if (e.type === 'bubble') this.floaters.push({ x: e.x, y: e.y, text: e.text, t: 1.6, color: e.color || '#f4f4f4' });
       else if (e.type === 'recruit') {
         this.floaters.push({ x: e.x, y: e.y - 14, text: `+ ${e.n.toLocaleString('fr-FR')}`, t: 1.8, color: '#f6c21c', size: 11 });
+        if (e.healed) this.floaters.push({ x: e.x, y: e.y - 28, text: 'SOIGNÉ', t: 1.8, color: '#38b764', size: 9 });
         this.burst(e.x, e.y, '#f6c21c', 10, 80);
         this.burst(e.x, e.y, '#e43b44', 8, 60);
+      } else if (e.type === 'heroCard' && e.x !== undefined) {
+        // Un camarade libéré : une vie de plus, comme dans Broforce.
+        this.floaters.push({ x: e.x, y: e.y - 10, text: '+1', t: 2.4, color: '#f6c21c', size: 20 });
+        this.burst(e.x, e.y, '#f6c21c', 14, 90);
       } else if (e.type === 'overrun') {
         this.floaters.push({ x: e.x, y: e.y - 12, text: 'ON EST LÀ !', t: 1.8, color: '#f6c21c', size: 10 }); // « On est là, même si Macron le veut pas »
         this.burst(e.x, e.y, '#94b0c2', 10, 70);
@@ -143,7 +152,9 @@ export class Renderer {
     tctx.setTransform(this.scale, 0, 0, this.scale, 0, 0);
 
     this.crowd = game.crowd || 0;
+    this.heroBox = game.hero;
     this.boxes = []; // les pancartes déjà posées à cette image : aucune ne recouvre l'autre
+    this.backRows = game.level?.murs;
     this.backWalls(game, cx, cy);
     for (const d of game.decors) if (!this.bundle.decors[d.id]?.devant) this.decor(d);
     for (const e of game.enemies) if (e.beam) this.beam(e);
@@ -169,8 +180,11 @@ export class Renderer {
     for (const f of this.floaters) {
       this.label(f.text, f.x - cx, f.y - cy, { size: f.size || 7, color: f.color, alpha: Math.min(1, f.t * 2), width: 150 });
     }
-    if (game.kettle) this.label('NASSE', this.viewW / 2, 34, { size: 12, color: Math.floor(this.clock * 3) % 2 ? '#e43b44' : '#f4f4f4' });
-    if (game.sign && !this.demo) this.board(game.sign, this.viewW / 2, 30);
+    if (game.sign && !this.demo) {
+      // Un panneau peut dire la même chose au clavier et au pouce : « au clavier // au pouce ».
+      const [keys, thumbs] = game.sign.split(' // ');
+      this.board(thumbs && document.body.classList.contains('tactile') ? thumbs : keys, this.viewW / 2, 30);
+    }
   }
 
   background(kind, cx, cy) {
@@ -238,6 +252,7 @@ export class Renderer {
 
   tiles(world, cx, cy) {
     const { ctx } = this;
+    const back = this.backRows;
     const x0 = Math.max(0, Math.floor(cx / TILE));
     const y0 = Math.max(0, Math.floor(cy / TILE));
     const x1 = Math.min(world.w - 1, Math.floor((cx + this.viewW) / TILE));
@@ -250,7 +265,9 @@ export class Renderer {
         const x = tx * TILE - cx;
         const y = ty * TILE - cy;
         ctx.drawImage(sprite(def.sprites.image, this.palette), x, y);
-        if (def.id === 'terre' && (ty === 0 || !world.tiles[(ty - 1) * world.w + tx])) {
+        // L'herbe ne pousse qu'à ciel ouvert : pas au fond d'une cave (là où il y a un mur du fond au-dessus).
+        const cellar = back?.[ty - 1]?.[tx] && back[ty - 1][tx] !== '.';
+        if (def.id === 'terre' && !cellar && (ty === 0 || !world.tiles[(ty - 1) * world.w + tx])) {
           ctx.fillStyle = '#38b764';
           ctx.fillRect(x, y, TILE, 3);
           ctx.fillStyle = '#a7f070';
@@ -309,7 +326,9 @@ export class Renderer {
     const moving = e.state === 'patrol' || e.state === 'alert' || e.def.deplacement === 'vol';
     if (e.rope) this.line(e.rope.x, e.rope.y, e.x + e.w / 2, e.y, '#1a1c2c');
     if (e.jet) this.jet(e.jet);
-    this.actor(e, this.frames(s, moving, e.animTime, e.def.deplacement === 'vol' ? 14 : 7), { flash: e.flash > 0 });
+    // Un plateau de télé ne se retourne pas : son enseigne resterait à l'envers.
+    const set = e.def.deplacement === 'fixe' && e.def.reaction === 'cadre';
+    this.actor(e, this.frames(s, moving, e.animTime, e.def.deplacement === 'vol' ? 14 : 7), { flash: e.flash > 0, ...(set && { flip: false }) });
     if (e.aim) this.aim(e);
     if (e.rush?.phase === 'ruee') {
       this.ctx.fillStyle = '#f4f4f4';
@@ -322,7 +341,7 @@ export class Renderer {
         { size: 6.5, color: '#f4f4f4', bg: enough ? '#257953' : '#e43b44' });
     }
     if (e.state === 'stunned') this.label('✶ ✶', e.x + e.w / 2 - this.cx, e.y - 5 - this.cy, { size: 6, color: '#f6c21c' });
-    if (e.def.reaction === 'cadre' && e.state === 'alert') this.viewfinder(e);
+    if (e.def.reaction === 'cadre' && e.state === 'alert' && (!e.film || e.framing)) this.viewfinder(e);
     if (speaks) this.label(e.bubble.text, e.x + e.w / 2 - this.cx, e.y - 10 - this.cy, { size: 5.5, color: '#1a1c2c', bg: '#f4f4f4', width: 80 });
   }
 
@@ -393,8 +412,12 @@ export class Renderer {
   /** Le cadre du drone : ce que PANIQUE TV choisit de montrer. */
   viewfinder(e) {
     const { ctx } = this;
-    const x = Math.round(e.x + e.w / 2 - 22 - this.cx);
-    const y = Math.round(e.y + e.h + 4 - this.cy);
+    // Un drone cadre ce qu'il survole ; une équipe au sol cadre le héros lui-même ; venue pour un feu, elle cadre le feu.
+    const aloft = e.def.deplacement === 'vol';
+    const at = e.film ? { x: e.film.x, y: e.film.y - 34 }
+      : aloft ? { x: e.x + e.w / 2, y: e.y + e.h + 4 } : { x: this.heroBox.x + this.heroBox.w / 2, y: this.heroBox.y - 10 };
+    const x = Math.round(at.x - 22 - this.cx);
+    const y = Math.round(at.y - this.cy);
     ctx.strokeStyle = Math.floor(this.clock * 4) % 2 ? '#e43b44' : '#f4f4f4';
     ctx.lineWidth = 1;
     ctx.strokeRect(x + 0.5, y + 0.5, 44, 30);
@@ -439,6 +462,7 @@ export class Renderer {
     const y = Math.round(d.y - img.height - this.cy);
     if (x > this.viewW || x + img.width < 0) return;
     this.ctx.drawImage(img, x, y);
+    if (d.fire) this.flames(d.fire.x - this.cx, d.fire.y - this.cy, Math.min(img.width - 8, 30));
     const text = def.ecrit && this.written(d);
     if (!text) return;
     if (def.ecrit === 'tag') this.label(text, x + 8, y - 6, { size: 6.5, color: '#e43b44', width: 110 });
@@ -448,9 +472,42 @@ export class Renderer {
     }
   }
 
-  /** La vraie pancarte écrite sur un décor (banderole, tag) : toujours la même au même endroit. */
+  /** Un feu de poubelle : des langues de flammes qui dansent, de la fumée au-dessus. `x` : le centre, `y` : le sol. */
+  flames(x, y, width) {
+    const { ctx } = this;
+    const still = this.reduced;
+    const t = still ? 0 : this.clock;
+    const n = Math.max(3, Math.floor(width / 4));
+    for (let i = 0; i < n; i++) {
+      const fx = Math.round(x - width / 2 + (i + 0.5) * (width / n));
+      // Chaque langue a son rythme ; celles du milieu montent plus haut.
+      const lift = 8 + 9 * Math.sin((Math.PI * (i + 0.5)) / n) + 4 * Math.sin(t * 9 + i * 1.7) + 2 * Math.sin(t * 15 + i * 2.9);
+      const h = Math.max(4, Math.round(lift));
+      const top = Math.round(y - 10 - h);
+      ctx.fillStyle = '#e43b44';
+      ctx.fillRect(fx - 2, top, 4, h);
+      ctx.fillStyle = '#ef7d57';
+      ctx.fillRect(fx - 1, top + 2, 3, h - 2);
+      ctx.fillStyle = '#f6c21c';
+      ctx.fillRect(fx - 1, top + Math.round(h * 0.45), 2, Math.round(h * 0.55));
+      ctx.fillStyle = '#ffe08a';
+      ctx.fillRect(fx, top + Math.round(h * 0.7), 1, Math.round(h * 0.3));
+    }
+    // Fumée : trois volutes qui montent et s'effacent.
+    for (let k = 0; k < 3; k++) {
+      const rise = still ? k / 3 : (t * 0.5 + k / 3) % 1;
+      ctx.fillStyle = `rgba(86, 108, 134, ${(0.5 * (1 - rise)).toFixed(2)})`;
+      const size = 3 + Math.round(rise * 5);
+      ctx.fillRect(Math.round(x - size / 2 + Math.sin(rise * 6 + k) * 4), Math.round(y - 30 - rise * 34), size, size);
+    }
+  }
+
+  /**
+   * La vraie pancarte écrite sur un décor (banderole, tag) : toujours la même au même endroit.
+   * Une banderole n'a la place que de 24 caractères : seules les pancartes courtes s'y écrivent (c'est dit dans le guide).
+   */
   written(d) {
-    this.signs ??= this.bundle.pancartes.filter((p) => p.credit && p.texte.length <= 24);
+    this.signs ??= this.bundle.pancartes.filter((p) => p.texte.length <= 24);
     return this.signs.length ? this.signs[Math.floor(d.x / 16 + d.y * 7) % this.signs.length].texte : '';
   }
 
@@ -478,12 +535,13 @@ export class Renderer {
       this.ctx.fillRect(hand, y - 16, 1, 18);
       const sway = Math.round(Math.sin(this.clock * 5 + i) * 1);
       this.ctx.drawImage(cloth, m.facing < 0 ? hand - cloth.width : hand + 1, y - 16 + sway);
-    } else if (m.kind === 'pancarte') {
+    } else if (m.kind === 'pancarte' && m.label) { // mains vides tant qu'aucune pancarte n'est arrivée
       const top = y - 12 - (i % 2) * 14;
-      if (!this.reserve(m.label, hand, top, 4.6, 44)) return; // elle reste baissée plutôt que d'en cacher une autre
+      const width = m.label.length > 45 ? 84 : m.label.length > 26 ? 64 : 44; // une longue pancarte est plus large, pas plus haute
+      if (!this.reserve(m.label, hand, top, 4.6, width)) return; // elle reste baissée plutôt que d'en cacher une autre
       this.ctx.fillStyle = '#6b3a2a';
       this.ctx.fillRect(hand, y - 8 - (i % 2) * 14, 1, 10 + (i % 2) * 14);
-      this.board(m.label, hand, top, { size: 4.6, width: 44 });
+      this.board(m.label, hand, top, { size: 4.6, width });
     }
   }
 

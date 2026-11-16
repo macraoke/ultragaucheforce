@@ -60,10 +60,18 @@ test('recrue « multiplie » : l’assemblée générale double la manif, quelle
   assert.equal(alone.cortege.length, 0);
 });
 
-test('les deux comptages : selon les syndicats, selon la préfecture', () => {
-  const game = play(flat({ cortege: true, manif: 900 }));
-  assert.deepEqual(game.counts(), { syndicats: 900, prefecture: 157 }, 'le rapport des comptages de Paris, le 31 janvier 2023');
-  assert.deepEqual(play(flat()).counts(), { syndicats: 0, prefecture: 1 });
+test('recrue qui soigne : un medic rend des points de vie au héros, sans dépasser son maximum', () => {
+  const lvl = () => flat({ cortege: true, legende: { m: recruit('soigneuse') }, draw: (put, ground) => put(ground, 9, 'm') });
+  const hurt = settle(play(lvl()));
+  hurt.hero.hp = 1;
+  const events = run(hurt, 60, { right: true });
+  assert.equal(hurt.hero.hp, 2);
+  assert.equal(of(events, 'recruit')[0].healed, 1);
+
+  const fine = settle(play(lvl()));
+  const full = fine.hero.hp;
+  assert.equal(of(run(fine, 60, { right: true }), 'recruit')[0].healed, 0, 'en pleine forme : rien à soigner');
+  assert.equal(fine.hero.hp, full);
 });
 
 // ---------------------------------------------------------------- dispersions
@@ -215,6 +223,20 @@ test('nasse : les lignes apparaissent des deux côtés, se referment, et finisse
   assert.equal(game.status, 'won', 'jamais une impasse : on sort du niveau');
 });
 
+test('nasse au rythme du niveau : elle revient d’elle-même, là où le héros se trouve, sans repère', () => {
+  const game = settle(play(flat({ width: 70, nasse: { ennemi: 'statue', nombre: 2, vitesse: 20, rythme: 3 } }), { invincible: true }));
+  assert.equal(of(run(game, 60 * 2), 'kettle').length, 0, 'pas avant le délai');
+  const events = run(game, 60 * 2);
+  assert.deepEqual(of(events, 'kettle').map((e) => e.state), ['start']);
+  assert.ok(Math.abs(game.kettle.x - (game.hero.x + game.hero.w / 2)) < TILE, 'autour du héros');
+  const later = run(game, 60 * 30);
+  assert.ok(of(later, 'kettle').filter((e) => e.state === 'end').length >= 1, 'toujours levée');
+  assert.ok(of(later, 'kettle').filter((e) => e.state === 'start').length >= 1, 'puis elle revient');
+
+  const calm = settle(play(flat({ width: 70, nasse: { ennemi: 'statue', nombre: 2, vitesse: 20, rythme: 0 } }), { invincible: true }));
+  assert.equal(of(run(calm, 60 * 20), 'kettle').length, 0, 'rythme 0 : seulement aux repères');
+});
+
 test('nasse : elle prend fin si une ligne cède ou si le héros en sort par le haut', () => {
   const broken = settle(play(nasse('ligne', { cortege: true }), { invincible: true }));
   run(broken, 260, { right: true });
@@ -279,4 +301,45 @@ test('alertes de PANIQUE TV : les manchettes du niveau d’abord, puis les bande
     ['BANDEAU RELEVÉ', 'Chaîne, janv. 2023 — https://exemple.org/bandeau'],
     ['FLASH SPÉCIAL', undefined],
   ]);
+});
+
+// ---------------------------------------------------------------- pancartes
+
+test('pancartes : les manifestants qui arrivent en portent parfois une, tirée au hasard, nouvelle ou non', () => {
+  const lvl = flat({ cortege: true, legende: { v: recruit('voisine') }, draw: (put, ground) => put(ground, 9, 'v') });
+  let drawn = 0;
+  let joined = 0;
+  const texts = new Set();
+  for (let seed = 1; seed <= 60; seed++) {
+    const game = settle(play(lvl, { seed }));
+    const start = game.stats.signs;
+    const events = run(game, 60, { right: true });
+    joined += of(events, 'recruit').length;
+    drawn += game.stats.signs - start;
+    for (const e of of(events, 'sign')) texts.add(e.text);
+    assert.equal(of(events, 'sign').length, game.stats.signs - start, 'chaque pancarte arrivée est signalée');
+  }
+  assert.equal(joined, 60);
+  assert.ok(drawn > 30 && drawn < 150, `tantôt oui, tantôt non (${drawn} pancartes pour 60 recrues)`);
+  assert.deepEqual([...texts].sort(), ['PANCARTE DEUX', 'PANCARTE UN'], 'avec ou sans source, toutes peuvent sortir');
+});
+
+test('pancartes : les rares sortent moins souvent, et le cortège ne montre que celles qui sont arrivées', () => {
+  const bundle = { ...fixtureBundle(), pancartes: [{ texte: 'COMMUNE', credit: '', rarete: 0 }, { texte: 'LÉGENDAIRE', credit: 'vue — https://exemple.org', rarete: 3 }] };
+  const seen = { COMMUNE: 0, LÉGENDAIRE: 0 };
+  let empty = 0;
+  for (let seed = 1; seed <= 400; seed++) {
+    const game = play(flat({ cortege: true }), { bundle, seed });
+    const carrier = game.cortege.find((m) => m.kind === 'pancarte');
+    assert.deepEqual(game.signs.length, game.stats.signs);
+    if (!game.signs.length) {
+      empty++;
+      assert.equal(carrier.label, '', 'aucune pancarte arrivée : le porteur a les mains vides');
+    } else {
+      assert.equal(carrier.label, game.signs.at(-1));
+      seen[carrier.label]++;
+    }
+  }
+  assert.ok(empty > 120 && empty < 280, `une fois sur deux, le cortège de départ n'en a pas (${empty} sur 400)`);
+  assert.ok(seen.LÉGENDAIRE > 0 && seen.COMMUNE > seen.LÉGENDAIRE * 4, JSON.stringify(seen));
 });

@@ -16,7 +16,7 @@ test('« constructor » ou « toString » ne passent pas pour un contenu existan
   assert.deepEqual(campaign.bundle.campagne, []);
 
   const level = files.find((f) => f.path === 'content/niveaux/bismillah.txt');
-  const boss = buildContent(withFile(level.path, level.text.replace('boss: arnault-armure', 'boss: toString')));
+  const boss = buildContent(withFile(level.path, level.text.replace('fond: ville', 'fond: ville\nboss: toString')));
   assert.ok(boss.errors.some((e) => e.file === level.path && e.message.includes('toString')));
 });
 

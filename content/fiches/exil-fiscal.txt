@@ -1,0 +1,10 @@
+titre: Exil fiscal : moins de 350 foyers par an
+theme: richesses
+texte: Après la hausse d'impôt sur le capital de 2013, moins de 350 foyers de plus sont partis chaque année, sur 385 000 concernés.
+portee: Borne haute de l'estimation, sur le 1 % de foyers aux plus hauts revenus du capital. Le communiqué dit que l'effet de la fiscalité sur les départs est « significatif » mais « relativement modeste ». Il prévient que l'étude ne mesure pas les autres réactions (épargne, optimisation, évasion). C'est le communiqué, pas le Focus complet (non ouvert).
+periode: réformes de 2013 et de 2017-2018 (communiqué du 2 septembre 2025)
+choc: oui
+source.titre: Conseil d'analyse économique — Fiscalité du capital : quels sont les effets de l'exil fiscal sur l'économie ?
+source.url: https://cae-eco.fr/static/pdf/Communique_de_presse_F118_V2.pdf
+source.nature: officielle
+verifie: 2026-11-16

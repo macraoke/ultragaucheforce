@@ -1,0 +1,10 @@
+titre: 248 874 567 actions LVMH
+theme: richesses
+texte: Le groupe familial Arnault a déclaré détenir 248 874 567 actions LVMH, soit 50,01 % du capital.
+portee: Situation au 19 février 2026, déclarée par le groupe familial à l'Autorité des marchés financiers. Les actions sont détenues presque entièrement par des sociétés holdings, pas par des personnes.
+periode: 19 février 2026
+valeur: 248874567
+source.titre: Autorité des marchés financiers — Avis 226C0219, déclaration de franchissement de seuil (LVMH)
+source.url: https://echanges.dila.gouv.fr/OPENDATA/AMF/307/8888/01/FC307616509_20260302.pdf
+source.nature: officielle
+verifie: 2026-11-16

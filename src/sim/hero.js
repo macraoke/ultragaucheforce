@@ -21,7 +21,7 @@ export const FEEL = {
 
 export function createHero(def, cx, feetY) {
   const hero = {
-    x: 0, y: 0, w: 0, h: 0, vx: 0, vy: 0, facing: 1, onGround: false, onWall: 0, hp: 0, invuln: 0,
+    x: 0, y: 0, w: 0, h: 0, vx: 0, vy: 0, facing: 1, aim: 0, onGround: false, onWall: 0, hp: 0, invuln: 0,
     def: null, charges: 0, anim: 'repos', animTime: 0, clones: [], dead: false,
     coyote: 0, buffer: 0, cut: true, cooldown: 0, gasTime: 0, hitX: 0, hitY: 0,
   };
@@ -43,13 +43,15 @@ export function setHeroDef(hero, def, cx = hero.x + hero.w / 2, feetY = hero.y +
 }
 
 /**
- * @param input { left, right, jump, fire, jumpPressed, specialPressed }
+ * @param input { left, right, up, down, jump, fire, jumpPressed, specialPressed }
  */
 export function updateHero(game, hero, input, dt) {
   const { world } = game;
   const { def } = hero;
   const dir = (input.right ? 1 : 0) - (input.left ? 1 : 0);
   if (dir) hero.facing = dir;
+  // Sans avancer, haut ou bas oriente le tir : c'est ainsi qu'on creuse sous ses pieds ou qu'on perce un plafond.
+  hero.aim = dir === 0 ? (input.down ? 1 : 0) - (input.up ? 1 : 0) : 0;
 
   // Course : accélération franche, arrêt net.
   const accel = def.vitesse * (hero.onGround ? FEEL.groundAccel : FEEL.airAccel);
@@ -93,11 +95,12 @@ export function updateHero(game, hero, input, dt) {
       clone.y = point.y - clone.h;
     }
     clone.facing = hero.facing;
+    clone.aim = hero.aim;
     clone.t -= dt;
   }
   hero.clones = hero.clones.filter((c) => c.t > 0);
 
-  // Tir : continu tant que le bouton est tenu, à l'horizontale.
+  // Tir : continu tant que le bouton est tenu, devant soi, ou à la verticale quand on vise.
   hero.cooldown -= dt;
   if (input.fire && hero.cooldown <= 0 && def.arme) {
     const weapon = WEAPONS[def.arme.type];

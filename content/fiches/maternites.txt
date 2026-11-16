@@ -1,0 +1,10 @@
+titre: 1 369 maternités en 1975, 428 en 2024
+theme: richesses
+texte: Le nombre de maternités a été divisé par trois depuis 1975 : 1 369 en 1975, 428 en 2024.
+portee: Dans le PDF, la phrase citée enjambe un saut de page. La série 1 369 → 428 porte sur la France métropolitaine hors service de santé des armées. Pour la France entière, la même fiche donne un autre nombre : « En 2024, 445 maternités sont dénombrées en France, soit 88 de moins qu'en 2014 ». Ne pas mélanger 428 et 445.
+periode: 1975 à 2024 (édition 2026)
+choc: oui
+source.titre: DREES — La naissance : les maternités
+source.url: https://drees.solidarites-sante.gouv.fr/sites/default/files/2026-07/ES%202026%20-%20Fiche%2019%20-%20La%20naissance%20-%20les%20maternit%C3%A9s.pdf
+source.nature: officielle
+verifie: 2026-11-16

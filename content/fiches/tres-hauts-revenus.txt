@@ -1,0 +1,10 @@
+titre: Très hauts revenus : +119 % depuis 2003
+theme: richesses
+texte: De 2003 à 2022, le revenu moyen des 0,1 % de foyers les plus aisés a crû de 119 %, les autres de 46 %.
+portee: 40 700 foyers fiscaux (0,1 %), revenus déclarés à l'impôt, en euros courants (inflation non déduite). La page ajoute : « En 2022, leur revenu annuel moyen s'établit à 1 million d'euros, contre 31 000 euros pour les autres foyers. » Ne couvre pas les bénéfices laissés dans les sociétés. Non contesté.
+periode: 2003 à 2022 (publié le 18 novembre 2025)
+choc: oui
+source.titre: Insee — Entre 2003 et 2022, le revenu des plus aisés augmente plus vite que celui des autres foyers mais avec une forte volatilité
+source.url: https://www.insee.fr/fr/statistiques/8612588?sommaire=8612596
+source.nature: officielle
+verifie: 2026-11-16

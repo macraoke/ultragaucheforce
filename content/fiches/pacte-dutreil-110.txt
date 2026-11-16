@@ -1,0 +1,10 @@
+titre: 110 donataires : 30 millions d'avantage fiscal
+theme: richesses
+texte: En 2024, 110 bénéficiaires du pacte Dutreil ont reçu un avantage fiscal moyen de 30 millions d'euros, soit 65 % de la dépense.
+portee: Le « dernier centile » des donataires, classés par avantage reçu. Même réserve que le fait 12 sur l'année 2024. La même page compare : les droits de succession et de donation ont rapporté 20,9 Md€ en 2024, la dépense Dutreil en représente un quart.
+periode: 2024
+choc: oui
+source.titre: Cour des comptes — Le Pacte Dutreil : un dispositif fiscal en forte croissance à mieux cibler
+source.url: https://www.ccomptes.fr/fr/publications/le-pacte-dutreil-un-dispositif-fiscal-en-forte-croissance-mieux-cibler
+source.nature: officielle
+verifie: 2026-11-16

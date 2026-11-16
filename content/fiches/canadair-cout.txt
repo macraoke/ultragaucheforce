@@ -1,0 +1,12 @@
+titre: Un Canadair : 91 millions d'euros
+theme: richesses
+texte: Un avion bombardier d'eau commandé par la France en 2024 revient autour de 91 millions d'euros, toutes dépenses comprises, selon le rapporteur du budget de la sécurité civile au Sénat.
+portee: L'avion DHC-515, la TVA, les frais de douane et le lot initial de pièces de rechange. L'appareil seul : 49,4 millions d'euros hors taxe. Ni les pilotes, ni l'entretien, ni le carburant ne sont comptés.
+periode: contrat du 12 août 2024
+valeur: 91000000
+finance: Canadair
+ponctuel: oui
+source.titre: Sénat — Rapport général n° 139 (2025-2026), annexe 28b : Sécurité civile
+source.url: https://www.senat.fr/rap/l25-139-328-2/l25-139-328-21.pdf
+source.nature: officielle
+verifie: 2026-11-16

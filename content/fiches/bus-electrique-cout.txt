@@ -1,0 +1,12 @@
+titre: Un bus électrique : 554 000 euros
+theme: richesses
+texte: Un bus électrique de douze mètres coûte en moyenne 554 000 euros hors taxe, options comprises, selon la centrale d'achat du transport public.
+portee: L'achat du véhicule. Ni les bornes de recharge, ni le remplacement de la batterie à mi-vie, ni le conducteur ne sont comptés. Étude de novembre 2022.
+periode: novembre 2022
+valeur: 554000
+finance: bus électriques
+ponctuel: oui
+source.titre: AGIR Transport — Étude comparative des motorisations des autobus (novembre 2022)
+source.url: https://www.agir-transport.org/wp-content/uploads/2024/07/NOV-2022-Etude_comparative_des_differentes_motorisations_de_bus_2022_majNov22.pdf
+source.nature: associative
+verifie: 2026-11-16
