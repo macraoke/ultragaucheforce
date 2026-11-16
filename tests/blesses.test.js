@@ -1,13 +1,18 @@
-// Les blessés annoncés en fin de niveau, répartis comme les CRS blessés en octobre 2026 : des entiers, jamais plus que le total.
+// Les blessés annoncés en fin de niveau, répartis comme les CRS blessés en octobre 2026 : des entiers, jamais plus que le total,
+// et une ou deux blessures du fichier, mot pour mot, tirées au hasard de la partie.
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { loadContent } from '../tools/content.mjs';
-import { CRS_OCTOBRE_2026, injuries, injuryParts } from '../src/client/blesses.js';
+import { CRS_OCTOBRE_2026, FROM_FILE, injuries, injuryParts, injuryReport } from '../src/client/blesses.js';
+import { makeRng } from '../src/sim/rng.js';
+import { Game } from '../src/sim/game.js';
 
 const { bundle } = loadContent();
 const plain = (text) => text.replace(/\s/g, ' ');
 const KEYS = ['legers', 'arrets', 'jambes', 'bras', 'acouphenes', 'origine', 'tiers'];
+const report = (n, seed) => injuryReport(n, makeRng(seed));
+const ALL = [...FROM_FILE.alone, ...FROM_FILE.declared];
 
 test('blessés : chaque nombre de la répartition est dans le texte de sa fiche', () => {
   const fact = bundle.fiches[CRS_OCTOBRE_2026.fiche];
@@ -64,4 +69,67 @@ test('blessés : 1 233 blessés redonnent les nombres de la source', () => {
   // En dessous de 2 blessés par un tiers, la mention ne s'écrit pas : « 1 sur environ 1 » ferait lire 100 %.
   assert.ok(!injuryParts(60).map(plain).some((p) => p.includes('par un tiers')));
   assert.deepEqual(injuryParts(205).map(plain).at(-1), '2 blessés sans ambiguïté par un tiers, sur environ 3 dont l’origine est connue');
+});
+
+test('blessés : chaque blessure du fichier que l’écran peut citer est mot pour mot dans la fiche', () => {
+  const fact = bundle.fiches[CRS_OCTOBRE_2026.fiche];
+  const said = plain(`${fact.texte} ${fact.portee}`);
+  assert.ok(FROM_FILE.alone.length && FROM_FILE.declared.length);
+  for (const line of ALL) {
+    assert.ok(said.includes(plain(line)), `« ${line} » n’est pas dans la fiche`);
+    assert.match(line, /« [^«»]+ »/, `${line} : les mots du fichier, entre guillemets`);
+  }
+  assert.equal(new Set(ALL).size, ALL.length, 'aucune en double');
+});
+
+test('blessés : l’écran change d’une graine à l’autre, et ne change pas pour une même graine', () => {
+  const seen = new Set();
+  const cited = new Set();
+  const counts = new Set();
+  const shown = new Set();
+  for (let seed = 1; seed <= 400; seed++) {
+    const { parts, file } = report(40, seed);
+    assert.deepEqual(report(40, seed), { parts, file }, `graine ${seed} : même graine, même écran`);
+    assert.ok(file.length === 1 || file.length === 2, `graine ${seed} : une ou deux blessures du fichier`);
+    assert.ok(FROM_FILE.alone.includes(file[0]), `graine ${seed} : la première, un agent qui s’est blessé seul`);
+    assert.equal(new Set(file).size, file.length, `graine ${seed} : pas deux fois la même`);
+    file.forEach((line) => cited.add(line));
+    counts.add(file.length);
+    parts.slice(1).forEach((part) => shown.add(part));
+    seen.add(JSON.stringify({ parts, file }));
+  }
+  assert.deepEqual([...counts].sort(), [1, 2], 'tantôt une, tantôt deux');
+  assert.deepEqual(ALL.filter((line) => !cited.has(line)), [], 'chacune finit par sortir');
+  assert.equal(shown.size, injuryParts(40).length - 1, 'chaque part de la répartition finit par sortir');
+  assert.ok(seen.size >= 100, `${seen.size} écrans différents sur 400 graines`);
+});
+
+test('blessés : l’écran tiré garde des entiers, les blessés légers en tête, jamais plus que le total', () => {
+  for (let n = 1; n <= 3000; n++) {
+    const all = injuryParts(n);
+    const { parts, file } = report(n, n * 7919);
+    assert.equal(parts[0], all[0], `${n} blessés : les blessés légers d’abord`);
+    assert.match(parts[0], /blessés? légers?$/);
+    assert.equal(parts.length, Math.min(3, all.length), `${n} blessés : les légers et deux autres parts`);
+    assert.deepEqual(parts, all.filter((p) => parts.includes(p)), `${n} blessés : des parts de la répartition, dans son ordre`);
+    for (const part of parts) {
+      assert.doesNotMatch(plain(part), /\d,\d|(^|\D)0 /, `${n} blessés : « ${part} »`);
+      for (const x of plain(part).match(/\d+( \d{3})*/g)) assert.ok(Number(x.replace(/ /g, '')) <= n, `${n} blessés : ${x} dépasse le total dans « ${part} »`);
+    }
+    assert.ok(file.length >= 1);
+  }
+  assert.deepEqual(report(0, 1), { parts: [], file: [] }, 'sans blessé, rien');
+});
+
+test('blessés : un nombre ne reste jamais seul en fin de ligne, une espace insécable le lie au mot qui suit', () => {
+  for (let n = 1; n <= 20000; n++) {
+    for (const part of injuryParts(n)) assert.doesNotMatch(part, /\d /, `${n} blessés : « ${part} » a un nombre suivi d’une espace ordinaire`);
+  }
+  assert.ok(injuryParts(1233).every((part) => /\d\u00a0\D/.test(part)), 'l’espace qui suit le nombre est insécable');
+});
+
+test('blessés : la partie garde sa graine, l’écran de fin en tire ce qu’il montre', () => {
+  const id = Object.keys(bundle.niveaux)[0];
+  assert.equal(new Game(bundle, id, { seed: 4242 }).seed, 4242);
+  assert.equal(new Game(bundle, id).seed, 1);
 });

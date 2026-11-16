@@ -68,7 +68,8 @@ export class Game {
     this.bundle = bundle;
     this.level = level;
     this.levelId = level.id ?? levelId;
-    this.rng = makeRng(opts.seed ?? 1);
+    this.seed = opts.seed ?? 1; // la graine : l'écran de fin en tire aussi ce qu'il montre
+    this.rng = makeRng(this.seed);
     this.invincible = Boolean(opts.invincible);
     this.choice = opts.hero ?? ''; // lu par loadLevel
 

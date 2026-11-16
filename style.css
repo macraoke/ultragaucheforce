@@ -459,6 +459,8 @@ html.pivote body.tactile.essai #toasts { right: calc(max(10px, env(safe-area-ins
 .fin .bilans article { padding: .6em .8em; }
 .fin .bilans p { margin: 0; font-weight: 700; }
 .fin .bilans .dont { font: 400 .82rem/1.3 var(--texte); margin-top: .3em; }
+.fin .bilans .fichier { font: 700 .95rem/1.3 var(--texte); margin-top: .4em; }
+.fin .bilans .fichier span { font-weight: 400; }
 .fin .annonce { background: var(--rouge); }
 .fin .chiffre { font: 900 clamp(2rem, 8vmin, 4rem)/1 var(--titre); }
 .fin .vrai { display: flex; flex-wrap: wrap; align-items: baseline; gap: .2em .9em; margin-top: 10px; padding: .45em .8em; background: var(--encre); border-left: 6px solid var(--or); font: 700 .9rem/1.3 var(--texte); }
@@ -470,11 +472,12 @@ html.bas .fin h2 { font-size: 1.25rem; margin: 0 0 6px; }
 html.bas .fin .bilans { grid-template-columns: minmax(0, 1fr) minmax(0, 3fr); gap: 8px; }
 /* Sur un écran bas, le nombre de blessés et son libellé sur une seule ligne. */
 html.bas .fin .annonce { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline; column-gap: .45em; }
-html.bas .fin .annonce .dont { grid-column: 1 / -1; }
+html.bas .fin .annonce .dont, html.bas .fin .annonce .fichier { grid-column: 1 / -1; }
 html.bas .fin .bilans article { padding: .35em .6em; }
 html.bas .fin .bilans p { font-size: .8rem; }
 html.bas .fin .bilans p.chiffre { font-size: 1.9rem; }
 html.bas .fin .bilans .dont { font-size: .72rem; margin-top: .1em; }
+html.bas .fin .bilans .fichier { font-size: .8rem; margin-top: .15em; }
 html.bas .fin .vrai { margin-top: 6px; padding: .3em .6em; gap: .1em .7em; font-size: .76rem; }
 html.bas .fin .vrai button { font-size: .74rem; }
 html.bas .fin .debloquees { margin-top: 6px; padding-bottom: 4px; }

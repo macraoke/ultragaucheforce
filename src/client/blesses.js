@@ -1,6 +1,6 @@
 // Le bilan des blessés de fin de niveau : le nombre que la partie annonce côté forces de l'ordre, réparti comme les
-// CRS blessés en octobre 2026 dans le fichier interne de leur direction (fiche `crs-blesses-octobre-2026`).
-// Sans DOM : testé dans Node.
+// CRS blessés en octobre 2026 dans le fichier interne de leur direction (fiche `crs-blesses-octobre-2026`), et une ou
+// deux blessures de ce fichier, mot pour mot. Ce qui s'affiche se tire au hasard de la partie. Sans DOM : testé dans Node.
 
 import { plural } from './dom.js';
 
@@ -17,8 +17,37 @@ export const CRS_OCTOBRE_2026 = {
   tiers: 12, // blessure causée sans ambiguïté par un tiers
 };
 
+/**
+ * Des blessures du fichier, telles que l'article de Mediapart les cite et que la fiche les reprend : un test vérifie
+ * que chacune y figure mot pour mot. L'article n'en donne pas le nombre (ce sont des exemples) : l'écran les cite
+ * telles quelles, sans les ramener à la partie. Les crochets sont ceux de Mediapart.
+ */
+export const FROM_FILE = {
+  // Ce qu'un agent s'est fait seul : une porte, une chute du fourgon, une course, un trou.
+  alone: [
+    '« poignet gauche en fermant la porte du VR [véhicule de reconnaissance] »',
+    '« se tord la cheville en chutant du fourgon »',
+    '« une entorse [lors d’une] poursuite pédestre »',
+    '« des douleurs aux côtes droites lors d’une course-poursuite »',
+    '« une cheville tordue dans un trou »',
+  ],
+  // Des blessures déclarées, au mot près.
+  declared: [
+    '« douleur orteil pied droit »',
+    '« auriculaire main droite »',
+    '« fesse gauche »',
+    '« voûte plantaire »',
+    '« pouce de la main droite »',
+    '« ongle majeur droit »',
+    'des hauts gradés, parfois pour une « douleur fesses quadriceps gauche »',
+  ],
+};
+
 /** « 1 167 » : un nombre entier, en français. */
 const whole = (x) => x.toLocaleString('fr-FR');
+
+/** Entre un nombre et le mot qui le suit : une espace insécable, pour que le nombre ne reste pas seul en fin de ligne. */
+const NBSP = '\u00a0';
 
 /**
  * Les `n` blessés annoncés, répartis comme les CRS blessés en octobre 2026. Chaque part est arrondie à l'entier le plus
@@ -40,11 +69,12 @@ export function injuries(n) {
 }
 
 /** « 1 blessé léger », « 2 blessés légers ». */
-const word = (x, one, many) => `${whole(x)} ${plural(x, one, many)}`;
+const word = (x, one, many) => `${whole(x)}${NBSP}${plural(x, one, many)}`;
 
 /**
- * La ligne de l'écran de fin, en morceaux : « 38 blessés légers », « 4 arrêts de travail »… Une part arrondie à zéro
- * ne s'écrit pas ; le blessé par un tiers non plus, et avec lui les origines connues, dont il est la seule raison d'être.
+ * La répartition entière, en morceaux, dans l'ordre de la source : « 38 blessés légers », « 4 arrêts de travail »…
+ * Une part arrondie à zéro ne s'écrit pas ; le blessé par un tiers non plus, et avec lui les origines connues, dont il
+ * est la seule raison d'être.
  * @returns {string[]} vide sans blessé
  */
 export function injuryParts(n) {
@@ -52,15 +82,48 @@ export function injuryParts(n) {
   if (!parts) return [];
   const limbs = [
     parts.jambes && word(parts.jambes, 'blessure aux jambes ou aux pieds', 'blessures aux jambes ou aux pieds'),
-    parts.bras && (parts.jambes ? `${whole(parts.bras)} aux bras ou aux mains` : word(parts.bras, 'blessure aux bras ou aux mains', 'blessures aux bras ou aux mains')),
+    parts.bras && (parts.jambes ? `${whole(parts.bras)}${NBSP}aux bras ou aux mains` : word(parts.bras, 'blessure aux bras ou aux mains', 'blessures aux bras ou aux mains')),
   ].filter(Boolean).join(' et ');
   return [
     parts.legers && word(parts.legers, 'blessé léger', 'blessés légers'),
     parts.arrets && word(parts.arrets, 'arrêt de travail', 'arrêts de travail'),
     limbs,
-    parts.acouphenes && `${whole(parts.acouphenes)} avec un acouphène`,
+    parts.acouphenes && `${whole(parts.acouphenes)}${NBSP}avec un acouphène`,
     // L'origine n'est indiquée que pour une vingtaine d'agents sur 1 233 : le tiers se compte parmi eux.
     // Pas en dessous de 2 : « 1 sur environ 1 » ferait lire 100 % là où la source dit 12 sur une vingtaine.
-    parts.tiers >= 2 && `${word(parts.tiers, 'blessé', 'blessés')} sans ambiguïté par un tiers, sur environ ${whole(parts.origine)} dont l’origine est connue`,
+    parts.tiers >= 2 && `${word(parts.tiers, 'blessé', 'blessés')} sans ambiguïté par un tiers, sur environ ${whole(parts.origine)}${NBSP}dont l’origine est connue`,
   ].filter(Boolean);
+}
+
+/** Combien de parts s'affichent en plus des blessés légers. */
+const SHOWN = 2;
+
+/**
+ * Ce que l'écran de fin dit des `n` blessés, tiré au hasard de la partie (même graine, même écran) :
+ * - `parts` : les blessés légers, toujours en tête, puis deux autres parts de la répartition, dans l'ordre de la source ;
+ * - `file` : une blessure qu'un agent s'est faite seul, et une fois sur deux une autre du fichier.
+ * @param {number} n  les blessés annoncés par la partie
+ * @param {{int: (k: number) => number, pick: (list: string[]) => string}} rng  le hasard de la partie (`makeRng(game.seed)`)
+ * @returns {{parts: string[], file: string[]}} vides sans blessé
+ */
+export function injuryReport(n, rng) {
+  const [first, ...rest] = injuryParts(n);
+  if (!first) return { parts: [], file: [] };
+  const kept = new Set(shuffle(rest, rng).slice(0, SHOWN));
+  const alone = rng.pick(FROM_FILE.alone);
+  const others = [...FROM_FILE.alone.filter((x) => x !== alone), ...FROM_FILE.declared];
+  return {
+    parts: [first, ...rest.filter((part) => kept.has(part))],
+    file: rng.int(2) ? [alone, rng.pick(others)] : [alone],
+  };
+}
+
+/** Une copie mélangée de `list` (Fisher-Yates), au hasard de `rng`. */
+function shuffle(list, rng) {
+  const out = [...list];
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = rng.int(i + 1);
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
 }

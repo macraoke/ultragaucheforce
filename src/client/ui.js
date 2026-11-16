@@ -8,8 +8,9 @@ import { storeSave, eraseProgress, isFound, isReadOnly, asksMusic } from './save
 import { SHELVES, VOTE_FICHES, allCards, collectionCount, isFresh, levelOrder, markSeen, openCard, progress, rarityCounts, shelfGrid, wonCards } from './collection.js';
 import { livesStack } from './lives.js';
 import { KEY_NAMES, CONTROLS, brief, mentions } from './input.js';
-import { CRS_OCTOBRE_2026, injuryParts } from './blesses.js';
+import { CRS_OCTOBRE_2026, injuryReport } from './blesses.js';
 import { PANIC_STEPS } from '../sim/game.js';
+import { makeRng } from '../sim/rng.js';
 import { SIGN_LINGER } from './render.js';
 
 const MENTION = 'Satire citoyenne, libre et collaborative.';
@@ -469,16 +470,18 @@ export class Screens {
 
   /**
    * Fin de niveau, en un écran : la manif, le bilan des blessés tel qu'on l'annonce côté forces de l'ordre, réparti
-   * comme les CRS blessés en octobre 2026, des faits réels à ouvrir (« Et en vrai ? »), ce qui a été débloqué.
+   * comme les CRS blessés en octobre 2026 avec une ou deux blessures de leur fichier, des faits réels à ouvrir
+   * (« Et en vrai ? »), ce qui a été débloqué.
    * @param {number} hurt      les blessés annoncés côté forces de l'ordre pendant la partie
+   * @param {number} seed      la graine de la partie : ce que l'écran dit des blessés s'en tire
    * @param {string[]} facts   les fiches de « Et en vrai ? »
    */
-  end({ level, hurt = 0, facts = [], time, crowd, next, last, won = [], best = 0, share = null }) {
+  end({ level, hurt = 0, seed = 1, facts = [], time, crowd, next, last, won = [], best = 0, share = null }) {
     const cards = allCards(this.bundle).filter((c) => c.kind === 'fiches');
     const truths = facts.map((id) => cards.find((c) => c.item.id === id)).filter(Boolean);
     const minutes = `${Math.floor(time / 60)} min ${String(Math.floor(time % 60)).padStart(2, '0')} s`;
     const n = (x) => x.toLocaleString('fr-FR');
-    const parts = injuryParts(hurt);
+    const { parts, file } = injuryReport(hurt, makeRng(seed));
     const crs = CRS_OCTOBRE_2026;
     this.show('fin',
       h('h2', {}, 'Niveau terminé ', h('small', {}, `${level.titre} · ${minutes}`)),
@@ -491,7 +494,10 @@ export class Screens {
           h('p', { className: 'chiffre' }, n(hurt)),
           h('p', {}, hurt > 1 ? 'blessés annoncés côté forces de l’ordre' : 'blessé annoncé côté forces de l’ordre'),
           parts.length ? h('p', { className: 'dont' },
-            `${hurt > 1 ? 'Répartis' : 'Réparti'} comme les ${n(crs.blesses)} CRS blessés en octobre 2026 : ${parts.join(', ')}.`) : null)),
+            `${hurt > 1 ? 'Répartis' : 'Réparti'} comme les ${n(crs.blesses)}\u00a0CRS blessés en octobre 2026 : ${parts.join(', ')}.`) : null,
+          // Espaces insécables : « ne reste pas seul en fin de ligne, » et ; ne commencent pas la suivante.
+          file.length ? h('p', { className: 'fichier' }, h('span', {}, 'Dans leur fichier : '),
+            `${file.join('\u00a0; ').replace(/« /g, '«\u00a0').replace(/ »/g, '\u00a0»')}.`) : null)),
       // « Et en vrai ? » sur toute la largeur : les titres entiers, chacun ouvre sa carte.
       truths.length ? h('div', { className: 'vrai' }, h('span', {}, 'Et en vrai ?'),
         truths.map((card) => h('button', { type: 'button', onclick: () => openCard(this.bundle, card) }, card.item.titre))) : null,
