@@ -339,8 +339,9 @@ body.tactile.en-jeu #tactile { display: block; position: absolute; inset: 0; z-i
 /* Au pouce : le HUD s'écarte des encoches et le bandeau passe en haut, hors des pouces. */
 body.tactile #hud .gauche { left: max(10px, env(safe-area-inset-left)); }
 body.tactile #hud .droite { right: max(10px, env(safe-area-inset-right)); }
-body.tactile #bandeau { bottom: auto; top: 5.9em; }
-body.tactile #toasts { top: 8.6em; left: max(10px, env(safe-area-inset-left)); }
+body.tactile #bandeau { bottom: auto; top: 6.3em; }
+body.tactile #toasts { top: 8.9em; left: max(10px, env(safe-area-inset-left)); max-width: 62%; font-size: clamp(.75rem, 2.6vmin, 1.25rem); } /* juste sous le bandeau : même unité que lui */
+body.tactile #toasts p { font-size: .72rem; padding: .35em .6em; }
 html.pivote body.tactile #hud .gauche, html.pivote body.tactile #toasts { left: max(10px, env(safe-area-inset-top)); }
 html.pivote body.tactile #hud .droite { right: max(10px, env(safe-area-inset-bottom)); }
 

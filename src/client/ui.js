@@ -457,7 +457,7 @@ export class Hud {
   toast(text, tone = '') {
     const note = h('p', { className: tone }, text);
     const box = this.q('toasts');
-    while (box.children.length > 2) box.firstChild.remove();
+    while (box.children.length > 1) box.firstChild.remove(); // deux notes à la fois, pas plus : l'écran reste au jeu
     box.append(note);
     setTimeout(() => note.remove(), 4200);
   }

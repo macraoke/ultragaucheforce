@@ -100,6 +100,9 @@ function toMenu() {
   radio.play('menu');
 }
 
+/** Une note à l'écran reste courte : le texte entier est dans la Collection. */
+const short = (text, max = 44) => (text.length > max ? `${text.slice(0, max - 1).trimEnd()}…` : text);
+
 /**
  * Une rencontre : la carte entre dans la Collection, avec la citation et le fait qui l'expliquent.
  * La première fois, on l'annonce (sauf `quiet`).
@@ -109,7 +112,7 @@ function collect(kind, id, quiet = false) {
   const item = lines ? bundle[kind].find((p) => p.texte === id) : bundle[kind]?.[id];
   if (!item || !discover(save, kind, id)) return;
   won.push(`${kind}:${id}`);
-  if (kind === 'pancartes') hud.toast(`Pancarte ${rarityName(item)} débloquée : « ${item.texte} »`, `rarete-${item.rarete}`);
+  if (kind === 'pancartes') hud.toast(`Pancarte ${rarityName(item)} débloquée : « ${short(item.texte)} »`, `rarete-${item.rarete}`);
   else if (!quiet) hud.toast(`Débloqué : ${cardName(item)}`);
   collect('citations', item.citation, true);
   for (const fiche of [item.fiche].flat()) collect('fiches', fiche, true);

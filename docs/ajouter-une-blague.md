@@ -2,7 +2,7 @@
 
 Une ligne de texte, et c'est dans le jeu. Le jeu n'affiche que du vrai : ce qui a été écrit, scandé ou diffusé, avec où, quand et le lien.
 
-- Une **pancarte** vue en manif, un **slogan** scandé : [`content/pancartes/`](../content/pancartes). Le cortège les brandit, les banderoles et les tags les reprennent.
+- Une **pancarte** vue en manif, un **slogan** scandé : [`content/pancartes/`](../content/pancartes). Le cortège les brandit ; les banderoles et les tags du décor reprennent celles de 24 caractères au plus, la place qu'ils ont.
 - Un **bandeau** de chaîne d'info : [`content/manchettes/`](../content/manchettes). PANIQUE TV le diffuse en alerte quand la panique monte.
 
 Chacune se débloque en jouant et se retrouve dans la Collection, rayons « Pancartes » et « Vu à la télé ». Une pancarte se débloque quand elle arrive dans la manif : une tranche de vingt personnes qui rejoint le cortège en apporte une, une fois sur deux, tirée au hasard parmi toutes.

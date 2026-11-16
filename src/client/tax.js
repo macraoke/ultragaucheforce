@@ -37,16 +37,36 @@ function drawStack(ctx, x, y) {
 }
 
 const billions = (euros) => frenchNumber(euros / 1e9, 1);
-/** Un grand nombre arrondi vers le bas à deux ou trois chiffres : 64 640 → « 64 000 », 247 → « 240 ». */
-const round = (n) => {
+/** Un grand nombre arrondi vers le bas à deux chiffres : 64 640 → « 64 000 », 247 → « 240 ». Jamais plus que le vrai. */
+export const round = (n) => {
   const step = 10 ** Math.max(0, Math.floor(Math.log10(Math.max(1, n))) - 1);
   return frenchNumber(Math.floor(n / step) * step);
 };
+/** Ce que vaut une fiche sur un an : sa valeur, douze fois si elle est donnée par mois (`par: mois`). */
+export const perYear = (fact) => fact.valeur * (fact.par === 'mois' ? 12 : 1);
+
+/**
+ * Les nombres de l'écran de taxe, sans rien dessiner.
+ * @param {number} billionsOwned  la fortune, en milliards d'euros
+ * @param {object} scale          la fiche `compare` : le revenu de quelqu'un
+ * @param {object | null} use     la fiche `finance` : ce que la taxe paierait
+ * @param {object[]} rent         les fiches dont le produit donne ce que la fortune rapporte en un an
+ */
+export function taxNumbers(billionsOwned, scale, use = null, rent = []) {
+  const fortune = billionsOwned * 1e9;
+  const income = perYear(scale);
+  const years = fortune / income;
+  const stackYears = STACK_YEARS.find((y) => years / y <= STACKS) ?? STACK_YEARS.at(-1);
+  const yearly = rent.length && rent.every((f) => f?.valeur) ? rent.reduce((total, f) => total * f.valeur, 1) : 0;
+  const tax = fortune * RATE;
+  return { fortune, income, years, stackYears, unit: income * stackYears, yearly, tax, count: use ? tax / perYear(use) : 0 };
+}
+
 const last = {}; // la dernière comparaison montrée de chaque sorte : on en change à la partie suivante
 /** Tire une comparaison au hasard, autre que la précédente s'il y a le choix. */
-function draw(kind, list) {
+export function draw(kind, list, random = Math.random) {
   const pool = list.length > 1 ? list.filter((f) => f.id !== last[kind]) : list;
-  const pick = pool[Math.floor(Math.random() * pool.length)];
+  const pick = pool[Math.floor(random() * pool.length)];
   last[kind] = pick?.id;
   return pick;
 }
@@ -68,21 +88,15 @@ function sourcesOf(facts) {
 export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pick = draw } = {}) {
   return new Promise((resolve) => {
     const fiche = (id) => bundle.fiches[id];
-    const fortune = boss.fortune.montant * 1e9;
     // Le dictionnaire : à qui comparer la fortune, et ce que la taxe paierait. Tirés au hasard à chaque partie.
     const scale = pick('compare', taxScales(bundle));
     const use = pick('finance', taxUses(bundle));
     const shock = pick('choc', taxShocks(bundle));
-    if (!fortune || !scale) return resolve([]);
-    const income = scale.valeur * (scale.par === 'mois' ? 12 : 1); // revenu d'une année
-    const years = fortune / income;
-    const stackYears = STACK_YEARS.find((y) => years / y <= STACKS) ?? STACK_YEARS.at(-1);
-    const unit = income * stackYears;
+    if (!boss.fortune.montant || !scale) return resolve([]);
     const estimate = fiche(boss.fortune.fiche); // d'où vient le montant de la fortune
     // Ce que la fortune rapporte en un an : un dividende par action multiplié par un nombre d'actions, chacun avec sa source.
     const rent = boss.fortune.rente.map(fiche);
-    const yearly = rent.length && rent.every((f) => f?.valeur) ? rent.reduce((total, f) => total * f.valeur, 1) : 0;
-    const tax = fortune * RATE;
+    const { fortune, years, stackYears, unit, yearly, tax, count } = taxNumbers(boss.fortune.montant, scale, use, rent);
     const base = Math.round(fortune / unit);
     const gained = Math.round(yearly / unit);
     const taken = Math.max(1, Math.round(tax / unit));
@@ -154,7 +168,7 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pi
       yearly > 0 && h('p', { className: 'qui' }, `Rien qu’en dividendes, elle rapporte ${billions(yearly)} milliards par an.`), legend);
     // Après : ce que 2 % paieraient (au plus : l'impôt est différentiel), et un fait frappant.
     const after = h('div', { className: 'detail apres', hidden: true },
-      h('p', { className: 'resultat' }, use ? `${round(tax / use.valeur)} ${use.finance}` : `Au plus ${billions(tax)} milliards par an`),
+      h('p', { className: 'resultat' }, use ? `${round(count)} ${use.finance}` : `Au plus ${billions(tax)} milliards par an`),
       h('p', { className: 'qui' }, use
         ? `Ce que paieraient 2 % de cette fortune${use.ponctuel ? ' en un an' : ', chaque année'} : au plus ${billions(tax)} milliards${under ? ', moins que ses dividendes' : ''}.`
         : `2 % de cette fortune${under ? ' : moins que ses dividendes' : ''}.`),

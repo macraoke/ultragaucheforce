@@ -502,7 +502,10 @@ export class Renderer {
     }
   }
 
-  /** La vraie pancarte écrite sur un décor (banderole, tag) : toujours la même au même endroit. */
+  /**
+   * La vraie pancarte écrite sur un décor (banderole, tag) : toujours la même au même endroit.
+   * Une banderole n'a la place que de 24 caractères : seules les pancartes courtes s'y écrivent (c'est dit dans le guide).
+   */
   written(d) {
     this.signs ??= this.bundle.pancartes.filter((p) => p.texte.length <= 24);
     return this.signs.length ? this.signs[Math.floor(d.x / 16 + d.y * 7) % this.signs.length].texte : '';
