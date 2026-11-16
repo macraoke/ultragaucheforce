@@ -1,7 +1,7 @@
 titre: Le rond-point
 auteur: UltraGauche Force
 accroche: Un rond-point bloqué, comme le 17 novembre 2018, premier samedi des gilets jaunes.
-citation: macron-foule-haineuse
+citation: macron-pognon-de-dingue
 fiche: comptage-17-novembre-2018
 fiche: blesses-comptage
 fond: campagne
