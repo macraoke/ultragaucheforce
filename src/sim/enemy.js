@@ -73,8 +73,9 @@ const barred = (l, y, h) => y < l.y + l.h && y + h > l.y - LINE_REACH;
 
 /**
  * Une ligne qui tient arrête les unités au sol d'en face comme le héros (voir `Game.blockHero`) : charge, ruée,
- * marche, recul. Une unité qui arrive d'un côté y reste, même lancée à toute vitesse ; une qui la chevauchait déjà
- * (descendue à la corde, rattrapée par une nasse) en sort du côté de son centre. Ce qui vole passe au-dessus.
+ * marche, recul. Une unité qui arrive d'un côté y reste, même lancée à toute vitesse. Une qui la chevauchait déjà
+ * (descendue à la corde) en sort du côté de son centre ; rattrapée par une ligne de nasse qui se referme, elle reste
+ * dehors, du côté opposé au héros, ou sur place : jamais poussée vers le centre de la nasse. Ce qui vole passe au-dessus.
  */
 function stopAtLines(game, e, x0) {
   if (e.state === 'done' || e.blocking || e.def.deplacement === 'vol') return;
@@ -84,7 +85,8 @@ function stopAtLines(game, e, x0) {
     const from = x0 + e.w <= l.x + 0.01 ? -1 : x0 >= l.x + l.w - 0.01 ? 1 : 0;
     const centre = e.x + e.w / 2 < l.x + l.w / 2 ? -1 : 1;
     const side = (dir) => (dir < 0 ? l.x - e.w : l.x + l.w);
-    const tries = from ? [side(from), x0] : [side(centre), side(-centre)];
+    // `l.kettle` : le côté de la nasse où se tient la ligne, donc le dehors.
+    const tries = from ? [side(from), x0] : l.kettle ? [side(l.kettle)] : [side(centre), side(-centre)];
     const x = tries.find((at) => !hitsSolid(game.world, at, e.y, e.w, e.h));
     if (x !== undefined) e.x = x;
   }
@@ -380,6 +382,11 @@ function charge(game, e, dt, dx, alert) {
       return 0;
     }
     e.warned = true;
+    if (blockedAhead(game, e)) {
+      // Contre un mur ou une ligne qui tient, pas de ruée ni son bruit : il attend sa pause et réessaie.
+      Object.assign(r, { phase: 'pause', t: c.pause });
+      return 0;
+    }
     Object.assign(r, { phase: 'ruee', dir: e.facing, left: c.distance });
     game.sfx('charge', e.x);
   }

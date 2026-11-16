@@ -114,3 +114,89 @@ test('ligne cédée : elle n’arrête plus personne, la charge passe', () => {
   assert.ok(of(events, 'hurt').some((e) => e.kind === 'charge'), 'et touche le héros');
   assert.ok(hero.hp < hero.def.pv);
 });
+
+test('ligne qui tient : une ruée s’arrête dès qu’elle touche la ligne, sans finir sa course contre elle', () => {
+  const game = settle(play(behind('chargeur')));
+  const { line, foe } = parts(game);
+  const step = foe.def.charge.vitesse / 60;
+  let from = null;
+  let rushing = 0;
+  let paused = false;
+  for (let i = 0; i < 400 && !paused; i++) {
+    run(game, 1);
+    if (foe.rush?.phase === 'ruee') {
+      from ??= foe.x + step; // là où la ruée est partie
+      rushing++;
+    }
+    paused = rushing > 0 && foe.rush?.phase === 'pause';
+  }
+  assert.ok(paused, 'la ruée a pris fin');
+  const contact = (from - (line.x + line.w)) / step; // pas pour aller de son départ à la ligne
+  assert.ok(rushing <= contact + 3, `elle s’arrête au contact (${rushing} pas de ruée, ${contact.toFixed(0)} pour arriver)`);
+  assert.ok(rushing < (foe.def.charge.distance / foe.def.charge.vitesse) * 60 - 10, 'bien avant la fin de sa course');
+  // Collée à la ligne, elle ne relance pas de ruée contre elle : pas de bruit de charge sans fin.
+  const later = run(game, 60 * 10);
+  assert.equal(of(later, 'sfx').filter((e) => e.id === 'charge').length, 0, 'plus de ruée contre la ligne');
+  assert.ok(Math.abs(foe.x - (line.x + line.w)) < 2, 'elle reste au contact');
+});
+
+test('ligne qui tient : une moto et une patrouille y font demi-tour, comme devant un mur', () => {
+  // La moto fonce vers la ligne, qui est entre elle et le héros.
+  const moto = settle(play(behind('moto')));
+  const { line, foe } = parts(moto);
+  let reached = false;
+  let turned = false;
+  for (let i = 0; i < 600 && !turned; i++) {
+    run(moto, 1);
+    assert.ok(foe.x >= line.x + line.w - 0.001, 'elle ne traverse pas');
+    reached ||= foe.x - (line.x + line.w) < 2;
+    turned = reached && foe.facing > 0 && foe.x - (line.x + line.w) > 16;
+  }
+  assert.ok(reached, 'elle est allée jusqu’à la ligne');
+  assert.ok(turned, 'puis elle repart dans l’autre sens');
+
+  // Une patrouille : le héros est trop loin pour qu'elle le voie, elle va et vient.
+  const walk = settle(play(flat({
+    width: 60, legende: { l: enemy('ligne'), g: enemy('garde') },
+    draw: (put, ground) => {
+      put(ground, 16, 'l');
+      put(ground, 19, 'g');
+    },
+  })));
+  const guard = walk.enemies.find((e) => e.def.id === 'garde');
+  const wall = walk.enemies.find((e) => e.def.id === 'ligne');
+  let closest = Infinity;
+  let back = false;
+  for (let i = 0; i < 600 && !back; i++) {
+    run(walk, 1);
+    assert.notEqual(guard.state, 'alert', 'elle ne voit pas le héros');
+    closest = Math.min(closest, guard.x - (wall.x + wall.w));
+    back = guard.facing > 0 && guard.x > wall.x + wall.w + 20;
+  }
+  assert.ok(closest < 2, 'elle est allée jusqu’à la ligne');
+  assert.ok(back, 'puis elle a fait demi-tour');
+});
+
+test('nasse : une ligne qui se referme laisse dehors les unités qu’elle rattrape, jamais enfermées avec le héros', () => {
+  for (const col of [37, 23]) {
+    const game = settle(play(flat({
+      width: 70, nasse: { ennemi: 'statue', nombre: 2, vitesse: 20 }, legende: { u: enemy('agent') },
+      draw: (put, ground) => {
+        put(ground, 30, 'N');
+        put(ground, col, 'u');
+      },
+    }), { invincible: true }));
+    const foe = game.enemies.find((e) => e.def.id === 'agent');
+    const mark = 30 * 16 + 8;
+    let closest = Infinity;
+    let kettled = false;
+    run(game, 60 * 15, (i, g) => {
+      kettled ||= Boolean(g.kettle);
+      const cx = g.hero.x + g.hero.w / 2;
+      if (g.kettle) closest = Math.min(closest, Math.abs(foe.x + foe.w / 2 - cx));
+      return { right: cx < mark - 2, left: cx > mark + 2 };
+    });
+    assert.ok(kettled, 'la nasse s’est formée');
+    assert.ok(closest > 50, `colonne ${col} : l’unité reste hors de la nasse (au plus près, ${closest.toFixed(0)} px du héros)`);
+  }
+});
