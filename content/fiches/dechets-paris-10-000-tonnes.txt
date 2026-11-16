@@ -1,0 +1,9 @@
+titre: Paris, 17 mars 2023 : 10 000 tonnes de déchets
+theme: luttes
+texte: Le 17 mars 2023, au douzième jour de la grève des éboueurs contre la réforme des retraites, la barre des 10 000 tonnes de déchets non ramassés dans les rues de Paris a été franchie, selon l'estimation de la mairie.
+portee: Estimation de la mairie, qui soustrait les déchets ramassés par rapport à la moyenne en temps normal. Le même jour, aucune benne de ramassage n'est sortie dans les arrondissements où la collecte est gérée par la Ville, contrairement à ce qu'affirmait le ministre de l'Intérieur sur la réquisition des agents.
+periode: 17 mars 2023
+source.titre: France 24 — Grève des éboueurs : Paris croule sous 10 000 tonnes de déchets
+source.url: https://www.france24.com/fr/france/20230317-gr%C3%A8ve-des-%C3%A9boueurs-paris-croule-sous-10-000-tonnes-de-d%C3%A9chets
+source.nature: presse
+verifie: 2026-11-16
