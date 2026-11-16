@@ -359,6 +359,9 @@ body.tactile.en-jeu #tactile { display: block; position: absolute; inset: 0; z-i
 #tactile b { width: 21vmin; height: 21vmin; display: grid; place-items: center; font: 900 clamp(.7rem, 3.6vmin, 1rem)/1 var(--titre); letter-spacing: .04em; color: rgb(244 244 244 / .75); background: rgb(26 28 44 / .22); border: 2px solid rgb(244 244 244 / .4); }
 #tactile b[data-action='special'] { width: 15vmin; height: 15vmin; color: rgb(246 194 28 / .9); border-color: rgb(246 194 28 / .55); }
 #tactile b.appuye { background: rgb(246 194 28 / .6); color: var(--nuit); border-color: var(--nuit); }
+/* La flèche au-dessus de TIR : y glisser le pouce, c'est tirer en haut. */
+#tactile b[data-action='fire']::before { content: ''; position: absolute; left: 50%; bottom: calc(100% + 1.6vmin); width: 5vmin; height: 3vmin; transform: translateX(-50%); background: rgb(244 244 244 / .5); clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+#tactile b.haut::before { background: rgb(246 194 28 / .9); }
 /* Combien de spéciales il reste, sous SPÉ. */
 #tactile b[data-nombre]::after { content: attr(data-nombre); position: absolute; top: 100%; left: 50%; transform: translate(-50%, .3em); white-space: nowrap; font-size: .85em; color: var(--or); text-shadow: 0 1px 0 var(--nuit), 1px 0 0 var(--nuit), -1px 0 0 var(--nuit), 0 -1px 0 var(--nuit); }
 #tactile b.vide { opacity: .45; }

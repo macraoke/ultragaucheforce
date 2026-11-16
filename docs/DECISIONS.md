@@ -119,6 +119,16 @@ L'écran de fin donne le nombre de blessés que la partie annonce côté forces 
 - **Des écrans courts** : un écran, une idée ; ce qui précise se déplie. Une citation est simplement signée, et sa signature mène à la source.
 - **L'Atelier se dessine** : une palette d'images, on peint, on essaie.
 
+## Les commandes au pouce
+
+Valentin, le 16 novembre 2026, après avoir joué sur son téléphone : « also on mobile some cntrols are hard to use. like going up whilst shooting , and sometimes i trigger the special attack without wanting it ».
+
+- **Le manche se lit par secteurs** : poussé vers le haut à 30° près de la verticale, on saute et le tir vise en haut, sans marcher ; en diagonale, on avance et on saute. Le saut part dans l'anneau du manche, avant le bout de sa course.
+- **L'anneau suit le pouce** : sorti du cercle, le pouce garde sa direction et son appui ; la boule reste dans l'anneau.
+- **Grimper d'un geste tenu** : en l'air, le saut tenu (manche vers le haut, ou SAUT) le long d'un mur, le héros s'y accroche et grimpe ; tout en haut, il passe par-dessus, ou sur l'étage de l'autre côté de la trouée. Au clavier et à la manette, on grimpe toujours en tapant le saut : la simulation ne change pas, seuls les doigts sont lus autrement.- **TIR glissé vers le haut vise en haut**, sans sauter : le pouce qui tire n'a pas à lâcher son bouton. Une flèche au-dessus de TIR le montre.
+- **SPÉ ne part que d'un appui posé dessus**, jamais d'un pouce qui glisse depuis TIR ou SAUT. Le reste du haut de l'écran, à droite, tire en haut. Le glissement entre SAUT et TIR reste.
+- On vise en haut sans avancer, comme au clavier et à la manette : la règle est celle de la simulation, la même partout.
+
 ## Une sauvegarde qui survit aux mises à jour
 
 Tout est sur l'appareil du joueur ; une mise à jour ne lui fait rien perdre.
