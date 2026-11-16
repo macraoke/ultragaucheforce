@@ -187,10 +187,11 @@ test('dans la partie : on vise en haut au pouce, et un glissement jusqu’à SP�
 });
 
 // Le passage de la vidéo de Valentin (Bismillah, la garde à vue à l'étage), en petit : une trouée de deux tuiles entre
-// un pilier et le bord d'un étage cinq tuiles plus haut. Un saut n'y suffit pas : il faut grimper au pilier.
+// un pilier et le bord d'un étage cinq tuiles plus haut, l'étage suivant au-dessus. Un saut n'y suffit pas : il faut
+// grimper au pilier.
 const SHAFT = level([
   '....................',
-  '....................',
+  '...AAAAAAAAAAAAAAAAA',
   '...A................',
   '...A................',
   '...A................',
@@ -202,37 +203,129 @@ const SHAFT = level([
   '...AD..............S',
   'AAAAAAAAAAAAAAAAAAAA',
 ]);
-/** Joue un geste du pouce gauche (décalage depuis où il s'est posé, pas par pas) ; rend vrai si le héros tient à l'étage. */
-function climbs(offset, assist = true) {
-  const game = settle(play(SHAFT));
+// Un coin sous un plafond bas : grimper n'y mène nulle part.
+const CORNER = level([
+  'AAAAAAAAAAAAAAAAAAAA',
+  '...A................',
+  '...A................',
+  '...A................',
+  '...AD..............S',
+  'AAAAAAAAAAAAAAAAAAAA',
+]);
+// Le héros part collé au bord gauche de la carte.
+const EDGE = level([
+  '....................',
+  '....................',
+  '....................',
+  '....................',
+  '....................',
+  '....................',
+  '....................',
+  'D..................S',
+  'AAAAAAAAAAAAAAAAAAAA',
+]);
+
+/**
+ * Joue un geste du pouce gauche, `offset(pas, partie)` : son décalage depuis où il s'est posé. `fire` : TIR tenu.
+ * Rend les pas où le héros a sauté, s'il a tenu sur l'étage du puits, combien il s'est déplacé, s'il a visé en haut.
+ */
+function gesture(lvl, offset, { assist = true, steps = 300, fire = false, saut = () => false } = {}) {
+  const game = settle(play(lvl));
   const memo = {};
+  const x0 = game.hero.x;
+  const jumps = [];
   let stick = null;
-  for (let i = 0; i < 300; i++) {
-    const o = offset(i);
+  let top = game.hero.y;
+  let aimedUp = 0;
+  let shelf = false;
+  for (let i = 0; i < steps; i++) {
+    const o = offset(i, game);
     stick = trackPoint(stick, { x: 130 + o.dx, y: 260 + o.dy }, VIEW);
-    let touch = touchActions([stick], VIEW);
-    if (assist) touch = climbAssist(touch, game.hero, game.world, memo);
-    run(game, 1, touch);
-    if (game.hero.onGround && game.hero.y + game.hero.h <= 6 * 16 + 1) return true;
+    const button = saut(i);
+    const right = [fire && trackPoint(undefined, at('fire'), VIEW), button && trackPoint(undefined, at('jump'), VIEW)];
+    let touch = touchActions([stick, ...right.filter(Boolean)], VIEW);
+    if (assist) touch = climbAssist(touch, game.hero, game.world, memo, button);
+    if (run(game, 1, touch).some((e) => e.type === 'sfx' && e.id === 'saut')) jumps.push(i);
+    top = Math.min(top, game.hero.y);
+    if (game.hero.aim === -1) aimedUp++;
+    if (game.hero.onGround && game.hero.y + game.hero.h <= 6 * 16 + 1) shelf = true;
   }
-  return false;
+  return { jumps, shelf, top, moved: Math.abs(game.hero.x - x0), aimedUp: aimedUp / steps };
 }
 const ramp = (to) => (i) => ({ dx: (to.dx * Math.min(i, 6)) / 6, dy: (to.dy * Math.min(i, 6)) / 6 });
+/** Le joueur de la vidéo : pouce en haut à gauche, vers le pilier ; arrivé assez haut, il le penche vers l'étage. */
+const toPillarThenShelf = (i, game) => (game.hero.y + game.hero.h < 6 * 16 - 8 ? { dx: 45, dy: -10 } : ramp({ dx: -60, dy: -60 })(i));
+/** Au plus `n` sauts dans n'importe quelle seconde. */
+const atMostPerSecond = (jumps, n) => jumps.every((t) => jumps.filter((u) => u >= t && u < t + 60).length <= n);
 
-test('grimper au pouce : manche tenu vers le haut, le héros grimpe au pilier et passe à l’étage', () => {
-  assert.equal(climbs(ramp({ dx: 0, dy: -50 }), false), false, 'sans l’aide, un saut ne suffit pas');
-  assert.equal(climbs(ramp({ dx: 0, dy: -50 })), true, 'tout droit vers le haut, tenu');
-  assert.equal(climbs(ramp({ dx: 10, dy: -50 })), true, 'un peu de biais');
-  assert.equal(climbs((i) => (i < 90 ? ramp({ dx: -60, dy: -60 })(i) : { dx: 45, dy: -10 })), true, 'vers le pilier, puis vers l’étage');
+test('grimper au pouce : penché vers le pilier, saut tenu, le héros grimpe ; penché vers l’étage, il y passe', () => {
+  assert.equal(gesture(SHAFT, toPillarThenShelf, { assist: false }).shelf, false, 'sans l’aide, un saut tenu ne suffit pas');
+  const climb = gesture(SHAFT, toPillarThenShelf);
+  assert.equal(climb.shelf, true);
+  assert.ok(atMostPerSecond(climb.jumps, 4), `rebonds au rythme d’un pouce : ${climb.jumps}`);
 });
 
-test('l’aide à la grimpe ne touche qu’au saut tenu en l’air : au sol, ou sans saut, les doigts passent tels quels', () => {
+test('la vidéo : manche penché vers le pilier qui tient le saut, SAUT tapé ; chaque appui rebondit, comme au clavier', () => {
+  const taps = (i) => i < 90 && i % 20 < 8; // trois appuis par seconde, une seconde et demie, puis vers l'étage
+  const video = gesture(SHAFT, (i) => (i < 90 ? ramp({ dx: -60, dy: -60 })(i) : { dx: 45, dy: -10 }), { saut: taps });
+  assert.equal(video.shelf, true);
+  // Sous un plafond, l'aide ne rebondit plus d'elle-même, mais un appui sur SAUT reste un rebond.
+  const corner = gesture(CORNER, ramp({ dx: -60, dy: -60 }), { steps: 240, saut: (i) => i % 20 < 8 });
+  assert.ok(corner.jumps.length >= 8, `${corner.jumps.length} sauts pour 12 appuis`);
+});
+
+test('pouce tout droit en haut, TIR tenu : il saute et tire en haut, sans être tiré vers le mur', () => {
+  const straight = gesture(SHAFT, ramp({ dx: 0, dy: -50 }), { fire: true, steps: 120 });
+  assert.equal(straight.moved, 0, 'pas un pixel de côté, contre le pilier comme au clavier');
+  assert.equal(straight.jumps.length, 1, 'un saut, comme ↑ tenu au clavier');
+  assert.ok(straight.aimedUp > 0.9, `le tir reste en haut (${Math.round(straight.aimedUp * 100)} % des pas)`);
+  assert.equal(gesture(SHAFT, ramp({ dx: 0, dy: -50 })).shelf, false, 'il ne grimpe pas : il faut pencher le pouce vers le mur');
+});
+
+test('sous un plafond, contre un mur : pas de rebonds à répétition', () => {
+  const corner = gesture(CORNER, ramp({ dx: -60, dy: -60 }), { steps: 240 });
+  assert.ok(atMostPerSecond(corner.jumps, 3), `sauts : ${corner.jumps.length} en 4 s, aux pas ${corner.jumps}`);
+  assert.ok(corner.jumps.length <= 3, `sauts : ${corner.jumps.length} en 4 s`);
+});
+
+test('le bord de la carte n’est pas un mur où grimper', () => {
+  const edge = gesture(EDGE, ramp({ dx: -60, dy: -60 }), { steps: 240 });
+  assert.equal(edge.jumps.length, 1, 'un saut, pas de rebonds contre le bord');
+  assert.ok(edge.top > 0, `il ne sort pas par le haut (y le plus haut : ${Math.round(edge.top)})`);
+});
+
+test('un pouce qui tremble de ±3 px, à n’importe quel angle : un saut, et ni la marche ni le haut ne clignotent', () => {
+  let seed = 7;
+  const shake = () => ((seed = (seed * 16807) % 2147483647) / 2147483647 - 0.5) * 6;
+  for (const r of [50, 70]) {
+    for (let deg = 0; deg <= 180; deg += 3) {
+      const to = { dx: r * Math.cos((deg * Math.PI) / 180), dy: -r * Math.sin((deg * Math.PI) / 180) };
+      let p = trackPoint(undefined, { x: 130, y: 260 }, VIEW);
+      for (let i = 1; i <= 8; i++) p = trackPoint(p, { x: 130 + (to.dx * i) / 8, y: 260 + (to.dy * i) / 8 }, VIEW);
+      let prev = touchActions([p], VIEW);
+      const flips = { jump: 0, walk: 0, up: 0 };
+      for (let i = 0; i < 120; i++) {
+        p = trackPoint(p, { x: 130 + to.dx + shake(), y: 260 + to.dy + shake() }, VIEW);
+        const now = touchActions([p], VIEW);
+        if (now.jump && !prev.jump) flips.jump++;
+        if (Boolean(now.left || now.right) !== Boolean(prev.left || prev.right)) flips.walk++;
+        if (Boolean(now.up) !== Boolean(prev.up)) flips.up++;
+        prev = now;
+      }
+      assert.ok(flips.jump <= 1 && flips.walk <= 1 && flips.up <= 1, `${deg}°, ${r} px : ${JSON.stringify(flips)}`);
+    }
+  }
+});
+
+test('l’aide à la grimpe ne touche qu’au saut tenu en l’air, pouce penché : sinon les doigts passent tels quels', () => {
   const world = { solid: () => true };
-  const grounded = { x: 0, y: 0, w: 10, h: 14, vy: 0, onGround: true, facing: 1 };
+  const grounded = { x: 16, y: 0, w: 10, h: 14, vy: 0, onGround: true };
   const touch = { right: true, jump: true };
   assert.equal(climbAssist(touch, grounded, world, {}), touch);
-  const air = { ...grounded, onGround: false };
+  const air = { ...grounded, onGround: false, vy: 10 };
   const walk = { right: true, fire: true };
   assert.equal(climbAssist(walk, air, world, {}), walk);
+  const straight = { jump: true, up: true, fire: true };
+  assert.equal(climbAssist(straight, air, world, {}), straight, 'pouce tout droit en haut : rien ne change');
   assert.deepEqual(climbAssist({}, air, world, {}), {}, 'le clavier et la manette ne passent pas par là');
 });
