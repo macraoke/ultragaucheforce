@@ -414,11 +414,11 @@ export function collectionShelf(bundle, shelf, save = null) {
     .map((c) => collectionCard(bundle, c, !save || isFound(save, c.kind, cardId(c.item)))));
 }
 
-/** L'album complet, rayon par rayon (Galerie). */
-export function collectionAlbum(bundle, save = null) {
+/** L'album complet, rayon par rayon (Galerie). `more(rayon)` : ce qui s'ajoute au titre d'un rayon (un lien). */
+export function collectionAlbum(bundle, save = null, more = () => null) {
   const { found, total } = collectionCount(bundle, save);
   return h('div', { className: 'album' },
     h('p', { className: 'compte' }, `${found} / ${total}`),
     SHELVES.map((shelf) => (collectionCount(bundle, save, shelf.id).total
-      ? [h('h3', { className: 'rayon' }, shelf.titre), collectionShelf(bundle, shelf.id, save)] : [])));
+      ? [h('h3', { className: 'rayon' }, shelf.titre, more(shelf)), collectionShelf(bundle, shelf.id, save)] : [])));
 }

@@ -112,7 +112,6 @@ export class Screens {
         this.button('Campagne', () => this.levels()),
         this.button(`Collection ${collectionCount(this.bundle, this.save).found}/${collectionCount(this.bundle).total}`, () => this.collection()),
         this.button('Atelier', () => this.go.atelier()),
-        h('a', { className: 'bouton', href: 'galerie.html' }, 'Galerie'),
         this.button('Commandes', () => this.controls()),
         this.button('Options', () => this.options()),
         this.button('À propos', () => this.about()),
