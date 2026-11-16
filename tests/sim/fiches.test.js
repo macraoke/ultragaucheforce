@@ -78,6 +78,7 @@ test('ennemi : ligne, sommations, charge, tir visé, jet, faisceau et renforts s
 
   expect(edit('content/ennemis/ligne.txt', (t) => t.replace('ligne.vie: 60', 'ligne.vie: 6000')), /« ligne\.vie » doit être entre 0 et 5000/);
   expect(edit('content/ennemis/ligne.txt', (t) => t.replace('ligne.poussee: 10', 'ligne.poussee: 80')), /« ligne\.poussee » doit être entre 0 et 50/);
+  expect(edit('content/ennemis/ligne.txt', (t) => t.replace('ligne.vie: 60', 'debordement: 30')), /« debordement »\. Écris plutôt « ligne\.vie: … »/);
   expect(edit('content/ennemis/chargeur.txt', (t) => t.replace('charge.distance: 120', 'charge.elan: 3')), /Réglage inconnu « charge\.elan »/);
   expect(edit('content/ennemis/tireur.txt', (t) => t.replace('arme.visee: 0.8', 'arme.visee: 5')), /« arme\.visee » doit être entre 0 et 2/);
   expect(edit('content/ennemis/canon.txt', (t) => t.replace('arme.duree: 2', 'arme.degats: 2')), /Réglage inconnu « arme\.degats »/);

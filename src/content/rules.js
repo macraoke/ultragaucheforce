@@ -112,13 +112,16 @@ function readValue(f, key, s, report) {
   }
 }
 
+/** Des clés qui ont changé de nom : le message dit laquelle écrire à la place. */
+const RENAMED = { debordement: '« ligne.vie: … » : une ligne a maintenant une vie (voir docs/ajouter-un-personnage.md)' };
+
 function readFields(f, spec, report, extra = () => false) {
   const out = {};
   for (const [key, s] of Object.entries(spec)) setPath(out, key, readValue(f, key, s, report));
   for (const { key, line } of f.fields) {
-    if (!(key in spec) && !extra(key)) {
-      report(line, `Clé inconnue « ${key} ». Clés possibles : ${Object.keys(spec).join(', ')}.`);
-    }
+    if (key in spec || extra(key)) continue;
+    if (RENAMED[key]) report(line, `Clé inconnue « ${key} ». Écris plutôt ${RENAMED[key]}.`);
+    else report(line, `Clé inconnue « ${key} ». Clés possibles : ${Object.keys(spec).join(', ')}.`);
   }
   return out;
 }

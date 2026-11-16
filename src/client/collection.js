@@ -254,7 +254,7 @@ function facts(kind, item) {
   }
   if (kind === 'ennemis') {
     const w = item.arme;
-    const traits = [item.bouclier && 'bouclier', w?.gaz > 0 && 'lacrymogènes', w?.vise > 0 && 'LBD', w?.type === 'jet' && 'canon à eau',
+    const traits = [item.ligne?.vie > 0 && 'ligne', item.bouclier && 'bouclier', w?.gaz > 0 && 'lacrymogènes', w?.vise > 0 && 'LBD', w?.type === 'jet' && 'canon à eau',
       w?.mots?.length && 'tire des mots', item.reaction === 'charge' && 'charge', item.reaction === 'fonce' && 'fonce',
       item.reaction === 'projecteur' && 'projecteur', item.deplacement === 'vol' && 'vole'].filter(Boolean);
     const pv = item.ligne?.vie > 0 ? item.ligne.vie : item.pv; // une ligne : sa vie de ligne
