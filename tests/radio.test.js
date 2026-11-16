@@ -409,6 +409,91 @@ test('une piste qui ne se charge jamais (réseau coupé en plein changement) : l
   assert.equal(s.radio.status, 'playing');
 });
 
+// Relecture : deux chargements coup sur coup (quitter le niveau juste après « C'est parti », le boss juste après une
+// fin de piste) : `widget.load()` remet le lecteur à zéro, le « prêt » du premier faisait partir le rappel du second
+// trop tôt, et le nouveau lecteur n'envoyait plus rien. La piste jouait, la Radio l'écartait au bout d'une minute.
+
+test('deux pistes demandées coup sur coup : un seul chargement avant le rappel, puis la dernière demandée', async () => {
+  const s = setup();
+  await s.on();
+  s.radio.play('rond-point');
+  s.radio.play('boss'); // deux start() de suite
+  assert.equal(s.widget.loads.length, 1, 'pas de second load() avant le rappel du premier');
+  assert.equal(s.radio.current.id, 'boss-a');
+  s.playing(); // le lecteur annonce encore l'ancienne piste
+  assert.equal(s.radio.status, 'loading');
+  s.ready();
+  assert.equal(s.widget.loads.length, 2);
+  assert.equal(s.lastUrl(), tracks[5].url, 'au rappel, la piste voulue entre-temps');
+  s.ready();
+  s.playing();
+  assert.equal(s.radio.status, 'playing');
+  assert.equal(s.radio.failed.size, 0);
+  // Trois moments en rafale : la première piste, puis seulement la dernière.
+  s.radio.play('raffinerie');
+  s.radio.play('boss');
+  s.radio.play('menu');
+  assert.equal(s.widget.loads.length, 3);
+  s.ready();
+  assert.equal(s.widget.loads.length, 4);
+  assert.equal(s.lastUrl(), s.radio.current.url);
+  assert.equal(s.radio.current.ou, 'menu');
+});
+
+test('un chargement qui ne rappelle jamais : injoignable, le bouton recharge ; un rappel tardif ne compte plus', async () => {
+  const s = setup();
+  await s.on();
+  s.radio.play('rond-point');
+  const late = s.widget.callback;
+  s.radio.play('boss');
+  s.advance(LOAD_TIMEOUT);
+  assert.equal(s.radio.status, 'unreachable');
+  s.radio.retry(); // le bouton « Relancer la musique »
+  assert.equal(s.widget.loads.length, 2);
+  assert.equal(s.lastUrl(), tracks[5].url);
+  late(); // le premier chargement finit par rappeler
+  assert.equal(s.widget.loads.length, 2);
+  assert.equal(s.radio.attempt.loaded, false, 'la piste du boss attend encore son propre rappel');
+  s.ready();
+  s.playing();
+  assert.equal(s.radio.status, 'playing');
+});
+
+test('le réseau revient pendant un chargement : rien par-dessus ; sans rappel dix secondes plus tard, un nouvel essai', async () => {
+  const s = setup();
+  await s.on();
+  s.radio.play('rond-point');
+  s.radio.reconnected();
+  assert.equal(s.widget.loads.length, 1, 'le chargement en cours a sa chance');
+  s.ready();
+  s.playing();
+  assert.equal(s.radio.status, 'playing');
+  s.emit('FINISH'); // cette fois, le réseau a coupé pendant le chargement : pas de rappel
+  assert.equal(s.widget.loads.length, 2);
+  s.radio.reconnected();
+  s.advance(START_TIMEOUT - 1);
+  assert.equal(s.widget.loads.length, 2);
+  s.advance(1);
+  assert.equal(s.widget.loads.length, 3, 'le chargement resté en plan repart');
+  assert.equal(s.lastUrl(), s.widget.loads[1]);
+  s.ready();
+  s.playing();
+  assert.equal(s.radio.status, 'playing');
+});
+
+test('musique coupée pendant un chargement : la piste chargée ne part pas, et rien d’autre ne se charge', async () => {
+  const s = setup();
+  await s.on();
+  s.radio.play('rond-point');
+  s.radio.play('boss');
+  s.radio.setEnabled(false);
+  const pauses = s.widget.pauses;
+  s.ready(); // chargée, le lecteur la lancerait de lui-même
+  assert.equal(s.widget.pauses, pauses + 1);
+  assert.equal(s.widget.loads.length, 1);
+  assert.equal(s.radio.status, 'off');
+});
+
 test('toutes les pistes échouent (API de SoundCloud en panne) : injoignable ; aucun geste ne relance un tour, le bouton si', async () => {
   const s = setup({ list: [T('a', 'menu'), T('b', 'boss'), T('c', 'jeu')] });
   s.radio.setEnabled(true);
@@ -476,6 +561,8 @@ test('l’extrait de Monarch ne se charge pas : la version de Ryukken prend sa p
   await s.on();
   s.radio.play('boss');
   s.emit('ERROR');
+  assert.equal(s.radio.current, bundle.musiques['abattez-la-citadelle-ryukken']);
+  s.ready(); // le lecteur rappelle après son erreur : la suite se charge
   assert.equal(s.lastUrl(), bundle.musiques['abattez-la-citadelle-ryukken'].url);
 });
 

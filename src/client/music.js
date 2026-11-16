@@ -130,6 +130,7 @@ export class Radio {
     this.status = 'off'; // off | loading | playing | paused | blocked (refusée, attend un geste) | unreachable (lecteur injoignable)
     this.widget = null;
     this.connecting = null;
+    this.pending = null; // un chargement demandé au lecteur, qui n'a pas encore rappelé : { track, timer }
     this.current = null; // la piste chargée (ou en train de l'être)
     this.slot = 'menu';
     this.named = null;
@@ -225,7 +226,7 @@ export class Radio {
     // Tant que le lecteur n'a pas fini de charger cette piste, ce qu'il annonce vient de la précédente.
     this.watch(track, { loaded: false });
     this.render();
-    if (this.widget) return this.widget.load(track.url, { ...OPTIONS, callback: () => this.loaded(track) });
+    if (this.widget) return this.load(track);
     if (this.connecting) return; // le lecteur arrive : il prendra la piste courante une fois prêt
     const pending = this.env.connect(track, (name, data) => this.event(name, data), this.view);
     this.connecting = pending;
@@ -240,6 +241,36 @@ export class Radio {
     }, () => {
       if (this.connecting === pending) this.unreachable();
     });
+  }
+
+  /**
+   * Demande une piste au lecteur, jamais par-dessus un chargement en cours : `widget.load()` remet le lecteur à zéro
+   * et remplace l'attente du précédent. Si le « prêt » de l'ancien arrive entre les deux, le rappel part trop tôt et
+   * le nouveau lecteur n'envoie plus rien. La piste demandée entre-temps (`current`) se charge au rappel.
+   */
+  load(track) {
+    if (this.pending) return;
+    const request = { track, timer: null };
+    this.pending = request;
+    this.widget.load(track.url, { ...OPTIONS, callback: () => this.called(request) });
+  }
+
+  /** Un chargement a rappelé. Une autre piste a été demandée entre-temps : c'est son tour. */
+  called(request) {
+    if (this.pending !== request) return; // oublié : le lecteur a été déclaré injoignable entre-temps
+    this.forget();
+    if (!this.enabled) {
+      // Musique coupée pendant le chargement : la piste chargée partirait d'elle-même.
+      this.ownPause = true;
+      return this.widget.pause();
+    }
+    if (this.current !== request.track) return this.load(this.current);
+    this.loaded(request.track);
+  }
+
+  forget() {
+    if (this.pending?.timer) this.env.cancel(this.pending.timer);
+    this.pending = null;
   }
 
   /** Le lecteur a chargé la piste demandée : à partir de maintenant, on attend qu'elle parte. */
@@ -349,6 +380,7 @@ export class Radio {
   /** Le lecteur ne répond pas, ou plus aucune piste ne joue : on joue sans musique. Le bouton, ou le retour du réseau, réessaieront. */
   unreachable() {
     this.cancelWatch();
+    this.forget(); // un chargement qui n'a jamais rappelé ne bloque pas le prochain essai
     if (!this.widget) {
       this.connecting = null;
       this.view.unmount();
@@ -383,12 +415,24 @@ export class Radio {
     this.start(track);
   }
 
-  /** Le réseau revient : les pistes écartées retrouvent leur chance, et un chargement resté en plan repart. */
+  /**
+   * Le réseau revient : les pistes écartées retrouvent leur chance, et un chargement resté en plan repart.
+   * Pas par-dessus celui en cours : il a encore le temps de rappeler ; sinon, on recharge.
+   */
   reconnected() {
     this.failed.clear();
     if (!this.enabled) return;
     if (this.status === 'unreachable') return this.retry();
-    if (this.status === 'loading' && this.widget && !this.attempt?.loaded) this.start(this.current);
+    if (this.status !== 'loading' || !this.widget || this.attempt?.loaded) return;
+    const request = this.pending;
+    if (!request) return this.start(this.current);
+    if (request.timer) this.env.cancel(request.timer);
+    request.timer = this.env.later(() => {
+      request.timer = null;
+      if (this.pending !== request || !this.enabled) return;
+      this.forget();
+      this.start(this.current);
+    }, START_TIMEOUT);
   }
 
   /** Ce que le lecteur SoundCloud annonce. */
