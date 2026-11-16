@@ -313,6 +313,9 @@ function layout() {
   root.classList.toggle('bas', height <= 480);
   renderer.resize();
   renderer.anchor = thumbs ? 0.58 : 0.62; // les pouces occupent les coins du bas : on remonte un peu l'action
+  // Au clavier, les notes du coin gauche descendent jusqu'à 140 pixels environ : le panneau passe dessous.
+  // Au pouce, elles sont sous le bandeau, et le panneau reste entre le HUD et le bandeau.
+  renderer.signTop = thumbs ? 30 : Math.max(30, Math.ceil((140 * (window.devicePixelRatio || 1)) / renderer.scale));
   input.refreshTouch();
 }
 addEventListener('resize', layout);

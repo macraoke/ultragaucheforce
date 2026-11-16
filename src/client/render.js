@@ -36,6 +36,7 @@ export class Renderer {
     this.anchor = 0.62; // hauteur des pieds du héros à l'écran (0 = haut, 1 = bas) : on voit ce qu'il y a sous terre
     this.demo = false; // démo du menu : pas de panneaux par-dessus le titre
     this.device = 'clavier'; // l'appareil dont les panneaux disent les touches : clavier, manette ou pouce
+    this.signTop = 30; // hauteur du panneau à l'écran, en pixels du jeu (main.js la règle selon la mise en page)
     this.sign = { text: '', t: 0 }; // le dernier panneau lu, et combien de temps il reste à l'écran
     this.clock = 0;
   }
@@ -197,7 +198,7 @@ export class Renderer {
       // Un panneau long passe à la ligne vers le bas : il ne monte jamais sur le HUD.
       const text = withKeys(this.sign.text, this.device);
       const lines = this.wrap(text, 7, 190).length;
-      this.board(text, this.viewW / 2, 30 + (lines - 1) * 7 * 1.1, { alpha: Math.min(1, this.sign.t * 2) });
+      this.board(text, this.viewW / 2, this.signTop + (lines - 1) * 7 * 1.1, { alpha: Math.min(1, this.sign.t * 2) });
     }
   }
 
