@@ -1,0 +1,11 @@
+texte: Une petite phrase largement tronquée.
+auteur: François Pinault
+fonction: fondateur de Kering, collectionneur d'art
+date: 2018-06-24
+contexte: Réaction au Journal du Dimanche, après la polémique sur ses propos sur Emmanuel Macron et « les petites gens ».
+categorie: puissants
+note: Fragment rapporté par l'AFP, qui précise qu'il ne dit pas quelle partie de ses déclarations serait concernée. Dans la même réaction : « Chacun sait que j'ai la plus grande admiration pour l'action conduite par le président depuis son arrivée à la tête de l'Etat ». Le journal n'a pas été ouvert.
+source.titre: Public Sénat (AFP) — François Pinault dit « sa grande admiration pour l'action » de Macron et juge la « polémique excessive »
+source.url: https://www.publicsenat.fr/actualites/politique/francois-pinault-dit-sa-grande-admiration-pour-l-action-de-macron-et-juge-la
+source.nature: presse
+verifie: 2026-11-16

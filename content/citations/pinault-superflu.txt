@@ -1,0 +1,11 @@
+texte: Tout ce qui est nécessaire est là, tout ce qui est superflu n'est plus là.
+auteur: François Pinault
+fonction: collectionneur d'art, fondateur de Kering
+date: 2021-05-10
+contexte: Interview publiée par la Bourse de Commerce — Pinault Collection, à l'ouverture du musée, à propos du travail de l'architecte Tadao Ando, dont il dit : « c'est comme l'art minimal ».
+categorie: puissants
+note: Les mots portent sur l'architecture de Tadao Ando, pas sur l'argent. Page datée du 10 mai 2021.
+source.titre: Bourse de Commerce — Pinault Collection — L'interview de François Pinault
+source.url: https://www.pinaultcollection.com/fr/boursedecommerce/linterview-de-francois-pinault
+source.nature: officielle
+verifie: 2026-11-16

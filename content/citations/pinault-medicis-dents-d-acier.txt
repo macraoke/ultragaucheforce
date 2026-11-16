@@ -1,0 +1,11 @@
+texte: Ce Médicis moderne aux dents d'acier.
+auteur: Antoine Bosshard
+fonction: journaliste, Le Temps
+date: 2000-09-02
+contexte: Portrait de François Pinault, présenté comme le premier patron de l'Hexagone, qui vient de soutenir la chaîne TV Breizh. Le même article l'appelle aussi « un Rockefeller à la française » et « saint patron de la Bretagne ».
+categorie: puissants
+note: Phrase d'origine : « Les méthodes? Elles sont au cœur des questions que pose ce Médicis moderne aux dents d'acier. » La formule est celle du journaliste, pas de François Pinault. Article publié le 2 septembre 2000, modifié le 11 juin 2023.
+source.titre: Le Temps — François Pinault, portrait d'un Rockefeller à la française, saint patron de la Bretagne
+source.url: https://www.letemps.ch/monde/francois-pinault-portrait-dun-rockefeller-francaise-saint-patron-bretagne
+source.nature: presse
+verifie: 2026-11-16
