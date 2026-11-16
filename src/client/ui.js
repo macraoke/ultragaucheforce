@@ -459,8 +459,9 @@ export class Screens {
 
   lost() {
     this.show('liste etroit',
-      h('h2', {}, 'Plus de vies'),
+      h('h2', {}, 'Game over'),
       h('p', {}, 'La lutte continue : on recommence.'),
+      h('p', { className: 'convaincre' }, 'Qui sont les 3 personnes que tu vas convaincre d’ici avril 2027\u00a0?'),
       this.button('Recommencer', () => this.go.restart(), 'gros'),
       this.editButton(),
       this.button('Menu', () => this.go.quit(), 'discret'));

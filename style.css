@@ -399,6 +399,7 @@ html.pivote body.tactile.essai #toasts { right: calc(max(10px, env(safe-area-ins
 #ecran[hidden] { display: none; }
 .panneau { width: min(100%, 880px); max-height: 100%; overflow: auto; background: var(--nuit); border: 4px solid var(--blanc); box-shadow: 8px 8px 0 var(--rouge); padding: clamp(14px, 3vmin, 28px); line-height: 1.45; }
 .panneau.etroit { width: min(100%, 380px); display: grid; gap: 12px; }
+.panneau .convaincre { margin: 0; font: 900 1.05rem/1.25 var(--titre); color: var(--or); text-transform: uppercase; }
 .panneau h2 { font: 900 clamp(1.6rem, 5vmin, 2.6rem)/.95 var(--titre); text-transform: uppercase; color: var(--blanc); margin: 0 0 .5em; }
 .panneau h3 { font: 900 1.15rem/1.1 var(--titre); text-transform: uppercase; letter-spacing: .03em; color: var(--or); margin: 1.2em 0 .4em; }
 .panneau p { margin: .5em 0; }

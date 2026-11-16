@@ -688,7 +688,7 @@ test('« Recommencer » après une mort au boss : la piste de cette visite revie
   s.radio.play('boss');
   s.ready();
   s.playing();
-  s.radio.play('rond-point', null, { restart: true }); // « Plus de vies » au boss, puis « Recommencer »
+  s.radio.play('rond-point', null, { restart: true }); // « Game over » au boss, puis « Recommencer »
   assert.equal(s.radio.current.id, 'propre-a');
   assert.equal(s.lastUrl(), ownList.find((t) => t.id === 'propre-a').url);
   s.ready();
