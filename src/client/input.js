@@ -10,7 +10,6 @@ const KEYS = {
   KeyJ: 'fire', KeyX: 'fire', Enter: 'fire',
   KeyK: 'special', KeyC: 'special', ShiftLeft: 'special', ShiftRight: 'special',
 };
-const PAUSE_KEYS = ['Escape', 'KeyP'];
 export const ACTIONS = ['left', 'right', 'up', 'down', 'jump', 'fire', 'special'];
 
 /**
@@ -149,7 +148,8 @@ export class Input {
     this.touch = {};
     this.pointers = new Map();
     this.active = false; // vrai seulement en pleine partie : ailleurs, le clavier sert aux menus
-    this.onPause = () => {};
+    this.onPause = () => {}; // P, Start
+    this.onBack = () => {}; // Échap, et B de la manette hors partie : l'écran d'avant (en partie, Échap met en pause)
     this.onAny = () => {}; // premier geste : sert à débloquer le son
     this.onDevice = () => {}; // le joueur a changé d'appareil : les écrans ouverts redisent les touches
     // L'appareil dont on montre les touches : le dernier qui a servi.
@@ -159,7 +159,8 @@ export class Input {
       this.onAny();
       this.use('clavier');
       if (e.repeat) return;
-      if (PAUSE_KEYS.includes(e.code)) return this.onPause();
+      if (e.code === 'Escape') return this.onBack();
+      if (e.code === 'KeyP') return this.onPause();
       const action = KEYS[e.code];
       if (!action || !this.active) return;
       this.keys[e.code] = action;
@@ -258,11 +259,25 @@ export class Input {
     return pad;
   }
 
+  /** Les boutons de la manette tels que les menus les lisent. */
+  menuButtons(pad) {
+    const b = (i) => Boolean(pad.buttons[i]?.pressed);
+    return {
+      next: b(13) || b(15) || pad.axes[1] > 0.5 || pad.axes[0] > 0.5,
+      prev: b(12) || b(14) || pad.axes[1] < -0.5 || pad.axes[0] < -0.5,
+      ok: b(0),
+      back: b(1),
+      start: b(9),
+    };
+  }
+
   /** Manette standard : croix ou stick, A = saut, X ou gâchette droite = tir, B ou gâchette gauche = spéciale. */
   gamepad() {
     const pad = this.findPad();
     if (!pad) return {};
     const b = (i) => Boolean(pad.buttons[i]?.pressed);
+    // Ce qui est tenu en jouant ne compte pas comme un appui dans le menu qui s'ouvre (A, B tenus en mettant en pause).
+    this.padMenu = this.menuButtons(pad);
     if (b(9)) {
       if (!this.padPause) this.onPause();
       this.padPause = true;
@@ -278,17 +293,11 @@ export class Input {
     };
   }
 
-  /** Manette hors partie : croix ou stick pour changer de bouton, A pour valider, Start pour reprendre. */
+  /** Manette hors partie : croix ou stick pour changer de bouton, A pour valider, B pour revenir, Start pour reprendre. */
   pollMenu() {
     const pad = this.findPad();
     if (!pad) return;
-    const b = (i) => Boolean(pad.buttons[i]?.pressed);
-    const now = {
-      next: b(13) || b(15) || pad.axes[1] > 0.5 || pad.axes[0] > 0.5,
-      prev: b(12) || b(14) || pad.axes[1] < -0.5 || pad.axes[0] < -0.5,
-      ok: b(0),
-      start: b(9),
-    };
+    const now = this.menuButtons(pad);
     const was = this.padMenu || {};
     this.padMenu = now;
     this.padPause = now.start; // évite un second basculement au retour en partie
@@ -299,7 +308,14 @@ export class Input {
       if (pressed('ok')) card.dispatchEvent(new Event('pointerdown'));
       return;
     }
-    const items = [...document.querySelectorAll('#ecran button:not(:disabled), #ecran a.bouton')];
+    // Une carte ouverte par-dessus l'écran : B la ferme comme Échap, et la croix ne parcourt qu'elle.
+    const layer = document.querySelector('#ecran .carte-ouverte');
+    if (pressed('back')) {
+      if (layer) layer.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', bubbles: true }));
+      else this.onBack();
+      return;
+    }
+    const items = [...(layer || document).querySelectorAll(layer ? 'button:not(:disabled), a.bouton' : '#ecran button:not(:disabled), #ecran a.bouton')];
     if (!items.length) return;
     const at = items.indexOf(document.activeElement);
     if (pressed('ok')) (items[at] || items[0]).click();

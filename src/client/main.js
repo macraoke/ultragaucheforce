@@ -166,7 +166,7 @@ function start(id, level = null) {
 function openAtelier() {
   setMode('menu');
   document.body.dataset.ecran = 'atelier';
-  showAtelier(screenRoot, { bundle, save, test: (level) => start(null, level), back: () => toMenu() });
+  screens.escape = showAtelier(screenRoot, { bundle, save, test: (level) => start(null, level), back: () => toMenu() });
 }
 
 function togglePause() {
@@ -175,6 +175,12 @@ function togglePause() {
     screens.pause();
   } else if (begin) begin();
   else if (mode === 'paused' && screens.open) setMode('playing');
+}
+
+/** Échap : en pleine partie, la pause ; ailleurs, l'écran d'avant (une carte ouverte se ferme d'abord, d'elle-même). */
+function back() {
+  if (mode === 'playing') togglePause();
+  else screens.escape?.();
 }
 
 async function win() {
@@ -301,6 +307,7 @@ function frame(now) {
 
 hud.onQuote = (id) => mode === 'playing' && collect('citations', id, true);
 input.onPause = togglePause;
+input.onBack = back;
 input.onAny = () => audio.unlock();
 input.onDevice = () => screens.open && screens.refreshKeys(); // un carton ou une pause ouverts redisent les touches
 document.getElementById('pause').onclick = togglePause;
