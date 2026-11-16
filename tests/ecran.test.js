@@ -84,6 +84,25 @@ test('les textes flottants nés au même endroit se décalent, quatre au plus', 
   for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) assert.ok(!overlap(boxes[i], boxes[j]), `${alive[i].text} / ${alive[j].text}`);
 });
 
+test('un texte qui a sa place (une ligne qui cède, un coup) n’est ni évincé ni déplacé', () => {
+  const r = renderer();
+  const line = { x: 200, y: 180, rise: 0, text: '✊ 512 / 500', t: 2.2, bg: '#257953', size: 7.5, keep: true };
+  const cry = { x: 200, y: 194, rise: 0, text: 'ON EST LÀ !', t: 2.2, size: 12, keep: true };
+  r.float(line);
+  r.float(cry);
+  r.absorb(['UN', 'DEUX', 'TROIS', 'QUATRE', 'CINQ'].map((text) => ({ type: 'bubble', x: 200, y: 190, text })));
+  assert.ok(line.t > 0.25 && cry.t > 0.25, 'jamais évincés');
+  assert.ok(r.floaters.filter((f) => f.t > 0.25).length <= 4, 'les autres cèdent la place');
+  r.placeFloaters([]);
+  assert.equal(line.y, 180);
+  assert.equal(cry.y, 194);
+  const fixed = [line, cry].map((f) => r.textBox(f.text, f.x, f.y, f.size, 150));
+  for (const f of r.floaters.filter((g) => !g.keep && g.t > 0.25)) {
+    const box = r.textBox(f.text, f.x, f.y, f.size, 150);
+    assert.ok(fixed.every((b) => !overlap(box, b)), `${f.text} passe autour`);
+  }
+});
+
 test('deux gains au même moment et au même endroit font un seul nombre', () => {
   const r = renderer();
   r.absorb([{ type: 'recruit', x: 100, y: 150, n: 20 }, { type: 'recruit', x: 120, y: 150, n: 30 }]);
