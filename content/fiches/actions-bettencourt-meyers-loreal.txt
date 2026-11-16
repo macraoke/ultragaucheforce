@@ -1,0 +1,10 @@
+titre: 185 715 079 actions L'Oréal
+theme: richesses
+texte: La famille Bettencourt Meyers détient 185 715 079 actions L'Oréal, soit 34,79 % du capital.
+portee: Situation au 31 décembre 2025, d'après le document d'enregistrement universel de L'Oréal : Françoise Bettencourt Meyers, trois membres de sa famille et leurs sociétés Téthys SAS et Financière L'Arcouest SAS, qui en détiennent à elles deux 180 164 292 en pleine propriété. L'essentiel passe donc par des sociétés holdings, pas par des personnes.
+periode: 31 décembre 2025
+valeur: 185715079
+source.titre: L'Oréal — Document d'enregistrement universel 2025, section 7.3.2 (p. 396)
+source.url: https://www.loreal-finance.com/sites/default/files/2026-03/LOREAL_DEU_2025_FR.pdf
+source.nature: officielle
+verifie: 2026-11-16

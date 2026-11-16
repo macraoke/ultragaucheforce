@@ -1,0 +1,12 @@
+texte: Nous en sommes les gardiens
+auteur: Françoise Bettencourt Meyers
+fonction: actionnaire de L'Oréal, présidente de Téthys
+date: 2025-04-28
+contexte: Déclaration à l'AFP, la veille de l'assemblée générale de L'Oréal où elle quitte le conseil d'administration, sur son attachement au groupe et à son avenir.
+categorie: puissants
+mot: GARDIENS
+note: Dans la dépêche : « "Nous en sommes les gardiens", selon elle. "Nous voulons apprécier cette continuité remarquable par respect et fierté pour tous ceux qui ont contribué partout dans le monde. Au fond, pour que presque rien ne change dans cette épopée", dit-elle. » Page lue sur La Gazette France, qui reprend la dépêche de l'AFP ; la déclaration originale n'a pas été relue.
+source.titre: La Gazette France (dépêche AFP) — Françoise Bettencourt Meyers, l'héritière discrète de L'Oréal
+source.url: https://www.lagazettefrance.fr/article/francoise-bettencourt-meyers-l-heritiere-discrete-de-l-oreal
+source.nature: presse
+verifie: 2026-11-16
