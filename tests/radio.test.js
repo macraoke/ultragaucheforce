@@ -617,3 +617,31 @@ test('le menu et le boss gardent leur tirage au hasard, sans sac', async () => {
   for (let i = 0; i < 40; i++) menu.add(chooseTrack(real, { slot: 'menu', random: seeded(i + 1) }).id);
   assert.deepEqual([...menu].sort(), real.filter((t) => t.ou === 'menu').map((t) => t.id).sort(), 'le menu tire parmi ses pistes');
 });
+
+test('après l’échec de la dernière piste du sac, la piste qu’on vient d’entendre ne revient pas', async () => {
+  // Relecture : une piste chiffrée, seule dans le sac, échoue ; le tirage de secours retombait sur la précédente.
+  const list = [...tracks, T('jeu-c', 'jeu')];
+  const values = [0, 0.5, 0]; // le menu, puis « jeu-b » au premier niveau, puis « jeu-a » en fin de piste
+  let n = 0;
+  const s = setup({ list, random: () => values[n++] ?? 0 });
+  await s.on();
+  s.radio.play('rond-point');
+  assert.equal(s.radio.current.id, 'jeu-b');
+  s.ready();
+  s.playing();
+  s.emit('FINISH');
+  assert.equal(s.radio.current.id, 'jeu-a');
+  s.ready();
+  s.playing();
+  s.radio.play('boss');
+  s.ready();
+  s.playing();
+  s.radio.play('menu');
+  s.ready();
+  s.playing();
+  s.radio.play('rond-point');
+  assert.equal(s.radio.current.id, 'jeu-c', 'la seule qui reste dans le sac');
+  s.emit('ERROR'); // chiffrée, sans module de lecture : elle échoue
+  assert.ok(s.radio.failed.has('jeu-c'));
+  assert.equal(s.radio.current.id, 'jeu-b', 'pas « jeu-a », qu’on vient d’entendre');
+});

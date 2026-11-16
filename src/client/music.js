@@ -127,6 +127,7 @@ export class Radio {
     // En partie, les pistes tournent : `heard`, celles du tour en cours (le sac) ; `played`, toutes celles entendues.
     this.heard = new Set();
     this.played = new Set();
+    this.lastHeard = new Map(); // la dernière piste vraiment entendue, par moment (les niveaux partagent la leur)
     this.failed = new Set(); // pistes qui n'ont pas voulu jouer ; le retour du réseau leur rend leur chance
     this.attempt = null; // une lecture demandée, pas encore confirmée : { track, loaded, refused, retried, waits }
     this.timer = null;
@@ -182,6 +183,11 @@ export class Radio {
     this.played.add(track.id);
     const { all } = levelTracks(this.tracks, this.slot, this.named, this.failed);
     if (all.every((t) => this.heard.has(t.id))) for (const t of all) if (t !== track) this.heard.delete(t.id);
+  }
+
+  /** Le moment du jeu, pour la dernière piste entendue : le menu, le boss, ou les niveaux (un seul sac). */
+  moment() {
+    return NOT_A_LEVEL.has(this.slot) ? this.slot : 'niveau';
   }
 
   /** La piste qui suit celle-ci (clé `puis`), si elle peut jouer. */
@@ -307,7 +313,8 @@ export class Radio {
    */
   fail(track) {
     this.failed.add(track.id);
-    const next = this.following(track) ?? this.choose();
+    // Jamais la dernière piste entendue à ce moment-là, même quand la piste en échec était la dernière du sac.
+    const next = this.following(track) ?? this.choose(this.lastHeard.get(this.moment()) ?? null);
     if (next) this.start(next);
     else this.unreachable();
   }
@@ -382,6 +389,7 @@ export class Radio {
     // Une lecture demandée avance : elle joue vraiment. (Sans demande en cours, un reste d'avant une pause.)
     if (name === 'PLAY_PROGRESS' && data.currentPosition > 0 && this.attempt && !this.ownPause) {
       this.heardNow(this.attempt.track); // entendue pour de bon : elle sort du sac
+      this.lastHeard.set(this.moment(), this.attempt.track);
       this.cancelWatch();
       this.status = 'playing';
       this.render();
