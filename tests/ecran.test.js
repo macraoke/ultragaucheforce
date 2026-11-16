@@ -262,7 +262,12 @@ test('« GARDE À VUE » : écrit pour une cage à l’étage du héros, et jama
   const said = [];
   r.label = (text) => said.push(text);
   const cage = { kind: 'cage', x: 300, y: 150, w: 16, h: 16, on: false };
-  const show = () => { said.length = 0; r.prop(cage); return said.length > 0; };
+  const show = () => {
+    said.length = 0;
+    r.boxes = [];
+    r.placeTags([r.prop(cage)].filter(Boolean), [cage]);
+    return said.length > 0;
+  };
   // Elle entre dans l'image : le héros est au même étage, elle s'écrit.
   r.heroBox = { x: 20, y: 148, w: 12, h: 18 };
   assert.ok(show());
@@ -285,6 +290,45 @@ test('« GARDE À VUE » : écrit pour une cage à l’étage du héros, et jama
     r.heroBox = { x: 40, y, w: 12, h: 18 };
     assert.ok(show(), `héros à ${y} : toujours écrite`);
   }
+});
+
+test('une cage et un piquet côte à côte, sous le panneau lu : leurs étiquettes ne se recouvrent pas, ne disparaissent pas, ne sautent pas', () => {
+  const r = renderer();
+  r.heroBox = { x: 20, y: 148, w: 12, h: 18 };
+  const cage = { kind: 'cage', x: 150, y: 150, w: 16, h: 16, on: false };
+  const piquet = { kind: 'piquet', x: 166, y: 150, w: 16, h: 16, on: false };
+  const props = [cage, piquet];
+  const written = [];
+  const label = r.label.bind(r);
+  r.label = (text, x, y, opts) => { written.push({ text, box: r.textBox(text, x, y, opts.size, 0) }); return label(text, x, y, opts); };
+  const frame = (board = null) => {
+    written.length = 0;
+    r.boxes = board ? [board] : [];
+    r.placeTags([cage, piquet].map((p) => r.prop(p)).filter(Boolean), props);
+    return written.map((w) => ({ ...w }));
+  };
+  const apart = (list) => list.every((a, i) => list.slice(i + 1).every((b) => !overlap(a.box, b.box)));
+  const first = frame();
+  assert.deepEqual(first.map((w) => w.text).sort(), ['GARDE À VUE', 'PIQUET DE GRÈVE']);
+  assert.ok(apart(first), 'côte à côte, la seconde se pose juste à côté de la première');
+  assert.equal(first[0].box.y0, first[1].box.y0, 'sur la même ligne');
+  // Image après image, rien ne bouge.
+  for (let k = 0; k < 5; k++) assert.deepEqual(frame(), first);
+  // Le panneau lu arrive juste là où elles sont : elles s'écartent, toutes deux écrites, sans le recouvrir.
+  const board = { x0: 100, x1: 230, y0: first[0].box.y0 - 40, y1: first[0].box.y1 + 2 };
+  const under = frame(board);
+  assert.equal(under.length, 2);
+  assert.ok(apart(under) && under.every((w) => !overlap(w.box, board)));
+  // Il s'en va : elles restent où elles sont allées, sans revenir d'un saut.
+  assert.deepEqual(frame(), under);
+  // Le piquet écrit seul, puis la cage qui s'écrit à côté : le piquet ne bouge pas (leurs places sont celles du niveau).
+  r.propSpot = new WeakMap();
+  written.length = 0;
+  r.boxes = [];
+  r.placeTags([r.prop(piquet)].filter(Boolean), props);
+  const alone = written.find((w) => w.text === 'PIQUET DE GRÈVE');
+  const both = frame().find((w) => w.text === 'PIQUET DE GRÈVE');
+  assert.deepEqual(both, alone, 'le piquet ne bouge pas quand la cage s’écrit');
 });
 
 test('des unités identiques côte à côte n’ont qu’un « ! » ; une autre, plus loin ou différente, a le sien', () => {
