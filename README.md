@@ -32,7 +32,7 @@ Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les platea
 | ![Millevaches : la base sous le rond-point](docs/captures/millevaches-base.jpg) | ![Millevaches : la grange et sa cave](docs/captures/millevaches-grange.jpg) |
 | ![Millevaches : la mine](docs/captures/millevaches-mine.jpg) | ![Millevaches : le château d'eau](docs/captures/millevaches-chateau-d-eau.jpg) |
 | ![Millevaches : la méga-bassine](docs/captures/millevaches-bassine.jpg) | ![Millevaches : l'hélicoptère](docs/captures/millevaches-helicoptere.jpg) |
-| ![Le rond-point : le péage levé](docs/captures/rond-point-peage.jpg) | ![La raffinerie bloquée : sur les cuves](docs/captures/raffinerie-cuves.jpg) |
+| ![Le rond-point : le péage levé](docs/captures/rond-point-peage.jpg) | ![La raffinerie bloquée : la cuve du dépôt de carburant](docs/captures/raffinerie-cuves.jpg) |
 | ![Le siège de la chaîne d'info : la régie](docs/captures/chaine-info-regie.jpg) | ![Le soir du 49.3 : devant l'Assemblée](docs/captures/soir-du-49-3-assemblee.jpg) |
 | ![Une équipe télé filme la poubelle qui brûle](docs/captures/feu-de-poubelle.jpg) | ![PANIQUE TV en pleine hystérie](docs/captures/panique-bandeau.jpg) |
 | ![Le duplex de BFM-TV](docs/captures/duplex-bfm.jpg) | ![La fortune, à l'échelle](docs/captures/taxe-fortune.jpg) |
