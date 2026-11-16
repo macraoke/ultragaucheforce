@@ -5,7 +5,7 @@
 // Dans l'album, les cartes sont compactes et toutes de la même taille (`miniCard`) ; on en
 // touche une, elle s'ouvre en grand avec ses références (`openCard`, `collectionCard`).
 
-import { h, link, frenchDate, signature, sourceName, billions } from './dom.js';
+import { h, link, frenchDate, quoted, signature, sourceName, billions } from './dom.js';
 import { RARITIES } from '../content/rules.js';
 import { sprite, spriteElement } from './sprites.js';
 import { isFound } from './save.js';
@@ -124,10 +124,12 @@ function unitsOf(bundle, level) {
 
 /**
  * Où débloque-t-on cette carte ? L'indice affiché sous une silhouette, puis « Vu dans » sur la carte trouvée.
+ * Les niveaux viennent dans l'ordre de la campagne : le premier nommé est le premier qu'on croise.
+ * Un lieu se dit par son titre ; une circonstance, avec sa préposition (« dans la manif », « en taxant une fortune »).
  * Une liste vide voudrait dire qu'aucun chemin n'y mène : un test l'interdit.
  */
 export function whereToFind(bundle, kind, item) {
-  const levels = Object.values(bundle.niveaux);
+  const levels = levelOrder(bundle).map((id) => bundle.niveaux[id]);
   const titles = (keep) => levels.filter(keep).map((lv) => lv.titre);
   const inLegend = (lv) => Object.values(lv.legende).some((l) => l.id === item.id);
   const characters = ['heros', 'recrues', 'ennemis', 'boss'].flatMap((k) => Object.values(bundle[k] || {}));
@@ -136,14 +138,19 @@ export function whereToFind(bundle, kind, item) {
     case 'niveaux': return [item.titre];
     // Un personnage jouable peut ouvrir un niveau (au hasard la première fois) ou sortir de n'importe quelle garde à vue.
     case 'heros': return item.statut === 'jouable' ? ['dans une garde à vue'] : titles((lv) => lv.heros === item.id || lv.camarades.includes(item.id));
-    case 'boss': return titles((lv) => bossesOf(bundle, lv).includes(item));
+    case 'boss': {
+      // Tiré au hasard au bout de chaque niveau qui a un boss : aucun niveau n'est à nommer plus qu'un autre.
+      const fights = levels.filter((lv) => bossesOf(bundle, lv).length);
+      const mine = fights.filter((lv) => bossesOf(bundle, lv).includes(item));
+      return mine.length > 1 && mine.length === fights.length ? ['au bout de n’importe quel niveau'] : mine.map((lv) => lv.titre);
+    }
     case 'recrues': return titles(inLegend);
     case 'ennemis': return titles((lv) => unitsOf(bundle, lv).has(item.id));
     case 'drapeaux': return levels.some((lv) => lv.cortege) ? ['dans le cortège'] : [];
-    case 'manchettes': return ['PANIQUE TV'];
+    case 'manchettes': return ['sur PANIQUE TV'];
     case 'pancartes': return ['dans la manif']; // tirée au hasard quand des gens rejoignent le cortège
     case 'citations': {
-      if (item.categorie !== 'gauche') return ['PANIQUE TV'];
+      if (item.categorie !== 'gauche') return ['sur PANIQUE TV'];
       const quoting = [...characters, ...levels].filter((x) => x.citation === item.id).map(cardName);
       const saying = speakers.filter((x) => (x.arme?.mots || []).some((w) => citationOfWord(bundle, w) === item)).map(cardName);
       return [...quoting, ...saying];
@@ -158,6 +165,19 @@ export function whereToFind(bundle, kind, item) {
     }
     default: return [];
   }
+}
+
+/** Une circonstance commence par sa préposition : elle se lit d'un trait, sans deux-points. */
+const CIRCUMSTANCE = /^(dans|au|aux|en|à|sur) /;
+
+/**
+ * La ligne d'indice d'une carte. Cachée : « À découvrir dans la manif », « À découvrir : Le rond-point ».
+ * Trouvée (un personnage) : « Vu dans une garde à vue », « Vu dans : Le rond-point, La raffinerie bloquée ».
+ */
+export function hintLine(where, found) {
+  if (!where.length) return found ? '' : 'À découvrir';
+  if (CIRCUMSTANCE.test(where[0])) return `${found ? 'Vu' : 'À découvrir'} ${where[0]}`;
+  return found ? `Vu dans : ${where.join(', ')}` : `À découvrir : ${where[0]}`;
 }
 
 /** Une miniature de niveau : un pixel par case, de la couleur dominante de sa tuile. */
@@ -207,7 +227,7 @@ const shortName = (kind, item) => (kind === 'pancartes' || kind === 'manchettes'
 /** Sur une carte, la source tient en une ligne : le média, cliquable. */
 const shortSource = (item) => h('p', { className: 'source' }, 'Source : ', link(item.source.url, sourceName(item)));
 
-const quoteBlock = (quote) => h('blockquote', {}, `« ${quote.texte} »`, h('cite', {}, signature(quote)));
+const quoteBlock = (quote) => h('blockquote', {}, quoted(quote.texte), h('cite', {}, signature(quote)));
 
 /** Les lignes « d'où ça vient » : la citation exacte et la fiche sourcée attachées à la carte. */
 function references(bundle, item) {
@@ -237,7 +257,6 @@ function facts(kind, item) {
   }
   if (kind === 'boss') return [`Fortune : ${billions(item.fortune.montant)} d’euros`];
   if (kind === 'recrues') return [item.multiplie > 1 ? `Manif × ${item.multiplie}` : `+ ${item.apport} dans la manif`];
-  if (kind === 'niveaux') return [item.accroche];
   if (kind === 'drapeaux') return [item.description];
   return [];
 }
@@ -249,7 +268,7 @@ function textBody(kind, item) {
     return [where && h('p', { className: 'dapres' }, where), url && h('p', { className: 'source' }, link(url, 'source'))];
   }
   if (kind === 'citations') {
-    return [h('blockquote', {}, `« ${item.texte} »`),
+    return [h('blockquote', {}, quoted(item.texte)),
       h('p', { className: 'dapres' }, link(item.source.url, [item.fonction, frenchDate(item.date)].filter(Boolean).join(', '))),
       item.contexte && h('details', { className: 'portee' }, h('summary', {}, 'Le contexte'), h('p', {}, item.contexte))];
   }
@@ -274,15 +293,16 @@ export function collectionCard(bundle, card, found = true) {
   if (!found) {
     return h('article', { className: `carte ${kind} cachee` }, head, picture,
       h('h3', {}, '???'),
-      h('p', { className: 'indice' }, where.length ? `À découvrir : ${where[0]}` : 'À découvrir'));
+      h('p', { className: 'indice' }, hintLine(where, false)));
   }
   return h('article', { className: `carte ${kind}` }, head, art && picture,
-    h('h3', {}, kind === 'pancartes' || kind === 'manchettes' ? `« ${item.texte} »` : cardName(item)),
+    h('h3', {}, kind === 'pancartes' || kind === 'manchettes' ? quoted(item.texte) : cardName(item)),
     item.inspiration && h('p', { className: 'dapres' }, `d’après ${item.inspiration}`),
+    kind === 'niveaux' && item.accroche && h('p', { className: 'dapres' }, item.accroche), // le lieu, en une phrase, sous son nom
     item.origine && h('p', { className: 'origine' }, item.origine),
     art ? references(bundle, item) : textBody(kind, item),
     facts(kind, item).filter(Boolean).map((line) => h('p', { className: 'stats' }, line)),
-    where.length && ['heros', 'recrues', 'ennemis', 'boss'].includes(kind) ? h('p', { className: 'indice' }, `Vu dans : ${where.join(', ')}`) : null);
+    where.length && ['heros', 'recrues', 'ennemis', 'boss'].includes(kind) ? h('p', { className: 'indice' }, hintLine(where, true)) : null);
 }
 
 /**
@@ -303,21 +323,44 @@ export function miniCard(bundle, card, { found = true, fresh = false, onOpen = n
 /**
  * Ouvre une carte en grand, par-dessus l'écran, avec ses références.
  * Se ferme d'un toucher à côté, avec Échap ou avec « Fermer ». `actions` : boutons ajoutés au pied.
+ * Tant qu'elle est ouverte, elle garde le clavier : Échap la ferme où que soit le focus, Tab tourne dedans,
+ * et à la fermeture le focus revient sur ce qui l'a ouverte.
  */
 export function openCard(bundle, card, { found = true, actions = [] } = {}) {
-  const close = () => overlay.remove();
-  const overlay = h('div', {
-    className: 'carte-ouverte',
-    onclick: (e) => e.target === overlay && close(),
-    onkeydown: (e) => {
-      if (e.key !== 'Escape') return;
+  const opener = document.activeElement;
+  const close = () => {
+    document.removeEventListener('keydown', onKey, true);
+    overlay.remove();
+    if (opener?.isConnected && opener !== document.body) opener.focus({ preventScroll: true });
+  };
+  const onKey = (e) => {
+    if (!overlay.isConnected) return document.removeEventListener('keydown', onKey, true); // l'écran a changé sous elle
+    if (e.key === 'Escape') {
       e.stopPropagation(); // Échap ferme la carte, pas l'écran
-      close();
-    },
-  }, h('div', { className: 'cadre' },
-    collectionCard(bundle, card, found),
-    h('div', { className: 'pied' }, actions, h('button', { type: 'button', className: 'discret fermer', onclick: close }, 'Fermer'))));
+      e.preventDefault();
+      return close();
+    }
+    if (e.key !== 'Tab') return undefined;
+    const inside = [...overlay.querySelectorAll('a[href], button, summary')].filter((el) => el.offsetParent);
+    if (!inside.length) return undefined;
+    const at = inside.indexOf(document.activeElement);
+    e.preventDefault();
+    return inside[(at + (e.shiftKey ? -1 : 1) + inside.length) % inside.length].focus(); // une carte haute défile jusqu'au lien
+  };
+  const article = collectionCard(bundle, card, found);
+  const overlay = h('div', { className: 'carte-ouverte', onclick: (e) => e.target === overlay && close() },
+    h('div', { className: 'cadre' },
+      article,
+      h('div', { className: 'pied' }, actions, h('button', { type: 'button', className: 'discret fermer', onclick: close }, 'Fermer'))));
+  overlay.setAttribute('role', 'dialog');
+  overlay.setAttribute('aria-modal', 'true');
+  overlay.setAttribute('aria-label', found ? cardName(card.item) : 'Carte à découvrir');
+  document.addEventListener('keydown', onKey, true);
   (document.getElementById('ecran') || document.body).append(overlay);
+  // Trop haute pour l'écran, la carte le dit : une flèche en bas, jusqu'à ce qu'on ait tout lu.
+  const more = () => article.classList.toggle('defile', article.scrollTop + article.clientHeight < article.scrollHeight - 4);
+  article.addEventListener('scroll', more, { passive: true });
+  more();
   overlay.querySelector('.fermer').focus({ preventScroll: true });
   return overlay;
 }

@@ -3,7 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { loadContent } from '../tools/content.mjs';
-import { SHELVES, allCards, cardId, cardName, citationOfWord, whereToFind } from '../src/client/collection.js';
+import { SHELVES, allCards, cardId, cardName, citationOfWord, hintLine, levelOrder, whereToFind } from '../src/client/collection.js';
 
 const { bundle } = loadContent();
 const cards = allCards(bundle);
@@ -44,6 +44,31 @@ test('collection : chaque carte se débloque quelque part en jouant', () => {
   assert.deepEqual(hint('fiches', 'procuration'), ['à la fin de la campagne']);
   assert.deepEqual(hint('fiches', 'patrimoine-moitie'), ['en taxant une fortune']);
   assert.ok(hint('ennemis', 'gendarme-mobile').length >= 1, 'les renforts de l’hélicoptère comptent');
+});
+
+test('collection : les indices suivent l’ordre de la campagne ; un boss tiré au hasard se croise au bout de n’importe quel niveau', () => {
+  const order = levelOrder(bundle);
+  const crs = whereToFind(bundle, 'ennemis', bundle.ennemis.crs);
+  assert.deepEqual(crs, order.filter((id) => crs.includes(bundle.niveaux[id].titre)).map((id) => bundle.niveaux[id].titre), 'dans l’ordre des étapes');
+  for (const boss of Object.values(bundle.boss)) assert.deepEqual(whereToFind(bundle, 'boss', boss), ['au bout de n’importe quel niveau'], boss.id);
+  // Un niveau qui impose son boss : les autres boss ne s'y croisent plus ; on nomme alors les niveaux, dans l'ordre.
+  const [first, ...rest] = order.filter((id) => bundle.niveaux[id].carte.some((row) => row.includes('Y')));
+  const [one, other] = Object.keys(bundle.boss);
+  const imposed = { ...bundle, niveaux: { ...bundle.niveaux, [first]: { ...bundle.niveaux[first], boss: one } } };
+  assert.deepEqual(whereToFind(imposed, 'boss', bundle.boss[other]), rest.map((id) => bundle.niveaux[id].titre));
+  assert.deepEqual(whereToFind(imposed, 'boss', bundle.boss[one]), ['au bout de n’importe quel niveau']);
+});
+
+test('collection : la ligne d’indice se lit d’un trait, sans « dans » en double', () => {
+  assert.equal(hintLine(['dans une garde à vue'], false), 'À découvrir dans une garde à vue');
+  assert.equal(hintLine(['dans une garde à vue'], true), 'Vu dans une garde à vue');
+  assert.equal(hintLine(['au bout de n’importe quel niveau'], true), 'Vu au bout de n’importe quel niveau');
+  assert.equal(hintLine(['Le rond-point', 'La raffinerie bloquée'], false), 'À découvrir : Le rond-point');
+  assert.equal(hintLine(['Le rond-point', 'La raffinerie bloquée'], true), 'Vu dans : Le rond-point, La raffinerie bloquée');
+  assert.equal(hintLine([], false), 'À découvrir');
+  for (const c of cards) {
+    for (const found of [false, true]) assert.doesNotMatch(hintLine(whereToFind(bundle, c.kind, c.item), found), /dans : dans|: (dans|au|en|à|sur) /, `${c.kind}:${cardId(c.item)}`);
+  }
 });
 
 test('collection : un mot crié en jeu retrouve sa citation, par son mot-clé ou par ses propres mots', () => {
