@@ -36,11 +36,21 @@ let begin = null; // le carton d'ouverture attend : fonction qui lance vraiment 
 let bot = {};
 let won = []; // clés de ce qui a été débloqué depuis le début du niveau : la rangée de l'écran de fin
 // Le temps d'écran pas encore joué. Il repart d'un quart de pas, jamais de zéro : à 60 Hz, une image dure un pas,
-// et un reste nul laisserait le moindre écart d'horloge jouer tantôt zéro pas, tantôt deux (le décor saccade).
-// À un quart, il en reste loin, à 60 Hz comme à 30 ou 120.
+// et un reste nul laisserait le moindre écart d'horloge jouer tantôt zéro pas, tantôt deux (le décor saute).
 const PHASE = DT / 4;
 let acc = PHASE;
 let last = performance.now();
+
+/**
+ * Une image d'écran qui dure un demi-pas, un pas ou deux, à une milliseconde près (120, 60 ou 30 Hz, mais aussi 59,94 Hz,
+ * ou une horloge arrondie à la milliseconde), compte pour ce qu'elle doit durer. Sinon l'écart s'accumule dans le reste
+ * du pas, et toutes les quelques secondes une rafale d'images joue zéro pas puis deux. La partie suit alors l'écran :
+ * à 59,94 Hz, elle va moins vite d'un millième.
+ */
+function frameTime(dt) {
+  const k = Math.round(dt / (DT / 2));
+  return k >= 1 && k <= 4 && Math.abs(dt - (k * DT) / 2) < 0.001 ? (k * DT) / 2 : dt;
+}
 
 radio.onAsk = () => {
   save.options.musique = true;
@@ -338,7 +348,7 @@ function handle(events) {
 
 function frame(now) {
   requestAnimationFrame(frame);
-  const dt = Math.min(0.1, (now - last) / 1000);
+  const dt = frameTime(Math.min(0.1, (now - last) / 1000));
   last = now;
   if (mode !== 'playing') input.pollMenu();
   if (!game) return;
