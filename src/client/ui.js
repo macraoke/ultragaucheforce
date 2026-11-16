@@ -309,7 +309,7 @@ export class Screens {
       storeSave(this.save);
       this.go.restart(); // la partie repart avec ce héros, et ce carton se réaffiche
     };
-    // Échap ne lance pas le niveau : il ramène là d'où l'on vient, le plan, l'Atelier ou le menu.
+    // « ← Retour », comme Échap, ne lance pas le niveau : il ramène là d'où l'on vient, le plan, l'Atelier ou le menu.
     // Un changement de héros réaffiche ce carton : l'écran d'avant reste le même.
     const before = this.root.firstElementChild?.classList;
     if (!before?.contains('intro')) {
@@ -327,7 +327,8 @@ export class Screens {
       h('h2', {}, level.titre),
       level.accroche && h('p', { className: 'accroche' }, level.accroche),
       choose && heroes.length > 1 && this.heroRow(heroes, mine, hero, pick),
-      h('div', { className: 'depart' }, this.keys(), go)); // écran bas : les commandes à côté du bouton, pas au-dessus
+      // Écran bas : les commandes à côté des boutons, pas au-dessus. « C'est parti » reste le bouton principal.
+      h('div', { className: 'depart' }, this.keys(), h('div', { className: 'boutons' }, this.back(() => this.introBack()), go)));
     this.escape = this.introBack;
     this.fitHeroNames();
     // Une longue déclaration sur un écran bas : la manchette rapetisse jusqu'à ce que le carton tienne sans défiler.

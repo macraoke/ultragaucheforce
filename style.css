@@ -414,6 +414,8 @@ html.pivote body.tactile #toasts { right: calc(max(10px, env(safe-area-inset-bot
 .panneau .pied button.effacer { margin-left: auto; font-size: .8em; opacity: .75; } /* à l'écart, en bas des Options du menu */
 .pause .touches { margin: 0; }
 .intro .depart { display: flex; flex-direction: column; align-items: center; }
+/* « ← Retour » à gauche de « C'est parti », plus discret : le bouton principal reste celui qui lance le niveau. */
+.intro .boutons { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; }
 .panneau .onglets { display: flex; flex-wrap: wrap; gap: 8px; margin: .8em 0; }
 .panneau .contenu { font-size: .9rem; }
 
