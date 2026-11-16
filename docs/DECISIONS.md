@@ -91,7 +91,7 @@ L'échelle et l'exemple se tirent au hasard dans un dictionnaire de fiches sourc
 
 ## Les blessés annoncés, répartis comme en vrai
 
-L'écran de fin donne le nombre de blessés que la partie annonce côté forces de l'ordre, réparti comme les 1 233 CRS blessés en octobre 2026 dans le fichier interne de leur direction : blessés légers, arrêts de travail, où, acouphènes, blessés sans ambiguïté par un tiers parmi ceux dont l'origine est connue. Chaque part est arrondie vers le bas à deux chiffres : elle ne dit jamais plus que la source, et 3 blessés donnent « 2,8 blessés légers », pas « 2 » ni « 3 ». La fiche est dans « Et en vrai ? ».
+L'écran de fin donne le nombre de blessés que la partie annonce côté forces de l'ordre, réparti comme les 1 233 CRS blessés en octobre 2026 dans le fichier interne de leur direction : blessés légers, arrêts de travail, où, acouphènes, blessés sans ambiguïté par un tiers parmi ceux dont l'origine est connue. Chaque part est arrondie à l'entier le plus proche, sans décimale (Valentin, le 16 novembre 2026 : « dans le décompte des blessés, arrondi . pas de décimales . ») : 3 blessés donnent « 3 blessés légers, 2 blessures aux jambes ou aux pieds et 1 aux bras ou aux mains ». Une part arrondie à zéro ne s'écrit pas. Aucune part ne dépasse le total ; les parts se recoupent (un blessé léger peut être en arrêt de travail), leur somme n'est donc pas le total, ni dans la source ni à l'écran. La fiche est dans « Et en vrai ? ».
 
 ## Itération 3
 
