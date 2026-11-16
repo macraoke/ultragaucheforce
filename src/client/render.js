@@ -32,7 +32,8 @@ const SIGN_DOWN = 0.5; // … et une pancarte baissée attend une demi-seconde a
 const NEAR_HERO = 14; // un manifestant plus près que cela du héros passe en transparence
 const REC = '● REC'; // le cadre de la caméra l'affiche déjà : pas de bulle en double
 const SIGN_TURN = 6; // secondes d'un tour : les porteurs lèvent leur pancarte à tour de rôle…
-const SIGN_SHARE = 3; // … un tour sur trois chacun : un tiers des pancartes levées à la fois, toutes à leur tour
+const SIGN_FRESH = 3; // secondes pendant lesquelles une pancarte qui vient d'arriver reste levée, hors de son tour
+const SIGN_SHARE = 2; // … un tour sur deux chacun : la moitié des pancartes levées à la fois, toutes à leur tour
 const SLOGAN_GAP = 3; // secondes entre deux slogans de recrues : les autres recrues rejoignent sans crier
 const NEAR_PROP = { x: 10 * TILE, y: 6 * TILE }; // « GARDE À VUE », « PIQUET DE GRÈVE » : écrits quand le héros approche
 const GROUP = { x: 40, y: 24 }; // des unités identiques aussi proches font un groupe : un seul écriteau, une seule bulle, un seul « ! »
@@ -974,10 +975,13 @@ export class Renderer {
     cortege.forEach((m, i) => {
       if (m.kind !== 'pancarte' || !m.label) return;
       // À tour de rôle : chaque porteur a son tour un tour sur SIGN_SHARE, décalé de ses voisins. Une manif plus grande
-      // a plus de porteurs, donc plus de pancartes levées à la fois ; aucune n'est oubliée.
-      const turn = Math.floor(now / SIGN_TURN + k++ * 0.618) % SIGN_SHARE === 0;
+      // a plus de porteurs, donc plus de pancartes levées à la fois ; aucune n'est oubliée. Une pancarte qui vient
+      // d'arriver se lève dès qu'elle a la place (c'est la récompense du déblocage), le reste SIGN_FRESH secondes, puis rejoint la rotation.
       let held = this.held.get(m);
-      if (held?.label !== m.label) this.held.set(m, (held = { up: false, since: -Infinity, label: m.label }));
+      if (held?.label !== m.label) this.held.set(m, (held = { up: false, since: -Infinity, label: m.label, first: null }));
+      const slot = k++;
+      const fresh = held.first === null || now - held.first < SIGN_FRESH;
+      const turn = fresh || Math.floor(now / SIGN_TURN + slot * 0.618) % SIGN_SHARE === 0;
       const s = this.spot(m, i);
       if (!s?.shown || m.gassed > 0) {
         if (held.up) Object.assign(held, { up: false, since: now });
@@ -991,6 +995,7 @@ export class Renderer {
     const roomy = (box) => clear({ x0: box.x0 - 12, x1: box.x1 + 12, y0: box.y0 - 6, y1: box.y1 + 18 }, priority) && clear(box);
     const keep = (sign, ok) => {
       if (ok) {
+        sign.held.first ??= now; // sa première levée : son tour de nouvelle venue commence
         if (!sign.held.up) Object.assign(sign.held, { up: true, since: now });
         this.boxes.push(sign.box);
       } else if (sign.held.up) Object.assign(sign.held, { up: false, since: now });

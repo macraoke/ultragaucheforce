@@ -183,28 +183,53 @@ test('devant le héros, une pancarte se baisse tout de suite', () => {
   assert.ok(!r.raised.has(cortege[0]));
 });
 
-test('les porteurs lèvent leur pancarte à tour de rôle : un tiers à la fois, toutes à leur tour', () => {
+test('les porteurs lèvent leur pancarte à tour de rôle : une sur deux à la fois, toutes à leur tour', () => {
   const r = renderer();
   // Neuf porteurs bien espacés : rien ne les gêne, seul leur tour décide.
   const cortege = Array.from({ length: 27 }, (_, i) => ({
-    x: 20 + i * 14, y: 170, facing: 1, kind: ['pancarte', 'drapeau', 'fanfare'][i % 3], label: i % 3 === 0 ? 'ON LÂCHE RIEN' : '', gassed: 0, animTime: 0,
+    x: 20 + i * 14, y: 170 + (Math.floor(i / 3) % 2) * 40, facing: 1, kind: ['pancarte', 'drapeau', 'fanfare'][i % 3],
+    label: i % 3 === 0 ? 'ON LÂCHE RIEN' : '', gassed: 0, animTime: 0,
   }));
   r.viewW = 600;
   const carriers = cortege.filter((m) => m.kind === 'pancarte');
   const ever = new Set();
   let raised = 0;
-  const frames = 60 * 36;
-  for (let frame = 0; frame < frames; frame++) {
+  let counted = 0;
+  for (let frame = 0; frame < 60 * 42; frame++) {
     r.clock = frame / 60;
     r.boxes = [];
-    for (const m of carriers) m.y = 170 + (carriers.indexOf(m) % 2) * 40; // deux rangs : aucune ne cache l'autre
     r.raiseSigns(cortege);
+    if (r.clock < 6) continue; // les six premières secondes, toutes viennent d'arriver : toutes levées
+    counted++;
     raised += r.raised.size;
     for (const m of r.raised) ever.add(m);
   }
   assert.equal(ever.size, carriers.length, 'chaque pancarte a son tour');
-  const share = raised / frames / carriers.length;
-  assert.ok(share > 0.25 && share < 0.42, `levées ${(100 * share).toFixed(0)} % du temps`);
+  const share = raised / counted / carriers.length;
+  assert.ok(share > 0.4 && share < 0.6, `levées ${(100 * share).toFixed(0)} % du temps`);
+});
+
+test('une pancarte qui vient d’arriver se lève tout de suite, puis rejoint la rotation', () => {
+  const r = renderer();
+  const cortege = Array.from({ length: 12 }, (_, i) => ({
+    x: 20 + i * 30, y: 170 + (Math.floor(i / 3) % 2) * 40, facing: 1, kind: ['pancarte', 'drapeau', 'fanfare'][i % 3],
+    label: i % 3 === 0 ? `PANCARTE ${i}` : '', gassed: 0, animTime: 0,
+  }));
+  r.viewW = 600;
+  const carriers = cortege.filter((m) => m.kind === 'pancarte');
+  for (let frame = 0; frame < 60 * 20; frame++) {
+    r.clock = frame / 60;
+    r.boxes = [];
+    r.raiseSigns(cortege);
+  }
+  // À 20 s, chacune est dans la rotation : on donne une pancarte nouvelle à un porteur dont ce n'est pas le tour.
+  const resting = carriers.find((m) => !r.raised.has(m));
+  assert.ok(resting, 'un porteur au repos');
+  resting.label = 'ELLE VIENT D’ARRIVER';
+  r.clock += 1 / 60;
+  r.boxes = [];
+  r.raiseSigns(cortege);
+  assert.ok(r.raised.has(resting), 'levée tout de suite');
 });
 
 test('une recrue sur plusieurs, à quelques secondes d’écart, crie son slogan ; le gain s’affiche toujours', () => {
