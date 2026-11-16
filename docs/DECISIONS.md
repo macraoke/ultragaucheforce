@@ -42,6 +42,8 @@ Le prix : un format maison. Il tient en moins de cent lignes (`src/content/parse
 
 Le prix : pas de musique hors-ligne, et un lecteur tiers avec ses traceurs. Il n'est chargé que si la musique est activée.
 
+Le lecteur ne dit pas toujours qu'une piste se tait. Radio Manif vérifie que la lecture avance : sinon, elle passe à une autre piste. Quand le navigateur refuse de jouer sans geste du joueur, un bouton le montre et le prochain toucher relance la musique.
+
 ## Le but : une manif qui grossit
 
 On ne gagne pas en tirant plus, mais en arrivant plus nombreux.
