@@ -6,14 +6,21 @@ const KEY = 'ugf:sauvegarde'; // préfixé : le domaine peut être partagé avec
 const UNREAD = 'ugf:sauvegarde:illisible'; // une sauvegarde qu'on n'a pas su lire reste ici, telle quelle
 
 /** Le format de la sauvegarde. Il ne change qu'avec une fonction de passage dans `MIGRATIONS`. */
-export const VERSION = 1;
+export const VERSION = 2;
 
 /**
  * `MIGRATIONS[n - 1]` fait passer une sauvegarde de la version n à la version n + 1.
  * On n'en retire jamais : un joueur peut revenir après des mois. Chaque version garde une vraie
  * sauvegarde dans `tests/fixtures/sauvegardes/`, que les tests font remonter jusqu'à aujourd'hui.
  */
-const MIGRATIONS = [];
+const MIGRATIONS = [
+  // 1 → 2 : la question « Radio Manif ? » du premier lancement (`options.musiqueChoisie`). Qui avait mis la
+  // musique l'a choisie ; les autres n'y ont jamais été invités : la question leur est posée une fois.
+  (save) => {
+    if (shape(save.options) !== 'object') return save; // abîmées : upgrade() les met de côté et repart des options de départ
+    return { ...save, options: { ...save.options, musiqueChoisie: save.options.musique === true } };
+  },
+];
 
 const DEFAULTS = {
   termines: {}, // identifiant de niveau → vrai
@@ -21,7 +28,9 @@ const DEFAULTS = {
   decouvertes: [], // ce qui est débloqué dans la Collection : « rayon:identifiant ». Une clé inconnue reste : la fiche peut revenir
   vues: {}, // rayon de la Collection → nombre de découvertes lors de sa dernière visite (badge « Nouveau »)
   heros: '', // le héros de départ choisi ; vide : au hasard
-  options: { son: true, musique: false, sobre: false }, // la musique (lecteur SoundCloud) ne se lance que sur demande
+  // La musique (lecteur SoundCloud) ne se lance que sur demande ; `musiqueChoisie` : le joueur a répondu, d'une façon
+  // ou d'une autre (question du premier lancement, Options, bouton de Radio Manif), et on ne lui redemande plus.
+  options: { son: true, musique: false, sobre: false, musiqueChoisie: false },
   brouillon: '',
 };
 
@@ -47,6 +56,9 @@ export function upgrade(stored) {
   out.options = { ...DEFAULTS.options, ...out.options };
   return out;
 }
+
+/** Le menu demande « Radio Manif ? » : le joueur n'a jamais choisi, et la musique est coupée. */
+export const asksMusic = (save) => !save.options.musique && !save.options.musiqueChoisie;
 
 /** Écrite par une version plus récente du jeu : cette version-ci la lit, mais n'y écrit pas, pour ne rien abîmer. */
 export const isReadOnly = (save) => versionOf(save) > VERSION;

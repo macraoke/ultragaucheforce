@@ -4,7 +4,7 @@
 import { h, link, quoted, signature } from './dom.js';
 import { spriteElement } from './sprites.js';
 import { REPO, REFERENCES, ANALYTICS } from './config.js';
-import { storeSave, eraseProgress, isFound, isReadOnly } from './save.js';
+import { storeSave, eraseProgress, isFound, isReadOnly, asksMusic } from './save.js';
 import { SHELVES, VOTE_FICHES, allCards, collectionCount, isFresh, levelOrder, markSeen, openCard, progress, rarityCounts, shelfGrid, wonCards } from './collection.js';
 import { livesStack } from './lives.js';
 import { KEY_NAMES, CONTROLS, brief, mentions } from './input.js';
@@ -148,6 +148,10 @@ export class Screens {
 
   menu() {
     const heroes = Object.values(this.bundle.heros).filter((x) => x.statut === 'jouable');
+    // Premier lancement : « Radio Manif ? ». Rien de SoundCloud ne se charge avant la réponse.
+    // Échap (ou B) : non, pour cette fois ; la question revient au prochain lancement.
+    const asking = !this.musicLater && asksMusic(this.save) && Object.keys(this.bundle.musiques || {}).length > 0;
+    const yes = asking && this.button('▶ Oui', () => this.go.music(true));
     this.show('menu',
       h('div', { className: 'logo' }, h('span', {}, 'UltraGauche'), h('span', {}, 'Force')),
       h('p', { className: 'devise' }, 'Taxez les riches. Abattez la Citadelle.'),
@@ -161,8 +165,17 @@ export class Screens {
         this.button('Options', () => this.options()),
         this.button('À propos', () => this.about()),
         this.update && this.button('Mettre à jour', this.update)),
+      asking && h('div', { className: 'question-radio' },
+        h('b', {}, 'Radio Manif ?'), yes, this.button('Non', () => this.go.music(false), 'discret'),
+        h('small', {}, 'Musique par SoundCloud')),
       isReadOnly(this.save) && h('p', { className: 'mention' }, 'Cette sauvegarde vient d’une version plus récente du jeu. Mets le jeu à jour : d’ici là, rien n’est enregistré.'),
       h('p', { className: 'mention' }, MENTION, ' ', link(REPO, 'Open source.')));
+    if (!asking) return;
+    yes.focus({ preventScroll: true });
+    this.escape = () => {
+      this.musicLater = true;
+      this.menu();
+    };
   }
 
   nextLevel() {
@@ -297,6 +310,7 @@ export class Screens {
       const box = h('input', { type: 'checkbox', checked: this.save.options[key] });
       box.onchange = () => {
         this.save.options[key] = box.checked;
+        if (key === 'musique') this.save.options.musiqueChoisie = true;
         storeSave(this.save);
         this.go.options();
       };

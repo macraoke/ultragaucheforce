@@ -698,6 +698,18 @@ html.bas .atelier .liens a.bouton { padding: .42em .6em; }
 .atelier .etat .sauve.rate { opacity: 1; padding: .3em .5em; background: var(--rouge-sombre); color: var(--blanc); font-weight: 700; }
 body.tactile .atelier input[type='text'], body.tactile .atelier select, body.tactile .atelier textarea { font-size: 16px; }
 
+/* Premier lancement : « Radio Manif ? », à la place du panneau de la radio, tant que le joueur n'a pas répondu. */
+.menu .question-radio { position: fixed; right: max(10px, env(safe-area-inset-right)); bottom: max(10px, env(safe-area-inset-bottom)); width: min(320px, calc(100vw - 20px)); display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; background: var(--nuit); border: 3px solid var(--blanc); box-shadow: 4px 4px 0 var(--rouge); padding: 8px 10px; text-align: left; }
+.question-radio b { flex: 1; font: 900 1rem/1 var(--titre); text-transform: uppercase; letter-spacing: .05em; color: var(--or); white-space: nowrap; }
+.question-radio button { font-size: .85rem; padding: .45em .8em; }
+.question-radio small { flex-basis: 100%; font-size: .68rem; opacity: .85; }
+body:has(#ecran .question-radio) #radio { display: none; }
+html.bas .menu .question-radio { width: 240px; gap: 4px 6px; padding: 5px 7px; border-width: 2px; box-shadow: 3px 3px 0 var(--rouge); }
+html.bas .question-radio b { font-size: .85rem; }
+html.bas .question-radio button { font-size: .75rem; padding: .4em .65em; }
+html.bas .question-radio small { font-size: .62rem; }
+html.bas.pivote .menu .question-radio { right: max(10px, env(safe-area-inset-bottom)); bottom: max(10px, env(safe-area-inset-left)); }
+
 /* Radio Manif */
 #radio { position: fixed; right: max(10px, env(safe-area-inset-right)); bottom: max(10px, env(safe-area-inset-bottom)); z-index: 30; width: min(320px, calc(100vw - 20px)); background: var(--nuit); border: 3px solid var(--blanc); box-shadow: 4px 4px 0 var(--rouge); padding: 6px 8px; font-size: .72rem; }
 #radio[hidden] { display: none; }

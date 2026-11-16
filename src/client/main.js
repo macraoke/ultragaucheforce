@@ -40,9 +40,19 @@ let last = performance.now();
 
 radio.onAsk = () => {
   save.options.musique = true;
+  save.options.musiqueChoisie = true;
   storeSave(save);
   applyOptions();
 };
+
+/** La réponse à « Radio Manif ? » : retenue. Le toucher de « Oui » est le geste qui autorise la lecture. */
+function answerMusic(yes) {
+  save.options.musique = yes;
+  save.options.musiqueChoisie = true;
+  storeSave(save);
+  applyOptions();
+  screens.menu();
+}
 
 function applyOptions() {
   audio.enabled = save.options.son;
@@ -67,6 +77,7 @@ const screens = new Screens(screenRoot, {
     edit: () => backToEdit(),
     testing: () => Boolean(custom),
     options: () => applyOptions(),
+    music: (yes) => answerMusic(yes),
     learn: (ids) => ids.forEach((id) => collect('fiches', id, true)),
     back: () => (mode === 'paused' ? screens.pause() : screens.menu()),
     playing: () => mode === 'paused',
