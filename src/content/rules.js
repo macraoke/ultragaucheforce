@@ -6,6 +6,7 @@
 
 import { Fiche, parseLines } from './parse.js';
 import { WEAPONS, SPECIALS, MOVES, REACTIONS, ENDINGS, ENEMY_GROUPS, BOSS_ATTACKS } from '../sim/behaviors.js';
+import { RARITIES } from './rarities.js';
 
 export const TILE = 16;
 
@@ -19,18 +20,11 @@ export const MARKERS = {
   N: 'nasse (les lignes se referment quand le héros passe ici)',
 };
 
-/** Les raretés d'une pancarte ou d'un bandeau, de la plus courante à la plus rare. Leurs noms sont à part, pour la Collection. */
-export { RARITIES } from './rarities.js';
-const RARITY_STEPS = [55, 83, 96]; // sur cent lignes : 55 communes, 28 rares, 13 épiques, 4 légendaires
-
-/** La rareté d'une ligne se tire de son texte : personne ne la règle, et elle est la même pour tout le monde. */
-export function rarityOf(text) {
-  let h = 2166136261;
-  for (const c of text) h = Math.imul(h ^ c.codePointAt(0), 16777619);
-  h = Math.imul(h ^ (h >>> 15), 2246822519);
-  const roll = ((h ^ (h >>> 13)) >>> 0) % 100;
-  return RARITY_STEPS.filter((step) => roll >= step).length;
-}
+/**
+ * Les raretés d'une pancarte ou d'un bandeau, de la plus courante à la plus rare. Leurs noms sont à part, pour la Collection.
+ * Elle s'écrit à la main au bout de la ligne, « | rareté: épique » ; sans ce champ, la ligne est commune.
+ */
+export { RARITIES };
 
 export const THEMES = ['richesses', 'droits', 'ordre', 'democratie', 'programme', 'luttes'];
 export const NATURES = ['officielle', 'presse', 'associative', 'militante', 'createur'];
@@ -546,24 +540,32 @@ export function buildContent(files) {
     const report = reporter(file.path);
     if (LINE_FOLDERS.includes(dir)) {
       for (const { text, line } of parseLines(file.text)) {
-        // « TEXTE | où et quand — adresse », puis au besoin « | était: l'ancien texte ».
+        // « TEXTE | où et quand — adresse », puis au besoin « | était: l'ancien texte » et « | rareté: rare ».
         const [texte, ...rest] = text.split('|').map((s) => s.trim());
-        const at = rest.findIndex((s) => /^était\s*:/.test(s));
-        const was = at < 0 ? undefined : rest.splice(at, 1)[0].replace(/^était\s*:\s*/, '');
+        const field = (name) => {
+          const key = new RegExp(`^${name}\\s*:\\s*`);
+          const at = rest.findIndex((s) => key.test(s));
+          return at < 0 ? undefined : rest.splice(at, 1)[0].replace(key, '');
+        };
+        const was = field('était');
+        const rank = field('rareté');
         const credit = rest.shift() ?? '';
-        if (rest.length || was === '') report(line, 'Une ligne s’écrit « TEXTE | où et quand — adresse », puis au besoin « | était: l’ancien texte ». Il y a une barre « | » de trop, ou rien après « était: ».');
+        if (rest.length || was === '') report(line, 'Une ligne s’écrit « TEXTE | où et quand — adresse », puis au besoin « | était: l’ancien texte » et « | rareté: rare ». Il y a une barre « | » de trop, ou rien après « était: ».');
+        // Choisie à la main ; sans le champ, la ligne est commune.
+        const rarete = rank === undefined ? 0 : RARITIES.indexOf(rank);
+        if (rarete < 0) report(line, `Rareté inconnue « ${rank} » : écris « rareté: » suivi de ${RARITIES.map((r) => `« ${r} »`).join(', ')}.`);
         const address = credit.split(' — ')[1]; // crédit : « où et quand — adresse de la source »
         if (address !== undefined && !/^https:\/\/\S+$/.test(address)) {
           report(line, 'Après « — », il faut l’adresse de la source : elle commence par https://');
         }
         // Un texte corrigé garde son identifiant : celui de sa première écriture, noté « était: … ».
-        // Le déblocage des joueurs et la rareté le suivent. Deux lignes ne partagent jamais un identifiant.
+        // Le déblocage des joueurs le suit ; la rareté reste sur la ligne. Deux lignes ne partagent jamais un identifiant.
         // Ni son identifiant ni son texte : le jeu retrouve une pancarte par ce qui est écrit dessus.
         const id = was || texte;
         const twin = lineIds[dir].get(id) || lineIds[dir].get(texte);
         if (twin) report(line, `Cette ligne existe déjà (${twin.file}, ligne ${twin.line}) : même texte, ou un « était: » qui reprend celui d’une autre.`);
         else for (const name of [id, texte]) lineIds[dir].set(name, { file: file.path, line });
-        bundle[dir].push({ id, texte, credit, rarete: rarityOf(id) });
+        bundle[dir].push({ id, texte, credit, rarete: Math.max(0, rarete) });
       }
       continue;
     }

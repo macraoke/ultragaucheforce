@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
 import { upgrade, VERSION, isFound, isReadOnly, storeSave, loadSave, discover, eraseProgress } from '../src/client/save.js';
 import { loadContent } from '../tools/content.mjs';
-import { allCards, cardKey } from '../src/client/collection.js';
+import { allCards, cardKey, rarityCounts } from '../src/client/collection.js';
 
 const DIR = new URL('./fixtures/sauvegardes/', import.meta.url);
 const old = Object.fromEntries(readdirSync(DIR).map((f) => [f.replace('.json', ''), JSON.parse(readFileSync(new URL(f, DIR), 'utf8'))]));
@@ -27,6 +27,25 @@ test('une sauvegarde ancienne remonte à la version d’aujourd’hui sans rien 
     assert.deepEqual(lost, [], `${name} : ces déblocages ne mènent plus à aucune carte. Texte corrigé ? Ajoute « | était: l’ancien texte » au bout de la ligne`);
     // `musiqueChoisie` (version 2) : qui avait mis la musique l'a choisie ; les autres auront la question une fois.
     assert.deepEqual(save.options, { son: true, musique: false, sobre: false, musiqueChoisie: stored.options?.musique === true, ...stored.options }, name);
+  }
+});
+
+test('raretés écrites à la main : une vraie sauvegarde v1 ou v2 garde toutes ses pancartes et ses bandeaux', () => {
+  const { bundle } = loadContent();
+  for (const [name, stored] of Object.entries(old)) {
+    const save = upgrade(structuredClone(stored));
+    for (const [kind, shelf] of [['pancartes', 'pancartes'], ['manchettes', 'tele']]) {
+      const mine = stored.decouvertes.filter((k) => k.startsWith(`${kind}:`));
+      assert.ok(mine.length > 0, `${name} : la sauvegarde d’essai a des ${kind}`);
+      for (const k of mine) {
+        const item = bundle[kind].find((p) => `${kind}:${p.id}` === k);
+        assert.ok(item, `${name} : « ${k} » ne mène plus à aucune ligne`);
+        assert.ok(isFound(save, kind, item.id), `${name} : « ${k} » n’est plus débloquée`);
+      }
+      // Les compteurs par rareté de la Collection retrouvent chacune, sous sa nouvelle rareté.
+      const counts = rarityCounts(bundle, save, shelf);
+      assert.equal(counts.reduce((n, r) => n + r.found, 0), mine.length, `${name} : ${kind} comptées par rareté`);
+    }
   }
 });
 

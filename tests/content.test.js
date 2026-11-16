@@ -5,7 +5,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
 import { readContentFiles, loadContent } from '../tools/content.mjs';
-import { buildContent, checkLevel, formatError, rarityOf, RARITIES } from '../src/content/rules.js';
+import { buildContent, checkLevel, formatError, RARITIES } from '../src/content/rules.js';
 import { Fiche, parseLines } from '../src/content/parse.js';
 
 const real = readContentFiles();
@@ -187,12 +187,57 @@ test('carte de collection : « fiche » se répète, et chaque référence doit 
   expectError(errorsOf('content/niveaux/essai.txt', opening), { message: /« citation-fantome » n'existe pas dans content\/citations\// });
 });
 
-test('rareté : tirée du texte, toujours la même, et les quatre existent dans le vrai contenu', () => {
+test('rareté : écrite au bout de la ligne, et les quatre existent dans le vrai contenu', () => {
   const { bundle } = loadContent();
-  assert.equal(rarityOf('JEUNESSE EN FEU'), rarityOf('JEUNESSE EN FEU'));
   const counts = RARITIES.map((_, r) => bundle.pancartes.filter((p) => p.rarete === r).length);
   assert.ok(counts.every((n) => n > 0), `une rareté est vide : ${counts}`);
   assert.ok(counts[0] > counts[1] && counts[1] > counts[2] && counts[2] > counts[3], `les plus rares sont les moins nombreuses : ${counts}`);
+  assert.equal(bundle.pancartes.find((p) => p.texte === 'COMBIEN DE 49-3 FONT 1789 ?').rarete, RARITIES.indexOf('légendaire'));
+});
+
+test('rareté : « | rareté: … » se lit, une ligne sans le champ est commune', () => {
+  const text = [
+    'UNE LÉGENDAIRE | vue à Paris, mars 2023 — https://exemple.org/page | rareté: légendaire',
+    'UNE ÉPIQUE | rareté: épique',
+    'UNE RARE|vue à Lyon|rareté:rare',
+    'UNE COMMUNE ÉCRITE | vue à Caen | rareté: commune',
+    'UNE SANS CHAMP | vue à Caen',
+  ].join('\n');
+  const { bundle, errors } = buildContent(withFile('content/pancartes/essai.txt', text));
+  assert.deepEqual(errors.map(formatError), []);
+  assert.deepEqual(bundle.pancartes.slice(-5).map((p) => [p.texte, p.credit, RARITIES[p.rarete]]), [
+    ['UNE LÉGENDAIRE', 'vue à Paris, mars 2023 — https://exemple.org/page', 'légendaire'],
+    ['UNE ÉPIQUE', '', 'épique'],
+    ['UNE RARE', 'vue à Lyon', 'rare'],
+    ['UNE COMMUNE ÉCRITE', 'vue à Caen', 'commune'],
+    ['UNE SANS CHAMP', 'vue à Caen', 'commune'],
+  ]);
+  const banners = buildContent(withFile('content/manchettes/essai.txt', 'Un bandeau ? | Chaîne, 1er janv. 2023 | rareté: épique\nUn autre\n')).bundle.manchettes;
+  assert.deepEqual(banners.slice(-2).map((b) => RARITIES[b.rarete]), ['épique', 'commune'], 'les bandeaux aussi');
+});
+
+test('rareté : une valeur inconnue est une erreur en français, avec le fichier et la ligne', () => {
+  for (const wrong of ['Légendaire', 'mythique', 'legendaire', '']) {
+    const errors = errorsOf('content/pancartes/essai.txt', `# essai\nUNE PANCARTE | vue à Paris | rareté: ${wrong}\n`);
+    const found = expectError(errors, { line: 2, message: /Rareté inconnue/ });
+    assert.equal(found.file, 'content/pancartes/essai.txt');
+    assert.match(found.message, /« commune », « rare », « épique », « légendaire »/);
+  }
+  expectError(errorsOf('content/manchettes/essai.txt', 'Un bandeau | Chaîne | rareté: rarissime\n'), { line: 1, message: /Rareté inconnue « rarissime »/ });
+  expectError(errorsOf('content/pancartes/essai.txt', 'UNE PANCARTE | vue à Paris | rareté: rare | rareté: épique\n'), { line: 1, message: /de trop/ });
+});
+
+test('rareté : l’identifiant ne change pas, la sauvegarde retrouve la même pancarte', () => {
+  const plain = buildContent(withFile('content/pancartes/essai.txt', 'TEXTE D’ESSAI | vue à Paris\n')).bundle.pancartes.at(-1);
+  const ranked = buildContent(withFile('content/pancartes/essai.txt', 'TEXTE D’ESSAI | vue à Paris | rareté: épique\n')).bundle.pancartes.at(-1);
+  assert.equal(plain.id, 'TEXTE D’ESSAI');
+  assert.equal(ranked.id, plain.id, 'le champ ne touche pas à l’identifiant');
+  assert.equal(ranked.credit, plain.credit);
+  // corrigée et rangée : l'identifiant reste l'ancien texte, dans n'importe quel ordre
+  for (const tail of ['| était: TEXTE D’AVANT | rareté: rare', '| rareté: rare | était: TEXTE D’AVANT']) {
+    const p = buildContent(withFile('content/pancartes/essai.txt', `TEXTE CORRIGÉ | vue à Paris ${tail}\n`)).bundle.pancartes.at(-1);
+    assert.deepEqual(p, { id: 'TEXTE D’AVANT', texte: 'TEXTE CORRIGÉ', credit: 'vue à Paris', rarete: RARITIES.indexOf('rare') });
+  }
 });
 
 test('pancartes et bandeaux : le crédit suit le texte, après « | »', () => {
@@ -200,19 +245,19 @@ test('pancartes et bandeaux : le crédit suit le texte, après « | »', () => {
   const { bundle, errors } = buildContent(files);
   assert.deepEqual(errors.map(formatError), []);
   assert.deepEqual(bundle.manchettes.slice(-2), [
-    { id: 'Un bandeau', texte: 'Un bandeau', credit: 'Chaîne, 1er janv. 2023 — https://exemple.org/page', rarete: rarityOf('Un bandeau') },
-    { id: 'Un autre', texte: 'Un autre', credit: '', rarete: rarityOf('Un autre') },
+    { id: 'Un bandeau', texte: 'Un bandeau', credit: 'Chaîne, 1er janv. 2023 — https://exemple.org/page', rarete: 0 },
+    { id: 'Un autre', texte: 'Un autre', credit: '', rarete: 0 },
   ]);
   assert.ok(bundle.pancartes.every((p) => typeof p.texte === 'string' && typeof p.credit === 'string'));
   expectError(errorsOf('content/pancartes/essai.txt', 'UNE PANCARTE | vue à Paris — javascript:alert(1)\n'), { line: 1, message: /commence par https:\/\// });
 });
 
 test('une pancarte corrigée garde son identifiant et sa rareté : « était: »', () => {
-  const line = 'ON TE MAI 68 | vue à Paris, mars 2023 — https://exemple.org/page | était: ON TE MAI 86\n';
+  const line = 'ON TE MAI 68 | vue à Paris, mars 2023 — https://exemple.org/page | était: ON TE MAI 86 | rareté: légendaire\n';
   const { bundle, errors } = buildContent(withFile('content/pancartes/essai.txt', line));
   assert.deepEqual(errors.map(formatError), []);
   assert.deepEqual(bundle.pancartes.at(-1), {
-    id: 'ON TE MAI 86', texte: 'ON TE MAI 68', credit: 'vue à Paris, mars 2023 — https://exemple.org/page', rarete: rarityOf('ON TE MAI 86'),
+    id: 'ON TE MAI 86', texte: 'ON TE MAI 68', credit: 'vue à Paris, mars 2023 — https://exemple.org/page', rarete: RARITIES.indexOf('légendaire'),
   });
   expectError(errorsOf('content/pancartes/essai.txt', 'UNE PANCARTE | vue à Paris | autre chose\n'), { line: 1, message: /était:/ });
   expectError(errorsOf('content/pancartes/essai.txt', 'UNE PANCARTE | vue à Paris | était: AVANT | encore\n'), { line: 1, message: /de trop/ });
@@ -220,7 +265,7 @@ test('une pancarte corrigée garde son identifiant et sa rareté : « était: »
   // sans crédit : « était: » juste après le texte
   const bare = buildContent(withFile('content/pancartes/essai.txt', 'TEXTE CORRIGÉ SANS CRÉDIT | était: TEXTE D’AVANT SANS CRÉDIT\n'));
   assert.deepEqual(bare.errors.map(formatError), []);
-  assert.deepEqual(bare.bundle.pancartes.at(-1), { id: 'TEXTE D’AVANT SANS CRÉDIT', texte: 'TEXTE CORRIGÉ SANS CRÉDIT', credit: '', rarete: rarityOf('TEXTE D’AVANT SANS CRÉDIT') });
+  assert.deepEqual(bare.bundle.pancartes.at(-1), { id: 'TEXTE D’AVANT SANS CRÉDIT', texte: 'TEXTE CORRIGÉ SANS CRÉDIT', credit: '', rarete: 0 });
 });
 
 test('deux lignes ne partagent pas un identifiant : même texte, ou « était: » déjà pris', () => {
