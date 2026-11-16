@@ -1,0 +1,9 @@
+titre: Le premier samedi
+theme: ordre
+texte: Le 17 novembre 2018, premier samedi des gilets jaunes : « 287 710 personnes comptabilisées sur 2 034 sites », selon le ministre de l'Intérieur, qui a revu le chiffre à la hausse le dimanche matin.
+portee: Chiffre du ministère, rapporté par l'AFP et repris par Le Temps. Le même article compte plus de 400 blessés dont 14 graves, et une femme morte renversée par une automobiliste sur un barrage en Savoie. Les manifestants ont bloqué des autoroutes, des ronds-points, des hypermarchés, et ouvert des péages.
+periode: 17 et 18 novembre 2018
+source.titre: Le Temps (AFP) — « Gilets jaunes » : plus de 287 000 manifestants contre la hausse des taxes sur le carburant
+source.url: https://www.letemps.ch/monde/europe/gilets-jaunes-plus-287-000-manifestants-contre-hausse-taxes-carburant
+source.nature: presse
+verifie: 2026-11-16
