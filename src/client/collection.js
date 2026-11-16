@@ -10,13 +10,16 @@ import { RARITIES } from '../content/rules.js';
 import { sprite, spriteElement } from './sprites.js';
 import { isFound } from './save.js';
 
-/** Les rayons de l'album, dans l'ordre d'affichage. `keep` trie les fiches entre deux rayons. */
+/**
+ * Les rayons de l'album, dans l'ordre d'affichage : onglets, clavier, manette, numéros des cartes.
+ * Les pancartes viennent juste après les camarades. `keep` trie les fiches entre deux rayons.
+ */
 export const SHELVES = [
   { id: 'camarades', titre: 'Camarades', kinds: ['heros', 'recrues'] },
+  { id: 'pancartes', titre: 'Pancartes', kinds: ['pancartes'] },
   { id: 'en-face', titre: 'En face', kinds: ['ennemis', 'boss'] },
   { id: 'lieux', titre: 'Lieux', kinds: ['niveaux'] },
   { id: 'paroles', titre: 'Paroles', kinds: ['citations'] },
-  { id: 'pancartes', titre: 'Pancartes', kinds: ['pancartes'] },
   { id: 'tele', titre: 'Vu à la télé', kinds: ['manchettes'] },
   { id: 'faits', titre: 'Faits', kinds: ['fiches'], keep: (f) => f.theme !== 'programme' },
   { id: 'propositions', titre: 'Propositions', kinds: ['fiches'], keep: (f) => f.theme === 'programme' },

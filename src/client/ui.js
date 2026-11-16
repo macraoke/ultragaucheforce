@@ -184,18 +184,44 @@ export class Screens {
         if (shelf.id === tab) shown = button;
         return button;
       })),
-      h('div', { className: 'raretes' }, rarityCounts(bundle, save, tab).reverse().map((r) => Object.assign(this.button(
-        [`${r.name}s `, h('small', {}, `${r.found}/${r.total}`)],
-        () => this.collection(tab, { rarity: rarity === r.rarity ? null : r.rarity, keep: r.rarity, back }), `rarete-${r.rarity}${rarity === r.rarity ? '' : ' discret'}`),
-      { ariaPressed: String(rarity === r.rarity) }))),
-      h('div', { className: 'contenu album' }, shelfGrid(bundle, tab, save, actionsFor, rarity)),
-      h('div', { className: 'pied' }, this.back(leave)));
+      // « Retour » ouvre la rangée des filtres : elle garde sa hauteur sur les rayons sans rareté, la grille ne saute pas.
+      h('div', { className: 'barre' }, this.back(leave),
+        h('div', { className: 'raretes' }, rarityCounts(bundle, save, tab).reverse().map((r) => Object.assign(this.button(
+          [`${r.name}s `, h('small', {}, `${r.found}/${r.total}`)],
+          () => this.collection(tab, { rarity: rarity === r.rarity ? null : r.rarity, keep: r.rarity, back }), `rarete-${r.rarity}${rarity === r.rarity ? '' : ' discret'}`),
+        { ariaPressed: String(rarity === r.rarity) })))),
+      h('div', { className: 'contenu album' }, shelfGrid(bundle, tab, save, actionsFor, rarity)));
     this.escape = leave;
+    this.fitShelf();
     // Le clavier reste où il était : sur le filtre qu'on vient de toucher, sinon sur le rayon ouvert.
     const keyboard = keep === null ? shown : this.root.querySelector(`.raretes .rarete-${keep}`);
     keyboard?.focus({ preventScroll: true });
     markSeen(save, tab); // affichées avec leur badge « Nouveau » cette fois-ci, plus la prochaine
     storeSave(save);
+  }
+
+  /**
+   * Une rangée entière de cartes doit rester en vue sous les rayons. Sur un écran trop bas pour cela (téléphone en
+   * paysage, barre du navigateur visible), le titre se replie ; plus bas encore, tout le panneau défile et les rayons
+   * restent collés en haut. La mesure ne dépend pas du rayon ouvert : d'un rayon à l'autre, rien ne bouge.
+   * Refaite quand la fenêtre change de taille.
+   */
+  fitShelf() {
+    const panel = this.root.querySelector('.panneau.biblio');
+    if (!panel) return;
+    panel.classList.remove('serre', 'tout-defile');
+    panel.style.scrollPaddingTop = '';
+    const grid = panel.querySelector('.contenu');
+    // La hauteur d'une carte : mesurée, gardée pour un filtre de rareté sans aucune carte (128 : `button.carte-mini`).
+    this.cardHeight = grid.querySelector('.carte-mini')?.offsetHeight || this.cardHeight || 128;
+    const fits = () => grid.clientHeight >= this.cardHeight + parseFloat(getComputedStyle(grid).paddingTop);
+    if (fits()) return;
+    panel.classList.add('serre');
+    if (fits()) return;
+    panel.classList.replace('serre', 'tout-defile');
+    // Une carte atteinte au clavier ou à la manette ne passe pas sous les rayons collés.
+    const tabs = panel.querySelector('.onglets');
+    panel.style.scrollPaddingTop = `${tabs.offsetHeight + 8}px`;
   }
 
   /** Lance le prochain niveau avec ce héros au départ. */
@@ -309,7 +335,7 @@ export class Screens {
       storeSave(this.save);
       this.go.restart(); // la partie repart avec ce héros, et ce carton se réaffiche
     };
-    // Échap ne lance pas le niveau : il ramène là d'où l'on vient, le plan, l'Atelier ou le menu.
+    // « ← Retour », comme Échap, ne lance pas le niveau : il ramène là d'où l'on vient, le plan, l'Atelier ou le menu.
     // Un changement de héros réaffiche ce carton : l'écran d'avant reste le même.
     const before = this.root.firstElementChild?.classList;
     if (!before?.contains('intro')) {
@@ -327,7 +353,8 @@ export class Screens {
       h('h2', {}, level.titre),
       level.accroche && h('p', { className: 'accroche' }, level.accroche),
       choose && heroes.length > 1 && this.heroRow(heroes, mine, hero, pick),
-      h('div', { className: 'depart' }, this.keys(), go)); // écran bas : les commandes à côté du bouton, pas au-dessus
+      // Écran bas : les commandes à côté des boutons, pas au-dessus. « C'est parti » reste le bouton principal.
+      h('div', { className: 'depart' }, this.keys(), h('div', { className: 'boutons' }, this.back(() => this.introBack()), go)));
     this.escape = this.introBack;
     this.fitHeroNames();
     // Une longue déclaration sur un écran bas : la manchette rapetisse jusqu'à ce que le carton tienne sans défiler.

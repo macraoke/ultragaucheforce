@@ -39,7 +39,7 @@ Déposer un fichier suffit : aucune liste à tenir à jour.
 
 ## La Collection
 
-Tout ce qu'on dépose se débloque quand le joueur le croise dans le jeu, et se retrouve dans la Collection. Neuf rayons : Camarades, En face, Lieux, Paroles, Pancartes, Vu à la télé, Faits, Propositions, Luttes.
+Tout ce qu'on dépose se débloque quand le joueur le croise dans le jeu, et se retrouve dans la Collection. Neuf rayons : Camarades, Pancartes, En face, Lieux, Paroles, Vu à la télé, Faits, Propositions, Luttes.
 
 Sur la carte d'un personnage ou d'un lieu, trois clés font le texte :
 

@@ -349,6 +349,7 @@ function layout() {
   renderer.signTop = thumbs ? 30 : Math.max(30, Math.ceil((140 * (window.devicePixelRatio || 1)) / renderer.scale));
   hud.row = 0; // à remesurer
   input.refreshTouch();
+  screens.fitShelf(); // la Collection ouverte : une rangée de cartes tient-elle encore sous ses rayons ?
 }
 addEventListener('resize', layout);
 document.addEventListener('visibilitychange', () => {

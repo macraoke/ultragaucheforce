@@ -414,6 +414,11 @@ html.pivote body.tactile #toasts { right: calc(max(10px, env(safe-area-inset-bot
 .panneau .pied button.effacer { margin-left: auto; font-size: .8em; opacity: .75; } /* à l'écart, en bas des Options du menu */
 .pause .touches { margin: 0; }
 .intro .depart { display: flex; flex-direction: column; align-items: center; }
+/*
+ * « ← Retour » à gauche de « C'est parti », plus discret : le bouton principal reste celui qui lance le niveau.
+ * Les deux boutons restent sur une ligne ; sur un écran bas, ce sont les commandes, à côté, qui se resserrent.
+ */
+.intro .boutons { display: flex; flex: none; justify-content: center; align-items: center; gap: 10px; }
 .panneau .onglets { display: flex; flex-wrap: wrap; gap: 8px; margin: .8em 0; }
 .panneau .contenu { font-size: .9rem; }
 
@@ -509,7 +514,10 @@ html.bas .pause h2 { margin: 0; font-size: 1.4rem; }
 html.bas .pause button { padding: .5em .6em; }
 html.bas .pause button.gros { font-size: 1.15rem; }
 html.bas .intro .depart { flex-direction: row; justify-content: center; gap: 14px; margin-top: .3em; }
-html.bas .intro .depart .touches { justify-content: flex-start; max-width: 25em; margin: 0; font-size: .72rem; line-height: 1.5; text-align: left; }
+html.bas .intro .depart .touches { justify-content: flex-start; max-width: 25em; min-width: 0; margin: 0; font-size: .72rem; line-height: 1.5; text-align: left; }
+html.bas .intro .boutons { gap: 8px; }
+html.bas .intro .boutons button.discret { font-size: .85rem; padding: .4em .75em; }
+body.tactile .intro .boutons button.discret { min-height: 40px; }
 html.bas .panneau.commandes { padding: 10px 14px; }
 html.bas .commandes h2 { font-size: 1.3rem; margin: 0 0 .3em; }
 html.bas .commandes table { font-size: .7rem; line-height: 1.25; }
@@ -704,16 +712,44 @@ article.carte.cachee h3 { letter-spacing: .2em; }
 /* l'album : barres de progression, cartes compactes toutes de la même taille */
 .jauge { display: block; height: 6px; background: #0006; border-radius: 3px; overflow: hidden; }
 .jauge i { display: block; height: 100%; background: var(--or); }
+/*
+ * La Collection ne change pas de taille d'un rayon à l'autre : le panneau a sa hauteur à lui, pas celle de son
+ * contenu ; le titre, les rayons, « Retour » et les filtres restent en place, seule la grille défile.
+ */
+.panneau.biblio {
+  height: min(100%, 800px);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto auto auto auto minmax(0, 1fr);
+  overflow: hidden;
+}
+.biblio > * { grid-column: 1 / -1; }
 .biblio > .jauge { height: 10px; margin: -.3em 0 .9em; }
+.biblio > .onglets { margin: 0 0 10px; }
+/* « Retour » ouvre la rangée des filtres : elle a toujours la hauteur du bouton, que le rayon ait des raretés ou non. */
+.biblio > .barre { display: flex; align-items: center; gap: 10px; margin: 0 0 10px; }
+/* La grille défile seule ; sa barre de défilement a toujours sa place, la largeur des colonnes n'en dépend pas. */
+.biblio > .contenu { min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; margin: -6px -8px 0 -6px; padding: 6px 8px 10px 6px; }
+/* Trop bas pour une rangée entière de cartes sous les rayons (`Screens.fitShelf`) : le titre et sa jauge se replient. */
+:is(html, html.bas) .panneau.biblio.serre { padding-block: 4px; grid-template-rows: auto auto minmax(0, 1fr); }
+.biblio.serre > h2, .biblio.serre > .jauge { display: none; }
+:is(html, html.bas) .panneau.biblio.serre > :is(.onglets, .barre) { margin-bottom: 2px; }
+/* Plus bas encore : tout le panneau défile, les rayons restent collés en haut. Au repos, rien ne bouge d'un rayon à l'autre. */
+.panneau.biblio.tout-defile { display: flex; flex-flow: row wrap; align-content: flex-start; align-items: center; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; scroll-padding-bottom: 8px; }
+.biblio.tout-defile > * { flex: 1 0 100%; }
+/* Collés tout en haut, marge du panneau comprise : aucune carte ne passe au-dessus d'eux. */
+.biblio.tout-defile > .onglets { position: sticky; top: -6px; z-index: 1; background: var(--nuit); box-shadow: 0 4px 0 var(--nuit); }
+.biblio.tout-defile > .contenu { overflow: visible; }
 .biblio .onglets button { position: relative; padding-bottom: 1em; }
 .biblio .onglets button small { font-size: .8em; opacity: .8; }
 .biblio .onglets button .jauge { position: absolute; left: 6px; right: 6px; bottom: 4px; height: 4px; }
 .biblio .onglets button:not(.discret) .jauge { background: #0003; }
 .biblio .onglets button:not(.discret) .jauge i { background: var(--rouge); }
 .pastille { display: inline-block; width: .6em; height: .6em; margin-left: .35em; border-radius: 50%; background: var(--rouge); vertical-align: .1em; }
+/* Sur un rayon, la pastille se pose dans le coin : qu'elle vienne ou s'en aille, l'onglet garde sa largeur. */
+.biblio .onglets .pastille { position: absolute; top: 4px; right: 4px; margin: 0; }
 
-.biblio .raretes { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 .8em; }
-.biblio .raretes:empty { display: none; }
+.biblio .raretes { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
 .biblio .raretes button { font-size: .8rem; padding: .35em .7em; border-left: 6px solid var(--gris, #888); }
 .biblio .raretes button.rarete-1 { border-left-color: var(--rare); }
 .biblio .raretes button.rarete-2 { border-left-color: var(--epique); }
@@ -782,15 +818,24 @@ html.bas .carte-ouverte article.carte > * { margin-bottom: 5px; }
 html.bas .carte-ouverte article.carte > :not(header, .vignette) { display: flow-root; } /* le texte se range à côté de l'image */
 html.bas .carte-ouverte article.carte > .vignette { float: left; width: 34%; height: 128px; margin: 0 10px 5px 0; }
 html.bas .carte-ouverte article.carte.niveaux > .vignette { float: none; width: auto; height: 64px; margin-right: 0; }
-/* Écran bas : l'en-tête, les rayons et les filtres se serrent, une rangée entière de cartes reste en vue. */
-html.bas .panneau.biblio { padding-block: 10px; }
-html.bas .biblio h2 { font-size: 1.3rem; margin-bottom: .25em; }
-html.bas .biblio > .jauge { height: 6px; margin: 0 0 .5em; }
-html.bas .biblio .onglets { gap: 6px; margin: 0 0 .5em; }
+/*
+ * Écran bas : l'en-tête, les rayons, « Retour » et les filtres se serrent, une rangée entière de cartes reste en vue.
+ * La grande jauge passe à côté du titre.
+ */
+html.bas .panneau.biblio { padding-block: 6px; grid-template-rows: auto auto auto minmax(0, 1fr); column-gap: 12px; }
+html.bas .biblio h2 { grid-column: 1; font-size: 1.3rem; margin: 0 0 4px; }
+html.bas .biblio > .jauge { grid-column: 2; align-self: center; height: 6px; margin: 0 0 4px; }
+html.bas .biblio.tout-defile > h2 { flex: 0 0 auto; margin-right: 12px; }
+html.bas .biblio.tout-defile > .jauge { flex: 1 1 0; }
+html.bas .biblio .onglets { gap: 4px 6px; margin: 0 0 4px; }
 html.bas .biblio .onglets button { font-size: .74rem; padding: .45em .65em .85em; }
-html.bas .biblio .raretes { margin-bottom: .5em; }
-/* Au pouce, les rayons et les filtres de rareté se touchent sans viser. */
-body.tactile .biblio .onglets button, body.tactile .biblio .raretes button { min-height: 40px; }
+html.bas .biblio .onglets .pastille { top: 3px; right: 3px; }
+html.bas .biblio > .barre { gap: 8px; margin: 0 0 4px; }
+html.bas .biblio .barre > button { font-size: .85rem; padding: .4em .75em; }
+html.bas .biblio .raretes { gap: 4px; }
+html.bas .biblio .raretes button { font-size: .7rem; padding: .3em .55em; border-left-width: 5px; }
+/* Au pouce, les rayons, « Retour » et les filtres de rareté se touchent sans viser. */
+body.tactile .biblio .onglets button, body.tactile .biblio .barre button { min-height: 40px; }
 
 /* ------------------------------------------------------------------ choix du héros, +1, pile de vies */
 

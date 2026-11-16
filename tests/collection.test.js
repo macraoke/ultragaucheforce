@@ -18,6 +18,12 @@ test('collection : une carte par fiche, numérotée, avec un nom et une clé uni
   }
 });
 
+test('collection : les pancartes en deuxième, juste après les camarades ; les numéros suivent les rayons', () => {
+  assert.deepEqual(SHELVES.map((s) => s.id), ['camarades', 'pancartes', 'en-face', 'lieux', 'paroles', 'tele', 'faits', 'propositions', 'luttes']);
+  const shelfOf = cards.map((c) => SHELVES.findIndex((s) => s.id === c.shelf));
+  assert.deepEqual(shelfOf, [...shelfOf].sort((a, b) => a - b), 'les cartes d’un rayon se suivent, rayon après rayon');
+});
+
 test('collection : chaque rayon a ses cartes ; faits et propositions se partagent les fiches', () => {
   for (const shelf of SHELVES) assert.ok(cards.some((c) => c.shelf === shelf.id), `rayon « ${shelf.titre} »`);
   const of = (id) => cards.filter((c) => c.shelf === id);
