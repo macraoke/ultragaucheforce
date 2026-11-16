@@ -228,9 +228,10 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pi
     const first = step('fortune', `La fortune ${de(owner)}`, h('p', { className: 'montant' }, `${billions(boss.fortune.montant)} d’euros`),
       [`${round(years)} ans de revenus ${de(scale.compare)}.`, yearly > 0 && ` Rien qu’en dividendes, elle rapporte ${money(yearly)} par an.`],
       [estimate, scale, ...(yearly > 0 ? rent : [])]);
-    // Taxée à 2 % : au plus, puisque l'impôt est différentiel. « Moins que ses dividendes » garde les sources des dividendes.
+    // Taxée à 2 % : au plus, puisque l'impôt est différentiel. La fortune s'efface du récit, mais ce nombre en découle :
+    // il garde la source de son estimation, et « Moins que ses dividendes » celles des dividendes.
     const second = step('impot', 'Taxée à 2 % par an', h('p', { className: 'nombre' }, money(tax)),
-      [`Au plus : on déduit les impôts déjà payés sur ses revenus.`, under && ' Moins que ses dividendes.'], [rule, ...(under ? rent : [])]);
+      [`Au plus : on déduit les impôts déjà payés sur ses revenus.`, under && ' Moins que ses dividendes.'], [rule, estimate, ...(under ? rent : [])]);
     // Ce que ça paierait : le titre, après la taxe.
     const result = use ? `${round(count)} ${use.finance}` : `Au plus ${money(tax)} par an`;
     const third = use && step('paie', 'Ce que ça paierait', h('p', { className: 'nombre' }, h('b', {}, round(count)), ` ${use.finance}`),
