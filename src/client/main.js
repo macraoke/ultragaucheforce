@@ -299,8 +299,14 @@ function frame(now) {
   }
   renderer.device = input.device;
   hud.device = input.device;
+  if (!demo) placeSign();
   renderer.draw(game, dt);
   if (!demo) hud.update(game);
+}
+
+/** Au pouce, le panneau d'aide se pose sous la première ligne du HUD, puce SPÉ comprise (mesurée une fois, gardée). */
+function placeSign() {
+  if (document.body.classList.contains('tactile')) renderer.signTop = Math.max(30, Math.ceil((hud.rowBottom() + 6) / renderer.ratio));
 }
 
 // ---------------------------------------------------------------- branchements
@@ -329,8 +335,9 @@ function layout() {
   renderer.resize();
   renderer.anchor = thumbs ? 0.58 : 0.62; // les pouces occupent les coins du bas : on remonte un peu l'action
   // Au clavier, les notes du coin gauche descendent jusqu'à 140 pixels environ : le panneau passe dessous.
-  // Au pouce, elles sont sous le bandeau, et le panneau reste entre le HUD et le bandeau.
+  // Au pouce, le HUD est sous le bandeau : le panneau se pose sous sa première ligne (`placeSign`).
   renderer.signTop = thumbs ? 30 : Math.max(30, Math.ceil((140 * (window.devicePixelRatio || 1)) / renderer.scale));
+  hud.row = 0; // à remesurer
   input.refreshTouch();
 }
 addEventListener('resize', layout);
@@ -368,6 +375,7 @@ if (new URLSearchParams(location.search).has('debug')) {
     draw(snap = false) {
       if (snap) renderer.snap(game);
       renderer.tick(1 / 60);
+      placeSign();
       renderer.draw(game, 1 / 60);
       hud.update(game);
     },

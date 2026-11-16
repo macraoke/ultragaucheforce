@@ -482,6 +482,7 @@ export class Hud {
   setVisible(on) {
     const el = this.q('bandeau');
     const shown = !el.hidden;
+    this.row = 0;
     this.el.hidden = !on;
     el.hidden = !on;
     clearTimeout(this.rotation);
@@ -519,6 +520,7 @@ export class Hud {
     // La pile ne se redessine que si elle change : un coup reçu la fait sursauter, sans qu'une autre mise à jour l'interrompe.
     const pile = [hero.def.id, hero.hp, game.stack.join()].join('|');
     if (pile !== this.pile) {
+      this.row = 0; // la première ligne a changé : à remesurer (`rowBottom`)
       const hurt = this.pile && hero.def.id === this.hero && (hero.hp < this.hp || game.stack.length < this.height);
       const stack = livesStack(this.bundle, game);
       if (hurt) stack.classList.add('touche');
@@ -632,6 +634,23 @@ export class Hud {
     inner.style.animation = '';
     inner.style.animationDuration = `${time.toFixed(2)}s`;
     this.airtime = Math.max(this.airtime, 1.2 + time + 1.6); // une pause avant, le défilement, une pause après
+  }
+
+  /**
+   * Jusqu'où descend la première ligne du HUD (nom, pile, puce de la spéciale, pause), en pixels CSS depuis le haut de
+   * la scène ; 0 tant qu'il est masqué. Mesuré dans la mise en page, pas à l'écran : juste aussi quand tout pivote.
+   */
+  rowBottom() {
+    if (this.row) return this.row;
+    const scene = this.el.offsetParent;
+    const bottom = (el) => {
+      if (!el?.offsetHeight) return 0;
+      let y = el.offsetHeight;
+      for (let e = el; e && e !== scene; e = e.offsetParent) y += e.offsetTop;
+      return y;
+    };
+    this.row = Math.max(...['hud-heros', 'hud-vies', 'hud-charges', 'pause'].map((id) => bottom(this.q(id))));
+    return this.row;
   }
 
   /**
