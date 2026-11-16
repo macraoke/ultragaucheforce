@@ -54,6 +54,37 @@ export function chooseTrack(tracks, { slot, named = null, failed = new Set(), av
   return null;
 }
 
+/** Les moments hors des niveaux : ils tirent au hasard (`chooseTrack`), sans sac. */
+const NOT_A_LEVEL = new Set(['menu', 'boss']);
+
+/**
+ * Les pistes qu'un niveau peut jouer : les siennes (`ou` : le niveau, ou celle que nomme sa clé `musique`),
+ * puis celles de tous les niveaux (`jeu`) et de partout. Une piste qui en suit une autre (`puis`) n'en est pas.
+ */
+export function levelTracks(tracks, slot, named = null, failed = new Set()) {
+  const following = new Set(tracks.map((t) => t.puis).filter(Boolean));
+  const usable = tracks.filter((t) => !failed.has(t.id) && !following.has(t.id));
+  const own = usable.filter((t) => t.ou === slot || t.id === named);
+  return { own, all: [...own, ...usable.filter((t) => !own.includes(t) && (t.ou === 'jeu' || t.ou === 'partout'))] };
+}
+
+/**
+ * La prochaine piste d'un niveau. Ses pistes à lui passent d'abord, la première fois seulement (`played` : déjà
+ * entendues pendant cette visite). Ensuite, un sac : toutes celles qu'il peut jouer, au hasard, sans en rejouer
+ * une (`heard`) avant d'avoir entendu les autres ; jamais celle qu'on entend déjà (`avoid`), s'il y en a une autre.
+ */
+export function nextLevelTrack(tracks, { slot, named = null, failed = new Set(), heard = new Set(), played = new Set(), avoid = null, random = Math.random }) {
+  const { own, all } = levelTracks(tracks, slot, named, failed);
+  if (!all.length) return null;
+  const pick = (list) => list[Math.floor(random() * list.length)];
+  const firstTime = own.filter((t) => !played.has(t.id) && t !== avoid);
+  if (firstTime.length) return pick(firstTime);
+  const bag = all.filter((t) => !heard.has(t.id) && t !== avoid);
+  if (bag.length) return pick(bag);
+  const others = all.filter((t) => t !== avoid); // le sac est vide : un nouveau tour
+  return pick(others.length ? others : all);
+}
+
 /** Le cadre du lecteur SoundCloud pour une première piste. */
 export function frameAttributes(track) {
   const params = new URLSearchParams({ url: track.url, color: '#e43b44', ...OPTIONS });
@@ -93,6 +124,9 @@ export class Radio {
     this.slot = 'menu';
     this.named = null;
     this.chosenFor = null; // le moment pour lequel `current` a été choisie
+    // En partie, les pistes tournent : `heard`, celles du tour en cours (le sac) ; `played`, toutes celles entendues.
+    this.heard = new Set();
+    this.played = new Set();
     this.failed = new Set(); // pistes qui n'ont pas voulu jouer ; le retour du réseau leur rend leur chance
     this.attempt = null; // une lecture demandée, pas encore confirmée : { track, loaded, refused, retried, waits }
     this.timer = null;
@@ -126,7 +160,8 @@ export class Radio {
     if (this.status === 'unreachable') return; // le bouton ou le retour du réseau réessaieront
     const live = this.status === 'playing' || this.status === 'loading';
     if (again && live) return; // « Recommencer » : la même musique continue
-    const track = this.choose();
+    // Chaque niveau change de piste : jamais celle qu'on entend déjà en y entrant.
+    const track = this.choose(NOT_A_LEVEL.has(slot) ? null : this.current);
     if (!track) return this.unreachable(); // plus aucune piste ne joue
     this.chosenFor = `${slot}|${named}`;
     if (track !== this.current) return this.start(track);
@@ -134,7 +169,19 @@ export class Radio {
   }
 
   choose(avoid = null) {
-    return chooseTrack(this.tracks, { slot: this.slot, named: this.named, failed: this.failed, avoid, random: this.env.random });
+    const base = { slot: this.slot, named: this.named, failed: this.failed, avoid, random: this.env.random };
+    if (NOT_A_LEVEL.has(this.slot)) return chooseTrack(this.tracks, base);
+    // En partie : le sac des pistes du niveau ; s'il ne reste rien, n'importe laquelle plutôt que le silence.
+    return nextLevelTrack(this.tracks, { ...base, heard: this.heard, played: this.played }) ?? chooseTrack(this.tracks, base);
+  }
+
+  /** Une piste de niveau joue vraiment : elle sort du sac. Quand il est vide, un nouveau tour commence (sans elle). */
+  heardNow(track) {
+    if (NOT_A_LEVEL.has(this.slot)) return;
+    this.heard.add(track.id);
+    this.played.add(track.id);
+    const { all } = levelTracks(this.tracks, this.slot, this.named, this.failed);
+    if (all.every((t) => this.heard.has(t.id))) for (const t of all) if (t !== track) this.heard.delete(t.id);
   }
 
   /** La piste qui suit celle-ci (clé `puis`), si elle peut jouer. */
@@ -334,6 +381,7 @@ export class Radio {
     }
     // Une lecture demandée avance : elle joue vraiment. (Sans demande en cours, un reste d'avant une pause.)
     if (name === 'PLAY_PROGRESS' && data.currentPosition > 0 && this.attempt && !this.ownPause) {
+      this.heardNow(this.attempt.track); // entendue pour de bon : elle sort du sac
       this.cancelWatch();
       this.status = 'playing';
       this.render();
