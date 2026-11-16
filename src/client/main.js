@@ -296,7 +296,7 @@ async function win() {
     });
   };
   screens.end({
-    level, hurt, facts, time: game.time, crowd, won, best: custom ? null : best, share,
+    level, hurt, seed: game.seed, facts, time: game.time, crowd, won, best: custom ? null : best, share,
     next: index >= 0 ? order[index + 1] : null,
     last: index === order.length - 1,
   });
