@@ -1,0 +1,9 @@
+titre: 10,8 milliards estimés
+theme: richesses
+texte: Selon le classement Challenges 2026, la famille Bolloré pèse 10,8 milliards d'euros, au 13e rang des fortunes de France, contre le 15e en 2025.
+portee: Reprise du classement Challenges 2026 par iDealwine, un site marchand de vins, faute d'une page de presse qui donne le montant. Estimation attribuée à « Vincent Bolloré et sa famille » ; ce n'est pas de l'argent disponible, et les biens personnels ne sont pas comptés. La page iDealwine a été modifiée le 9 octobre 2026.
+periode: classement Challenges 2026
+source.titre: iDealwine — Les plus grandes fortunes du vin (reprise du classement Challenges 2026)
+source.url: https://www.idealwine.net/les-plus-grosses-fortunes-du-vin/
+source.nature: presse
+verifie: 2026-11-16
