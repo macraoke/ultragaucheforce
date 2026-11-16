@@ -42,6 +42,13 @@ const TAGS = {
   piquet: { text: 'PIQUET DE GRÈVE', dy: -8, opts: { size: 4.5, color: '#1a1c2c', bg: '#f6c21c' } },
   sortie: { text: 'SORTIE ▶', dy: -9, opts: { size: 6, color: '#1a1c2c', bg: '#f6c21c' } },
 };
+const TAG_OUT = 96; // pixels au-delà du bord de l'image : une étiquette écrite y sort avec son accessoire, puis s'oublie
+/**
+ * Une étiquette couvre-t-elle un dessin de plus de deux pixels dans les deux sens ? `box` : sa boîte de texte (`textBox`),
+ * dont son fond dessiné laisse un pixel de chaque côté, un en haut et deux en bas.
+ */
+const covers = (box, art) => Math.min(box.x1 - 1, art.x1) - Math.max(box.x0 + 1, art.x0) > 2
+  && Math.min(box.y1 - 2, art.y1) - Math.max(box.y0 + 1, art.y0) > 2;
 const GROUP = { x: 40, y: 24 }; // des unités identiques aussi proches font un groupe : un seul « ! », un seul « KOF ! »
 const SAFE_TOP = 100; // pixels CSS en haut de l'écran laissés au HUD, au moins (bandeau au pouce, barre de vie du boss) ; plus s'il descend plus bas
 
@@ -65,6 +72,7 @@ export class Renderer {
     this.propSay = new WeakMap(); // accessoire en entier dans l'image → son étiquette est-elle écrite (muette → écrite, jamais l'inverse)
     this.propSpot = new WeakMap(); // accessoire → { dx, dy } : son étiquette, écartée d'une gêne, tant qu'il est à l'écran (`placeTags`)
     this.layout = null; // où s'écrit l'étiquette de chaque accessoire du niveau (`tagLayout`)
+    this.propHidden = new WeakSet(); // accessoires cachés sous la bande du HUD : sans étiquette tant qu'ils n'en sont pas sortis
     this.held = new WeakMap(); // porteur de pancarte du cortège → { up, since, label } : levée ou baissée, depuis quand
     this.raised = new Set(); // les porteurs dont la pancarte est levée à cette image
     this.particles = [];
@@ -329,6 +337,7 @@ export class Renderer {
     this.bossSay = this.bossBubble(game.boss);
     if (this.bossSay) this.boxes.push(this.bossSay.box);
     const fixed = this.boxes.slice(gains); // gains des recrues, voix, coups : les textes flottants passent autour
+    if (board) fixed.push(board.box); // et autour du panneau lu
     // Le héros se lit au premier coup d'œil : aucune pancarte ne se lève devant lui ni juste au-dessus de sa tête.
     const { hero } = game;
     if (!hero.dead) this.boxes.push({ x0: hero.x - 3 - cx, x1: hero.x + hero.w + 3 - cx, y0: hero.y - 8 - cy, y1: hero.y + hero.h - cy });
@@ -914,21 +923,28 @@ export class Renderer {
     return first;
   }
 
+  /** Le dessin d'un accessoire, dans le monde : la boîte qu'aucune étiquette ne doit couvrir. Null s'il n'en a pas. */
+  artOf(p) {
+    const rows = this.bundle.decors[p.kind]?.sprites?.image;
+    if (!rows) return null;
+    const x0 = Math.round(p.x + p.w / 2 - rows[0].length / 2);
+    const y0 = Math.round(p.y + p.h - rows.length);
+    return { x0, x1: x0 + rows[0].length, y0, y1: y0 + rows.length };
+  }
+
   /**
-   * L'étiquette d'un accessoire et sa place de départ, dans le monde : au-dessus de lui ; `below`, sous ses pieds.
-   * Null pour un accessoire qui n'en a pas.
+   * L'étiquette d'un accessoire, dans le monde : son texte, sa place de départ au-dessus de lui, `below` sous ses pieds,
+   * et `art`, son dessin. Null pour un accessoire qui n'en a pas.
    */
   tagOf(p) {
     const tag = TAGS[p.kind];
-    const rows = tag && this.bundle.decors[p.kind]?.sprites.image;
-    if (!rows) return null;
-    const x = Math.round(p.x + p.w / 2 - rows[0].length / 2);
-    const y = Math.round(p.y + p.h - rows.length);
-    const left = p.kind === 'cage' ? 8 : rows[0].length / 2;
-    return { p, text: tag.text, opts: tag.opts, x: x + left, y: y + tag.dy, below: y + rows.length + 4 };
+    const art = tag && this.artOf(p);
+    if (!art) return null;
+    const x = p.kind === 'cage' ? art.x0 + 8 : (art.x0 + art.x1) / 2;
+    return { p, text: tag.text, opts: tag.opts, x, y: art.y0 + tag.dy, below: art.y1 + 4, art };
   }
 
-  /** Dessine un accessoire ; rend son étiquette à écrire à cette image, à sa place de départ à l'écran (voir `placeTags`). */
+  /** Dessine un accessoire ; rend son étiquette à écrire à cette image, à l'écran (voir `placeTags`). */
   prop(p) {
     const d = this.bundle.decors;
     const rows = { cage: d.cage, piquet: d.piquet, sortie: d.sortie, panneau: d.panneau }[p.kind]?.sprites;
@@ -938,45 +954,57 @@ export class Renderer {
     const y = Math.round(p.y + p.h - img.height - this.cy);
     this.ctx.drawImage(img, x, y);
     const tag = this.tagOf(p);
-    const onScreen = () => ({ ...tag, x: tag.x - this.cx, y: tag.y - this.cy, below: tag.below - this.cy });
+    const onScreen = () => ({ ...tag, x: tag.x - this.cx, y: tag.y - this.cy, below: tag.below - this.cy, art: this.shown(tag.art) });
     if (p.kind === 'sortie') {
       if (x > this.viewW || x + img.width < 0) this.propSpot.delete(p);
       return p.on === false || !tag ? null : onScreen();
     }
     // « GARDE À VUE », « PIQUET DE GRÈVE » : écrits pour un accessoire à l'étage du héros ; plus haut ou plus bas, le dessin
-    // suffit. Muette, l'étiquette s'écrit dès que le héros arrive à son étage ; écrite, elle le reste tant que l'accessoire
-    // est en entier dans l'image : un saut ou un pas ne la fait jamais disparaître.
+    // suffit. Muette, l'étiquette s'écrit dès que le héros arrive à son étage, l'accessoire en entier dans l'image ;
+    // écrite, elle le reste et sort de l'image avec lui, comme le reste du décor : un saut, un pas ou la caméra qui
+    // bouge au bord ne la font jamais disparaître d'un coup. Elle s'oublie une fois l'accessoire loin de l'image.
     if (!tag || p.on) return null;
     const whole = x >= 0 && y >= 0 && x + img.width <= this.viewW && y + img.height <= this.viewH;
-    if (!whole) {
+    const near = x + img.width > -TAG_OUT && x < this.viewW + TAG_OUT && y + img.height > -TAG_OUT && y < this.viewH + TAG_OUT;
+    if (!near) {
       this.propSay.delete(p);
       this.propSpot.delete(p);
+      this.propHidden.delete(p);
       return null;
     }
     const h = this.heroBox;
-    if (!this.propSay.get(p)) this.propSay.set(p, Boolean(h) && Math.abs(p.y + p.h - (h.y + h.h)) <= PROP_FLOOR);
+    if (whole && !this.propSay.get(p)) this.propSay.set(p, Boolean(h) && Math.abs(p.y + p.h - (h.y + h.h)) <= PROP_FLOOR);
     return this.propSay.get(p) ? onScreen() : null;
   }
 
+  /** Une boîte du monde, à l'écran. */
+  shown(box) {
+    return { x0: box.x0 - this.cx, x1: box.x1 - this.cx, y0: box.y0 - this.cy, y1: box.y1 - this.cy };
+  }
+
   /**
-   * Où s'écrit l'étiquette de chaque accessoire du niveau, par rapport à sa place de départ : des accessoires voisins
-   * (une cage et un piquet côte à côte) ont leurs étiquettes l'une à côté de l'autre, sinon l'une au-dessus de l'autre.
+   * Où s'écrit l'étiquette de chaque accessoire du niveau, par rapport à sa place de départ au-dessus de lui. Des
+   * accessoires voisins (une cage et un piquet côte à côte) ont leurs étiquettes l'une à côté de l'autre, tant que
+   * chacune reste au-dessus de son propre dessin ; sinon l'une au-dessus de l'autre. Aucune ne couvre un dessin.
    * Calculé une fois pour le niveau, dans le monde : rien ne change quand la caméra bouge ou qu'une voisine s'écrit.
    */
   tagLayout(props) {
     if (this.layout?.props === props && this.layout.ratio === this.ratio) return this.layout.spots;
     const spots = new WeakMap();
+    const arts = props.map((p) => this.artOf(p)).filter(Boolean);
     const placed = [];
     const hit = (box) => placed.find((b) => box.x0 < b.x1 && box.x1 > b.x0 && box.y0 < b.y1 && box.y1 > b.y0);
     for (const t of props.map((p) => this.tagOf(p)).filter(Boolean).sort((a, b) => a.x - b.x || a.y - b.y)) {
       const base = this.textBox(t.text, t.x, t.y, t.opts.size, 0);
       const at = (s) => ({ x0: base.x0 + s.dx, x1: base.x1 + s.dx, y0: base.y0 + s.dy, y1: base.y1 + s.dy });
-      const width = base.x1 - base.x0;
       const step = base.y1 - base.y0 + 1;
       const other = hit(base);
       const aside = other ? other.x1 + 1 - base.x0 : 0; // de gauche à droite : ce qui gêne est à gauche
-      const spot = [{ dx: 0, dy: 0 }, ...(aside > 0 && aside <= width ? [{ dx: aside, dy: 0 }] : []),
-        { dx: 0, dy: -step }, { dx: 0, dy: -2 * step }, { dx: 0, dy: -3 * step }].find((s) => !hit(at(s))) ?? { dx: 0, dy: 0 };
+      // À côté, mais toujours au-dessus de son propre dessin (au moins 4 pixels de recouvrement).
+      const over = (s) => Math.min(at(s).x1, t.art.x1) - Math.max(at(s).x0, t.art.x0) >= 4;
+      const ok = (s) => over(s) && !hit(at(s)) && !arts.some((a) => covers(at(s), a));
+      const spot = [{ dx: 0, dy: 0 }, ...(aside > 0 ? [{ dx: aside, dy: 0 }] : []), { dx: 0, dy: -step }, { dx: 0, dy: -2 * step }]
+        .find(ok) ?? { dx: 0, dy: 0 };
       spots.set(t.p, spot);
       placed.push(at(spot));
     }
@@ -985,48 +1013,51 @@ export class Renderer {
   }
 
   /**
-   * Les étiquettes des accessoires : aucune ne recouvre une autre, ni le panneau lu, ni l'écriture d'un décor, ni ne passe
-   * sous la bande du HUD. Chacune s'écrit à sa place dans le niveau (voir `tagLayout`) ; trop haute, elle s'arrête sous le
-   * HUD. Si quelque chose la gêne, elle se pose sous les pieds de son accessoire (un cran plus bas s'il le faut), et y
-   * reste tant qu'il est à l'écran : elle ne revient pas d'un saut quand la gêne s'en va. Rien ne la cache jamais.
+   * Les étiquettes des accessoires : aucune ne recouvre une autre, ni le panneau lu, ni l'écriture d'un décor, ni un
+   * dessin d'accessoire, ni ne passe sous la bande du HUD. Chacune s'écrit à sa place dans le niveau (voir `tagLayout`).
+   * Gênée là, ou montée sous le HUD, elle se pose sous les pieds de son accessoire, et y reste tant qu'il est à l'écran :
+   * elle ne revient pas d'un saut quand la gêne s'en va. Un accessoire qui passe sous le HUD l'emporte avec lui : son
+   * étiquette s'efface à mesure qu'il disparaît, et il n'en a plus une fois caché.
    */
   placeTags(tags, props) {
     const layout = this.tagLayout(props);
     const ceiling = this.ceiling();
+    const arts = props.map((p) => this.artOf(p)).filter(Boolean).map((a) => this.shown(a))
+      .filter((a) => a.x1 > 0 && a.x0 < this.viewW && a.y1 > 0 && a.y0 < this.viewH);
     tags.sort((a, b) => a.x - b.x || a.y - b.y);
     for (const t of tags) {
+      const { art } = t;
+      // Un accessoire caché sous la bande du HUD n'a pas d'étiquette. Caché en entier, il la perd ; il ne la retrouve
+      // qu'une fois revenu en entier dans l'image : entre les deux, rien ne change, et une caméra qui sautille ne la
+      // fait pas clignoter.
+      if (art.y1 <= ceiling) this.propHidden.add(t.p);
+      else if (art.y0 >= ceiling) this.propHidden.delete(t.p);
+      if (this.propHidden.has(t.p)) continue;
       const base = this.textBox(t.text, t.x, t.y, t.opts.size, 0);
-      // Jamais sous la bande du HUD : trop haute, elle s'arrête au plafond des textes flottants, comme eux.
-      const at = (s) => {
-        const dy = s.dy + Math.max(0, ceiling - (base.y0 + s.dy));
-        return { x0: base.x0 + s.dx, x1: base.x1 + s.dx, y0: base.y0 + dy, y1: base.y1 + dy, dy };
+      const at = (s) => ({ x0: base.x0 + s.dx, x1: base.x1 + s.dx, y0: base.y0 + s.dy, y1: base.y1 + s.dy });
+      const free = (s) => {
+        const box = at(s);
+        return box.y0 >= ceiling && !arts.some((a) => covers(box, a))
+          && !this.boxes.some((b) => box.x0 < b.x1 && box.x1 > b.x0 && box.y0 < b.y1 && box.y1 > b.y0);
       };
-      const hit = (box) => this.boxes.find((b) => box.x0 < b.x1 && box.x1 > b.x0 && box.y0 < b.y1 && box.y1 > b.y0);
-      const free = (s) => !hit(at(s));
       const home = layout.get(t.p) ?? { dx: 0, dy: 0 };
       const moved = this.propSpot.get(t.p);
-      let spot = moved && free(moved) ? moved : null;
-      if (!spot && free(home)) spot = home;
+      let spot = (moved && free(moved) ? moved : null) ?? (free(home) ? home : null);
       if (!spot) {
-        const inside = (s) => {
-          const box = at(s);
-          return box.x0 >= 0 && box.x1 <= this.viewW && free(s);
-        };
-        // Sous ses pieds, un cran plus bas s'il le faut ; sinon juste à côté de ce qui la gêne (d'au plus sa largeur).
-        const width = base.x1 - base.x0;
+        // Sous ses propres pieds, à une tuile au plus ; sinon un peu sur le côté, toujours au-dessus ou au-dessous de lui.
         const step = base.y1 - base.y0 + 1;
         const under = t.below - t.y;
-        const box = at(home);
-        const other = hit(box);
-        const sides = other ? [other.x1 + 1 - box.x0, other.x0 - 1 - box.x1].filter((d) => Math.abs(d) <= width) : [];
-        const spots = [...[0, 1, 2, 3, 4].map((k) => ({ dx: home.dx, dy: under + k * step })),
-          ...sides.map((d) => ({ dx: home.dx + d, dy: home.dy }))];
-        spot = spots.find(inside) ?? moved ?? home; // nulle part de libre : écrite quand même, là où elle était
-        if (spot !== home) this.propSpot.set(t.p, spot);
+        const reach = (base.x1 - base.x0) / 2 + (art.x1 - art.x0) / 2 - 4; // de quoi garder 4 pixels au-dessus de son dessin
+        const sides = [reach / 2, -reach / 2, reach, -reach].map(Math.round);
+        spot = [{ dx: 0, dy: under }, { dx: 0, dy: under + step }, ...sides.map((dx) => ({ dx, dy: home.dy })),
+          ...sides.map((dx) => ({ dx, dy: under }))].find(free) ?? moved ?? home; // nulle part : écrite quand même, là où elle était
+        this.propSpot.set(t.p, spot);
       }
       const box = at(spot);
       this.boxes.push(box);
-      this.label(t.text, t.x + spot.dx, t.y + box.dy, t.opts);
+      // Son accessoire passe sous le HUD : elle s'efface avec lui.
+      const alpha = art.y0 < ceiling ? Math.min(1, (art.y1 - ceiling) / (art.y1 - art.y0)) : 1;
+      this.label(t.text, t.x + spot.dx, t.y + spot.dy, { ...t.opts, alpha });
     }
   }
 
