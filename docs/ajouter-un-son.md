@@ -30,7 +30,7 @@ licence: CC0-1.0
 
 Le nom du fichier est l'identifiant : une arme s'en sert avec `arme.son: klaxon`.
 
-Les sons que le jeu joue de lui-même : `saut`, `tir`, `impact`, `explosion`, `degat`, `sauvetage`, `piquet`, `panne`, `greve`, `gaz`, `speciale`, `mort`, `victoire`, `palier`, `boss`, `tambour`, `cuivres`, `clic`, et ceux de la manif et d'en face : `recrue`, `debordement`, `nasse`, `charge`, `visee`, `renfort`, `jet`. Remplacez `content/sons/saut.txt`, vous changez le son du saut.
+Les sons que le jeu joue de lui-même : `saut`, `tir`, `impact`, `touche` (un coup qui porte), `pare` (un coup arrêté par un bouclier), `explosion`, `degat`, `sauvetage`, `piquet`, `panne`, `greve`, `gaz`, `speciale`, `mort`, `victoire`, `palier`, `boss`, `tambour`, `cuivres`, `clic`, et ceux de la manif et d'en face : `recrue`, `debordement`, `nasse`, `charge`, `visee`, `renfort`, `jet`. Remplacez `content/sons/saut.txt`, vous changez le son du saut.
 
 ## Un bruitage enregistré
 

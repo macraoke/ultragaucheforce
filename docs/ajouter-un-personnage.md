@@ -21,7 +21,7 @@ Chaque section `--- nom` est une image : une lettre par pixel, les lettres étan
 | `portrait` | héros : le portrait géant du carton de déblocage ; boss : obligatoire |
 | `projectile` | ce que lance son arme |
 | `onde` | héros : l'onde de la spéciale `sol` |
-| `fin` | unité : une fois hors service |
+| `fin` | unité : une fois hors service (sans lui, son dessin `repos`, éteint) |
 | `ejecte` | boss : la caricature qui s'éjecte, indemne |
 | `image`, `image2` | recrue : obligatoire, et sa seconde pose |
 
@@ -99,7 +99,7 @@ speciale.etourdit: 3
 | `traitement` | en une phrase : archétype, ou nature de la caricature | |
 | `cri` | la phrase du carton de déblocage : un slogan réel ou ses propres mots | |
 | `citation`, `fiche`, `origine` | sa carte | |
-| `pv` | combien de coups il encaisse avant de céder sa place au personnage précédent | 1 à 5 |
+| `pv` | combien de coups il encaisse avant de céder sa place au personnage précédent ; touché, ce qu'il lui reste s'affiche au-dessus de lui et dans la barre sous la pile | 1 à 5 |
 | `vitesse` | pixels par seconde | 60 à 220 |
 | `saut` | hauteur du saut, en cases | 1,5 à 5 |
 | `largeur`, `hauteur` | la boîte de collision, en pixels | 6 à 16, 8 à 24 |
@@ -197,6 +197,7 @@ auteur: ton pseudo
 | `contact` | dégâts au toucher ; une ruée blesse toujours | 0 à 3 |
 | `panique` | points de panique par seconde quand elle « cadre », ou quand le héros est dans son faisceau | 0 à 30 |
 | `debordement` | une ligne : elle ne cède que devant ce nombre de manifestants | 0 à 5000 |
+| `interpelle` | combien de manifestants elle emmène quand elle atteint le cortège, une fois toutes les deux secondes et demie | 0 à 20 |
 | `fin` | à zéro point de vie | `greve`, `panne` (elle fume) |
 | `camp` | à qui elle appartient ; seules les unités de l'ordre comptent dans le bilan des blessés | `ordre` (par défaut), `medias`, `pouvoir` |
 | `ecriteau` | ce qu'on lit au-dessus d'elle une fois hors service | |
@@ -207,9 +208,11 @@ auteur: ton pseudo
 
 L'arme est facultative. Pour placer l'unité, un niveau la déclare dans sa légende : `c: compagnie-d-intervention`.
 
+Ce que le joueur voit, sans rien régler : une unité touchée blanchit et recule d'un pixel, puis montre sa jauge ; un bouclier de face ou une ligne arrête le coup (« PARÉ », des étincelles) ; sonnée, des étoiles tournent autour de sa tête ; gazée par son propre camp, elle pleure et tousse (« KOF ! ») ; quand elle repère le héros, un « ! » ; hors service, « EN GRÈVE ! » ou « EN PANNE », puis son `ecriteau` quelques secondes.
+
 ### Une ligne : `debordement`
 
-Tant que la manif compte moins de monde, la ligne tient : les tracts ne lui font rien et on ne la saute pas. Elle cède dès que le héros arrive devant elle assez nombreux. Devant une ligne qui tient, des passants rejoignent la manif peu à peu : on finit toujours par passer, mais recruter va bien plus vite.
+Tant que la manif compte moins de monde, la ligne tient : les tracts ne lui font rien et on ne la saute pas. Au-dessus d'elle, « ✊ 312 / 500 » et une jauge disent où en est la manif ; hors de l'image, le même compteur attend au bord de l'écran. Elle cède dès que le héros arrive devant elle assez nombreux, et s'ouvre. Devant une ligne qui tient, des passants rejoignent la manif peu à peu (« + 20 passants ») ; si elle perd du monde en attendant, il en vient de plus en plus : on finit toujours par passer, mais recruter va bien plus vite.
 
 Modèles : [`barrage`](../content/ennemis/barrage.txt), [`centaure`](../content/ennemis/centaure.txt), [`grille`](../content/ennemis/grille.txt).
 
@@ -291,6 +294,7 @@ Lance un ou plusieurs projectiles devant soi.
 | `arme.recul` | pousse le tireur en arrière | 0 à 200 | 0 |
 | `arme.vise` | unités seulement : 1 = tiré vers le héros plutôt qu'à l'horizontale | 0 ou 1 | 0 |
 | `arme.visee` | unités seulement : secondes de visée avant un tir visé ; le joueur voit venir le coup | 0 à 2 | 0 |
+| `arme.touche` | unités seulement : manifestants touchés quand le tir atteint le cortège ; ils quittent la manif | 0 à 20 | 0 |
 | `arme.image` | le dessin du projectile (une section de la fiche) | | `projectile` |
 | `arme.mots` | des mots lancés à la place d'un dessin, séparés par une barre verticale : `BING ! \| BANG !` | | |
 | `arme.son` | un bruitage de `content/sons/` | | `tir` |
