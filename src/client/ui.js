@@ -184,18 +184,44 @@ export class Screens {
         if (shelf.id === tab) shown = button;
         return button;
       })),
-      h('div', { className: 'raretes' }, rarityCounts(bundle, save, tab).reverse().map((r) => Object.assign(this.button(
-        [`${r.name}s `, h('small', {}, `${r.found}/${r.total}`)],
-        () => this.collection(tab, { rarity: rarity === r.rarity ? null : r.rarity, keep: r.rarity, back }), `rarete-${r.rarity}${rarity === r.rarity ? '' : ' discret'}`),
-      { ariaPressed: String(rarity === r.rarity) }))),
-      h('div', { className: 'contenu album' }, shelfGrid(bundle, tab, save, actionsFor, rarity)),
-      h('div', { className: 'pied' }, this.back(leave)));
+      // « Retour » ouvre la rangée des filtres : elle garde sa hauteur sur les rayons sans rareté, la grille ne saute pas.
+      h('div', { className: 'barre' }, this.back(leave),
+        h('div', { className: 'raretes' }, rarityCounts(bundle, save, tab).reverse().map((r) => Object.assign(this.button(
+          [`${r.name}s `, h('small', {}, `${r.found}/${r.total}`)],
+          () => this.collection(tab, { rarity: rarity === r.rarity ? null : r.rarity, keep: r.rarity, back }), `rarete-${r.rarity}${rarity === r.rarity ? '' : ' discret'}`),
+        { ariaPressed: String(rarity === r.rarity) })))),
+      h('div', { className: 'contenu album' }, shelfGrid(bundle, tab, save, actionsFor, rarity)));
     this.escape = leave;
+    this.fitShelf();
     // Le clavier reste où il était : sur le filtre qu'on vient de toucher, sinon sur le rayon ouvert.
     const keyboard = keep === null ? shown : this.root.querySelector(`.raretes .rarete-${keep}`);
     keyboard?.focus({ preventScroll: true });
     markSeen(save, tab); // affichées avec leur badge « Nouveau » cette fois-ci, plus la prochaine
     storeSave(save);
+  }
+
+  /**
+   * Une rangée entière de cartes doit rester en vue sous les rayons. Sur un écran trop bas pour cela (téléphone en
+   * paysage, barre du navigateur visible), le titre se replie ; plus bas encore, tout le panneau défile et les rayons
+   * restent collés en haut. La mesure ne dépend pas du rayon ouvert : d'un rayon à l'autre, rien ne bouge.
+   * Refaite quand la fenêtre change de taille.
+   */
+  fitShelf() {
+    const panel = this.root.querySelector('.panneau.biblio');
+    if (!panel) return;
+    panel.classList.remove('serre', 'tout-defile');
+    panel.style.scrollPaddingTop = '';
+    const grid = panel.querySelector('.contenu');
+    // La hauteur d'une carte : mesurée, gardée pour un filtre de rareté sans aucune carte (128 : `button.carte-mini`).
+    this.cardHeight = grid.querySelector('.carte-mini')?.offsetHeight || this.cardHeight || 128;
+    const fits = () => grid.clientHeight >= this.cardHeight + parseFloat(getComputedStyle(grid).paddingTop);
+    if (fits()) return;
+    panel.classList.add('serre');
+    if (fits()) return;
+    panel.classList.replace('serre', 'tout-defile');
+    // Une carte atteinte au clavier ou à la manette ne passe pas sous les rayons collés.
+    const tabs = panel.querySelector('.onglets');
+    panel.style.scrollPaddingTop = `${tabs.offsetHeight + 8}px`;
   }
 
   /** Lance le prochain niveau avec ce héros au départ. */
