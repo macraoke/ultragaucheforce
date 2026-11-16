@@ -52,7 +52,9 @@ class Element {
     this.dataset = {};
     this.className = '';
     this.hidden = false;
+    this.attributes = {};
   }
+  setAttribute(name, value) { this.attributes[name] = String(value); }
   append(...nodes) {
     for (const n of nodes) this.children.push(n instanceof Element || n instanceof Text ? n : new Text(n));
   }
@@ -98,13 +100,17 @@ async function menu(options) {
   return { ui, root, buttons, press, answers };
 }
 
-test('le menu demande « Radio Manif ? », le focus sur « Oui » ; Oui et Non répondent', async () => {
+test('le menu demande « Radio Manif ? » : Oui et Non pareils, regroupés ; le focus reste sur « Jouer »', async () => {
   const m = await menu({});
   assert.match(m.root.textContent, /Radio Manif \?/);
   assert.match(m.root.textContent, /Musique par SoundCloud/);
-  assert.ok(m.buttons().includes('▶ Oui') && m.buttons().includes('Non'));
-  assert.equal(globalThis.document.activeElement.textContent, '▶ Oui', 'Entrée, ou A, répond oui');
-  m.press('▶ Oui');
+  const [group] = m.root.querySelectorAll('div.question-radio');
+  assert.deepEqual(group.attributes, { role: 'group', 'aria-label': 'Radio Manif ?' }, 'un groupe, pour un lecteur d’écran');
+  const [yes, no] = group.querySelectorAll('button');
+  assert.deepEqual([yes.textContent, no.textContent], ['Oui', 'Non']);
+  assert.equal(yes.className, no.className, 'refuser est aussi simple qu’accepter');
+  assert.equal(globalThis.document.activeElement.textContent, 'Jouer', 'Entrée, ou A, lancent la partie : ils ne valent pas oui');
+  m.press('Oui');
   m.press('Non');
   assert.deepEqual(m.answers, [true, false]);
 });

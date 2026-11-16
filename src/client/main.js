@@ -45,7 +45,10 @@ radio.onAsk = () => {
   applyOptions();
 };
 
-/** La réponse à « Radio Manif ? » : retenue. Le toucher de « Oui » est le geste qui autorise la lecture. */
+/**
+ * La réponse à « Radio Manif ? » : retenue. « Oui » charge le lecteur et lance la musique : dans Chromium, ce toucher
+ * suffit ; dans Safari, la lecture attend le toucher suivant (« ▶ Relancer la musique », ou n'importe où).
+ */
 function answerMusic(yes) {
   save.options.musique = yes;
   save.options.musiqueChoisie = true;

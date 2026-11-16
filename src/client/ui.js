@@ -149,9 +149,17 @@ export class Screens {
   menu() {
     const heroes = Object.values(this.bundle.heros).filter((x) => x.statut === 'jouable');
     // Premier lancement : « Radio Manif ? ». Rien de SoundCloud ne se charge avant la réponse.
+    // Un consentement : Oui et Non pareils, et le focus reste sur « Jouer » (Entrée ou A ne valent pas oui).
     // Échap (ou B) : non, pour cette fois ; la question revient au prochain lancement.
     const asking = !this.musicLater && asksMusic(this.save) && Object.keys(this.bundle.musiques || {}).length > 0;
-    const yes = asking && this.button('▶ Oui', () => this.go.music(true));
+    let question = null;
+    if (asking) {
+      question = h('div', { className: 'question-radio' },
+        h('b', {}, 'Radio Manif ?'), this.button('Oui', () => this.go.music(true)), this.button('Non', () => this.go.music(false)),
+        h('small', {}, 'Musique par SoundCloud'));
+      question.setAttribute('role', 'group');
+      question.setAttribute('aria-label', 'Radio Manif ?');
+    }
     this.show('menu',
       h('div', { className: 'logo' }, h('span', {}, 'UltraGauche'), h('span', {}, 'Force')),
       h('p', { className: 'devise' }, 'Taxez les riches. Abattez la Citadelle.'),
@@ -165,13 +173,10 @@ export class Screens {
         this.button('Options', () => this.options()),
         this.button('À propos', () => this.about()),
         this.update && this.button('Mettre à jour', this.update)),
-      asking && h('div', { className: 'question-radio' },
-        h('b', {}, 'Radio Manif ?'), yes, this.button('Non', () => this.go.music(false), 'discret'),
-        h('small', {}, 'Musique par SoundCloud')),
+      question,
       isReadOnly(this.save) && h('p', { className: 'mention' }, 'Cette sauvegarde vient d’une version plus récente du jeu. Mets le jeu à jour : d’ici là, rien n’est enregistré.'),
       h('p', { className: 'mention' }, MENTION, ' ', link(REPO, 'Open source.')));
     if (!asking) return;
-    yes.focus({ preventScroll: true });
     this.escape = () => {
       this.musicLater = true;
       this.menu();
