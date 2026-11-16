@@ -8,9 +8,8 @@ cortege: oui
 manif: 3
 heros: ecoterroriste
 
-panneau.1: Touche-la : elle rejoint la manif
-panneau.2: Assez nombreux, le barrage cède
-panneau.3: ↓ + J : creuser // Pouce gauche vers le bas + TIR : creuser
+panneau.1: Assez nombreux, le barrage cède
+panneau.2: [bas] + [tirer] : creuser
 
 g: gendarme-mobile
 c: crs
@@ -64,7 +63,7 @@ $: liasse
 ......................................................B...........B...RR...............RR...RR...........RR...RRPPPPPPPPPPPPP....RR...........B.......B.......B.........B.......B.......B...........................RR..............RR..................R...................R....B...............B..................LLLLLLL...........
 ......................................................V...........V...RR...............RR...RR...........RR...RR.................RR...........V.......V.......V.........V.......V.......V...........................RR..............RR..................R...................R....V...............V.................LLLLLLLLL..........
 ......................................................V...........V...VV...............VV...VV...........VV...VV.................VV...........V.......V.......V.........V.......V.......V...........................RR..............RR..................R...................R....V...............V................LLLLLLLLLLL.........
-...D..1.t..*.K..x.j..u..,.=...s...g..<..Q.o.~2.g.b.c3.V...g.....g.V..xVV..........X.X.XVVxgcVV.......X.X.XVc..VV............X.X.XVV.gjQ.w..q.cV.......V.x.w<..V.........Vx..g.g.V.......V,o.Q.c..u..c.X.X.X.X.gt.jx.RR....w..<g.....RR.u..Qt..c.b...o..gR..p..g.p....p....c.R..x.V..........w....V.w.K..K..Q..$..LLLLLLLLLLLLL..$.S...
+...D....t..*.K..x.j..u..,.=...s...g..<..Q.o.~1.g.b.c2.V...g.....g.V..xVV..........X.X.XVVxgcVV.......X.X.XVc..VV............X.X.XVV.gjQ.w..q.cV.......V.x.w<..V.........Vx..g.g.V.......V,o.Q.c..u..c.X.X.X.X.gt.jx.RR....w..<g.....RR.u..Qt..c.b...o..gR..p..g.p....p....c.R..x.V..........w....V.w.K..K..Q..$..LLLLLLLLLLLLL..$.S...
 RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR..RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR..RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR..RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR..RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRROOOOOOOO
 RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR..RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR..RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR..RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR..RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRROOOOOOOO
 TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT..TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT..TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT..TTTTTTTTTTTTTTTTTTTTTTTTT....................................TTT..TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTOOOOOOOO
