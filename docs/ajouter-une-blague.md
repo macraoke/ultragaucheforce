@@ -7,7 +7,7 @@ Une ligne de texte, et c'est dans le jeu. Le jeu n'affiche que du vrai : ce qui 
 
 Chacune se débloque en jouant et se retrouve dans la Collection, rayons « Pancartes » et « Vu à la télé ». Une pancarte se débloque quand elle arrive dans la manif : une tranche de vingt personnes qui rejoint le cortège en apporte une, une fois sur deux, tirée au hasard parmi toutes.
 
-Chaque ligne a une **rareté** : commune, rare, épique ou légendaire. Elle se tire de son texte, vous n'avez rien à régler. Les plus rares sortent moins souvent.
+Chaque ligne a une **rareté** : commune, rare, épique ou légendaire. Elle se choisit à la main ([plus bas](#la-rareté)). Les plus rares sortent moins souvent.
 
 ## Comment
 
@@ -26,8 +26,26 @@ TEXTE | où et quand — https://adresse-de-la-source
 Une ligne du jeu :
 
 ```text
-TU NOUS METS 64 ANS, ON TE MAI 68 | vue à Paris, mars 2023 — https://www.carenews.com/news/reforme-des-retraites-a-la-manifestation-du-7-mars-les-jeunes-interrogent-la-place-du-travail
+TU NOUS METS 64 ANS, ON TE MAI 68 | vue à Paris, mars 2023 — https://www.carenews.com/news/reforme-des-retraites-a-la-manifestation-du-7-mars-les-jeunes-interrogent-la-place-du-travail | rareté: légendaire
 ```
+
+## La rareté
+
+Elle se juge sur trois critères :
+
+- **Créativité** : une image, une forme, un détournement.
+- **Originalité** : pas le slogan de toutes les manifs.
+- **Comique** : un jeu de mots, de l'ironie, une chute.
+
+Légendaire : les trois au plus haut. Épique : deux nets. Rare : une vraie trouvaille. Commune : un slogan rituel, un constat. Pour un bandeau, on juge la trouvaille de la chaîne.
+
+Sans `rareté:`, la ligne est commune. Vous pouvez en proposer une au bout de la ligne : `commune`, `rare`, `épique` ou `légendaire`.
+
+```text
+LE TEXTE EXACT DE LA PANCARTE | vue à Lyon, janv. 2023 — https://adresse-de-l-article | rareté: rare
+```
+
+La relecture la garde ou la change.
 
 ## Corriger une ligne
 
@@ -37,7 +55,7 @@ Une faute dans un texte déjà dans le jeu : corrigez-la, et gardez l'ancien tex
 LE TEXTE CORRIGÉ | vue à Lyon, janv. 2023 — https://adresse-de-l-article | était: LE TEXTE D'AVANT
 ```
 
-Les joueurs qui l'avaient débloquée la gardent, et sa rareté ne change pas. S'il y a déjà un `était:` au bout de la ligne, n'y touchez pas : c'est le tout premier texte qui compte.
+Les joueurs qui l'avaient débloquée la gardent. Laissez `rareté:` où il est, s'il y en a un. S'il y a déjà un `était:` au bout de la ligne, n'y touchez pas : c'est le tout premier texte qui compte.
 
 ## Une pancarte, un slogan
 

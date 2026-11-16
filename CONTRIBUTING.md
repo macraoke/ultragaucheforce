@@ -49,7 +49,7 @@ Sur la carte d'un personnage ou d'un lieu, trois clés font le texte :
 | `fiche` | un fait sourcé de `content/fiches/` ; répétable |
 | `origine` | une phrase, s'il reste quelque chose à dire |
 
-Une pancarte, un slogan ou un bandeau porte sa source sur sa ligne : `TEXTE | où et quand — lien`. Sa rareté (commune, rare, épique, légendaire) se tire de son texte : rien à régler.
+Une pancarte, un slogan ou un bandeau porte sa source sur sa ligne : `TEXTE | où et quand — lien`. Sa rareté (commune, rare, épique, légendaire) se choisit à la main, sur la créativité, l'originalité et le comique : `| rareté: épique` au bout de la ligne. Sans ce champ, la ligne est commune. Vous pouvez en proposer une ; la relecture la garde ou la change ([le détail](docs/ajouter-une-blague.md#la-rareté)).
 
 ## Proposer depuis GitHub
 
