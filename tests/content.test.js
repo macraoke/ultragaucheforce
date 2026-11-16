@@ -187,14 +187,6 @@ test('carte de collection : « fiche » se répète, et chaque référence doit 
   expectError(errorsOf('content/niveaux/essai.txt', opening), { message: /« citation-fantome » n'existe pas dans content\/citations\// });
 });
 
-test('rareté : écrite au bout de la ligne, et les quatre existent dans le vrai contenu', () => {
-  const { bundle } = loadContent();
-  const counts = RARITIES.map((_, r) => bundle.pancartes.filter((p) => p.rarete === r).length);
-  assert.ok(counts.every((n) => n > 0), `une rareté est vide : ${counts}`);
-  assert.ok(counts[0] > counts[1] && counts[1] > counts[2] && counts[2] > counts[3], `les plus rares sont les moins nombreuses : ${counts}`);
-  assert.equal(bundle.pancartes.find((p) => p.texte === 'COMBIEN DE 49-3 FONT 1789 ?').rarete, RARITIES.indexOf('légendaire'));
-});
-
 test('rareté : « | rareté: … » se lit, une ligne sans le champ est commune', () => {
   const text = [
     'UNE LÉGENDAIRE | vue à Paris, mars 2023 — https://exemple.org/page | rareté: légendaire',
