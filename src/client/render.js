@@ -1157,12 +1157,20 @@ export class Renderer {
     };
     // Ceux qui ont leur place (`keep` : au pied d'une ligne, au bord de l'écran) ne bougent pas ; les autres passent autour.
     // Seule exception : un texte `keep` qui monte (« TOUCHÉ ») passe au-dessus d'une sommation plutôt que de la cacher.
+    const kept = [];
     for (const f of this.floaters.filter((g) => g.keep)) {
       const box = this.textBox(f.text, f.x - this.cx, f.y - this.cy, f.size, 150);
       const voice = this.voice;
       const rises = (f.rise ?? 14) > 0;
       if (voice && rises && !f.edge && box.x0 < voice.x1 && box.x1 > voice.x0 && box.y0 < voice.y1 && box.y1 > voice.y0) shift(f, box, voice.y0 - 1 - box.y1);
-      if ((rises || f.edge) && box.y0 < ceiling) shift(f, box, ceiling - box.y0);
+      // Sous la bande du HUD, même au pied d'une ligne perchée tout en haut : il descend juste sous elle, sans en couvrir un autre.
+      if (box.y0 < ceiling) {
+        shift(f, box, ceiling - box.y0);
+        for (let k = 0, other; k < 8 && (other = kept.find((b) => box.x0 < b.x1 && box.x1 > b.x0 && box.y0 < b.y1 && box.y1 > b.y0)); k++) {
+          shift(f, box, other.y1 + 1 - box.y0);
+        }
+      }
+      kept.push(box);
       placed.push(box);
       this.boxes.push(box);
     }
