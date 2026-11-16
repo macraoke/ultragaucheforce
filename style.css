@@ -704,16 +704,34 @@ article.carte.cachee h3 { letter-spacing: .2em; }
 /* l'album : barres de progression, cartes compactes toutes de la même taille */
 .jauge { display: block; height: 6px; background: #0006; border-radius: 3px; overflow: hidden; }
 .jauge i { display: block; height: 100%; background: var(--or); }
-.biblio > .jauge { height: 10px; margin: -.3em 0 .9em; }
+/*
+ * La Collection ne change pas de taille d'un rayon à l'autre : le panneau a sa hauteur à lui, pas celle de son
+ * contenu ; le titre, les rayons, les filtres et « Retour » restent en place, seule la grille défile.
+ */
+.panneau.biblio {
+  height: min(100%, 800px);
+  display: grid;
+  grid-template: 'titre' auto 'jauge' auto 'onglets' auto 'raretes' auto 'contenu' minmax(0, 1fr) 'pied' auto / minmax(0, 1fr);
+  overflow: hidden;
+}
+.biblio > h2 { grid-area: titre; }
+.biblio > .jauge { grid-area: jauge; height: 10px; margin: -.3em 0 .9em; }
+.biblio > .onglets { grid-area: onglets; margin-top: 0; }
+.biblio > .raretes { grid-area: raretes; }
+.biblio > .pied { grid-area: pied; }
+/* La grille défile seule ; sa barre de défilement a toujours sa place, la largeur des colonnes n'en dépend pas. */
+.biblio > .contenu { grid-area: contenu; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; margin: -6px -8px 0 -6px; padding: 6px 8px 10px 6px; }
 .biblio .onglets button { position: relative; padding-bottom: 1em; }
 .biblio .onglets button small { font-size: .8em; opacity: .8; }
 .biblio .onglets button .jauge { position: absolute; left: 6px; right: 6px; bottom: 4px; height: 4px; }
 .biblio .onglets button:not(.discret) .jauge { background: #0003; }
 .biblio .onglets button:not(.discret) .jauge i { background: var(--rouge); }
 .pastille { display: inline-block; width: .6em; height: .6em; margin-left: .35em; border-radius: 50%; background: var(--rouge); vertical-align: .1em; }
+/* Sur un rayon, la pastille se pose dans le coin : qu'elle vienne ou s'en aille, l'onglet garde sa largeur. */
+.biblio .onglets .pastille { position: absolute; top: 4px; right: 4px; margin: 0; }
 
-.biblio .raretes { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 .8em; }
-.biblio .raretes:empty { display: none; }
+/* Les filtres de rareté : leur rangée garde sa hauteur sur les rayons sans rareté, la grille ne saute pas. */
+.biblio .raretes { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 .8em; min-height: calc(.8rem * 1.7 + 6px); }
 .biblio .raretes button { font-size: .8rem; padding: .35em .7em; border-left: 6px solid var(--gris, #888); }
 .biblio .raretes button.rarete-1 { border-left-color: var(--rare); }
 .biblio .raretes button.rarete-2 { border-left-color: var(--epique); }
@@ -782,15 +800,21 @@ html.bas .carte-ouverte article.carte > * { margin-bottom: 5px; }
 html.bas .carte-ouverte article.carte > :not(header, .vignette) { display: flow-root; } /* le texte se range à côté de l'image */
 html.bas .carte-ouverte article.carte > .vignette { float: left; width: 34%; height: 128px; margin: 0 10px 5px 0; }
 html.bas .carte-ouverte article.carte.niveaux > .vignette { float: none; width: auto; height: 64px; margin-right: 0; }
-/* Écran bas : l'en-tête, les rayons et les filtres se serrent, une rangée entière de cartes reste en vue. */
-html.bas .panneau.biblio { padding-block: 10px; }
+/*
+ * Écran bas : l'en-tête, les rayons et les filtres se serrent, une rangée entière de cartes reste en vue.
+ * « Retour » passe au début de la rangée des filtres ; le compte du titre suffit, la grande jauge s'efface.
+ */
+html.bas .panneau.biblio { padding-block: 10px; grid-template: 'titre titre' auto 'onglets onglets' auto 'pied raretes' auto 'contenu contenu' minmax(0, 1fr) / auto minmax(0, 1fr); }
 html.bas .biblio h2 { font-size: 1.3rem; margin-bottom: .25em; }
-html.bas .biblio > .jauge { height: 6px; margin: 0 0 .5em; }
+html.bas .biblio > .jauge { display: none; }
 html.bas .biblio .onglets { gap: 6px; margin: 0 0 .5em; }
 html.bas .biblio .onglets button { font-size: .74rem; padding: .45em .65em .85em; }
-html.bas .biblio .raretes { margin-bottom: .5em; }
+html.bas .biblio .onglets .pastille { top: 3px; right: 3px; }
+html.bas .biblio .raretes { margin-bottom: .5em; align-items: center; }
+html.bas .biblio > .pied { margin: 0 10px .5em 0; align-self: center; }
 /* Au pouce, les rayons et les filtres de rareté se touchent sans viser. */
 body.tactile .biblio .onglets button, body.tactile .biblio .raretes button { min-height: 40px; }
+body.tactile .biblio .raretes { min-height: 40px; }
 
 /* ------------------------------------------------------------------ choix du héros, +1, pile de vies */
 
