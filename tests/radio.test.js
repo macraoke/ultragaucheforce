@@ -432,32 +432,30 @@ test('toutes les pistes échouent (API de SoundCloud en panne) : injoignable ; a
 /** Un hasard à graine, pour des tirages nombreux et reproductibles. */
 const seeded = (seed) => () => ((seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648);
 
-test('au boss, au hasard : Monarch, AGGRESSIVE FOMO ou « coupé cassé » ; Ryukken toujours après Monarch, jamais tirée', async () => {
+test('au boss, au hasard parmi toutes ses pistes ; Ryukken toujours après Monarch, jamais tirée', async () => {
   // Décision de Valentin, 16 novembre 2026 : « Au hasard, Ryukken après Monarch ».
   const monarch = bundle.musiques['abattez-la-citadelle'];
   const ryukken = bundle.musiques['abattez-la-citadelle-ryukken'];
-  const fomo = bundle.musiques['aggressive-fomo'];
-  const coupe = bundle.musiques['abattez-la-citadelle-coupe'];
   assert.equal(monarch.puis, ryukken.id);
+  const drawn = real.filter((t) => t.ou === 'boss' && t !== ryukken); // Monarch, AGGRESSIVE FOMO, « coupé cassé », et les intenses
+  assert.ok(drawn.length >= 3);
+  assert.ok(drawn.every((t) => !t.puis || t === monarch), 'une seule suite : Monarch puis Ryukken');
   const random = seeded(7);
   const count = new Map();
   for (let i = 0; i < 1000; i++) {
     const t = chooseTrack(real, { slot: 'boss', random });
     count.set(t.id, (count.get(t.id) || 0) + 1);
   }
-  assert.ok(count.get(monarch.id) > 250, `Monarch : ${count.get(monarch.id)} sur 1000`);
-  assert.ok(count.get(fomo.id) > 250, `AGGRESSIVE FOMO : ${count.get(fomo.id)} sur 1000`);
-  assert.ok(count.get(coupe.id) > 250, `coupé cassé : ${count.get(coupe.id)} sur 1000`);
-  assert.ok(!coupe.puis); // pas de suite
+  for (const t of drawn) assert.ok(count.get(t.id) > 700 / drawn.length, `${t.id} : ${count.get(t.id)} sur 1000`);
   assert.equal(count.get(ryukken.id) || 0, 0); // jamais tirée au hasard
   // Dans la Radio : à chaque arrivée au boss tirée sur Monarch, Ryukken suit son extrait.
   let monarchs = 0;
-  for (let seed = 1; seed <= 200; seed++) {
+  for (let seed = 1; seed <= 300; seed++) {
     const s = setup({ list: real, random: seeded(seed) });
     await s.on();
     s.radio.play('boss');
     const first = s.radio.current;
-    assert.ok(first === monarch || first === fomo || first === coupe, first.id);
+    assert.ok(drawn.includes(first), first.id);
     if (first !== monarch) continue;
     monarchs++;
     s.ready();
@@ -470,7 +468,7 @@ test('au boss, au hasard : Monarch, AGGRESSIVE FOMO ou « coupé cassé » ; Ryu
     assert.notEqual(s.radio.current, ryukken);
     assert.equal(s.radio.current.ou, 'boss');
   }
-  assert.ok(monarchs > 35 && monarchs < 100, `Monarch : ${monarchs} arrivées au boss sur 200`);
+  assert.ok(monarchs > 150 / drawn.length && monarchs < 600 / drawn.length, `Monarch : ${monarchs} arrivées au boss sur 300`);
 });
 
 test('l’extrait de Monarch ne se charge pas : la version de Ryukken prend sa place', async () => {
@@ -570,4 +568,52 @@ test('aucune piste de niveau ne revient avant que les autres soient passées, d�
       if (jeu.every((x) => bag.has(x))) bag = new Set([t]);
     }
   }
+});
+
+test('un grand sac : toutes les pistes « jeu » passent, trois tours de suite, sans qu’aucune revienne avant les autres', async () => {
+  const jeu = real.filter((t) => t.ou === 'jeu').map((t) => t.id);
+  assert.ok(jeu.length >= 20, `${jeu.length} pistes « jeu »`);
+  const s = setup({ list: real, random: seeded(11) });
+  await s.on();
+  s.radio.play('rond-point');
+  const heard = [s.radio.current.id];
+  s.ready();
+  s.playing();
+  while (heard.length < jeu.length * 3) {
+    s.emit('FINISH');
+    heard.push(s.radio.current.id);
+    s.ready();
+    s.playing();
+  }
+  let bag = new Set();
+  let rounds = 0;
+  for (const t of heard) {
+    assert.ok(!bag.has(t), `« ${t} » revient avant la fin du tour`);
+    bag.add(t);
+    if (jeu.every((x) => bag.has(x))) {
+      rounds++;
+      bag = new Set([t]);
+    }
+  }
+  assert.ok(rounds >= 2, `${rounds} tours complets`);
+});
+
+test('le menu et le boss gardent leur tirage au hasard, sans sac', async () => {
+  const s = setup({ list: real, random: seeded(13) });
+  await s.on();
+  const boss = [];
+  for (let i = 0; i < 60; i++) {
+    s.radio.play('rond-point');
+    s.ready();
+    s.playing();
+    s.radio.play('boss');
+    boss.push(s.radio.current.id);
+    s.ready();
+    s.playing();
+  }
+  assert.ok(boss.some((t, i) => i > 0 && t === boss[i - 1]), 'le boss peut retomber sur la même piste deux fois de suite');
+  assert.ok(s.radio.heard.size <= real.filter((t) => t.ou === 'jeu').length, 'le sac ne garde que des pistes de niveau');
+  const menu = new Set();
+  for (let i = 0; i < 40; i++) menu.add(chooseTrack(real, { slot: 'menu', random: seeded(i + 1) }).id);
+  assert.deepEqual([...menu].sort(), real.filter((t) => t.ou === 'menu').map((t) => t.id).sort(), 'le menu tire parmi ses pistes');
 });

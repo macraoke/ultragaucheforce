@@ -1,0 +1,6 @@
+titre: l'hymne de nos campagnes
+artiste: Arnaud Thebault
+url: https://soundcloud.com/arnaud-thebault/lhymne-de-nos-campagnes
+ou: jeu
+licence: tous droits réservés
+auteur: UltraGauche Force
