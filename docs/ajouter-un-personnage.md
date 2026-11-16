@@ -301,6 +301,8 @@ Lance un ou plusieurs projectiles devant soi.
 
 Un mot lancé par une unité qui reprend le `mot` d'une citation fait entrer cette citation dans la Collection.
 
+Un mot part de la vitesse de l'arme, pas de celle du tireur : plus lent que la marche du héros, il lui reste collé dessus. Les héros à mots tirent à 250 pour une marche autour de 145.
+
 Plus la manif est nombreuse, plus les projectiles du héros font de dégâts.
 
 ### Arme : `arme.type: jet`
