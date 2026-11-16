@@ -3,9 +3,9 @@
 
 import { h, link, signature } from './dom.js';
 import { spriteElement } from './sprites.js';
-import { REPO, VERSION, REFERENCES } from './config.js';
-import { storeSave, isFound } from './save.js';
-import { SHELVES, VOTE_FICHES, allCards, collectionCount, isFresh, levelOrder, markSeen, openCard, progress, shelfGrid, wonCards } from './collection.js';
+import { REPO, VERSION, REFERENCES, ANALYTICS } from './config.js';
+import { storeSave, eraseProgress, isFound, isReadOnly } from './save.js';
+import { SHELVES, VOTE_FICHES, allCards, collectionCount, isFresh, levelOrder, markSeen, openCard, progress, rarityCounts, shelfGrid, wonCards } from './collection.js';
 import { livesStack } from './lives.js';
 import { PANIC_STEPS } from '../sim/game.js';
 
@@ -67,6 +67,7 @@ export class Screens {
         this.button('Options', () => this.options()),
         this.button('À propos', () => this.about()),
         this.update && this.button('Mettre à jour', this.update)),
+      isReadOnly(this.save) && h('p', { className: 'mention' }, 'Cette sauvegarde vient d’une version plus récente du jeu. Mets le jeu à jour : d’ici là, rien n’est enregistré.'),
       h('p', { className: 'mention' }, MENTION, ` v${VERSION}`));
   }
 
@@ -100,10 +101,10 @@ export class Screens {
    * L'album : un rayon par onglet, des cartes compactes qu'on ouvre d'un toucher.
    * Ce qui n'a pas encore été croisé en jouant reste en silhouette.
    */
-  collection(tab = SHELVES[0].id) {
+  collection(tab = SHELVES[0].id, rarity = null, keep = false) {
     const { bundle, save } = this;
     const all = collectionCount(bundle, save);
-    const fresh = new Set(allCards(bundle).filter((c) => isFound(save, c.kind, c.item.id ?? c.item.texte) && isFresh(save, c)).map((c) => c.shelf));
+    const fresh = new Set(allCards(bundle).filter((c) => isFound(save, c.kind, c.item.id) && isFresh(save, c)).map((c) => c.shelf));
     // Un héros déjà rencontré se joue depuis sa carte ; pas en pleine partie, où ce serait l'abandonner.
     const actionsFor = (card) => (card.kind === 'heros' && !this.go.playing() ? [this.button('Jouer avec', () => this.playAs(card.item.id), 'gros')] : []);
     this.show('biblio',
@@ -115,8 +116,13 @@ export class Screens {
         const label = [shelf.titre, ' ', h('small', {}, `${found}/${total}`), fresh.has(shelf.id) && shelf.id !== tab && h('i', { className: 'pastille' }), progress(found, total)];
         return this.button(label, () => this.collection(shelf.id), shelf.id === tab ? '' : 'discret');
       })),
-      h('div', { className: 'contenu album' }, shelfGrid(bundle, tab, save, actionsFor)),
+      h('div', { className: 'raretes' }, rarityCounts(bundle, save, tab).reverse().map((r) => Object.assign(this.button(
+        [`${r.name}s `, h('small', {}, `${r.found}/${r.total}`)],
+        () => this.collection(tab, rarity === r.rarity ? null : r.rarity, r.rarity), `rarete-${r.rarity}${rarity === r.rarity ? '' : ' discret'}`),
+      { ariaPressed: String(rarity === r.rarity) }))),
+      h('div', { className: 'contenu album' }, shelfGrid(bundle, tab, save, actionsFor, rarity)),
       h('div', { className: 'pied' }, this.back(() => this.go.back())));
+    if (keep !== false) this.root.querySelector(`.raretes .rarete-${keep}`)?.focus({ preventScroll: true }); // le clavier reste sur le filtre
     markSeen(save, tab); // affichées avec leur badge « Nouveau » cette fois-ci, plus la prochaine
     storeSave(save);
   }
@@ -155,12 +161,7 @@ export class Screens {
           ['Pause', 'Échap ou P', 'Start', 'II']].map((row) => h('tr', {}, row.map((c) => h('td', {}, c))))),
       h('div', { className: 'pied' }, this.back(() => this.go.back()),
         this.button('Effacer ma progression', () => {
-          this.save.termines = {};
-          this.save.records = {};
-          this.save.decouvertes = [];
-          this.save.vues = {};
-          this.save.heros = '';
-          storeSave(this.save);
+          eraseProgress(this.save);
           this.options();
         }, 'discret')));
   }
@@ -172,6 +173,8 @@ export class Screens {
       h('p', {}, MENTION),
       h('p', {}, link(REPO, 'Le dépôt'), ' · ', link(`${REPO}/blob/main/CONTRIBUTING.md`, 'Contribuer'), ' · ',
         link(`${REPO}/blob/main/CHARTE.md`, 'La charte'), ' · ', h('a', { href: 'galerie.html' }, 'La Galerie')),
+      ANALYTICS.token && fold('Ce que le jeu compte',
+        h('p', {}, 'Par niveau : les parties lancées, terminées ou perdues, la taille de la manif, la durée, les personnages perdus, le boss, et les images partagées. Un numéro tiré au hasard relie les compteurs d’une même visite ; il est oublié à la fermeture de la page. Aucun cookie : rien n’est écrit sur votre appareil pour cela. La progression, elle, ne le quitte pas.')),
       fold('Références', h('ul', {}, REFERENCES.map((r) => h('li', {}, link(r.url, r.titre), ` — ${r.note}`)))),
       fold('Crédits et licences',
         h('p', {}, 'Code : MIT. Contenus : CC BY-SA 4.0. Bruitages synthétisés avec ZzFX de Frank Force (MIT).'),
@@ -249,7 +252,7 @@ export class Screens {
    * Fin de niveau, en un écran : la manif, le bilan des blessés tel qu'on l'annonce côté forces de l'ordre
    * avec ce qui le compose, un fait réel à ouvrir, ce qui a été débloqué.
    */
-  end({ level, stats, time, crowd, next, last, won = [], best = 0 }) {
+  end({ level, stats, time, crowd, next, last, won = [], best = 0, share = null }) {
     const fact = this.bundle.fiches[level.fiche?.[0]];
     const card = fact && allCards(this.bundle).find((c) => c.kind === 'fiches' && c.item === fact);
     const minutes = `${Math.floor(time / 60)} min ${String(Math.floor(time % 60)).padStart(2, '0')} s`;
@@ -278,6 +281,7 @@ export class Screens {
       h('div', { className: 'pied' },
         next && this.button('Niveau suivant', () => this.go.play(next), 'gros'),
         last && this.button('La suite', () => this.final(), 'gros'),
+        share && this.button('Partager', share, 'discret'),
         this.button('Rejouer', () => this.go.restart(), 'discret'),
         this.button('Menu', () => this.go.quit(), 'discret')));
   }

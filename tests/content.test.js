@@ -113,11 +113,11 @@ test('date mal écrite', () => {
 });
 
 test('nom de fichier : minuscules, chiffres et tirets seulement', () => {
-  expectError(errorsOf('content/heros/Mon Héros.txt', textOf('content/heros/zuc-man.txt')), { message: /Nom de fichier/ });
+  expectError(errorsOf('content/heros/Mon Héros.txt', textOf('content/heros/zucman.txt')), { message: /Nom de fichier/ });
 });
 
 test('référence croisée : une fiche ne peut citer que ce qui existe', () => {
-  const text = textOf('content/heros/zuc-man.txt').replace(/^citation: .*$/m, 'citation: citation-inventee');
+  const text = textOf('content/heros/zucman.txt').replace(/^citation: .*$/m, 'citation: citation-inventee');
   expectError(errorsOf('content/heros/essai.txt', text), { message: /« citation-inventee » n'existe pas dans content\/citations\// });
 });
 
@@ -200,11 +200,37 @@ test('pancartes et bandeaux : le crédit suit le texte, après « | »', () => {
   const { bundle, errors } = buildContent(files);
   assert.deepEqual(errors.map(formatError), []);
   assert.deepEqual(bundle.manchettes.slice(-2), [
-    { texte: 'Un bandeau', credit: 'Chaîne, 1er janv. 2023 — https://exemple.org/page', rarete: rarityOf('Un bandeau') },
-    { texte: 'Un autre', credit: '', rarete: rarityOf('Un autre') },
+    { id: 'Un bandeau', texte: 'Un bandeau', credit: 'Chaîne, 1er janv. 2023 — https://exemple.org/page', rarete: rarityOf('Un bandeau') },
+    { id: 'Un autre', texte: 'Un autre', credit: '', rarete: rarityOf('Un autre') },
   ]);
   assert.ok(bundle.pancartes.every((p) => typeof p.texte === 'string' && typeof p.credit === 'string'));
   expectError(errorsOf('content/pancartes/essai.txt', 'UNE PANCARTE | vue à Paris — javascript:alert(1)\n'), { line: 1, message: /commence par https:\/\// });
+});
+
+test('une pancarte corrigée garde son identifiant et sa rareté : « était: »', () => {
+  const line = 'ON TE MAI 68 | vue à Paris, mars 2023 — https://exemple.org/page | était: ON TE MAI 86\n';
+  const { bundle, errors } = buildContent(withFile('content/pancartes/essai.txt', line));
+  assert.deepEqual(errors.map(formatError), []);
+  assert.deepEqual(bundle.pancartes.at(-1), {
+    id: 'ON TE MAI 86', texte: 'ON TE MAI 68', credit: 'vue à Paris, mars 2023 — https://exemple.org/page', rarete: rarityOf('ON TE MAI 86'),
+  });
+  expectError(errorsOf('content/pancartes/essai.txt', 'UNE PANCARTE | vue à Paris | autre chose\n'), { line: 1, message: /était:/ });
+  expectError(errorsOf('content/pancartes/essai.txt', 'UNE PANCARTE | vue à Paris | était: AVANT | encore\n'), { line: 1, message: /de trop/ });
+  expectError(errorsOf('content/pancartes/essai.txt', 'UNE PANCARTE | vue à Paris | était:\n'), { line: 1, message: /rien après/ });
+  // sans crédit : « était: » juste après le texte
+  const bare = buildContent(withFile('content/pancartes/essai.txt', 'TEXTE CORRIGÉ SANS CRÉDIT | était: TEXTE D’AVANT SANS CRÉDIT\n'));
+  assert.deepEqual(bare.errors.map(formatError), []);
+  assert.deepEqual(bare.bundle.pancartes.at(-1), { id: 'TEXTE D’AVANT SANS CRÉDIT', texte: 'TEXTE CORRIGÉ SANS CRÉDIT', credit: '', rarete: rarityOf('TEXTE D’AVANT SANS CRÉDIT') });
+});
+
+test('deux lignes ne partagent pas un identifiant : même texte, ou « était: » déjà pris', () => {
+  const first = loadContent().bundle.pancartes[0].texte;
+  expectError(errorsOf('content/pancartes/essai.txt', 'UNE FOIS\nUNE FOIS\n'), { line: 2, message: /existe déjà \(content\/pancartes\/essai\.txt, ligne 1\)/ });
+  expectError(errorsOf('content/pancartes/essai.txt', `${first}\n`), { line: 1, message: /existe déjà/ });
+  expectError(errorsOf('content/pancartes/essai.txt', `AUTRE TEXTE | vue à Paris | était: ${first}\n`), { line: 1, message: /existe déjà/ });
+  // le même texte affiché sous deux identifiants : le jeu ne saurait jamais débloquer la seconde
+  expectError(errorsOf('content/pancartes/essai.txt', 'NOUVEAU TEXTE | c | était: VIEUX TEXTE\nNOUVEAU TEXTE | d\n'), { line: 2, message: /existe déjà \(content\/pancartes\/essai\.txt, ligne 1\)/ });
+  expectError(errorsOf('content/pancartes/essai.txt', 'NOUVEAU TEXTE | c | était: VIEUX TEXTE\nVIEUX TEXTE | d\n'), { line: 2, message: /existe déjà/ });
 });
 
 test('décor écrit : « ecrit » vaut pancarte ou tag', () => {

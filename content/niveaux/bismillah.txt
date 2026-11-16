@@ -5,7 +5,7 @@ fiche: comptage-31-janvier-2023
 fiche: bismillah-meme
 fond: ville
 cortege: oui
-heros: zuc-man
+heros: zucman
 nasse.ennemi: crs
 nasse.nombre: 3
 nasse.vitesse: 18

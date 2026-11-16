@@ -10,6 +10,8 @@ import { Radio } from './music.js';
 import { Screens, Hud } from './ui.js';
 import { showHeroCard } from './herocard.js';
 import { showTaxScene } from './tax.js';
+import { shareImage, openShare } from './share.js';
+import { measure } from './mesure.js';
 import { showAtelier } from './atelier.js';
 import { loadSave, storeSave, discover, isFound } from './save.js';
 import { cardName, citationOfWord, levelOrder, rarityName } from './collection.js';
@@ -110,8 +112,8 @@ const short = (text, max = 44) => (text.length > max ? `${text.slice(0, max - 1)
 function collect(kind, id, quiet = false) {
   const lines = kind === 'pancartes' || kind === 'manchettes'; // sans fiche : identifiées par leur texte
   const item = lines ? bundle[kind].find((p) => p.texte === id) : bundle[kind]?.[id];
-  if (!item || !discover(save, kind, id)) return;
-  won.push(`${kind}:${id}`);
+  if (!item || !discover(save, kind, item.id)) return;
+  won.push(`${kind}:${item.id}`);
   if (kind === 'pancartes') hud.toast(`Pancarte ${rarityName(item)} débloquée : « ${short(item.texte)} »`, `rarete-${item.rarete}`);
   else if (!quiet) hud.toast(`Débloqué : ${cardName(item)}`);
   collect('citations', item.citation, true);
@@ -151,6 +153,7 @@ function start(id, level = null) {
   setMode('paused');
   begin = () => {
     begin = null;
+    if (id) measure('niveau lancé', { niveau: id }); // chaque vraie partie, rejouée ou non ; pas un changement de héros sur le carton
     setMode('playing');
     radio.play(current.level.musique || current.id);
   };
@@ -172,14 +175,17 @@ function togglePause() {
 }
 
 async function win() {
+  begin = null;
   setMode('over');
   audio.play('victoire');
   const { level, id } = current;
   const boss = game.boss?.def; // celui qu'on vient d'affronter : il est tiré au hasard
+  let said = null; // ce que l'écran de taxe a dit des 2 % : l'image à partager le reprend
   if (boss?.fortune.montant) {
-    const learned = await showTaxScene(screenRoot, bundle, boss, { audio, hero: game.hero.def });
-    learned.forEach((f) => collect('fiches', f, true));
+    const tax = await showTaxScene(screenRoot, bundle, boss, { audio, hero: game.hero.def });
+    tax.learned.forEach((f) => collect('fiches', f, true));
     collect('boss', boss.id, true);
+    said = tax.said;
   }
   for (const fiche of [level.fiche].flat()) collect('fiches', fiche, true);
   const order = levelOrder(bundle);
@@ -189,8 +195,23 @@ async function win() {
   if (!custom && game.crowd > best) save.records[id] = game.crowd;
   if (index >= 0) save.termines[id] = true;
   storeSave(save);
+  // La pancarte de l'image : la plus rare de celles qui sont arrivées dans la manif pendant cette partie.
+  const sign = game.signs.map((t) => bundle.pancartes.find((p) => p.texte === t)).filter(Boolean)
+    .reduce((top, p) => (!top || p.rarete >= top.rarete ? p : top), null);
+  const crowd = game.crowd;
+  if (!custom) measure('niveau terminé', { niveau: id, manif: crowd, secondes: Math.round(game.time), personnages_perdus: game.stats.deaths, boss: boss?.id });
+  const share = () => {
+    measure('image partagée', { niveau: id });
+    openShare(shareImage({
+      frames: [document.getElementById('monde'), document.getElementById('textes')],
+      level: level.titre, crowd, tax: said, sign: sign?.texte, where: (location.host + location.pathname).replace(/(index\.html)?\/?$/, ''),
+    }), {
+      text: `✊ ${crowd.toLocaleString('fr-FR')} dans la manif. À toi.`, url: location.origin + location.pathname,
+      button: (label, action, className) => screens.button(label, action, className),
+    });
+  };
   screens.end({
-    level, stats: game.stats, time: game.time, crowd: game.crowd, won, best: custom ? null : best,
+    level, stats: game.stats, time: game.time, crowd, won, best: custom ? null : best, share,
     next: index >= 0 ? order[index + 1] : null,
     last: index === order.length - 1,
   });
@@ -231,6 +252,8 @@ function handle(events) {
       });
     } else if (e.type === 'won') win();
     else if (e.type === 'lost') {
+      if (!custom) measure('niveau perdu', { niveau: current.id, manif: game.crowd, secondes: Math.round(game.time) });
+      begin = null;
       setMode('over');
       screens.lost();
     }

@@ -17,6 +17,7 @@ Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les platea
 - **Débloquer.** Les gens qui rejoignent la manif portent parfois une pancarte : commune, rare, épique ou légendaire. Il y en a 344, toutes relevées en manif.
 - **Taxer.** Au bout de chaque niveau, un ultra-riche est assis sur sa fortune : lequel, le hasard le dit. On en prend 2 % : de quoi payer, par exemple, 64 000 enseignants. Les comparaisons et les faits changent à chaque partie.
 - **PANIQUE TV.** Un bandeau de chaîne d'info fait défiler de vraies déclarations. Quand la panique monte, une équipe télé vient filmer la poubelle qui brûle, pas la manif.
+- **Partager.** En fin de niveau, une image à envoyer : la manif, ce que 2 % paieraient, une pancarte.
 
 <details>
 <summary>Plus de captures</summary>
@@ -35,7 +36,7 @@ Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les platea
 | ![Le menu](docs/captures/menu.jpg) | ![L'ouverture d'un niveau](docs/captures/ouverture.jpg) |
 | ![Un camarade libéré](docs/captures/carton-heros.jpg) | ![Fin de niveau](docs/captures/fin-de-niveau.jpg) |
 | ![Ce que 2 % paieraient, et un fait](docs/captures/taxe-ce-que-ca-paie.jpg) | ![Le plan de campagne](docs/captures/plan-de-campagne.jpg) |
-| ![La Collection : les pancartes débloquées et leur rareté](docs/captures/collection-grille.jpg) | |
+| ![La Collection : les pancartes débloquées et leur rareté](docs/captures/collection-grille.jpg) | ![L'image à partager en fin de niveau](docs/captures/partage.jpg) |
 | ![Une pancarte débloquée](docs/captures/collection-carte.jpg) | ![L'appel au vote](docs/captures/appel-au-vote.jpg) |
 | ![L'Atelier : on dessine son niveau](docs/captures/atelier.jpg) | ![Sur téléphone](docs/captures/mobile-paysage.jpg) |
 | ![Fin de niveau sur téléphone](docs/captures/mobile-fin-de-niveau.jpg) | |

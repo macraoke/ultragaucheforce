@@ -67,7 +67,7 @@ export function joinRecruit(game, r) {
 // ---------------------------------------------------------------- cortège
 
 /** Combien de manifestants on dessine pour une foule donnée : jamais plus qu'il n'y en a, quarante au plus. */
-const ODDS = [12, 5, 2, 1]; // une légendaire sort douze fois moins qu'une commune
+const ODDS = [6, 4, 3, 2]; // une légendaire sort trois fois moins qu'une commune : sur 344 pancartes, une légendaire tous les 70 tirages environ
 const SIGN_CHANCE = 0.5; // un groupe qui arrive porte une pancarte une fois sur deux
 
 /** Tire une ligne au sort, les plus rares moins souvent (`odds` : le poids de chaque rareté). */

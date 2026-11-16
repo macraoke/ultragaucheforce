@@ -12,7 +12,7 @@ import { loadContent, readContentFiles, ROOT } from './content.mjs';
 import { formatError } from '../src/content/rules.js';
 import { makeIcons } from './png.mjs';
 
-const STATIC = ['index.html', 'galerie.html', 'style.css', 'manifest.webmanifest'];
+const STATIC = ['index.html', 'galerie.html', 'style.css', 'manifest.webmanifest', 'apercu.jpg']; // apercu.jpg : l'image d'un lien partagé
 
 /** Tous les fichiers `.js` d'un dossier, en chemins relatifs à la racine du dépôt. */
 function scripts(dir) {

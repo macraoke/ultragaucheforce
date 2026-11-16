@@ -33,7 +33,7 @@ arme.cadence: 4
 
 - Des lignes `clé: valeur`. Ni guillemets, ni virgules.
 - Pour les dessins et les cartes, des sections `--- nom` : une grille, un caractère par pixel ou par case. Les lettres sont les couleurs de [`content/palette.txt`](content/palette.txt), le point est transparent.
-- Le nom du fichier est l'identifiant : `content/heros/zuc-man.txt` est le héros `zuc-man`. Minuscules, chiffres, tirets.
+- Le nom du fichier est l'identifiant : `content/heros/zucman.txt` est le héros `zucman`. Minuscules, chiffres, tirets. Il ne change plus ensuite : la sauvegarde des joueurs s'en sert. Le nom affiché (`nom`), lui, peut changer.
 
 Déposer un fichier suffit : aucune liste à tenir à jour.
 

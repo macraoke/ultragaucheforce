@@ -585,6 +585,13 @@ article.carte.cachee h3 { letter-spacing: .2em; }
 .biblio .onglets button:not(.discret) .jauge i { background: var(--rouge); }
 .pastille { display: inline-block; width: .6em; height: .6em; margin-left: .35em; border-radius: 50%; background: var(--rouge); vertical-align: .1em; }
 
+.biblio .raretes { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 .8em; }
+.biblio .raretes:empty { display: none; }
+.biblio .raretes button { font-size: .8rem; padding: .35em .7em; border-left: 6px solid var(--gris, #888); }
+.biblio .raretes button.rarete-1 { border-left-color: var(--rare); }
+.biblio .raretes button.rarete-2 { border-left-color: var(--epique); }
+.biblio .raretes button.rarete-3 { border-left-color: var(--or); }
+.biblio .raretes button small { opacity: .8; }
 .grille-album { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
 button.carte-mini { position: relative; display: grid; grid-template-rows: auto 60px 2.3em; gap: 4px; height: 128px; min-width: 0; padding: 6px 6px 5px; overflow: hidden; background: var(--papier); color: var(--nuit); border: 3px solid var(--nuit); border-radius: 8px; box-shadow: 3px 3px 0 var(--rouge); font: 700 .68rem/1.15 var(--texte); letter-spacing: 0; text-transform: none; text-align: center; }
 button.carte-mini:hover { background: var(--blanc); }
@@ -619,6 +626,12 @@ article.carte .genre.rarete-3 { background: var(--or); color: var(--nuit); }
 .carte-ouverte { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; padding: 12px; overflow: auto; background: rgb(26 28 44 / .86); }
 .carte-ouverte .cadre { width: min(100%, 360px); perspective: 900px; }
 .carte-ouverte article.carte { max-height: calc(var(--vh, 1vh) * 100 - 110px); overflow: auto; font-size: .85rem; animation: retourne .35s ease-out both; }
+.carte-ouverte.partage { background: rgb(26 28 44 / .96); }
+.carte-ouverte.partage .cadre { display: grid; justify-items: center; gap: 12px; width: auto; }
+.carte-ouverte.partage img { display: block; width: auto; height: auto; max-width: min(100%, 420px); max-height: calc(var(--vh, 1vh) * 100 - 120px); border: 4px solid var(--papier); box-shadow: 6px 6px 0 var(--rouge); }
+html.bas .carte-ouverte.partage .cadre { grid-template-columns: auto auto; align-items: center; }
+html.bas .carte-ouverte.partage img { max-height: calc(var(--vh, 1vh) * 100 - 40px); }
+html.bas .carte-ouverte.partage .pied { flex-direction: column; margin-top: 0; }
 .carte-ouverte .pied { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 12px; }
 @keyframes retourne { from { transform: rotateY(90deg) scale(.8); } to { transform: none; } }
 

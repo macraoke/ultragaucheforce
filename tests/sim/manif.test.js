@@ -341,5 +341,5 @@ test('pancartes : les rares sortent moins souvent, et le cortège ne montre que 
     }
   }
   assert.ok(empty > 120 && empty < 280, `une fois sur deux, le cortège de départ n'en a pas (${empty} sur 400)`);
-  assert.ok(seen.LÉGENDAIRE > 0 && seen.COMMUNE > seen.LÉGENDAIRE * 4, JSON.stringify(seen));
+  assert.ok(seen.LÉGENDAIRE > 0 && seen.COMMUNE > seen.LÉGENDAIRE * 2, `une légendaire sort trois fois moins qu’une commune : ${JSON.stringify(seen)}`);
 });

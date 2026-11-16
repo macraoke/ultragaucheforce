@@ -83,7 +83,8 @@ function sourcesOf(facts) {
 }
 
 /**
- * @returns {Promise<string[]>} les fiches à noter comme découvertes
+ * @returns {Promise<{learned: string[], said: {caption: string, result: string} | null}>}
+ *   les fiches à noter comme découvertes, et ce que l'écran a dit des 2 % (pour l'image à partager)
  */
 export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pick = draw } = {}) {
   return new Promise((resolve) => {
@@ -92,7 +93,7 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pi
     const scale = pick('compare', taxScales(bundle));
     const use = pick('finance', taxUses(bundle));
     const shock = pick('choc', taxShocks(bundle));
-    if (!boss.fortune.montant || !scale) return resolve([]);
+    if (!boss.fortune.montant || !scale) return resolve({ learned: [], said: null });
     const estimate = fiche(boss.fortune.fiche); // d'où vient le montant de la fortune
     // Ce que la fortune rapporte en un an : un dividende par action multiplié par un nombre d'actions, chacun avec sa source.
     const rent = boss.fortune.rente.map(fiche);
@@ -167,8 +168,11 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pi
     const before = h('div', { className: 'detail' },
       yearly > 0 && h('p', { className: 'qui' }, `Rien qu’en dividendes, elle rapporte ${billions(yearly)} milliards par an.`), legend);
     // Après : ce que 2 % paieraient (au plus : l'impôt est différentiel), et un fait frappant.
+    const result = use ? `${round(count)} ${use.finance}` : `Au plus ${billions(tax)} milliards par an`;
+    // L'image à partager garde la réserve de l'écran : « jusqu'à », puisque l'impôt est différentiel.
+    const said = { result, caption: use ? `2 % de la fortune de ${owner}, ${use.ponctuel ? 'en un an' : 'chaque année'}, c’est jusqu’à :` : `2 % de la fortune de ${owner} :` };
     const after = h('div', { className: 'detail apres', hidden: true },
-      h('p', { className: 'resultat' }, use ? `${round(count)} ${use.finance}` : `Au plus ${billions(tax)} milliards par an`),
+      h('p', { className: 'resultat' }, result),
       h('p', { className: 'qui' }, use
         ? `Ce que paieraient 2 % de cette fortune${use.ponctuel ? ' en un an' : ', chaque année'} : au plus ${billions(tax)} milliards${under ? ', moins que ses dividendes' : ''}.`
         : `2 % de cette fortune${under ? ' : moins que ses dividendes' : ''}.`),
@@ -182,7 +186,7 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pi
       if (taxed) {
         root.replaceChildren();
         root.hidden = true;
-        return resolve(taxFiches(bundle, boss, [scale, use, shock].filter(Boolean)));
+        return resolve({ learned: taxFiches(bundle, boss, [scale, use, shock].filter(Boolean)), said });
       }
       taxed = true;
       audio?.play('tampon');
