@@ -1,0 +1,172 @@
+// Un écran qui se lit : les notes passent une à une, les textes flottants ne s'empilent pas,
+// les pancartes du cortège ne clignotent pas, les petits textes restent lisibles sur téléphone.
+// Le rendu tourne ici sur un faux canevas : on vérifie ses décisions, pas ses pixels.
+
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { loadContent } from '../tools/content.mjs';
+import { queueNote, readTime } from '../src/client/ui.js';
+
+// ---------------------------------------------------------------- un faux canevas
+
+let measured = 0;
+function fakeContext() {
+  const state = { font: '10px sans-serif' };
+  return new Proxy(state, {
+    get(target, key) {
+      if (key in target) return target[key];
+      if (key === 'measureText') {
+        return (text) => {
+          measured++;
+          return { width: text.length * parseFloat(target.font) * 0.5 };
+        };
+      }
+      if (key === 'createLinearGradient') return () => ({ addColorStop() {} });
+      return () => {};
+    },
+    set(target, key, value) {
+      target[key] = value;
+      return true;
+    },
+  });
+}
+const fakeCanvas = () => ({ width: 0, height: 0, style: {}, getContext: fakeContext });
+globalThis.document ??= { createElement: fakeCanvas, body: { classList: { contains: () => false } } };
+
+const { Renderer } = await import('../src/client/render.js');
+const { bundle } = loadContent();
+
+function renderer(ratio = 3) {
+  const r = new Renderer(fakeCanvas(), fakeCanvas(), bundle);
+  r.ratio = ratio;
+  r.viewW = 384;
+  r.viewH = 216;
+  r.cx = 0;
+  r.cy = 0;
+  r.boxes = [];
+  return r;
+}
+const overlap = (a, b) => a.x0 < b.x1 && a.x1 > b.x0 && a.y0 < b.y1 && a.y1 > b.y0;
+
+// ---------------------------------------------------------------- notes de déblocage
+
+test('les notes attendent leur tour ; une rafale du même genre se replie en une seule', () => {
+  const notes = [];
+  queueNote(notes, { text: 'Pancarte commune débloquée : « A »', tone: 'rarete-0', group: 'pancartes' });
+  assert.equal(notes.length, 1);
+  assert.equal(notes[0].text, 'Pancarte commune débloquée : « A »', 'seule, elle garde son texte');
+  queueNote(notes, { text: 'Pancarte légendaire débloquée : « B »', tone: 'rarete-3', group: 'pancartes' });
+  queueNote(notes, { text: 'Pancarte rare débloquée : « C »', tone: 'rarete-1', group: 'pancartes' });
+  assert.equal(notes.length, 1);
+  assert.equal(notes[0].text, '3 pancartes débloquées', 'toutes les raretés se replient pareil');
+  assert.equal(notes[0].tone, 'rarete-3', 'le bord a la couleur de la plus rare');
+  queueNote(notes, { text: 'Débloqué : La BAC', group: 'cartes' });
+  queueNote(notes, { text: 'Débloqué : Les CRS', group: 'cartes' });
+  assert.deepEqual(notes.map((n) => n.text), ['3 pancartes débloquées', '2 cartes débloquées']);
+});
+
+test('une note reste le temps d’être lue', () => {
+  assert.equal(readTime('2 pancartes débloquées'), 2.5);
+  assert.ok(readTime('Pancarte commune débloquée : « LA RETRAITE AVANT L’ARTHRITE, ET PLUS VITE QUE ÇA »') > 3.5);
+  assert.equal(readTime('x'.repeat(400)), 4, 'jamais plus de quatre secondes');
+});
+
+// ---------------------------------------------------------------- textes flottants
+
+test('les textes flottants nés au même endroit se décalent, quatre au plus', () => {
+  const r = renderer();
+  const slogans = ['DE L’ARGENT POUR L’HÔPITAL', 'LA RETRAITE AVANT L’ARTHRITE', 'ON EST LÀ', 'TOUS ENSEMBLE', 'GRÈVE GÉNÉRALE'];
+  r.absorb(slogans.map((text) => ({ type: 'bubble', x: 200, y: 120, text })));
+  const alive = r.floaters.filter((f) => f.t > 0.25);
+  assert.equal(alive.length, 4, 'le plus ancien s’efface');
+  r.placeFloaters([]);
+  const boxes = alive.map((f) => r.textBox(f.text, f.x, f.y, f.size, 150));
+  for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) assert.ok(!overlap(boxes[i], boxes[j]), `${alive[i].text} / ${alive[j].text}`);
+});
+
+test('deux gains au même moment et au même endroit font un seul nombre', () => {
+  const r = renderer();
+  r.absorb([{ type: 'recruit', x: 100, y: 150, n: 20 }, { type: 'recruit', x: 120, y: 150, n: 30 }]);
+  assert.deepEqual(r.floaters.map((f) => f.text), ['+ 50']);
+});
+
+test('un texte flottant ne passe jamais sur la voix d’en face (une sommation)', () => {
+  const r = renderer();
+  r.absorb([{ type: 'bubble', x: 200, y: 100, text: 'DÉSOBÉISSONS !' }]);
+  const voice = r.textBox('Obéissance à la loi. Dispersez-vous.', 200, 96, 5.5, 80);
+  r.placeFloaters([voice]);
+  const [f] = r.floaters;
+  assert.ok(!overlap(r.textBox(f.text, f.x, f.y, f.size, 150), voice));
+});
+
+// ---------------------------------------------------------------- pancartes du cortège
+
+/** Un cortège serré dont les pancartes se gênent ; il piétine (voir `step`). */
+function crowd(n = 12) {
+  return Array.from({ length: n }, (_, i) => ({
+    x: 60 + i * 12, y: 170, facing: 1, kind: ['pancarte', 'drapeau', 'fanfare'][i % 3],
+    label: i % 3 === 0 ? `UNE PANCARTE ASSEZ LONGUE NUMÉRO ${i}` : '', gassed: 0, animTime: 0,
+  }));
+}
+
+/** Chacun avance et recule de quelques pixels, pas en même temps : les pancartes se touchent puis se lâchent sans cesse. */
+const step = (cortege, frame) => cortege.forEach((m, i) => { m.x = 60 + i * 12 + Math.round(6 * Math.sin(frame * 0.35 + i * 1.3)); });
+
+test('une pancarte levée le reste une seconde ; baissée, elle attend une demi-seconde', () => {
+  // Avec l'ancienne règle (premier arrivé, recalculé à chaque image), ce cortège changeait 134 fois en dix secondes.
+  const r = renderer();
+  const cortege = crowd();
+  const history = new Map(cortege.map((m) => [m, []]));
+  for (let frame = 0; frame < 600; frame++) {
+    r.clock = frame / 60;
+    step(cortege, frame);
+    r.boxes = [];
+    r.raiseSigns(cortege);
+    for (const m of cortege) history.get(m).push(r.raised.has(m));
+  }
+  let changes = 0;
+  for (const [m, seen] of history) {
+    if (m.kind !== 'pancarte') continue;
+    let run = 1;
+    for (let k = 1; k < seen.length; k++) {
+      if (seen[k] === seen[k - 1]) { run++; continue; }
+      changes++;
+      if (seen[k - 1]) assert.ok(run >= 60, `levée ${run} images seulement`);
+      else if (k - run > 0) assert.ok(run >= 30, `rebaissée puis relevée après ${run} images`);
+      run = 1;
+    }
+  }
+  assert.ok(changes <= 10, `${changes} changements en dix secondes`);
+  assert.ok([...history].some(([m, seen]) => m.kind === 'pancarte' && seen.at(-1)), 'des pancartes restent levées');
+});
+
+test('devant le héros, une pancarte se baisse tout de suite', () => {
+  const r = renderer();
+  const cortege = crowd(1);
+  r.clock = 0;
+  r.raiseSigns(cortege);
+  assert.ok(r.raised.has(cortege[0]));
+  r.clock = 0.1;
+  r.boxes = [{ x0: 0, x1: 384, y0: 0, y1: 216 }]; // le héros réservé : toute la vue, pour l'exemple
+  r.raiseSigns(cortege);
+  assert.ok(!r.raised.has(cortege[0]));
+});
+
+// ---------------------------------------------------------------- lisibilité et travail inutile
+
+test('sur téléphone, un petit texte du monde grandit jusqu’à onze pixels à l’écran', () => {
+  assert.equal(renderer(3).fit(4.6), 4.6, 'ordinateur : rien ne change');
+  const phone = renderer(5 / 3);
+  assert.ok(Math.abs(phone.fit(4.6) * phone.ratio - 11) < 1e-9);
+  assert.equal(phone.fit(11), 11, 'un grand texte garde sa taille');
+});
+
+test('un texte hors de la vue n’est ni mesuré ni écrit', () => {
+  const r = renderer();
+  measured = 0;
+  r.label('GARDE À VUE', -400, 100, { size: 4.5, bg: '#333c57' });
+  r.label('+ 25', 200, 900, { size: 8 });
+  assert.equal(measured, 0);
+  r.label('SORTIE ▶', 200, 100, { size: 6 });
+  assert.ok(measured > 0);
+});
