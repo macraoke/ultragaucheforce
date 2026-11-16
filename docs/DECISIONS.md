@@ -44,6 +44,8 @@ Le prix : pas de musique hors-ligne, et un lecteur tiers avec ses traceurs. Il n
 
 **Des musiques qui tournent** (Valentin, 16 novembre 2026 : « aussi les musiques pendant le jeu elles tournent pas assez je trouve ») : un niveau dure moins qu'une piste, et chaque niveau tirait la sienne au hasard dans une liste courte ; la même revenait souvent, toujours depuis le début. Désormais, en partie, un sac : un niveau ouvre sur ses pistes à lui la première fois, puis toutes celles qu'il peut jouer passent avant qu'une revienne, et chaque niveau change de piste.
 
+**Une question au premier lancement** (décision de Valentin, 16 novembre 2026 : « Une question au premier lancement ») : le menu demande « Radio Manif ? », Oui ou Non, deux boutons pareils ; le focus reste sur « Jouer ». Rien de SoundCloud ne se charge avant la réponse. « Oui » charge le lecteur et lance la musique : dans Chromium, ce toucher suffit ; dans Safari, la lecture attend le toucher suivant (« ▶ Relancer la musique », ou n'importe où). La réponse est retenue (`options.musiqueChoisie`, version 2 de la sauvegarde) ; Options la change ensuite. Échap ou B : non, pour cette fois, et la question revient au lancement suivant. Une sauvegarde d'avant la question : musique activée, rien à demander ; sinon, la question, une fois.
+
 Le lecteur ne dit pas toujours qu'une piste se tait. Radio Manif vérifie que la lecture avance : une piste morte cède la place à une autre, un réseau lent est attendu. Quand le navigateur refuse de jouer sans geste du joueur, un bouton le montre et le prochain toucher relance la musique. SoundCloud injoignable : on joue sans musique, et seul le bouton de Radio Manif, ou le retour du réseau, réessaie.
 
 ## Le but : une manif qui grossit
