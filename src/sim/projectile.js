@@ -9,6 +9,7 @@ const DEFAULTS = {
   vx: 0, vy: 0, team: 'luttes', word: null, def: null, image: 'projectile',
   gravity: 0, range: 240, damage: 1, terrain: 1, bounces: 0, explosion: 0,
   pierce: false, armor: false, friendly: false, gas: 0, hug: false, owner: null, age: 0, dead: false,
+  touche: 0, // camp de l'ordre : manifestants touchés si le projectile atteint le cortège
 };
 const MAX_PROJECTILES = 240;
 
@@ -74,8 +75,8 @@ function strike(game, p, axis, before) {
   }
 }
 
-/** Fin du projectile : explosion et nuage éventuels. */
-function burst(game, p) {
+/** Fin du projectile : explosion et nuage éventuels. `quiet` : le coup a déjà son bruit (touché, paré). */
+function burst(game, p, quiet = false) {
   p.dead = true;
   const cx = p.x + p.w / 2;
   const cy = p.y + p.h / 2;
@@ -84,7 +85,7 @@ function burst(game, p) {
       team: p.team, friendly: p.friendly, terrain: Math.max(1, p.terrain),
       damage: Math.max(1, p.damage) * (p.team === 'luttes' ? game.power() : 1),
     });
-  } else {
+  } else if (!quiet) {
     game.sfx('impact', cx);
   }
   if (p.gas > 0) {
@@ -102,15 +103,15 @@ function touchActors(game, p) {
       // Le bouclier pare ce qui arrive de face, sauf projectile « blindage ».
       // Un projectile perçant (« perce ») n'abîme pas l'automate protégé, mais continue sa route.
       const blocked = e.def.bouclier && Math.sign(p.vx) === -e.facing && !p.armor;
-      if (blocked) e.flash = 0.05;
-      else game.hurtEnemy(e, damage, 'luttes');
-      if (!p.pierce) return burst(game, p);
+      if (blocked) game.parry(e, e.facing > 0 ? e.x + e.w : e.x); // l'étincelle jaillit sur le bouclier, côté tireur
+      else game.hurtEnemy(e, damage, 'luttes', Math.sign(p.vx));
+      if (!p.pierce) return burst(game, p, true);
     }
     const boss = game.boss;
     if (boss && boss.state !== 'ejecting' && boss.state !== 'gone' && !p.hits.has(boss) && overlap(p, boss)) {
       p.hits.add(boss);
       game.hurtBoss(damage);
-      if (!p.pierce) return burst(game, p);
+      if (!p.pierce) return burst(game, p, true);
     }
     for (const cage of game.props) {
       if (cage.kind !== 'cage' || cage.on || p.hits.has(cage) || !overlap(p, cage)) continue;
@@ -129,13 +130,22 @@ function touchActors(game, p) {
   }
   // Camp de l'ordre : vise le héros… et, pour les grenades « fratricides », touche aussi les collègues.
   if (!game.hero.dead && overlap(p, game.hero)) {
-    game.hurtHero(p.damage);
+    game.hurtHero(p.damage, { dir: Math.sign(p.vx), x: p.x + p.w / 2, kind: p.explosion > 0 ? 'explosion' : 'tir' });
     return burst(game, p);
+  }
+  // Un tir qui file dans le cortège (`arme.touche`) : quelques manifestants touchés quittent la manif.
+  if (p.touche > 0) {
+    const cx = p.x + p.w / 2;
+    const m = game.cortege.find((c) => Math.abs(c.x - cx) < 4 + p.w / 2 && p.y + p.h > c.y - 16 && p.y < c.y);
+    if (m) {
+      game.loseCrowd(p.touche, 'touche', { x: m.x, y: m.y - 16 });
+      return burst(game, p);
+    }
   }
   if (!p.friendly) return;
   for (const e of game.enemies) {
     if (e.state === 'done' || (e === p.owner && p.age < 0.4) || !overlap(p, e)) continue;
-    game.hurtEnemy(e, p.damage, 'ordre');
+    game.hurtEnemy(e, p.damage, 'ordre', Math.sign(p.vx));
     return burst(game, p);
   }
 }

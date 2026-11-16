@@ -39,6 +39,7 @@ export const WEAPONS = {
       recul: [0, 200, 0], // pousse le tireur en arrière
       vise: [0, 1, 0], // 1 = tiré vers le héros plutôt qu'à l'horizontale (ennemis seulement)
       visee: [0, 2, 0], // secondes de visée avant un tir visé : le joueur voit venir le coup
+      touche: [0, 20, 0], // ennemis seulement : manifestants touchés (ils quittent la manif) quand le tir atteint le cortège
     },
     texts: ['image', 'son'], // image = nom d'une section de sprite ; son = identifiant de bruitage
     lists: ['mots'], // si présent : le projectile est un mot écrit, tiré au hasard
@@ -78,7 +79,7 @@ export const WEAPONS = {
           vx: ux * w.vitesse + (upright ? spread : 0), vy: uy * w.vitesse + (upright ? 0 : spread - w.elan), team, word, def: shooter.def, image: w.image || 'projectile',
           gravity: w.gravite, range: w.portee, damage: w.degats, terrain: w.terrain, bounces: w.rebonds,
           explosion: w.explosion, pierce: w.perce > 0, armor: w.blindage > 0, friendly: w.fratricide > 0,
-          gas: w.gaz, owner: shooter,
+          gas: w.gaz, owner: shooter, touche: team === 'ordre' ? w.touche : 0,
         });
       }
       if (!upright) shooter.vx -= dir * w.recul;

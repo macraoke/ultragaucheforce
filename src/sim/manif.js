@@ -129,7 +129,7 @@ export function syncCortege(game) {
 export function updateCortege(game, dt) {
   const { trail } = game;
   if (!trail.length) return;
-  let clouds = 0;
+  const clouds = [];
   game.cortege.forEach((m, i) => {
     let k = Math.max(0, trail.length - 1 - (i + 1) * SPACING);
     while (k < trail.length - 1 && !trail[k].ground) k++; // jamais figé en l'air
@@ -162,10 +162,10 @@ export function updateCortege(game, dt) {
     }
     if (!cloud.dispersed) {
       cloud.dispersed = true; // un nuage disperse une fois, pas à chaque manifestant qu'il touche
-      clouds++;
+      clouds.push(cloud);
     }
   });
-  for (let i = 0; i < clouds; i++) game.disperse(0.03);
+  for (const cloud of clouds) game.disperse(0.03, 'gaz', { x: cloud.x, y: cloud.y - cloud.r });
 }
 
 // ---------------------------------------------------------------- nasse

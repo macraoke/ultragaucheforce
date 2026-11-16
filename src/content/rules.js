@@ -219,6 +219,8 @@ function buildEnemy(f, ctx, report) {
     replique: list(), largeur: num(6, 32, 12), hauteur: num(6, 32, 16),
     // `debordement` : la ligne tient (insensible, infranchissable) tant que la manif compte moins de monde.
     debordement: num(0, 5000, 0), sommation: list(), citation: str(),
+    // `interpelle` : combien de manifestants l'unité emmène quand elle atteint le cortège (une fois toutes les 2,5 s).
+    interpelle: num(0, 20, 0),
     // `ecriteau` : ce qu'on lit au-dessus de l'unité une fois hors service (rien si la clé est absente).
     ecriteau: str(), ...CARD, ...CREDITS,
   };

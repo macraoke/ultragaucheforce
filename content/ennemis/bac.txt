@@ -1,4 +1,5 @@
-# LBD : une visée que l'on voit venir, puis un tir tendu.
+# LBD : une visée que l'on voit venir, puis un tir tendu. Un tir qui file dans le cortège y touche deux personnes ;
+# la BAC qui atteint le cortège interpelle trois manifestants.
 nom: La BAC
 pv: 2
 vitesse: 60
@@ -11,6 +12,7 @@ hauteur: 17
 fiche: lbd-tirs-2018
 fiche: lbd-defenseur-des-droits
 ecriteau: CODE 562
+interpelle: 3
 arme.type: tir
 arme.cadence: 0.4
 arme.vitesse: 330
@@ -19,6 +21,7 @@ arme.degats: 1
 arme.terrain: 0
 arme.vise: 1
 arme.visee: 0.9
+arme.touche: 2
 arme.taille: 4
 arme.image: projectile
 arme.son: impact

@@ -1,0 +1,5 @@
+nom: Coup paré par un bouclier
+zzfx: .5,.05,1500,,.01,.15,1,1.5,,,,,,,9,,,.4,.05
+volume: 0.7
+auteur: UltraGauche Force
+licence: CC0-1.0

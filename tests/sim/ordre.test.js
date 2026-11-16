@@ -62,7 +62,7 @@ test('charge : en traversant le cortège, elle disperse une part de la manif, un
   }), { invincible: true }));
   run(game, 28, { right: true }); // le cortège s'étire derrière le héros, vers la ligne de charge
   const events = run(game, 200);
-  assert.deepEqual(of(events, 'dispersed'), [{ type: 'dispersed', n: 10, crowd: 90 }], 'charge.disperse: 10 → dix pour cent');
+  assert.deepEqual(of(events, 'dispersed').map(({ n, crowd, reason }) => ({ n, crowd, reason })), [{ n: 10, crowd: 90, reason: 'charge' }], 'charge.disperse: 10 → dix pour cent');
   assert.equal(game.cortege.length, 11, 'le cortège visible suit le nombre');
 });
 

@@ -105,7 +105,10 @@ export function updateBoss(game, boss, dt) {
     game.emit('shake', { force: 6 });
     boss.state = 'idle';
   }
-  if (boss.active && !hero.dead && overlap(boss, hero)) game.hurtHero(boss.state === 'charge' ? boss.charge.damage : 1);
+  if (boss.active && !hero.dead && overlap(boss, hero)) {
+    const charging = boss.state === 'charge';
+    game.hurtHero(charging ? boss.charge.damage : 1, { x: boss.x + boss.w / 2, kind: charging ? 'charge' : 'contact' });
+  }
 }
 
 /** Le héros touche la machine. */

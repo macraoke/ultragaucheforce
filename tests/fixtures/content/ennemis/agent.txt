@@ -1,0 +1,10 @@
+# Ne tire pas : quand le cortège passe sur lui, il interpelle trois manifestants.
+nom: Agent
+pv: 2
+deplacement: fixe
+reaction: rien
+fin: greve
+interpelle: 3
+--- repos
+kk
+kk

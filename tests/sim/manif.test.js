@@ -10,6 +10,7 @@ import { LINE_REACH } from '../../src/sim/enemy.js';
 const enemy = (id) => ({ type: 'ennemi', id });
 const recruit = (id) => ({ type: 'recrue', id });
 const of = (events, type) => events.filter((e) => e.type === type);
+const losses = (events) => of(events, 'dispersed').map(({ n, crowd, reason }) => ({ n, crowd, reason }));
 
 // ---------------------------------------------------------------- recrues
 
@@ -83,7 +84,7 @@ test('dispersion : personne ne meurt, et il reste toujours quelqu’un dans le c
   game.killHero();
   events.push(...game.events.splice(0));
   assert.equal(game.crowd, 85, 'la chute du héros disperse 15 % de la manif');
-  assert.deepEqual(of(events, 'dispersed'), [{ type: 'dispersed', n: 15, crowd: 85 }]);
+  assert.deepEqual(losses(events), [{ n: 15, crowd: 85, reason: 'chute' }]);
   assert.equal(game.lives, lives - 1, 'seul le héros y laisse une vie');
   run(game, 80);
 
@@ -98,7 +99,7 @@ test('dispersion : personne ne meurt, et il reste toujours quelqu’un dans le c
   const m = gassed.cortege[0];
   gassed.clouds.push({ x: m.x, y: m.y - 8, r: 30, t: 9 });
   events = run(gassed, 300);
-  assert.deepEqual(of(events, 'dispersed'), [{ type: 'dispersed', n: 6, crowd: 194 }], 'un nuage disperse 3 %, une seule fois');
+  assert.deepEqual(losses(events), [{ n: 6, crowd: 194, reason: 'gaz' }], 'un nuage disperse 3 %, une seule fois : des gazés');
   assert.ok(gassed.stats.gassed >= 2, 'plusieurs manifestants gazés, une seule dispersion');
 
   const none = play(flat({ manif: 4 }));
@@ -155,7 +156,8 @@ test('débordement : la ligne tient, insensible et infranchissable, puis cède q
   assert.notEqual(line.state, 'done');
   const blocked = of(events, 'blocked');
   assert.ok(blocked.length >= 2 && blocked.length <= 3, 'un rappel de temps en temps, pas à chaque image');
-  assert.deepEqual({ need: blocked[0].need, crowd: blocked[0].crowd }, { need: 30, crowd: 10 });
+  assert.deepEqual({ need: blocked[0].need, crowd: blocked[0].crowd, joined: blocked[0].joined }, { need: 30, crowd: 12, joined: 2 },
+    'dix au départ, deux passants rejoignent (4 % de trente) : le client le montre');
   game.step({ special: true });
   run(game, 30);
   assert.notEqual(line.state, 'stunned', 'la spéciale ne la fait pas reculer non plus');
