@@ -4,7 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadContent } from '../tools/content.mjs';
-import { Radio, chooseTrack, nextLevelTrack, poolsFor, frameAttributes, START_TIMEOUT, LOAD_TIMEOUT } from '../src/client/music.js';
+import { Radio, chooseTrack, nextLevelTrack, openingTrack, poolsFor, frameAttributes, START_TIMEOUT, LOAD_TIMEOUT } from '../src/client/music.js';
 
 const { bundle } = loadContent();
 const real = Object.values(bundle.musiques);
@@ -497,7 +497,7 @@ async function campaignOpenings(s, levels) {
   return openings;
 }
 
-test('une campagne : six niveaux, six pistes différentes, et chaque niveau ouvre sur ses pistes à lui la première fois', async () => {
+test('une campagne : six niveaux, six pistes différentes, et chaque niveau ouvre sur sa piste à lui, s’il en a une', async () => {
   for (let seed = 1; seed <= 100; seed++) {
     const s = setup({ list: real, random: seeded(seed) });
     await s.on();
@@ -508,6 +508,18 @@ test('une campagne : six niveaux, six pistes différentes, et chaque niveau ouvr
       if (own.length) assert.equal(bundle.musiques[openings[i]].ou, id, `${id} : ${openings[i]}`);
     });
   }
+});
+
+test('à l’entrée, jamais la piste qu’on entend déjà : un niveau à deux pistes prend l’autre, à une seule, le sac', () => {
+  const list = [...tracks, T('propre-a', 'rond-point'), T('propre-b', 'rond-point')];
+  const [a, b] = list.slice(-2);
+  for (const random of randoms) {
+    assert.equal(openingTrack(list, { slot: 'rond-point', avoid: a, random }), b);
+    assert.equal(openingTrack(list, { slot: 'rond-point', avoid: a, last: b.id, random }), b, 'celle de la visite d’avant, plutôt que celle qu’on entend');
+    assert.equal(openingTrack(list, { slot: 'rond-point', last: a.id, random }), b, 'sinon, une autre que la visite d’avant');
+  }
+  assert.equal(openingTrack(tracks, { slot: 'chaine-info', avoid: tracks[2] }), null, 'sa seule piste joue déjà : rien, le sac commence');
+  assert.equal(openingTrack(tracks, { slot: 'rond-point', named: 'jeu-b', avoid: tracks[4] }), null, 'la piste nommée joue déjà : le sac aussi');
 });
 
 test('« Sa piste en premier » : chaque entrée dans un niveau commence par sa piste à lui, puis le sac', async () => {
