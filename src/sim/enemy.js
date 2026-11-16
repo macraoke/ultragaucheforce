@@ -116,6 +116,21 @@ function stopAtLines(game, e, x0) {
   }
 }
 
+/**
+ * La manif pousse une ligne quand le héros arrive dessus : à moins de PUSH_RANGE, au même niveau (les pieds à une case
+ * près des siens), et sans rien de plein entre eux. Jamais à travers un sol, un plafond ou un mur.
+ */
+function pushes(game, e, dx) {
+  const { hero, world } = game;
+  if (hero.dead || Math.abs(dx) >= PUSH_RANGE || Math.abs(hero.y + hero.h - (e.y + e.h)) > TILE) return false;
+  const ty = Math.floor((hero.y + hero.h / 2) / TILE);
+  const hx = hero.x + hero.w / 2;
+  const edge = hx < e.x ? e.x : e.x + e.w;
+  const to = Math.floor((Math.max(hx, edge) - 0.01) / TILE);
+  for (let tx = Math.floor(Math.min(hx, edge) / TILE); tx <= to; tx++) if (world.solid(tx, ty)) return false;
+  return true;
+}
+
 /** Une ligne qui tient, collée à l'unité du côté `dir` : un mur, pour elle aussi. */
 const lineAt = (game, e, dir) => game.lines.some((l) => l !== e && holds(l) && barred(l, e.y, e.h)
   && Math.abs(dir > 0 ? l.x - (e.x + e.w) : e.x - (l.x + l.w)) <= 1);
@@ -161,7 +176,7 @@ export function updateEnemy(game, e, dt) {
   // Une ligne qui tient (`ligne.vie`, ou une nasse) : infranchissable.
   // Une ligne à vie : quand le héros arrive dessus, la manif pousse, d'autant plus fort qu'elle est nombreuse.
   e.blocking = isLine(def) || Boolean(e.kettle);
-  e.push = isLine(def) && !hero.dead && Math.abs(dx) < PUSH_RANGE && Math.abs(dy) < LINE_REACH ? (def.ligne.poussee * game.crowd) / 100 : 0;
+  e.push = isLine(def) && pushes(game, e, dx) ? (def.ligne.poussee * game.crowd) / 100 : 0;
   if (e.push > 0) {
     wearLine(game, e, e.push * dt);
     if (e.state === 'done') return;

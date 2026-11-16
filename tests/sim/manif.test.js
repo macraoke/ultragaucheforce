@@ -6,6 +6,7 @@ import assert from 'node:assert/strict';
 import { fixtureBundle, flat, play, run, settle } from './helpers.js';
 import { TILE } from '../../src/sim/world.js';
 import { LINE_REACH } from '../../src/sim/enemy.js';
+import { spawnProjectile } from '../../src/sim/projectile.js';
 
 const enemy = (id) => ({ type: 'ennemi', id });
 const recruit = (id) => ({ type: 'recrue', id });
@@ -210,6 +211,38 @@ test('ligne : plus rien ne la fait céder d’un coup : ni un nombre atteint au 
   assert.ok(game.hero.x > line.x + line.w, 'la manif passe');
 });
 
+test('ligne : la manif ne la pousse ni à travers le sol, ni à travers un mur', () => {
+  // Une ligne sur une dalle ; le héros passe dans le couloir, six cases dessous, avec mille manifestants.
+  const below = settle(play(flat({
+    width: 60, height: 20, cortege: true, manif: 1000, legende: { l: enemy('ligne') },
+    draw: (put) => {
+      put(13, 14, 'A'.repeat(16)); // la dalle, six cases au-dessus du sol du couloir
+      put(12, 22, 'l'); // la ligne, posée dessus
+    },
+  })));
+  const line = below.enemies[0];
+  let passed = false;
+  run(below, 600, (i, g) => {
+    passed ||= g.hero.x > line.x + line.w;
+    return { right: true };
+  });
+  assert.ok(passed, 'le héros est passé dessous');
+  assert.equal(line.hp, line.def.ligne.vie, 'vie inchangée');
+
+  // Au même niveau, mais un mur entre eux : rien non plus.
+  const walled = settle(play(flat({
+    width: 40, manif: 1000, legende: { l: enemy('ligne') },
+    draw: (put, ground) => {
+      for (let row = ground - 6; row <= ground; row++) put(row, 18, 'A');
+      put(ground, 21, 'l');
+    },
+  })));
+  const behind = walled.enemies[0];
+  run(walled, 300, { right: true });
+  assert.ok(Math.abs(walled.hero.x + walled.hero.w / 2 - (behind.x + behind.w / 2)) < 72, 'le héros est tout près, de l’autre côté du mur');
+  assert.equal(behind.hp, behind.def.ligne.vie, 'vie inchangée');
+});
+
 // ---------------------------------------------------------------- nasse
 
 const nasse = (ennemi, extra = {}) => flat({
@@ -270,6 +303,30 @@ test('nasse : elle prend fin si une ligne cède ou si le héros en sort par le h
   const calm = settle(play(nasse('statue', { nasse: { ennemi: '', nombre: 2, vitesse: 20 } })));
   events = run(calm, 400, { right: true });
   assert.equal(of(events, 'kettle').length, 0, 'sans unité désignée, le repère ne fait rien');
+});
+
+test('nasse : ses lignes ne craignent pas les grenades de leur propre camp', () => {
+  /** Une grenade fratricide qui tombe droit sur l'unité. */
+  const grenade = (game, unit) => spawnProjectile(game, {
+    team: 'ordre', friendly: true, w: 5, h: 5, damage: 3, range: 200, explosion: 18,
+    x: unit.x + unit.w / 2 - 2, y: unit.y - 24, vy: 80, gravity: 400,
+  });
+  const game = settle(play(nasse('statue'), { invincible: true }));
+  run(game, 260, { right: true });
+  assert.ok(game.kettle, 'nasse en cours');
+  const unit = game.kettle.units[0];
+  grenade(game, unit);
+  const events = run(game, 60);
+  assert.equal(unit.hp, unit.def.pv, 'pv inchangés');
+  assert.notEqual(unit.state, 'done');
+  assert.ok(of(events, 'parry').some((e) => e.line), 'paré, comme une ligne');
+
+  // Témoin : la même grenade sur la même unité, hors de toute nasse, l'entame.
+  const alone = settle(play(flat({ legende: { u: enemy('statue') }, draw: (put, ground) => put(ground, 20, 'u') }), { invincible: true }));
+  const statue = alone.enemies[0];
+  grenade(alone, statue);
+  run(alone, 60);
+  assert.ok(statue.hp < statue.def.pv, 'hors nasse, son propre camp l’entame');
 });
 
 // ---------------------------------------------------------------- découvertes
