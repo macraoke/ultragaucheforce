@@ -11,6 +11,7 @@ import { Screens, Hud } from './ui.js';
 import { showHeroCard } from './herocard.js';
 import { showTaxScene } from './tax.js';
 import { shareImage, openShare } from './share.js';
+import { measure } from './mesure.js';
 import { showAtelier } from './atelier.js';
 import { loadSave, storeSave, discover, isFound } from './save.js';
 import { cardName, citationOfWord, levelOrder, rarityName } from './collection.js';
@@ -146,6 +147,7 @@ function start(id, level = null) {
   hud.reset();
   if (!begin && !again) won = []; // un changement de héros sur le carton d'ouverture garde ce qui a déjà été débloqué
   if (id) collect('niveaux', id, true);
+  if (id && !again) measure('niveau lancé', { niveau: id });
   collect('citations', current.level.citation, true);
   collect('heros', game.hero.def.id, true);
   collectCortege();
@@ -196,13 +198,17 @@ async function win() {
   const sign = game.signs.map((t) => bundle.pancartes.find((p) => p.texte === t)).filter(Boolean)
     .reduce((top, p) => (!top || p.rarete >= top.rarete ? p : top), null);
   const crowd = game.crowd;
-  const share = () => openShare(shareImage({
-    frames: [document.getElementById('monde'), document.getElementById('textes')],
-    level: level.titre, crowd, tax: said, sign: sign?.texte, where: (location.host + location.pathname).replace(/(index\.html)?\/?$/, ''),
-  }), {
-    text: `✊ ${crowd.toLocaleString('fr-FR')} dans la manif. À toi.`, url: location.origin + location.pathname,
-    button: (label, action, className) => screens.button(label, action, className),
-  });
+  if (!custom) measure('niveau terminé', { niveau: id, manif: crowd, secondes: Math.round(game.time), personnages_perdus: game.stats.deaths, boss: boss?.id });
+  const share = () => {
+    measure('image partagée', { niveau: id });
+    openShare(shareImage({
+      frames: [document.getElementById('monde'), document.getElementById('textes')],
+      level: level.titre, crowd, tax: said, sign: sign?.texte, where: (location.host + location.pathname).replace(/(index\.html)?\/?$/, ''),
+    }), {
+      text: `✊ ${crowd.toLocaleString('fr-FR')} dans la manif. À toi.`, url: location.origin + location.pathname,
+      button: (label, action, className) => screens.button(label, action, className),
+    });
+  };
   screens.end({
     level, stats: game.stats, time: game.time, crowd, won, best: custom ? null : best, share,
     next: index >= 0 ? order[index + 1] : null,
@@ -245,6 +251,7 @@ function handle(events) {
       });
     } else if (e.type === 'won') win();
     else if (e.type === 'lost') {
+      if (!custom) measure('niveau perdu', { niveau: current.id, manif: game.crowd, secondes: Math.round(game.time) });
       setMode('over');
       screens.lost();
     }

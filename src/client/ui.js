@@ -175,6 +175,8 @@ export class Screens {
       h('p', {}, MENTION),
       h('p', {}, link(REPO, 'Le dépôt'), ' · ', link(`${REPO}/blob/main/CONTRIBUTING.md`, 'Contribuer'), ' · ',
         link(`${REPO}/blob/main/CHARTE.md`, 'La charte'), ' · ', h('a', { href: 'galerie.html' }, 'La Galerie')),
+      fold('Ce que le jeu compte',
+        h('p', {}, 'Le nombre de parties lancées, terminées ou perdues, par niveau, avec la taille de la manif. Sans cookie ni identifiant : rien n’est écrit sur votre appareil pour cela. La progression, elle, ne le quitte pas.')),
       fold('Références', h('ul', {}, REFERENCES.map((r) => h('li', {}, link(r.url, r.titre), ` — ${r.note}`)))),
       fold('Crédits et licences',
         h('p', {}, 'Code : MIT. Contenus : CC BY-SA 4.0. Bruitages synthétisés avec ZzFX de Frank Force (MIT).'),
