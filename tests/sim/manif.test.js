@@ -3,7 +3,7 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { fixtureBundle, flat, play, run, settle } from './helpers.js';
+import { fixtureBundle, flat, level, play, run, settle } from './helpers.js';
 import { TILE } from '../../src/sim/world.js';
 import { LINE_REACH } from '../../src/sim/enemy.js';
 import { spawnProjectile } from '../../src/sim/projectile.js';
@@ -241,6 +241,34 @@ test('ligne : la manif ne la pousse ni à travers le sol, ni à travers un mur',
   run(walled, 300, { right: true });
   assert.ok(Math.abs(walled.hero.x + walled.hero.w / 2 - (behind.x + behind.w / 2)) < 72, 'le héros est tout près, de l’autre côté du mur');
   assert.equal(behind.hp, behind.def.ligne.vie, 'vie inchangée');
+});
+
+test('ligne : enfoncée dans son cratère, elle reste poussée depuis le bord, et cède', () => {
+  // Un sol de terre ; la ligne est posée dessus. On creuse deux cases sous elle : elle tombe au fond.
+  const rows = [
+    ...Array.from({ length: 7 }, () => '.'.repeat(40)),
+    `..D.........l.......................S...`,
+    'T'.repeat(40),
+    'T'.repeat(40),
+    'A'.repeat(40),
+    'A'.repeat(40),
+  ];
+  const game = settle(play(level(rows, { cortege: true, manif: 140, legende: { l: enemy('ligne') } })));
+  const line = game.enemies[0];
+  const feet = line.y + line.h;
+  for (let tx = Math.floor(line.x / TILE); tx <= Math.floor((line.x + line.w - 0.01) / TILE); tx++) {
+    game.world.set(tx, 8, 0);
+    game.world.set(tx, 9, 0);
+  }
+  run(game, 30);
+  assert.equal(line.y + line.h, feet + 2 * TILE, 'elle est au fond du cratère, deux cases plus bas');
+  let rim = false;
+  const events = run(game, 60 * 10, (i, g) => {
+    rim ||= g.hero.y + g.hero.h === feet && Math.abs(g.hero.x + g.hero.w - line.x) < 1;
+    return { right: true };
+  });
+  assert.ok(rim, 'le héros est au bord, retenu par sa barrière');
+  assert.equal(of(events, 'overrun').length, 1, 'la manif la pousse, et elle cède');
 });
 
 // ---------------------------------------------------------------- nasse

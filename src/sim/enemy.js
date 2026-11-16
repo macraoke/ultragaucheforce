@@ -117,17 +117,22 @@ function stopAtLines(game, e, x0) {
 }
 
 /**
- * La manif pousse une ligne quand le héros arrive dessus : à moins de PUSH_RANGE, au même niveau (les pieds à une case
- * près des siens), et sans rien de plein entre eux. Jamais à travers un sol, un plafond ou un mur.
+ * La manif pousse une ligne quand le héros arrive dessus : à moins de PUSH_RANGE, à son niveau ou plus haut qu'elle
+ * tant que sa barrière le retient (une ligne enfoncée dans son cratère, le héros au bord), jamais depuis le dessous,
+ * et sans rien de plein entre la poitrine du héros et le haut de la ligne : ni un sol, ni un plafond, ni un mur.
  */
 function pushes(game, e, dx) {
   const { hero, world } = game;
-  if (hero.dead || Math.abs(dx) >= PUSH_RANGE || Math.abs(hero.y + hero.h - (e.y + e.h)) > TILE) return false;
-  const ty = Math.floor((hero.y + hero.h / 2) / TILE);
-  const hx = hero.x + hero.w / 2;
-  const edge = hx < e.x ? e.x : e.x + e.w;
-  const to = Math.floor((Math.max(hx, edge) - 0.01) / TILE);
-  for (let tx = Math.floor(Math.min(hx, edge) / TILE); tx <= to; tx++) if (world.solid(tx, ty)) return false;
+  const feet = hero.y + hero.h;
+  if (hero.dead || Math.abs(dx) >= PUSH_RANGE || feet > e.y + e.h + TILE || feet < e.y - LINE_REACH) return false;
+  const ox = hero.x + hero.w / 2;
+  const oy = hero.y + hero.h / 2;
+  const tx = e.x + e.w / 2;
+  const ty = e.y;
+  const steps = Math.ceil(Math.hypot(tx - ox, ty - oy) / 4);
+  for (let i = 1; i < steps; i++) {
+    if (world.solid(Math.floor((ox + ((tx - ox) * i) / steps) / TILE), Math.floor((oy + ((ty - oy) * i) / steps) / TILE))) return false;
+  }
   return true;
 }
 
