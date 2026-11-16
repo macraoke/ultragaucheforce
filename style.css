@@ -432,6 +432,8 @@ html.pivote body.tactile #toasts { right: calc(max(10px, env(safe-area-inset-bot
 .menu nav { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; margin: 8px 0 14px; }
 .menu nav > * { display: inline-flex; align-items: center; min-height: 46px; }
 .menu .mention { font-size: .72rem; line-height: 1.35; max-width: 62ch; margin: 0 auto; background: rgb(26 28 44 / .8); padding: .5em .8em; }
+/* Le titre du chargement (index.html), sur un téléphone tenu debout : déjà de côté, comme le menu qui le remplace. */
+@media (pointer: coarse) and (orientation: portrait) and (max-height: 949px) { .menu.chargement { transform: rotate(90deg); } }
 
 /* carton d'ouverture, fin de niveau, vote */
 .panneau.intro { text-align: center; width: min(100%, 640px); }

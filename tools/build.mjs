@@ -1,18 +1,20 @@
 // `npm run build` : fabrique dans `dist/` la version à mettre en ligne.
 //
 // Le jeu se joue sans build (`npm start`). Le build ajoute seulement ce qu'il faut pour
-// l'héberger et l'installer : le contenu assemblé en un fichier, les icônes, et le service
-// worker qui rend le tout disponible hors-ligne.
+// l'héberger et l'installer : le contenu assemblé en un fichier, les icônes, le service
+// worker qui rend le tout disponible hors-ligne, et la liste de ce que la page doit
+// demander tout de suite.
 
 import { createHash } from 'node:crypto';
 import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, join, posix } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadContent, readContentFiles, ROOT } from './content.mjs';
 import { formatError } from '../src/content/rules.js';
 import { makeIcons } from './png.mjs';
 
-const STATIC = ['index.html', 'galerie.html', 'style.css', 'manifest.webmanifest', 'apercu.jpg']; // apercu.jpg : l'image d'un lien partagé
+const STATIC = ['index.html', 'galerie.html', 'style.css', 'manifest.webmanifest', 'apercu.jpg'];
+const ONLINE_ONLY = ['apercu.jpg']; // l'image d'un lien partagé : en ligne pour les aperçus, inutile dans le jeu
 
 /** Tous les fichiers `.js` d'un dossier, en chemins relatifs à la racine du dépôt. */
 function scripts(dir) {
@@ -21,6 +23,24 @@ function scripts(dir) {
     if (entry.isDirectory()) return scripts(path);
     return entry.name.endsWith('.js') ? [path] : [];
   });
+}
+
+/** Un `import … from '…'` ou `export … from '…'` en début de ligne ; pas un `import()`, chargé plus tard. */
+const STATIC_IMPORT = /^\s*(?:import|export)\s+(?:[\w$*{},\s]+?\s+from\s+)?['"]([^'"]+)['"]/gm;
+
+/**
+ * Les modules chargés au démarrage : le script de la page et tout ce qu'il importe, de proche en proche.
+ * Annoncés dans la page, ils partent tous d'un coup au lieu d'attendre chacun le précédent.
+ */
+export function startupModules(files, entry) {
+  const found = [];
+  const visit = (path) => {
+    if (found.includes(path) || !files.has(path)) return;
+    found.push(path);
+    for (const [, spec] of files.get(path).toString().matchAll(STATIC_IMPORT)) visit(posix.join(posix.dirname(path), spec));
+  };
+  visit(entry);
+  return found;
 }
 
 /**
@@ -49,11 +69,17 @@ export function build(outDir = join(ROOT, 'dist')) {
   const version = hash.digest('hex').slice(0, 12);
 
   // La balise que `sw-register.js` cherche : sans elle (en développement), pas de service worker.
-  const page = files.get('index.html').toString();
+  let page = files.get('index.html').toString();
   if (!page.includes('</head>')) throw new Error('index.html : balise </head> introuvable.');
-  files.set('index.html', Buffer.from(page.replace('</head>', `  <meta name="ugf-build" content="${version}">\n</head>`)));
+  page = page.replace('</head>', `  <meta name="ugf-build" content="${version}">\n</head>`);
+  // Les modules du menu, annoncés dès la lecture de la page, avant la feuille de style qui ferait attendre
+  // le script. Seulement sans service worker (première visite) : sous lui, ils sont déjà en cache, et les
+  // annoncer ralentirait le menu.
+  const modules = JSON.stringify(startupModules(files, page.match(/<script type="module" src="([^"]+)"/)?.[1]));
+  const announce = `<script>if (!navigator.serviceWorker?.controller) for (const href of ${modules}) document.head.append(Object.assign(document.createElement('link'), { rel: 'modulepreload', href }));</script>`;
+  files.set('index.html', Buffer.from(page.replace('<link rel="stylesheet"', `${announce}\n  <link rel="stylesheet"`)));
 
-  const precache = [...files.keys()].sort();
+  const precache = [...files.keys()].filter((path) => !ONLINE_ONLY.includes(path)).sort();
   const worker = readFileSync(join(ROOT, 'tools/sw-template.js'), 'utf8')
     .replace("'__VERSION__'", JSON.stringify(version))
     .replace("['__FILES__']", JSON.stringify(precache, null, 2));

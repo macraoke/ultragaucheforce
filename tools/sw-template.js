@@ -19,8 +19,9 @@ self.addEventListener('install', (event) => {
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE);
     await Promise.all(FILES.map(async (url) => {
-      // « reload » : on veut le fichier du serveur, pas une copie du cache HTTP du navigateur.
-      const response = await fetch(new Request(url, { cache: 'reload' }));
+      // « no-cache » : le navigateur demande au serveur si sa copie est à jour. Ce que la page vient
+      // de recevoir revient sans être retéléchargé (304), et rien de périmé n'entre dans le cache.
+      const response = await fetch(new Request(url, { cache: 'no-cache' }));
       if (!response.ok) throw new Error(`${url} : ${response.status}`);
       await cache.put(url, response);
     }));

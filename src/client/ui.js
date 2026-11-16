@@ -103,6 +103,7 @@ export class Screens {
 
   menu() {
     const heroes = Object.values(this.bundle.heros).filter((x) => x.statut === 'jouable');
+    const atelier = this.button('Atelier', () => this.go.atelier(atelier)); // il dit, sur lui, que l'Atelier se charge
     this.show('menu',
       h('div', { className: 'logo' }, h('span', {}, 'UltraGauche'), h('span', {}, 'Force')),
       h('p', { className: 'devise' }, 'Taxez les riches. Abattez la Citadelle.'),
@@ -111,7 +112,7 @@ export class Screens {
         this.button('Jouer', () => this.go.play(this.nextLevel()), 'gros'),
         this.button('Campagne', () => this.levels()),
         this.button(`Collection ${collectionCount(this.bundle, this.save).found}/${collectionCount(this.bundle).total}`, () => this.collection()),
-        this.button('Atelier', () => this.go.atelier()),
+        atelier,
         this.button('Commandes', () => this.controls()),
         this.button('Options', () => this.options()),
         this.button('À propos', () => this.about()),
@@ -147,10 +148,11 @@ export class Screens {
         best ? h('div', { className: 'record' }, h('small', {}, 'Record'), h('b', {}, `✊ ${best.toLocaleString('fr-FR')}`)) : null,
         play);
     };
+    const draw = this.button('Dessiner une étape', () => this.go.atelier(draw));
     this.show('liste plan',
       h('h2', {}, 'Plan de campagne'),
       h('ol', { className: 'etapes' }, levelOrder(this.bundle).map(stop)),
-      h('div', { className: 'pied' }, this.back(), this.button('Dessiner une étape', () => this.go.atelier())));
+      h('div', { className: 'pied' }, this.back(), draw));
     this.escape = () => this.menu();
     ahead?.focus({ preventScroll: true });
     ahead?.closest('li').scrollIntoView({ block: 'center' }); // un écran bas défile jusqu'à elle

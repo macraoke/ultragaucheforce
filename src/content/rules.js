@@ -19,8 +19,8 @@ export const MARKERS = {
   N: 'nasse (les lignes se referment quand le héros passe ici)',
 };
 
-/** Les raretés d'une pancarte ou d'un bandeau, de la plus courante à la plus rare. */
-export const RARITIES = ['commune', 'rare', 'épique', 'légendaire'];
+/** Les raretés d'une pancarte ou d'un bandeau, de la plus courante à la plus rare. Leurs noms sont à part, pour la Collection. */
+export { RARITIES } from './rarities.js';
 const RARITY_STEPS = [55, 83, 96]; // sur cent lignes : 55 communes, 28 rares, 13 épiques, 4 légendaires
 
 /** La rareté d'une ligne se tire de son texte : personne ne la règle, et elle est la même pour tout le monde. */

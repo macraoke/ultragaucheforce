@@ -1,7 +1,24 @@
 // Bruitages. Tout est local : sons synthétisés (une ligne de texte dans
 // `content/sons/`) ou petits fichiers compressés du dépôt. Aucun son ne vient du réseau.
 
-import { buildSamples, SAMPLE_RATE } from './zzfx.js';
+import { synthesize, finish, SAMPLE_RATE } from './zzfx.js';
+
+/** Les réglages ZzFX d'une fiche ; l'aléa de hauteur est appliqué à la lecture. */
+const zzfxParams = (def) => {
+  const params = def.zzfx.map((v) => v ?? undefined);
+  params[1] = 0;
+  return params;
+};
+
+const MARGIN = 4; // ms laissées libres avant l'image suivante : un morceau de synthèse dure moins
+
+/** Le temps libre du navigateur ; sans `requestIdleCallback` (Safari), quelques millisecondes toutes les 50 ms. */
+const idle = (work) => (window.requestIdleCallback
+  ? window.requestIdleCallback(work)
+  : setTimeout(() => {
+    const end = performance.now() + MARGIN + 4;
+    work({ timeRemaining: () => Math.max(0, end - performance.now()) });
+  }, 50));
 
 export class Audio {
   constructor(bundle) {
@@ -10,6 +27,7 @@ export class Audio {
     this.volume = 0.35;
     this.ctx = null;
     this.buffers = new Map(); // id → AudioBuffer | Promise
+    this.making = new Map(); // id → synthèse commencée dans le temps libre (voir `prepare`)
     this.lastPlayed = new Map(); // id → instant, pour éviter les empilements
   }
 
@@ -17,10 +35,44 @@ export class Audio {
   unlock() {
     const Ctx = window.AudioContext || window.webkitAudioContext;
     if (!Ctx) return;
-    this.ctx ??= new Ctx();
+    if (!this.ctx) {
+      this.ctx = new Ctx();
+      this.prepare();
+    }
     if (this.ctx.state !== 'running') this.ctx.resume().catch(() => {});
     // Sur iPhone, le bouton « silencieux » coupe le son du web sauf si la page se déclare comme lecteur.
     if (navigator.audioSession) navigator.audioSession.type = 'playback';
+  }
+
+  /**
+   * Les bruitages synthétisés se calculent d'avance, par petits morceaux, quand le navigateur
+   * n'a rien d'autre à faire : jamais au milieu d'une image, au premier tir ou au premier saut.
+   */
+  prepare() {
+    const waiting = Object.keys(this.bundle.sons).filter((id) => this.bundle.sons[id].zzfx);
+    const work = (deadline) => {
+      while (waiting.length && deadline.timeRemaining() > MARGIN) {
+        const id = waiting[0];
+        if (this.buffers.has(id)) {
+          waiting.shift(); // déjà prêt : joué avant d'avoir été préparé
+          continue;
+        }
+        if (!this.making.has(id)) this.making.set(id, synthesize(...zzfxParams(this.bundle.sons[id])));
+        const step = this.making.get(id).next();
+        if (step.done) this.store(id, step.value);
+      }
+      if (waiting.length) idle(work);
+    };
+    setTimeout(() => idle(work), 300); // pas tout de suite : le toucher qui crée le son a déjà retardé l'image
+  }
+
+  /** Range les échantillons d'un bruitage synthétisé, prêts à jouer. */
+  store(id, samples) {
+    this.making.delete(id);
+    const buf = this.ctx.createBuffer(1, Math.max(1, samples.length), SAMPLE_RATE);
+    buf.getChannelData(0).set(samples);
+    this.buffers.set(id, buf);
+    return buf;
   }
 
   async buffer(id) {
@@ -28,14 +80,8 @@ export class Audio {
     const def = this.bundle.sons[id];
     if (!def) return null;
     const make = async () => {
-      if (def.zzfx) {
-        const params = def.zzfx.map((v) => v ?? undefined);
-        params[1] = 0; // l'aléa de hauteur est appliqué à la lecture
-        const samples = buildSamples(...params);
-        const buf = this.ctx.createBuffer(1, Math.max(1, samples.length), SAMPLE_RATE);
-        buf.getChannelData(0).set(samples);
-        return buf;
-      }
+      // Pas encore préparé dans le temps libre : on finit le calcul tout de suite.
+      if (def.zzfx) return this.store(id, finish(this.making.get(id) ?? synthesize(...zzfxParams(def))));
       const data = await (await fetch(`content/sons/${def.fichier}`)).arrayBuffer();
       return this.ctx.decodeAudioData(data);
     };

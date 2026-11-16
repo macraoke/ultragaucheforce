@@ -21,6 +21,8 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icone-192.png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <!-- Le contenu part dès la lecture de la page, sans attendre la feuille de style ni les modules ; main.js reprend cette requête. -->
+  <script>window.contentRequest = fetch('content.json');</script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="jeu">
@@ -59,7 +61,13 @@
     </div>
   </div>
 
-  <div id="ecran"></div>
+  <!-- Le titre se montre dès la page reçue, pendant le chargement du jeu ; le menu prend sa place. -->
+  <div id="ecran">
+    <section class="panneau menu chargement">
+      <div class="logo"><span>UltraGauche</span><span>Force</span></div>
+      <p class="devise">Taxez les riches. Abattez la Citadelle.</p>
+    </section>
+  </div>
   <div id="radio" hidden></div>
 
   <noscript>UltraGauche Force a besoin de JavaScript pour fonctionner.</noscript>

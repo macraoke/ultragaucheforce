@@ -13,12 +13,11 @@ import { showTaxScene, draw } from './tax.js';
 import { CRS_OCTOBRE_2026 } from './blesses.js';
 import { shareImage, openShare } from './share.js';
 import { measure } from './mesure.js';
-import { showAtelier } from './atelier.js';
 import { loadSave, storeSave, discover, isFound } from './save.js';
 import { cardName, citationOfWord, levelOrder, rarityName, taxShocks } from './collection.js';
 import { registerServiceWorker } from './sw-register.js';
 
-const bundle = await (await fetch('content.json')).json();
+const bundle = await (await (window.contentRequest ?? fetch('content.json'))).json(); // partie dès index.html
 const save = loadSave();
 const screenRoot = document.getElementById('ecran');
 const audio = new Audio(bundle);
@@ -63,7 +62,7 @@ const screens = new Screens(screenRoot, {
       setMode('playing');
     },
     quit: () => toMenu(),
-    atelier: () => openAtelier(),
+    atelier: (button) => openAtelier(button),
     options: () => applyOptions(),
     learn: (ids) => ids.forEach((id) => collect('fiches', id, true)),
     back: () => (mode === 'paused' ? screens.pause() : screens.menu()),
@@ -162,10 +161,21 @@ function start(id, level = null) {
   screens.intro(current.level, () => begin?.(), game.hero.def.id, !level);
 }
 
-function openAtelier() {
+let atelier = null; // le module de l'Atelier, chargé à sa première ouverture : le menu n'en a pas besoin
+
+/** Ouvre l'Atelier. La première fois, il se charge : le bouton qui l'ouvre le dit, et dit s'il manque le réseau. */
+async function openAtelier(button = null) {
+  if (!atelier) {
+    const label = button?.textContent;
+    const slow = button && setTimeout(() => (button.textContent = 'Chargement…'), 150);
+    atelier = await import('./atelier.js').catch(() => null);
+    clearTimeout(slow);
+    if (button) button.textContent = atelier ? label : 'Atelier : pas de réseau';
+    if (!atelier || (button && !button.isConnected)) return; // pas de réseau, ou le joueur est passé à un autre écran
+  }
   setMode('menu');
   document.body.dataset.ecran = 'atelier';
-  screens.escape = showAtelier(screenRoot, { bundle, save, test: (level) => start(null, level), back: () => toMenu() });
+  screens.escape = atelier.showAtelier(screenRoot, { bundle, save, test: (level) => start(null, level), back: () => toMenu() });
 }
 
 function togglePause() {
@@ -257,9 +267,12 @@ function handle(events) {
       const hero = bundle.heros[e.hero];
       collect('heros', hero.id, true);
       collectCortege(); // les soutiens venus avec le camarade libéré
-      // Le grand carton joue à chaque libération.
+      // Le grand carton joue à chaque libération. Il est opaque : le monde n'est pas redessiné dessous,
+      // sauf une fois quand il s'efface, tel que le joueur va le retrouver (caméra arrivée, panneau passé).
       setMode('card');
-      showHeroCard(bundle, hero, { audio, reduced: save.options.sobre }).then(() => {
+      const opened = performance.now();
+      const onClose = () => renderer.draw(game, (performance.now() - opened) / 1000);
+      showHeroCard(bundle, hero, { audio, reduced: save.options.sobre, onClose }).then(() => {
         if (mode !== 'card') return;
         setMode('playing');
         if (game.level.cortege) audio.play('slogan'); // le cortège salue le camarade libéré
@@ -299,7 +312,7 @@ function frame(now) {
   renderer.device = input.device;
   hud.device = input.device;
   if (!demo) placeSign();
-  renderer.draw(game, dt);
+  if (mode !== 'card') renderer.draw(game, dt); // sous le carton de héros, opaque, rien à redessiner (voir `handle`)
   if (!demo) hud.update(game);
 }
 
