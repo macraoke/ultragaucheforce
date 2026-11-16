@@ -24,6 +24,7 @@
 //                (jamais sous 1 avec un cortège)
 //   power()      multiplicateur des dégâts des projectiles du héros : le nombre fait la force
 //   kettle       null | { x, t, limit, x0, x1 } : nasse en cours (x0, x1 = bords intérieurs des lignes)
+//   lines        les lignes qui tiennent au début du pas (débordement, nasse) : elles arrêtent les deux camps
 //   Ennemis : blocking, aim, jet, beam, rush, rope (voir enemy.js) · boss.seated (voir boss.js)
 //
 // Repères : tout est en pixels, tuile = 16. Les boîtes (héros, ennemis, projectiles, accessoires, boss)
@@ -31,7 +32,7 @@
 
 import { makeRng } from './rng.js';
 import { TILE } from './world.js';
-import { hitsSolid, overlap } from './physics.js';
+import { hitsSolid, overlap, holds } from './physics.js';
 import { updateHero, setHeroDef, FEEL } from './hero.js';
 import { createEnemy, updateEnemy, sturdy, LINE_REACH } from './enemy.js';
 import { updateProjectiles } from './projectile.js';
@@ -89,6 +90,7 @@ export class Game {
     };
 
     this.enemies = [];
+    this.lines = [];
     this.projectiles = [];
     this.clouds = [];
     this.props = [];
@@ -142,6 +144,7 @@ export class Game {
       this.recordTrail();
       if (hero.y > this.world.h * TILE + 48) this.killHero(); // tombé sous la carte
     }
+    this.lines = this.enemies.filter(holds); // une ligne qui cède pendant le pas cesse aussitôt d'arrêter (voir `holds`)
     for (const e of this.enemies) updateEnemy(this, e, DT);
     this.blockHero();
     if (this.boss) updateBoss(this, this.boss, DT);

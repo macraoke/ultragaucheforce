@@ -123,6 +123,8 @@ Le but du joueur : arriver toujours plus nombreux.
 
 Une unité qui porte `debordement` (le barrage, le blindé, la grille) est une ligne : on ne la casse pas, on ne la saute pas, elle cède quand le héros arrive assez nombreux. Le nombre s'affiche au-dessus d'elle.
 
+Elle arrête les deux camps. Une unité posée derrière y reste tant qu'elle tient : ni sa charge ni ses tirs ne passent, seulement ses grenades, par-dessus.
+
 Devant une ligne qui tient, des passants rejoignent peu à peu : personne ne reste coincé. Pour que ce soit un choix et non une attente, placez avant elle de quoi la déborder, et davantage en hauteur pour qui explore.
 
 ## La nasse

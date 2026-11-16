@@ -2,7 +2,7 @@
 // Un seul modèle, entièrement réglé par les fiches (voir WEAPONS dans behaviors.js).
 
 import { TILE } from './world.js';
-import { hitsSolid, overlap } from './physics.js';
+import { hitsSolid, overlap, holds } from './physics.js';
 import { joinRecruit } from './manif.js';
 
 const DEFAULTS = {
@@ -130,7 +130,17 @@ function touchActors(game, p) {
     }
     return;
   }
-  // Camp de l'ordre : vise le héros… et, pour les grenades « fratricides », touche aussi les collègues.
+  // Camp de l'ordre : un tir qui touche une ligne qui tient s'y écrase, comme nos tracts (sauf « perce ») ; une grenade
+  // en cloche passe au-dessus. Une grenade « fratricide » qui la touche y éclate, plus bas, comme sur un collègue.
+  if (!p.friendly) {
+    for (const l of game.lines) {
+      if (l === p.owner || !holds(l) || p.hits.has(l) || !overlap(p, l)) continue;
+      p.hits.add(l);
+      game.parry(l, l.x + l.w / 2, true);
+      if (!p.pierce) return burst(game, p, true);
+    }
+  }
+  // Puis il vise le héros… et, pour les grenades « fratricides », touche aussi les collègues.
   if (!game.hero.dead && overlap(p, game.hero)) {
     game.hurtHero(p.damage, { dir: Math.sign(p.vx), x: p.x + p.w / 2, kind: p.explosion > 0 ? 'explosion' : 'tir' });
     return burst(game, p);

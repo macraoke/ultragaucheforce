@@ -8,6 +8,9 @@ export const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 export const approach = (v, target, step) => (v < target ? Math.min(v + step, target) : Math.max(v - step, target));
 export const overlap = (a, b) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
 
+/** Une ligne qui tient (voir enemy.js) : pleine pour le héros et ses tracts, pour les unités au sol et les tirs d'en face. */
+export const holds = (e) => e.blocking && e.state !== 'done';
+
 /** Vrai si le rectangle touche au moins une tuile pleine. */
 export function hitsSolid(world, x, y, w, h) {
   const x0 = Math.floor(x / TILE);
