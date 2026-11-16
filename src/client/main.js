@@ -339,9 +339,9 @@ function frame(now) {
   }
   renderer.device = input.device;
   hud.device = input.device;
+  if (!demo) hud.update(game); // d'abord le HUD : le dessin se place sous lui tel qu'il est à cette image
   placeOverHud(demo);
   if (mode !== 'card') renderer.draw(game, dt); // sous le carton de héros, opaque, rien à redessiner (voir `handle`)
-  if (!demo) hud.update(game);
 }
 
 /**
@@ -436,9 +436,9 @@ if (new URLSearchParams(location.search).has('debug')) {
     draw(snap = false) {
       if (snap) renderer.snap(game);
       renderer.tick(1 / 60);
+      hud.update(game);
       placeOverHud(false);
       renderer.draw(game, 1 / 60);
-      hud.update(game);
     },
     /** Avance de n pas avec des actions fixes, ou avec le robot si `actions` vaut 'bot'. */
     step(n = 1, actions = {}) {
