@@ -1,6 +1,6 @@
 titre: Arpanauts
 artiste: Eric Skiff
 url: https://soundcloud.com/ericskiff/arpanauts
-ou: bismillah
+ou: jeu
 licence: CC-BY
 auteur: UltraGauche Force

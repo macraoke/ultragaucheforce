@@ -1,6 +1,6 @@
 titre: BellaCiao
 artiste: Fanfare La Cacophonie
 url: https://soundcloud.com/fanfare-la-cacophonie-1/bellaciao
-ou: bismillah
+ou: jeu
 licence: tous droits réservés
 auteur: UltraGauche Force
