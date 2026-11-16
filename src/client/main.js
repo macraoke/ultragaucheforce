@@ -76,6 +76,7 @@ function setMode(next) {
   mode = next;
   if (next === 'playing') screens.close();
   hud.setVisible(next === 'playing' || next === 'paused' || next === 'card');
+  hud.live = next === 'playing'; // en pause ou sous un carton, la spéciale ne clignote pas
   document.body.classList.toggle('en-jeu', next === 'playing');
   radio.setVisible(next !== 'playing' && next !== 'card');
   renderer.demo = next === 'menu';

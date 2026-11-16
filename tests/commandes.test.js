@@ -3,8 +3,62 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { withKeys, KEY_NAMES, brief } from '../src/client/input.js';
+import { withKeys, KEY_NAMES, brief, mentions, padInUse } from '../src/client/input.js';
 import { loadContent } from '../tools/content.mjs';
+import { askSpecial } from '../src/client/ui.js';
+
+test('le clignotement reconnaît la spéciale sous les mêmes formes que le panneau', () => {
+  for (const text of ['[spéciale] : lance-la', '[ spéciale ] : lance-la', '[Speciale]', 'J ou [SPÉCIALE]']) {
+    assert.ok(mentions(text, 'speciale'), text);
+    assert.equal(withKeys(text, 'clavier').includes('K'), true, text);
+  }
+  assert.ok(!mentions('[spé] et spéciale', 'speciale'));
+  assert.ok(!mentions('', 'speciale'));
+});
+
+test('la spéciale clignote au panneau, cesse au premier usage, jamais en pause, huit secondes au plus', () => {
+  const game = { hero: { def: { id: 'rousseau', speciale: { nom: 'DÉCONSTRUCTION !' } }, charges: 2 }, sign: '[spéciale] : lance ta spéciale', time: 10 };
+  let ask = null;
+  const frame = (live = true) => {
+    const r = askSpecial(ask, game, live);
+    ask = r.ask;
+    return r.on;
+  };
+  assert.equal(frame(false), false, 'en pause devant le panneau : rien ne clignote');
+  assert.equal(frame(), true, 'la partie reprend : ça clignote');
+  game.hero.charges = 1; // elle s'en sert, toujours devant le panneau
+  for (let k = 0; k < 30; k++) {
+    game.time += 1 / 60;
+    assert.equal(frame(), false, 'après le premier usage, même devant le panneau');
+  }
+  game.time += 30;
+  assert.equal(frame(), false);
+
+  ask = null;
+  game.hero.charges = 2;
+  game.time = 0;
+  assert.equal(frame(), true);
+  game.sign = null;
+  game.time = 7.9;
+  assert.equal(frame(), true, 'le panneau dépassé, elle clignote encore un peu');
+  game.time = 8;
+  assert.equal(frame(), false, 'huit secondes au plus');
+  game.sign = '[ spéciale ] : encore';
+  assert.equal(frame(), false, 'une seule demande par partie');
+});
+
+test('une manette posée ne prend pas la main : seuls les boutons et axes que le jeu lit comptent', () => {
+  const pad = (axes = {}, buttons = []) => ({
+    axes: Object.assign(Array(10).fill(0), axes),
+    buttons: Array.from({ length: 17 }, (_, i) => ({ pressed: buttons.includes(i) })),
+  });
+  assert.equal(padInUse(pad({ 9: 1.2857 })), false, 'le chapeau d’une manette générique, au repos');
+  assert.equal(padInUse(pad({ 2: -1, 5: 1 })), false, 'gâchettes analogiques au repos, lues comme axes');
+  assert.equal(padInUse(pad({}, [3, 8, 16])), false, 'Y, Select, le bouton central : le jeu ne les lit pas');
+  assert.equal(padInUse(pad({ 0: 0.8 })), true, 'le stick');
+  assert.equal(padInUse(pad({ 1: -0.7 })), true);
+  for (const b of [0, 1, 2, 7, 9, 13]) assert.equal(padInUse(pad({}, [b])), true, `bouton ${b}`);
+});
 
 test('panneau : une touche entre crochets devient celle de l’appareil', () => {
   assert.equal(withKeys('[tirer] : lancer des tracts', 'clavier'), 'J : lancer des tracts');
@@ -114,7 +168,7 @@ test('Options du menu : effacer demande confirmation, et Annuler a la main', asy
   ui.options();
   assert.ok(buttons().includes('Effacer ma progression'));
   press('Effacer ma progression');
-  assert.match(root.textContent, /Tout ce que tu as débloqué et tes records seront perdus\./);
+  assert.match(root.textContent, /Tout ce que tu as débloqué et tes records seront perdus, et la campagne repartira du premier niveau\./);
   assert.deepEqual(buttons(), ['Annuler', 'Effacer']);
   assert.equal(globalThis.document.activeElement.textContent, 'Annuler', 'Entrée annule');
   press('Annuler');

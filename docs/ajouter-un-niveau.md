@@ -26,7 +26,7 @@ fiche: droit-de-manifester
 fond: ville
 cortege: oui
 manif: 5
-panneau.1: Va jusqu'à elle : elle rejoint la manif ✊
+panneau.1: Va jusqu'à la soignante : elle rejoint la manif ✊
 s: soignante
 b: bac
 d: drone
@@ -58,7 +58,7 @@ Déposé dans `content/niveaux/`, il devient une étape du plan de campagne, à 
 | `fond` | `campagne`, `ville` ou `citadelle` |
 | `cortege` | `oui` : la manif suit le héros |
 | `manif` | combien de manifestants au départ (10 avec un cortège, sauf indication ; 5000 au plus) |
-| `panneau.1` à `panneau.9` | le texte du panneau placé par le chiffre correspondant sur la carte. Une touche s'écrit entre crochets, et chacun la lit sur son appareil : `[tirer] : lancer des tracts` devient « J : … » au clavier, « X : … » à la manette, « TIR : … » au pouce. Les touches : `[avancer]`, `[sauter]`, `[tirer]`, `[bas]`, `[haut]`, `[spéciale]`, `[pause]`. Un panneau qui dit `[spéciale]` fait clignoter la spéciale du héros jusqu'à ce qu'il s'en serve |
+| `panneau.1` à `panneau.9` | le texte du panneau placé par le chiffre correspondant sur la carte. Une touche s'écrit entre crochets, et chacun la lit sur son appareil : `[tirer] : lancer des tracts` devient « J : … » au clavier, « X : … » à la manette, « TIR : … » au pouce. Les touches : `[avancer]`, `[sauter]`, `[tirer]`, `[bas]`, `[haut]`, `[spéciale]`, `[pause]`. Le premier panneau d'une partie qui dit `[spéciale]` fait clignoter la puce de la spéciale et le bouton SPÉ, jusqu'au premier usage, huit secondes au plus, jamais en pause |
 | un signe de légende | `b: bac` place une unité, une recrue ou un décor à chaque `b` de la carte |
 | `heros` | le héros avec lequel on essaie le niveau dans l'Atelier. En jeu, le joueur choisit parmi ceux qu'il a débloqués ; la première fois, le hasard choisit |
 | `camarades` | l'ordre des héros libérés, séparés par une barre verticale : `melenchon \| zucman` (sinon au hasard) |
@@ -167,7 +167,6 @@ Au même endroit, c'est toujours la même pancarte. Modèles : [`banderole`](../
 - Une ligne (barrage, grille) se contourne par-dessous si le sol se creuse. Pour qu'elle ne cède qu'au nombre, posez-la sur du socle.
 - Trois à six minutes suffisent : un sauvetage, une ligne à déborder, un passage à casser, la sortie.
 - Un panneau, c'est un conseil en quelques mots. Il s'affiche quand on passe devant, et reste lisible un instant après.
-- Les bases (avancer, sauter, tirer, recruter, creuser, grimper, la spéciale, la garde à vue) s'apprennent à Millevaches : un autre niveau n'en reparle que si elles y servent autrement.
 
 ## Les murs du fond (facultatif)
 

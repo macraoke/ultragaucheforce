@@ -7,7 +7,7 @@ import { REPO, VERSION, REFERENCES, ANALYTICS } from './config.js';
 import { storeSave, eraseProgress, isFound, isReadOnly } from './save.js';
 import { SHELVES, VOTE_FICHES, allCards, collectionCount, isFresh, levelOrder, markSeen, openCard, progress, rarityCounts, shelfGrid, wonCards } from './collection.js';
 import { livesStack } from './lives.js';
-import { KEY_NAMES, CONTROLS, brief } from './input.js';
+import { KEY_NAMES, CONTROLS, brief, mentions } from './input.js';
 import { PANIC_STEPS } from '../sim/game.js';
 
 const MENTION = 'Satire citoyenne, libre et collaborative.';
@@ -192,7 +192,7 @@ export class Screens {
   confirmErase() {
     this.show('liste etroit',
       h('h2', {}, 'Effacer ma progression ?'),
-      h('p', {}, 'Tout ce que tu as débloqué et tes records seront perdus.'),
+      h('p', {}, 'Tout ce que tu as débloqué et tes records seront perdus, et la campagne repartira du premier niveau.'),
       this.button('Annuler', () => this.options(), 'gros'),
       this.button('Effacer', () => {
         eraseProgress(this.save);
@@ -258,8 +258,7 @@ export class Screens {
       h('h2', {}, level.titre),
       level.accroche && h('p', {}, level.accroche),
       choose && heroes.length > 1 && this.heroRow(heroes, mine, hero, pick),
-      this.keys(),
-      go);
+      h('div', { className: 'depart' }, this.keys(), go)); // écran bas : les commandes à côté du bouton, pas au-dessus
     go.focus({ preventScroll: true }); // Entrée lance le niveau…
     this.root.firstChild.onkeydown = (e) => { // … ← et → changent de héros
       const turn = { ArrowLeft: -1, ArrowRight: 1 }[e.key];
@@ -343,6 +342,23 @@ export class Screens {
 
 // ---------------------------------------------------------------------- HUD et bandeau
 
+const ASK_TIME = 8; // secondes de jeu, au plus, pendant lesquelles la spéciale clignote
+
+/**
+ * Un panneau qui dit `[spéciale]` fait clignoter la spéciale. La demande s'arme une fois par partie, au premier
+ * panneau qui la nomme ; elle tombe au premier usage (une charge de moins), au changement de personnage, ou au bout
+ * de huit secondes de jeu ; elle ne clignote jamais quand la partie est arrêtée (`live` faux : pause, carton).
+ * @param {{hero: string, charges: number, until: number} | null} ask  la demande en cours (null : pas encore armée)
+ * @returns {{ask: object | null, on: boolean}} la demande, et si elle clignote à cette image
+ */
+export function askSpecial(ask, game, live) {
+  const { hero } = game;
+  const next = ask || (hero.def.speciale && hero.charges > 0 && mentions(game.sign, 'speciale')
+    ? { hero: hero.def.id, charges: hero.charges, until: game.time + ASK_TIME } : null);
+  const on = Boolean(live && next && next.hero === hero.def.id && next.charges === hero.charges && game.time < next.until);
+  return { ask: next, on };
+}
+
 export class Hud {
   constructor(bundle) {
     this.bundle = bundle;
@@ -355,7 +371,8 @@ export class Hud {
     this.turn = 0;
     this.onQuote = () => {}; // une vraie citation passe à l'antenne : la Collection la note
     this.device = 'clavier'; // l'appareil dont la puce de la spéciale montre la touche
-    this.ask = null; // un panneau demande la spéciale : la puce et le bouton SPÉ clignotent jusqu'au premier usage
+    this.ask = null; // un panneau a demandé la spéciale (voir `askSpecial`)
+    this.live = false; // la partie tourne : hors pause et hors carton, rien ne clignote
     // Le fil permanent de PANIQUE TV : de vraies déclarations, datées et signées.
     this.quotes = Object.values(bundle.citations).filter((c) => c.categorie !== 'gauche');
   }
@@ -395,9 +412,9 @@ export class Hud {
   update(game) {
     const { hero, boss } = game;
     const special = hero.def.speciale;
-    // Un panneau demande la spéciale : on la montre jusqu'à ce qu'elle serve (huit secondes au plus).
-    if (special && hero.charges > 0 && /\[sp[ée]ciale\]/i.test(game.sign || '')) this.ask = { hero: hero.def.id, charges: hero.charges, until: game.time + 8 };
-    const asking = Boolean(this.ask && this.ask.hero === hero.def.id && this.ask.charges === hero.charges && game.time < this.ask.until);
+    // Un panneau demande la spéciale : la puce et le bouton SPÉ clignotent jusqu'à ce qu'elle serve.
+    const { ask, on: asking } = askSpecial(this.ask, game, this.live);
+    this.ask = ask;
     const state = [hero.def.id, hero.hp, game.stack.join(), hero.charges, game.panicLevel, Math.round(game.panic), game.crowd,
       boss?.active && boss.state !== 'gone' ? boss.hp : -1, this.device, asking].join('|');
     if (state === this.last) return; // on ne touche au DOM que si quelque chose a changé

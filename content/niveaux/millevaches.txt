@@ -11,7 +11,7 @@ heros: tyrannogauchiste
 
 panneau.1: [avancer] : avancer · [sauter] : sauter
 panneau.2: [tirer] : lancer des tracts
-panneau.3: Va jusqu'à elle : elle rejoint la manif ✊
+panneau.3: Va jusqu'à la paysanne : elle rejoint la manif ✊
 panneau.4: [spéciale] : lance ta spéciale
 panneau.5: Pousse contre le mur : [sauter], [sauter], [sauter]
 panneau.6: ✊ Assez nombreux, le blindé cède

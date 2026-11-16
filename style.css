@@ -389,6 +389,7 @@ html.pivote body.tactile #hud .droite { right: max(10px, env(safe-area-inset-bot
 .commandes th.ici { color: var(--or); }
 .panneau .pied button.effacer { margin-left: auto; font-size: .8em; opacity: .75; } /* à l'écart, en bas des Options du menu */
 .pause .touches { margin: 0; }
+.intro .depart { display: flex; flex-direction: column; align-items: center; }
 .panneau .onglets { display: flex; flex-wrap: wrap; gap: 8px; margin: .8em 0; }
 .panneau .contenu { font-size: .9rem; }
 
@@ -463,7 +464,8 @@ html.bas .pause > h2, html.bas .pause > .touches, html.bas .pause > button.gros 
 html.bas .pause h2 { margin: 0; font-size: 1.4rem; }
 html.bas .pause button { padding: .5em .6em; }
 html.bas .pause button.gros { font-size: 1.15rem; }
-html.bas .intro .touches { margin: .3em 0 .5em; }
+html.bas .intro .depart { flex-direction: row; justify-content: center; gap: 14px; margin-top: .3em; }
+html.bas .intro .depart .touches { justify-content: flex-start; max-width: 25em; margin: 0; font-size: .72rem; line-height: 1.5; text-align: left; }
 html.bas .panneau.commandes { padding: 10px 14px; }
 html.bas .commandes h2 { font-size: 1.3rem; margin: 0 0 .3em; }
 html.bas .commandes table { font-size: .7rem; line-height: 1.25; }

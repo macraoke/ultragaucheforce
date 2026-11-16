@@ -39,7 +39,9 @@ export const brief = (device) => {
   return [[k.avancer, 'avancer'], [k.sauter, 'sauter'], [k.tirer, 'tirer'], [`${k.bas} + ${k.tirer}`, 'creuser'], [k.speciale, 'spéciale']];
 };
 
-const plain = (s) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+const TOKEN = /\[([^\]]+)\]/g;
+/** « [ Spéciale ] » → « speciale » : sans espaces, sans accents, en minuscules. */
+const tokenName = (word) => word.trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 
 /**
  * Le texte d'un panneau pour cet appareil. `[tirer]`, `[sauter]`, `[avancer]`, `[bas]`, `[haut]`, `[spéciale]`, `[pause]`
@@ -51,8 +53,21 @@ export function withKeys(text, device = 'clavier') {
   const [keys, thumbs] = text.split(' // ');
   const chosen = thumbs && device === 'pouce' ? thumbs : keys;
   const names = KEY_NAMES[device] || KEY_NAMES.clavier;
-  return chosen.replace(/\[([^\]]+)\]/g, (all, word) => names[plain(word.trim())] ?? all);
+  return chosen.replace(TOKEN, (all, word) => names[tokenName(word)] ?? all);
 }
+
+/** Ce panneau nomme-t-il cette commande (`speciale`, `tirer`…), sous l'une des formes que `withKeys` reconnaît ? */
+export const mentions = (text, action) => [...(text || '').matchAll(TOKEN)].some(([, word]) => tokenName(word) === action);
+
+/** Les boutons et les axes de la manette standard que le jeu lit (voir `gamepad()` et `pollMenu()`). */
+const PAD_BUTTONS = [0, 1, 2, 4, 5, 6, 7, 9, 12, 13, 14, 15];
+const PAD_AXES = [0, 1];
+
+/**
+ * Le joueur se sert-il de cette manette ? Seuls comptent les boutons et les axes que le jeu lit : une manette
+ * générique posée sur la table, dont un axe inutilisé ne revient jamais à zéro, ne prend pas la main au clavier.
+ */
+export const padInUse = (pad) => PAD_BUTTONS.some((i) => pad.buttons[i]?.pressed) || PAD_AXES.some((i) => Math.abs(pad.axes[i] || 0) > 0.5);
 
 /**
  * Les zones tactiles, en fractions de l'écran tenu en paysage. Pas de boutons à viser : tout l'écran répond.
@@ -239,7 +254,7 @@ export class Input {
   /** La manette branchée, s'il y en a une ; on la note comme appareil en cours dès qu'on y touche. */
   findPad() {
     const pad = [...(navigator.getGamepads?.() || [])].find(Boolean);
-    if (pad && (pad.buttons.some((x) => x?.pressed) || pad.axes.some((a) => Math.abs(a) > 0.5))) this.use('manette');
+    if (pad && padInUse(pad)) this.use('manette');
     return pad;
   }
 
