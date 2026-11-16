@@ -3,7 +3,7 @@
 // tambours et cuivres. Se ferme tout seul ou au premier toucher.
 
 import { spriteElement } from './sprites.js';
-import { frenchDate } from './dom.js';
+import { frenchDate, quoted } from './dom.js';
 
 const el = (tag, className, text) => {
   const node = document.createElement(tag);
@@ -13,6 +13,23 @@ const el = (tag, className, text) => {
 };
 
 const CONFETTI = ['#3b5dc9', '#f4f4f4', '#e43b44', '#f6c21c'];
+const TILT = 16; // marge en haut et en bas, en pixels : le tampon et le nom sont penchés, ils dépassent de leur boîte
+
+/**
+ * Tout doit tenir à l'écran : le nom sans qu'un mot déborde, puis le tampon, le cri, la citation et le bonus
+ * dans la hauteur. On réduit d'abord le nom, puis le cri, puis les petites lignes, jusqu'à ce que tout tienne.
+ */
+function fit(card, scene, words) {
+  const size = (el) => parseFloat(getComputedStyle(el).fontSize);
+  const tall = () => scene.offsetHeight > card.clientHeight - 2 * TILT;
+  const name = words.querySelector('.nom');
+  for (let s = size(name); name.scrollWidth > words.clientWidth && s > 18; s -= 3) name.style.fontSize = `${s}px`;
+  for (let s = size(name); tall() && s > 26; s -= 3) name.style.fontSize = `${s}px`;
+  const cri = words.querySelector('.cri');
+  for (let s = cri && size(cri); cri && tall() && s > 14; s -= 2) cri.style.fontSize = `${s}px`;
+  const small = [...words.querySelectorAll('.source, .bonus')];
+  for (let s = small[0] && size(small[0]); small.length && tall() && s > 9; s -= 1) small.forEach((el) => (el.style.fontSize = `${s}px`));
+}
 
 /**
  * @param {object} bundle  le contenu du jeu
@@ -55,10 +72,10 @@ export function showHeroCard(bundle, hero, { audio = null, reduced = false, resc
     const words = el('div', 'mots');
     words.append(el('div', 'tampon', rescued ? 'Camarade libéré·e !' : 'Entre en scène'));
     words.append(el('h1', 'nom', hero.nom));
-    if (hero.cri) words.append(el('p', 'cri', `« ${hero.cri} »`));
+    if (hero.cri) words.append(el('p', 'cri', quoted(hero.cri)));
     const quote = bundle.citations[hero.citation];
     if (quote) {
-      words.append(el('p', 'source', `« ${quote.texte} » — ${quote.auteur}, ${frenchDate(quote.date)}`));
+      words.append(el('p', 'source', `${quoted(quote.texte)} — ${quote.auteur}, ${frenchDate(quote.date)}`));
     }
     const perks = [rescued && '+1 vie', hero.speciale?.nom && `Spéciale : ${hero.speciale.nom}`].filter(Boolean);
     if (perks.length) {
@@ -81,11 +98,7 @@ export function showHeroCard(bundle, hero, { audio = null, reduced = false, resc
     }
 
     document.body.append(card);
-    // Le nom doit tenir en entier : on réduit la police jusqu'à ce qu'aucun mot ne déborde.
-    const name = words.querySelector('.nom');
-    for (let size = parseFloat(getComputedStyle(name).fontSize); name.scrollWidth > words.clientWidth && size > 18; size -= 3) {
-      name.style.fontSize = `${size}px`;
-    }
+    fit(card, scene, words);
     audio?.play('tambour');
     const timers = [
       setTimeout(() => audio?.play('cuivres'), 480),
