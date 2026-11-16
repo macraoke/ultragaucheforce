@@ -46,17 +46,23 @@ test('collection : chaque carte se débloque quelque part en jouant', () => {
   assert.ok(hint('ennemis', 'gendarme-mobile').length >= 1, 'les renforts de l’hélicoptère comptent');
 });
 
-test('collection : les indices suivent l’ordre de la campagne ; un boss tiré au hasard se croise au bout de n’importe quel niveau', () => {
+test('collection : les indices suivent l’ordre de la campagne', () => {
   const order = levelOrder(bundle);
   const crs = whereToFind(bundle, 'ennemis', bundle.ennemis.crs);
   assert.deepEqual(crs, order.filter((id) => crs.includes(bundle.niveaux[id].titre)).map((id) => bundle.niveaux[id].titre), 'dans l’ordre des étapes');
-  for (const boss of Object.values(bundle.boss)) assert.deepEqual(whereToFind(bundle, 'boss', boss), ['au bout de n’importe quel niveau'], boss.id);
-  // Un niveau qui impose son boss : les autres boss ne s'y croisent plus ; on nomme alors les niveaux, dans l'ordre.
-  const [first, ...rest] = order.filter((id) => bundle.niveaux[id].carte.some((row) => row.includes('Y')));
-  const [one, other] = Object.keys(bundle.boss);
-  const imposed = { ...bundle, niveaux: { ...bundle.niveaux, [first]: { ...bundle.niveaux[first], boss: one } } };
-  assert.deepEqual(whereToFind(imposed, 'boss', bundle.boss[other]), rest.map((id) => bundle.niveaux[id].titre));
-  assert.deepEqual(whereToFind(imposed, 'boss', bundle.boss[one]), ['au bout de n’importe quel niveau']);
+});
+
+test('collection : un boss tiré au hasard se croise au bout de n’importe quel niveau ; un boss imposé, dans ses niveaux', () => {
+  // Une campagne d'essai, faite ici : le contenu réel reste libre d'imposer ou non ses boss.
+  const level = (titre, boss = '') => ({ titre, boss, carte: [boss === null ? '.....' : '..Y..'], legende: {}, camarades: [] });
+  const campaign = (niveaux, campagne = Object.keys(niveaux)) => ({ campagne, niveaux, boss: { x: { id: 'x' }, y: { id: 'y' } }, heros: {}, ennemis: {} });
+  const random = campaign({ a: level('A'), b: level('B'), sans: level('Sans boss', null) });
+  for (const boss of Object.values(random.boss)) assert.deepEqual(whereToFind(random, 'boss', boss), ['au bout de n’importe quel niveau'], boss.id);
+  const imposed = campaign({ a: level('A', 'x'), b: level('B'), c: level('C') }, ['c', 'a', 'b']);
+  assert.deepEqual(whereToFind(imposed, 'boss', imposed.boss.y), ['C', 'B'], 'le niveau qui impose x n’est pas nommé pour y ; les autres, dans l’ordre de la campagne');
+  assert.deepEqual(whereToFind(imposed, 'boss', imposed.boss.x), ['au bout de n’importe quel niveau']);
+  const alone = campaign({ a: level('A'), b: level('B', null) });
+  assert.deepEqual(whereToFind(alone, 'boss', alone.boss.x), ['A'], 'un seul niveau à boss : on le nomme');
 });
 
 test('collection : la ligne d’indice se lit d’un trait, sans « dans » en double', () => {
