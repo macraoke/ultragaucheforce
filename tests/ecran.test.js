@@ -6,6 +6,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { loadContent } from '../tools/content.mjs';
 import { queueNote, readTime } from '../src/client/ui.js';
+import { Game, DT } from '../src/sim/game.js';
 
 // ---------------------------------------------------------------- un faux canevas
 
@@ -571,4 +572,78 @@ test('un texte hors de la vue n’est ni mesuré ni écrit', () => {
   assert.equal(measured, 0);
   r.label('SORTIE ▶', 200, 100, { size: 6 });
   assert.ok(measured > 0);
+});
+
+// ---------------------------------------------------------------- en mouvement
+
+/** Une longue rue plate, une manif de 250 personnes et ses pancartes derrière le héros. */
+function march() {
+  const width = 200;
+  const rows = Array.from({ length: 12 }, (_, y) => (y === 11 ? 'T'.repeat(width) : y === 10 ? `..D${'.'.repeat(width - 3)}` : '.'.repeat(width)));
+  const level = { titre: 'rue', manchette: [], panneaux: {}, legende: {}, boss: '', heros: 'zucman', cortege: true, manif: 10, fond: 'ville', carte: rows };
+  const game = new Game(bundle, 'rue', { level, seed: 3, invincible: true });
+  for (let k = 0; k < 12; k++) game.addCrowd(20); // des recrues une à une : la plupart apportent une pancarte
+  const r = renderer();
+  r.snap(game);
+  return { game, r };
+}
+
+/**
+ * La boucle de main.js : des pas fixes de DT, la caméra qui suit à chaque pas, un dessin par image de l'écran.
+ * `frames` : la durée de chaque image. Rend, image par image, où le héros, chaque manifestant et chaque pancarte
+ * levée sont dessinés à l'écran.
+ */
+function play(r, game, frames) {
+  const seen = [];
+  let acc = DT / 4;
+  const actor = r.actor.bind(r);
+  const marcher = r.marcher.bind(r);
+  const board = r.board.bind(r);
+  let shot = null;
+  r.actor = (a, rows, opts) => {
+    const at = actor(a, rows, opts);
+    if (a === game.hero && at) shot.set('héros', at.x);
+    return at;
+  };
+  r.marcher = (m, i) => {
+    shot.set(`manifestant ${i}`, r.spot(m, i)?.x);
+    return marcher(m, i);
+  };
+  r.board = (text, x, y, opts) => {
+    if (opts?.size === 4.6) shot.set(`« ${text} »`, x);
+    return board(text, x, y, opts);
+  };
+  for (const dt of frames) {
+    acc += dt;
+    while (acc >= DT) {
+      acc -= DT;
+      game.step({ right: true });
+      game.events.length = 0;
+      r.follow(game);
+    }
+    shot = new Map();
+    r.tick(dt);
+    r.draw(game, dt);
+    seen.push({ cx: r.cx, at: shot });
+  }
+  Object.assign(r, { actor, marcher, board });
+  return seen;
+}
+
+test('en marche, le héros, sa manif et ses pancartes ne tremblent pas à l’écran : à 60 Hz, à 120 Hz, ou quand une image joue deux pas ou aucun', () => {
+  const { game, r } = march();
+  play(r, game, Array(240).fill(DT)); // quatre secondes : toute la manif marche au pas derrière le héros
+  const jolts = [1, 0.4, 1.6, 0.9, 1.1, 0.5, 1.5, 1, 0.3, 1.7]; // des images plus ou moins longues : zéro, un ou deux pas
+  for (const [cadence, frames] of [
+    ['60 Hz', Array(60).fill(DT)],
+    ['120 Hz', Array(120).fill(DT / 2)],
+    ['à-coups', Array.from({ length: 60 }, (_, k) => jolts[k % jolts.length] * DT)],
+  ]) {
+    const seen = play(r, game, frames);
+    assert.ok(seen.at(-1).cx - seen[0].cx > 80, `${cadence} : la rue défile`);
+    const where = new Map();
+    for (const { at } of seen) for (const [who, x] of at) where.set(who, (where.get(who) ?? new Set()).add(x));
+    assert.ok(where.has('héros') && [...where.keys()].some((k) => k.startsWith('«')), `${cadence} : le héros et des pancartes levées`);
+    for (const [who, xs] of where) assert.equal(xs.size, 1, `${cadence} : ${who} dessiné à ${[...xs].join(', ')}`);
+  }
 });

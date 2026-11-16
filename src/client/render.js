@@ -51,6 +51,7 @@ const covers = (box, art) => Math.min(box.x1 - 1, art.x1) - Math.max(box.x0 + 1,
   && Math.min(box.y1 - 2, art.y1) - Math.max(box.y0 + 1, art.y0) > 2;
 const GROUP = { x: 40, y: 24 }; // des unités identiques aussi proches font un groupe : un seul « ! », un seul « KOF ! »
 const SAFE_TOP = 100; // pixels CSS en haut de l'écran laissés au HUD, au moins (bandeau au pouce, barre de vie du boss) ; plus s'il descend plus bas
+const FOLLOW = { x: 9 / 60, y: 7 / 60 }; // part du chemin vers le héros que la caméra fait à chaque pas de simulation
 
 export class Renderer {
   constructor(canvas, textCanvas, bundle) {
@@ -62,6 +63,8 @@ export class Renderer {
     this.palette = bundle.palette;
     this.bySymbol = Object.fromEntries(Object.values(bundle.tuiles).map((t) => [t.symbole, t]));
     this.cam = { x: 0, y: 0 };
+    this.camX = 0; // la caméra de l'image en cours, secousse comprise, au sous-pixel près (`cx`, `cy` : arrondie)
+    this.camY = 0;
     this.viewW = 384;
     this.viewH = 216;
     this.scale = 2;
@@ -295,14 +298,25 @@ export class Renderer {
 
   // ---------------------------------------------------------------- dessin
 
+  /**
+   * La caméra suit le héros d'un pas de simulation : appelée après chaque pas de la partie, jamais au dessin.
+   * Elle avance ainsi au même rythme que le monde, quelle que soit la cadence de l'écran (120 Hz, une image
+   * qui joue deux pas ou aucun) : le héros et le cortège qu'elle suit ne tremblent pas à l'écran.
+   */
+  follow(game) {
+    const goal = this.target(game);
+    this.cam.x += (goal.x - this.cam.x) * FOLLOW.x;
+    this.cam.y += (goal.y - this.cam.y) * FOLLOW.y;
+  }
+
   draw(game, dt = 1 / 60) {
     const { ctx, tctx } = this;
-    const goal = this.target(game);
-    this.cam.x += (goal.x - this.cam.x) * Math.min(1, dt * 9);
-    this.cam.y += (goal.y - this.cam.y) * Math.min(1, dt * 7);
     const jolt = this.reduced ? 0 : this.shake;
-    const cx = Math.round(this.cam.x + (Math.random() - 0.5) * jolt);
-    const cy = Math.round(this.cam.y + (Math.random() - 0.5) * jolt);
+    // La caméra de cette image, secousse comprise : au sous-pixel près pour ce qu'elle suit (`camX`), entière pour le décor.
+    this.camX = this.cam.x + (Math.random() - 0.5) * jolt;
+    this.camY = this.cam.y + (Math.random() - 0.5) * jolt;
+    const cx = Math.round(this.camX);
+    const cy = Math.round(this.camY);
     this.cx = cx;
     this.cy = cy;
 
@@ -522,12 +536,13 @@ export class Renderer {
   /**
    * Dessine un sprite posé au sol, centré sur la boîte de collision de son acteur. `dim` : assombri (vrai), ou apaisé
    * (`'calm'`). Rend le coin haut gauche du dessin à l'écran, ou null s'il est hors de l'image.
+   * `followed` : ce que la caméra suit (le héros, ses doubles), arrondi par rapport à elle : il ne tremble pas à l'écran.
    */
-  actor(a, rows, { flip = a.facing < 0, flash = false, alpha = 1, dx = 0, dy = 0, dim = false } = {}) {
+  actor(a, rows, { flip = a.facing < 0, flash = false, alpha = 1, dx = 0, dy = 0, dim = false, followed = false } = {}) {
     if (!rows) return null;
     const img = sprite(rows, this.palette, flip, flash, flash ? false : dim);
-    const x = Math.round(a.x + a.w / 2 - img.width / 2 - this.cx + dx);
-    const y = Math.round(a.y + a.h - img.height - this.cy + dy);
+    const x = Math.round(a.x + a.w / 2 - img.width / 2 - (followed ? this.camX : this.cx) + dx);
+    const y = Math.round(a.y + a.h - img.height - (followed ? this.camY : this.cy) + dy);
     if (x > this.viewW || y > this.viewH || x + img.width < 0 || y + img.height < 0) return null;
     if (alpha !== 1) this.ctx.globalAlpha = alpha;
     this.ctx.drawImage(img, x, y);
@@ -544,7 +559,7 @@ export class Renderer {
     if (h.dead) return;
     const s = h.def.sprites;
     const rows = h.anim === 'saut' ? s.saut || s.marche1 || s.repos : this.frames(s, h.anim === 'marche', h.animTime);
-    for (const c of h.clones || []) this.actor(c, rows, { flip: c.facing < 0, alpha: 0.55 });
+    for (const c of h.clones || []) this.actor(c, rows, { flip: c.facing < 0, alpha: 0.55, followed: true });
     // Touché : blanc un instant, puis il pâlit et revient, lentement, tant qu'il ne craint rien. Il ne disparaît jamais.
     // Effets réduits : il reste pâle, sans clignoter, et ne sursaute pas.
     const safe = h.flash <= 0 && h.invuln > 0;
@@ -553,7 +568,7 @@ export class Renderer {
     const jolt = this.hurt && !this.reduced ? Math.max(0, this.hurt.t - 0.95) / 0.25 : 0;
     const dx = Math.round((this.hurt?.dir || 0) * 4 * jolt);
     const dy = -Math.round(3 * Math.sin(jolt * Math.PI));
-    this.actor(h, rows, { flash: h.flash > 0, alpha: pale ? (this.reduced ? 0.6 : 0.4) : 1, dx, dy });
+    this.actor(h, rows, { flash: h.flash > 0, alpha: pale ? (this.reduced ? 0.6 : 0.4) : 1, dx, dy, followed: true });
     if (this.hurt) this.pips(h, rows.length);
     else if (this.crowded > 0 && !this.demo) this.marker(h, rows.length);
   }
@@ -561,8 +576,8 @@ export class Renderer {
   /** Au milieu de la manif, une petite flèche d'or au-dessus de la tête du héros : c'est lui. */
   marker(h, height) {
     const { ctx } = this;
-    const x = Math.round(h.x + h.w / 2 - this.cx);
-    const y = Math.round(h.y + h.h - height - 6 - this.cy);
+    const x = Math.round(h.x + h.w / 2 - this.camX);
+    const y = Math.round(h.y + h.h - height - 6 - this.camY);
     ctx.globalAlpha = this.crowded;
     ctx.fillStyle = '#1a1c2c';
     ctx.fillRect(x - 3, y - 1, 7, 3);
@@ -581,8 +596,8 @@ export class Renderer {
     const { hp, max } = this.hurt;
     const size = 3;
     const width = max * (size + 1) - 1;
-    const x0 = Math.round(h.x + h.w / 2 - width / 2 - this.cx);
-    const y0 = Math.round(h.y + h.h - height - 6 - this.cy);
+    const x0 = Math.round(h.x + h.w / 2 - width / 2 - this.camX);
+    const y0 = Math.round(h.y + h.h - height - 6 - this.camY);
     ctx.fillStyle = '#1a1c2c';
     ctx.fillRect(x0 - 1, y0 - 1, width + 2, size + 2);
     for (let i = 0; i < max; i++) {
@@ -1141,15 +1156,18 @@ export class Renderer {
     return this.signs.length ? this.signs[Math.floor(d.x / 16 + d.y * 7) % this.signs.length].texte : '';
   }
 
-  /** Où se tient un membre du cortège à l'écran, et où serait sa pancarte levée. */
+  /**
+   * Où se tient un membre du cortège à l'écran, et où serait sa pancarte levée. Le cortège marche avec le héros :
+   * comme lui, il est arrondi par rapport à la caméra, et ses pancartes ne tremblent pas quand on avance.
+   */
   spot(m, i) {
     const d = this.bundle.decors;
     const body = m.kind === 'fanfare' ? d.fanfare : i % 2 ? d['manifestant-2'] : d.manifestant;
     if (!body) return null;
     const step = Math.floor(m.animTime * 8) % 2 && body.sprites.image2;
     const img = sprite(step ? body.sprites.image2 : body.sprites.image, this.palette, m.facing < 0);
-    const x = Math.round(m.x - img.width / 2 - this.cx);
-    const y = Math.round(m.y - img.height - this.cy + (m.gassed > 0 ? 3 : 0));
+    const x = Math.round(m.x - img.width / 2 - this.camX);
+    const y = Math.round(m.y - img.height - this.camY + (m.gassed > 0 ? 3 : 0));
     const hand = m.facing < 0 ? x : x + img.width - 1;
     const top = y - 12 - (i % 2) * 14;
     const width = m.label?.length > 45 ? 84 : m.label?.length > 26 ? 64 : 44; // une longue pancarte est plus large, pas plus haute

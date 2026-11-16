@@ -35,7 +35,11 @@ let custom = null; // niveau de l'Atelier en cours de test
 let begin = null; // le carton d'ouverture attend : fonction qui lance vraiment le niveau
 let bot = {};
 let won = []; // clés de ce qui a été débloqué depuis le début du niveau : la rangée de l'écran de fin
-let acc = 0;
+// Le temps d'écran pas encore joué. Il repart d'un quart de pas, jamais de zéro : à 60 Hz, une image dure un pas,
+// et un reste nul laisserait le moindre écart d'horloge jouer tantôt zéro pas, tantôt deux (le décor saccade).
+// À un quart, il en reste loin, à 60 Hz comme à 30 ou 120.
+const PHASE = DT / 4;
+let acc = PHASE;
 let last = performance.now();
 
 radio.onAsk = () => {
@@ -98,7 +102,7 @@ function setMode(next) {
   renderer.demo = next === 'menu';
   input.release();
   input.active = next === 'playing';
-  acc = 0;
+  acc = PHASE;
 }
 
 /** Fond du menu : une vraie partie, jouée par le robot de test. */
@@ -313,7 +317,10 @@ function handle(events) {
       // sauf une fois quand il s'efface, tel que le joueur va le retrouver (caméra arrivée, panneau passé).
       setMode('card');
       const opened = performance.now();
-      const onClose = () => renderer.draw(game, (performance.now() - opened) / 1000);
+      const onClose = () => {
+        Object.assign(renderer.cam, renderer.target(game)); // la caméra arrivée
+        renderer.draw(game, (performance.now() - opened) / 1000);
+      };
       showHeroCard(bundle, hero, { audio, reduced: save.options.sobre, onClose }).then(() => {
         if (mode !== 'card') return;
         setMode('playing');
@@ -343,11 +350,12 @@ function frame(now) {
       acc -= DT;
       steps++;
       game.step(demo ? botActions(game, bot) : input.actions(game));
+      renderer.follow(game); // la caméra avance avec le monde, pas à pas
       const events = game.events.splice(0);
       if (demo) renderer.absorb(events);
       else handle(events);
     }
-    if (steps === 6) acc = 0; // onglet ralenti : on ne rattrape pas le retard
+    if (steps === 6) acc = PHASE; // onglet ralenti : on ne rattrape pas le retard
     renderer.tick(dt);
     if (demo && game.status !== 'playing') attract();
   }
@@ -418,7 +426,7 @@ function layout() {
 addEventListener('resize', layout);
 document.addEventListener('visibilitychange', () => {
   last = performance.now();
-  acc = 0;
+  acc = PHASE;
   if (document.hidden && mode === 'playing' && !window.__ugf) togglePause(); // pas en débogage : on pilote onglet caché
   radio.setHidden(document.hidden); // coupée par le système pendant ce temps (téléphone verrouillé), la musique reprend au retour
 });
@@ -459,6 +467,7 @@ if (new URLSearchParams(location.search).has('debug')) {
     step(n = 1, actions = {}) {
       for (let i = 0; i < n && game.status === 'playing'; i++) {
         game.step(actions === 'bot' ? botActions(game, bot) : actions);
+        renderer.follow(game);
         handle(game.events.splice(0));
       }
       return { x: Math.round(game.hero.x), y: Math.round(game.hero.y), status: game.status, lives: game.lives, panic: Math.round(game.panic) };
