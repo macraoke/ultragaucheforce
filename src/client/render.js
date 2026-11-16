@@ -555,7 +555,8 @@ export class Renderer {
     const text = ahead ? `${count} ▶` : `◀ ${count}`;
     this.tctx.font = `6.5px ${FONT}`;
     const half = this.tctx.measureText(text).width / 2 + 4;
-    const y = Math.max(40, Math.min(this.viewH - 40, line.y - this.cy));
+    // À hauteur du héros : au pouce, entre le bouton SPÉ au-dessus et TIR en dessous.
+    const y = Math.max(40, Math.min(this.viewH - 40, hero.y + hero.h * 0.3 - this.cy));
     this.label(text, ahead ? this.viewW - half - 2 : half + 2, y,
       { size: 6.5, color: '#f4f4f4', bg: this.crowd >= need ? '#257953' : '#e43b44' });
   }
