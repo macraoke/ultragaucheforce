@@ -36,7 +36,8 @@ import { updateRecruits, updateCortege, syncCortege, updateKettle, drawSign, bri
 
 export const DT = 1 / 60;
 
-const PANIC_STEPS = [34, 67]; // seuils ALERTE puis HYSTÉRIE
+export const PANIC_STEPS = [34, 67]; // seuils ALERTE puis HYSTÉRIE
+const IGNITE_RANGE = 20 * TILE; // une poubelle ne prend feu qu'à cette distance du héros : on doit le voir
 const MAX_REINFORCEMENTS = 4; // renforts bornés : la panique ne rend jamais un niveau infaisable
 const FUSE = 0.12; // délai entre la destruction d'un tonneau et son explosion (réaction en chaîne)
 export const START_LIVES = 1; // on part avec un seul personnage : les autres sortent des gardes à vue
@@ -88,6 +89,7 @@ export class Game {
     this.crowd = 0; // la manif : nombre de manifestants
     this.recruits = [];
     this.nasses = []; // repères « N » de la carte
+    this.fires = []; // les feux de poubelle allumés par la panique : { x, y } (centre, au sol)
     this.kettle = null;
     this.kettleClock = 0; // secondes depuis la dernière nasse (niveaux à `nasse.rythme`)
 
@@ -417,8 +419,52 @@ export class Game {
       this.emit('panic', { level: this.panicLevel });
       this.sfx('palier', this.hero.x);
       this.headline();
-      this.reinforce(2);
+      // Une poubelle prend feu et une équipe télé vient la filmer : elle compte parmi les renforts du palier.
+      this.reinforce(this.ignite() ? 1 : 2);
     }
+  }
+
+  /**
+   * La panique monte : le décor inflammable (`brule`) le plus proche du héros prend feu, de préférence devant lui,
+   * et une unité télé de la légende (réaction `cadre`, pas un plateau fixe) arrive pour filmer ce feu, pas la manif.
+   * @returns {boolean} vrai si une équipe a été envoyée
+   */
+  ignite() {
+    const { hero, world, bundle, level } = this;
+    const cx = hero.x + hero.w / 2;
+    const exit = this.props.find((p) => p.kind === 'sortie');
+    const ahead = exit && exit.x < hero.x ? -1 : 1;
+    const centre = (d) => d.x + (bundle.decors[d.id].sprites.image[0]?.length || TILE) / 2;
+    const reach = (d) => Math.abs(centre(d) - cx) + ((centre(d) - cx) * ahead < 0 ? IGNITE_RANGE / 2 : 0); // derrière : moins volontiers
+    const bin = this.decors
+      .filter((d) => bundle.decors?.[d.id]?.brule && !d.fire && Math.abs(centre(d) - cx) <= IGNITE_RANGE && Math.abs(d.y - (hero.y + hero.h)) <= 6 * TILE)
+      .sort((a, b) => reach(a) - reach(b))[0];
+    if (!bin) return false;
+    const fire = { x: centre(bin), y: bin.y };
+    bin.fire = fire;
+    this.fires.push(fire);
+    this.emit('fire', { x: fire.x, y: fire.y });
+
+    if (this.reinforcements >= MAX_REINFORCEMENTS) return false;
+    const crews = Object.values(level.legende || {})
+      .filter((ref) => ref.type === 'ennemi' && bundle.ennemis?.[ref.id]?.reaction === 'cadre')
+      .map((ref) => bundle.ennemis[ref.id])
+      .filter((def) => def.deplacement !== 'fixe');
+    // À pied de préférence : on voit l'équipe arriver. Sinon un drone.
+    const def = crews.find((d) => d.deplacement !== 'vol') || crews[0];
+    if (!def) return false;
+    const from = Math.max(TILE, Math.min(world.w * TILE - TILE, fire.x + ahead * 9 * TILE));
+    let feet = fire.y - 4 * TILE; // un drone arrive par les airs
+    if (def.deplacement !== 'vol') {
+      const tx = Math.floor(from / TILE);
+      let ty = Math.max(0, Math.floor(fire.y / TILE) - 4);
+      while (ty < world.h && (world.solid(tx, ty) || !world.solid(tx, ty + 1))) ty++;
+      if (ty >= world.h) return false; // pas de sol de ce côté : personne ne vient
+      feet = (ty + 1) * TILE;
+    }
+    this.spawnEnemy(def.id, from, feet, { state: 'alert', film: fire });
+    this.reinforcements++;
+    return true;
   }
 
   /** Renforts : de préférence des drones de PANIQUE TV, posés à distance fixe devant le héros. */

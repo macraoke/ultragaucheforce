@@ -88,7 +88,10 @@ export class Renderer {
         this.burst(e.x, e.y, '#566c86', 8, 30 + e.r);
         this.shake = Math.max(this.shake, Math.min(9, e.r / 5));
       } else if (e.type === 'shake') this.shake = Math.max(this.shake, e.force);
-      else if (e.type === 'bubble') this.floaters.push({ x: e.x, y: e.y, text: e.text, t: 1.6, color: e.color || '#f4f4f4' });
+      else if (e.type === 'fire') {
+        this.burst(e.x, e.y - 14, '#ef7d57', 12, 70);
+        this.burst(e.x, e.y - 14, '#f6c21c', 8, 50);
+      } else if (e.type === 'bubble') this.floaters.push({ x: e.x, y: e.y, text: e.text, t: 1.6, color: e.color || '#f4f4f4' });
       else if (e.type === 'recruit') {
         this.floaters.push({ x: e.x, y: e.y - 14, text: `+ ${e.n.toLocaleString('fr-FR')}`, t: 1.8, color: '#f6c21c', size: 11 });
         if (e.healed) this.floaters.push({ x: e.x, y: e.y - 28, text: 'SOIGNÉ', t: 1.8, color: '#38b764', size: 9 });
@@ -334,7 +337,7 @@ export class Renderer {
         { size: 6.5, color: '#f4f4f4', bg: enough ? '#257953' : '#e43b44' });
     }
     if (e.state === 'stunned') this.label('✶ ✶', e.x + e.w / 2 - this.cx, e.y - 5 - this.cy, { size: 6, color: '#f6c21c' });
-    if (e.def.reaction === 'cadre' && e.state === 'alert') this.viewfinder(e);
+    if (e.def.reaction === 'cadre' && e.state === 'alert' && (!e.film || e.framing)) this.viewfinder(e);
     if (speaks) this.label(e.bubble.text, e.x + e.w / 2 - this.cx, e.y - 10 - this.cy, { size: 5.5, color: '#1a1c2c', bg: '#f4f4f4', width: 80 });
   }
 
@@ -405,9 +408,10 @@ export class Renderer {
   /** Le cadre du drone : ce que PANIQUE TV choisit de montrer. */
   viewfinder(e) {
     const { ctx } = this;
-    // Un drone cadre ce qu'il survole ; une équipe au sol cadre le héros lui-même.
+    // Un drone cadre ce qu'il survole ; une équipe au sol cadre le héros lui-même ; venue pour un feu, elle cadre le feu.
     const aloft = e.def.deplacement === 'vol';
-    const at = aloft ? { x: e.x + e.w / 2, y: e.y + e.h + 4 } : { x: this.heroBox.x + this.heroBox.w / 2, y: this.heroBox.y - 10 };
+    const at = e.film ? { x: e.film.x, y: e.film.y - 34 }
+      : aloft ? { x: e.x + e.w / 2, y: e.y + e.h + 4 } : { x: this.heroBox.x + this.heroBox.w / 2, y: this.heroBox.y - 10 };
     const x = Math.round(at.x - 22 - this.cx);
     const y = Math.round(at.y - this.cy);
     ctx.strokeStyle = Math.floor(this.clock * 4) % 2 ? '#e43b44' : '#f4f4f4';
@@ -454,12 +458,43 @@ export class Renderer {
     const y = Math.round(d.y - img.height - this.cy);
     if (x > this.viewW || x + img.width < 0) return;
     this.ctx.drawImage(img, x, y);
+    if (d.fire) this.flames(d.fire.x - this.cx, d.fire.y - this.cy, Math.min(img.width - 8, 30));
     const text = def.ecrit && this.written(d);
     if (!text) return;
     if (def.ecrit === 'tag') this.label(text, x + 8, y - 6, { size: 6.5, color: '#e43b44', width: 110 });
     else {
       this.reserve(text, x + img.width / 2, y + def.ecritY, 6, 0);
       this.label(text, x + img.width / 2, y + def.ecritY, { size: 6, color: '#1a1c2c', stroke: false });
+    }
+  }
+
+  /** Un feu de poubelle : des langues de flammes qui dansent, de la fumée au-dessus. `x` : le centre, `y` : le sol. */
+  flames(x, y, width) {
+    const { ctx } = this;
+    const still = this.reduced;
+    const t = still ? 0 : this.clock;
+    const n = Math.max(3, Math.floor(width / 4));
+    for (let i = 0; i < n; i++) {
+      const fx = Math.round(x - width / 2 + (i + 0.5) * (width / n));
+      // Chaque langue a son rythme ; celles du milieu montent plus haut.
+      const lift = 8 + 9 * Math.sin((Math.PI * (i + 0.5)) / n) + 4 * Math.sin(t * 9 + i * 1.7) + 2 * Math.sin(t * 15 + i * 2.9);
+      const h = Math.max(4, Math.round(lift));
+      const top = Math.round(y - 10 - h);
+      ctx.fillStyle = '#e43b44';
+      ctx.fillRect(fx - 2, top, 4, h);
+      ctx.fillStyle = '#ef7d57';
+      ctx.fillRect(fx - 1, top + 2, 3, h - 2);
+      ctx.fillStyle = '#f6c21c';
+      ctx.fillRect(fx - 1, top + Math.round(h * 0.45), 2, Math.round(h * 0.55));
+      ctx.fillStyle = '#ffe08a';
+      ctx.fillRect(fx, top + Math.round(h * 0.7), 1, Math.round(h * 0.3));
+    }
+    // Fumée : trois volutes qui montent et s'effacent.
+    for (let k = 0; k < 3; k++) {
+      const rise = still ? k / 3 : (t * 0.5 + k / 3) % 1;
+      ctx.fillStyle = `rgba(86, 108, 134, ${(0.5 * (1 - rise)).toFixed(2)})`;
+      const size = 3 + Math.round(rise * 5);
+      ctx.fillRect(Math.round(x - size / 2 + Math.sin(rise * 6 + k) * 4), Math.round(y - 30 - rise * 34), size, size);
     }
   }
 

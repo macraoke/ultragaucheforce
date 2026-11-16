@@ -9,6 +9,7 @@
 //   beam      { x, y, w, lit } faisceau du projecteur : centré en x, posé au sol en y ; lit = le héros est dedans
 //   rush      { phase: 'sommation' | 'ruee' | 'pause' } pendant une charge
 //   rope      { x, y } tant qu'il descend à la corde depuis ce point
+//   film      { x, y } le feu de poubelle qu'une équipe télé est venue filmer (elle ne s'occupe pas du héros)
 
 import { TILE } from './world.js';
 import { moveBox, wallAt, overlap, hitsSolid } from './physics.js';
@@ -27,6 +28,8 @@ const WIND_UP = 0.5; // élan avant une charge sans sommation
 const AIM_LOCK = 0.25; // la visée se fige juste avant le tir : on peut l'esquiver
 const ROPE_SPEED = 140; // descente à la corde, pixels par seconde
 const SPOT_TIME = 1.5; // secondes passées dans le faisceau avant une dépose de renforts
+const FILM_DISTANCE = 30; // l'équipe télé se plante à cette distance du feu qu'elle filme
+const FILM_PANIC = 0.3; // filmer un feu fait monter la panique, mais doucement : cette part de `panique`
 
 export function createEnemy(def, cx, feetY, extra = {}) {
   return {
@@ -131,6 +134,9 @@ export function updateEnemy(game, e, dt) {
     return;
   }
 
+  // Une équipe télé venue pour un feu de poubelle : c'est lui qu'elle filme, pas la manif.
+  if (e.film) return film(game, e, dt);
+
   // Vue : alerte tant que le héros est visible, retour à la patrouille peu après l'avoir perdu.
   const seen = sees(game, e, dx, dy, flying || def.arme?.vise > 0);
   if (seen || e.kettle) {
@@ -220,6 +226,49 @@ export function updateEnemy(game, e, dt) {
     e.state = 'stunned';
     e.stun = Math.max(e.stun, 1.6);
   }
+}
+
+/**
+ * L'équipe télé va jusqu'au feu, se plante devant et le cadre. Tant qu'elle filme, la panique monte doucement.
+ * Ce qu'elle dit reste ses répliques : de vrais bandeaux.
+ */
+function film(game, e, dt) {
+  const { def, film: fire } = e;
+  e.state = 'alert';
+  e.aim = null;
+  if (!e.known) {
+    e.known = true;
+    game.discover('ennemi', def.id);
+  }
+  if (def.deplacement === 'vol') {
+    // Un drone se place au-dessus des flammes.
+    const tx = fire.x - e.w / 2;
+    const ty = fire.y - 60;
+    const gap = Math.hypot(tx - e.x, ty - e.y);
+    const reach = Math.min(gap, def.vitesse * 1.5 * dt);
+    if (gap > 0.01) {
+      e.x += ((tx - e.x) / gap) * reach;
+      e.y += ((ty - e.y) / gap) * reach;
+    }
+    e.facing = Math.sign(fire.x - (e.x + e.w / 2)) || e.facing;
+    e.framing = gap < 12;
+  } else {
+    const gap = fire.x - (e.x + e.w / 2);
+    const far = Math.abs(gap) > FILM_DISTANCE;
+    e.facing = Math.sign(gap) || e.facing;
+    if (far && e.onGround && wallAt(game.world, e, e.facing)) e.vy = -260; // un petit bond par-dessus l'obstacle
+    e.vx = (far ? e.facing * def.vitesse * 1.6 : 0) + e.kick;
+    e.kick = Math.abs(e.kick) < 1 ? 0 : e.kick * 0.85;
+    fall(game.world, e, dt);
+    e.framing = !far;
+  }
+  if (!e.framing) return;
+  game.addPanic(def.panique * FILM_PANIC * dt);
+  e.talk -= dt;
+  if (e.talk <= 0 && def.replique.length) {
+    say(e, game.rng.pick(def.replique));
+    e.talk = 4 + game.rng.next() * 3;
+  } else if (!e.bubble) say(e, '● REC', 1.2);
 }
 
 /** Une ligne qui tient ne recule pas ; dans une nasse, elle se referme lentement autour du repère. */

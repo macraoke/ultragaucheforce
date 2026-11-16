@@ -141,6 +141,7 @@ Un fichier `content/decors/mon-decor.txt` : un dessin `image` (et `image2` pour 
 | `devant` | `oui` : dessiné devant les personnages |
 | `ecrit` | `pancarte` : le jeu écrit sur le dessin une vraie pancarte de `content/pancartes/` (une banderole) ; `tag` : il la peint au-dessus, sans fond (un mur) |
 | `ecrit.y` | hauteur du texte, en pixels depuis le haut du dessin (0 à 96, défaut 8) |
+| `brule` | `oui` : quand la panique de PANIQUE TV franchit un palier près de lui, il prend feu, et une unité télé de la légende (réaction `cadre`) vient filmer le feu plutôt que la manif. Modèle : [`poubelles`](../content/decors/poubelles.txt) |
 
 Au même endroit, c'est toujours la même pancarte. Modèles : [`banderole`](../content/decors/banderole.txt), [`tag`](../content/decors/tag.txt).
 

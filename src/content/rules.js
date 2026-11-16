@@ -294,8 +294,9 @@ function buildTile(f, ctx, report) {
 function buildDecor(f, ctx, report) {
   // `ecrit` : le jeu écrit dessus une vraie pancarte de `content/pancartes/`, choisie selon l'emplacement.
   // « pancarte » : texte sombre sur le dessin (banderole) ; « tag » : texte peint, sans fond (mur).
+  // `brule` : quand la panique de la chaîne franchit un palier, ce décor peut prendre feu, et une équipe télé vient le filmer.
   const spec = { nom: req(), devant: bool(), ecrit: pick(['', 'pancarte', 'tag']), 'ecrit.y': num(0, 96, 8), ...CREDITS };
-  const out = readFields(f, { nom: req(), devant: bool(), ...CREDITS }, report, (key) => key === 'ecrit' || key === 'ecrit.y');
+  const out = readFields(f, { nom: req(), devant: bool(), brule: bool(), ...CREDITS }, report, (key) => key === 'ecrit' || key === 'ecrit.y');
   out.ecrit = readValue(f, 'ecrit', spec.ecrit, report);
   out.ecritY = readValue(f, 'ecrit.y', spec['ecrit.y'], report);
   out.sprites = readSprites(f, ctx.palette, report, { required: ['image'] });
