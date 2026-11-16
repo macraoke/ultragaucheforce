@@ -10,10 +10,10 @@ saut: 3.2
 fiche: hologramme-2017
 auteur: UltraGauche Force
 
-# Arme : la vague de verbe, courte portée, traverse tout.
+# Arme : la vague de verbe, courte portée, traverse tout. Elle part plus vite qu'il ne court.
 arme.type: tir
 arme.cadence: 2
-arme.vitesse: 150
+arme.vitesse: 250
 arme.portee: 96
 arme.degats: 3
 arme.terrain: 1

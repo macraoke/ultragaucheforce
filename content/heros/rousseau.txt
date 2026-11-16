@@ -9,10 +9,10 @@ vitesse: 145
 saut: 3.3
 auteur: UltraGauche Force
 
-# Arme : un mot géant, lent, qui traverse les adversaires et ronge le décor.
+# Arme : un mot géant qui traverse les adversaires et ronge le décor. Il part plus vite qu'elle ne court.
 arme.type: tir
 arme.cadence: 1.8
-arme.vitesse: 110
+arme.vitesse: 250
 arme.portee: 220
 arme.degats: 2
 arme.terrain: 3
