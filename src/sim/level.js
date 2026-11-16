@@ -48,7 +48,11 @@ export function loadLevel(game) {
   game.hero = createHero(def, start.x, start.y);
   game.checkpoint = start;
 
-  const bossDef = level.boss && bundle.boss?.[level.boss];
-  if (bossDef && bossAt) game.boss = createBoss(bossDef, bossAt.x, bossAt.y);
+  // Le repère « Y » est l'emplacement du boss. Lequel ? Celui que la fiche impose (`boss:`), sinon un ultra-riche
+  // tiré au hasard parmi ceux de `content/boss/` : d'une partie à l'autre, ce n'est pas le même.
+  const bosses = Object.values(bundle.boss || {});
+  const forced = Object.hasOwn(bundle.boss || {}, level.boss || '') ? bundle.boss[level.boss] : null;
+  const bossDef = bossAt && (forced || (bosses.length ? game.rng.pick(bosses) : null));
+  if (bossDef) game.boss = createBoss(bossDef, bossAt.x, bossAt.y);
   else for (const p of game.props) if (p.kind === 'sortie') p.on = true;
 }

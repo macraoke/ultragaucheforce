@@ -31,7 +31,6 @@ let current = null; // { id, level } du niveau en cours
 let custom = null; // niveau de l'Atelier en cours de test
 let begin = null; // le carton d'ouverture attend : fonction qui lance vraiment le niveau
 let bot = {};
-let written = []; // banderoles et tags du niveau que le héros n'a pas encore lus
 let won = []; // clés des cartes gagnées depuis le début du niveau : la rangée de l'écran de fin
 let acc = 0;
 let last = performance.now();
@@ -114,25 +113,11 @@ function collect(kind, id, quiet = false) {
   else if (!quiet) hud.toast(`Débloqué : ${cardName(item)}`);
   collect('citations', item.citation, true);
   for (const fiche of [item.fiche].flat()) collect('fiches', fiche, true);
-  for (const slogan of item.slogan || []) collect('pancartes', slogan, true); // une recrue arrive avec ses slogans
 }
 
-/** Ce que porte le cortège entre dans la Collection : de vraies pancartes, les drapeaux des luttes. */
+/** Les drapeaux des luttes que porte le cortège se débloquent en les voyant. (Les pancartes, elles, se tirent au hasard.) */
 function collectCortege() {
-  for (const m of game.cortege) {
-    if (m.kind === 'pancarte') collect('pancartes', m.label, true);
-    else if (m.kind === 'drapeau') collect('drapeaux', m.label, true);
-  }
-}
-
-/** Passer devant une banderole ou un tag, c'est l'avoir lu. */
-function readSigns() {
-  const { hero } = game;
-  written = written.filter((d) => {
-    if (Math.abs(d.x - hero.x) > 96 || Math.abs(d.y - hero.y) > 96) return true;
-    collect('pancartes', renderer.written(d), true);
-    return false;
-  });
+  for (const m of game.cortege) if (m.kind === 'drapeau') collect('drapeaux', m.label, true);
 }
 
 /**
@@ -160,7 +145,6 @@ function start(id, level = null) {
   collect('citations', current.level.citation, true);
   collect('heros', game.hero.def.id, true);
   collectCortege();
-  written = game.decors.filter((d) => bundle.decors[d.id]?.ecrit);
   setMode('paused');
   begin = () => {
     begin = null;
@@ -188,7 +172,7 @@ async function win() {
   setMode('over');
   audio.play('victoire');
   const { level, id } = current;
-  const boss = bundle.boss[level.boss];
+  const boss = game.boss?.def; // celui qu'on vient d'affronter : il est tiré au hasard
   if (boss?.fortune.montant) {
     const learned = await showTaxScene(screenRoot, bundle, boss, { audio, hero: game.hero.def });
     learned.forEach((f) => collect('fiches', f, true));
@@ -202,7 +186,7 @@ async function win() {
   if (index >= 0) save.termines[id] = true;
   storeSave(save);
   screens.end({
-    level, stats: game.stats, time: game.time, crowd: game.crowd, won, best,
+    level, stats: game.stats, time: game.time, crowd: game.crowd, won, best: custom ? null : best,
     next: index >= 0 ? bundle.campagne[index + 1] : null,
     last: index === bundle.campagne.length - 1,
   });
@@ -232,15 +216,14 @@ function handle(events) {
     else if (e.type === 'sign') collect('pancartes', e.text);
     else if (e.type === 'heroCard') {
       const hero = bundle.heros[e.hero];
-      const fresh = !isFound(save, 'heros', hero.id);
       collect('heros', hero.id, true);
       collectCortege(); // les soutiens venus avec le camarade libéré
-      if (game.level.cortege) audio.play('slogan'); // le cortège salue le camarade libéré
-      if (!fresh) continue; // déjà débloqué : on le joue tout de suite, sans cérémonie
-      // Jamais rencontré : le grand carton de déblocage.
+      // Le grand carton joue à chaque libération.
       setMode('card');
       showHeroCard(bundle, hero, { audio, reduced: save.options.sobre }).then(() => {
-        if (mode === 'card') setMode('playing');
+        if (mode !== 'card') return;
+        setMode('playing');
+        if (game.level.cortege) audio.play('slogan'); // le cortège salue le camarade libéré
       });
     } else if (e.type === 'won') win();
     else if (e.type === 'lost') {
@@ -269,7 +252,6 @@ function frame(now) {
       else handle(events);
     }
     if (steps === 6) acc = 0; // onglet ralenti : on ne rattrape pas le retard
-    if (!demo && written.length) readSigns();
     renderer.tick(dt);
     if (demo && game.status !== 'playing') attract();
   }

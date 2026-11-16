@@ -150,6 +150,7 @@ export function showAtelier(root, { bundle, save, test, back }) {
     type: 'button', className: 'discret', onclick: () => commit(setField(model, 'fond', id)),
   }, BACKDROP_NAMES[id] || id));
   const bossSelect = h('select', { onchange: () => commit(setField(model, 'boss', bossSelect.value)) },
+    h('option', { value: '' }, 'Au hasard'),
     Object.entries(bundle.boss).map(([id, def]) => h('option', { value: id }, def.nom || id)));
   const bossRow = h('label', { className: 'ligne' }, h('span', {}, 'Boss'), bossSelect);
   const marchBox = h('input', { type: 'checkbox', onchange: () => commit(setField(model, 'cortege', marchBox.checked ? 'oui' : 'non')) });
@@ -502,7 +503,7 @@ export function showAtelier(root, { bundle, save, test, back }) {
     sync(titleInput, getField(model, 'titre'));
     sync(authorInput, getField(model, 'auteur'));
     backdropButtons.forEach((button, i) => press(button, BACKDROPS[i] === (getField(model, 'fond') || BACKDROPS[0])));
-    bossRow.hidden = !getField(model, 'boss');
+    bossRow.hidden = !model.rows.some((row) => row.includes('Y'));
     bossSelect.value = getField(model, 'boss');
     marchBox.checked = getField(model, 'cortege') === 'oui';
     sizeLabel.textContent = `${model.rows[0].length} × ${model.rows.length}`;

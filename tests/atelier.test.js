@@ -145,9 +145,11 @@ test('un seul départ : le poser ailleurs le déplace', () => {
   assert.deepEqual(check(model).errors, []);
 });
 
-test('le boss arrive avec sa ligne d’en-tête, et repart avec', () => {
+test('poser un boss n’en impose aucun (il est tiré au hasard) ; le retirer efface celui qu’on avait imposé', () => {
   let { model } = paint(fresh(), [{ x: 30, y: 9 }], { type: 'repere', char: 'Y' }, defaults);
-  assert.equal(getField(model, 'boss'), defaults.boss);
+  assert.equal(getField(model, 'boss'), '');
+  assert.deepEqual(check(model).errors, []);
+  model = setField(model, 'boss', defaults.boss);
   assert.deepEqual(check(model).errors, []);
   ({ model } = paint(model, [{ x: 25, y: 9 }], { type: 'repere', char: 'Y' }, defaults));
   assert.equal(model.rows.join('').match(/Y/g).length, 1);

@@ -266,7 +266,7 @@ export class Screens {
         h('article', {},
           h('p', { className: 'chiffre' }, `✊ ${n(crowd)}`),
           h('p', {}, 'dans la manif'),
-          h('p', { className: 'dont' }, crowd > best ? (best ? `Record battu (${n(best)})` : 'Premier record') : `Record : ${n(best)}`)),
+          best === null ? null : h('p', { className: 'dont' }, crowd > best ? (best ? `Record battu (${n(best)})` : 'Premier record') : `Record : ${n(best)}`)),
         h('article', { className: 'annonce' },
           h('p', { className: 'chiffre' }, n(hurt)),
           h('p', {}, hurt > 1 ? 'blessés annoncés côté forces de l’ordre' : 'blessé annoncé côté forces de l’ordre'),

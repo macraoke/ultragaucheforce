@@ -62,7 +62,7 @@ Déposé dans `content/niveaux/`, il apparaît dans « Niveaux de la communauté
 | un signe de légende | `b: bac` place une unité, une recrue ou un décor à chaque `b` de la carte |
 | `heros` | le héros avec lequel on essaie le niveau dans l'Atelier. En jeu, le joueur choisit parmi ceux qu'il a débloqués ; la première fois, le hasard choisit |
 | `camarades` | l'ordre des héros libérés, séparés par une barre verticale : `melenchotron \| zuc-man` (sinon au hasard) |
-| `boss` | l'identifiant d'un boss de `content/boss/` ; il faut alors un `Y` sur la carte |
+| `boss` | facultatif : impose un boss de `content/boss/`. Sans cette ligne, le boss du `Y` est tiré au hasard à chaque partie |
 | `nasse.ennemi` | l'unité qui forme la nasse ; obligatoire s'il y a un `N` sur la carte |
 | `nasse.nombre` | unités de chaque côté (1 à 6, défaut 3) |
 | `nasse.vitesse` | vitesse à laquelle les lignes se referment, en pixels par seconde (4 à 80, défaut 18) |
@@ -84,7 +84,7 @@ Le niveau devient une carte de la Collection, avec sa citation et ses fiches.
 | `S` | sortie : le camion-sono (au moins une ; il occupe la case du `S` et les deux à sa droite) |
 | `K` | camarade en garde à vue : le libérer donne une vie, change de héros et amène 20 personnes |
 | `Q` | piquet de grève : point de reprise, et 10 personnes de plus |
-| `Y` | boss |
+| `Y` | l'emplacement du boss : un ultra-riche de `content/boss/`, tiré au hasard à chaque partie |
 | `N` | nasse : deux lignes se referment quand le héros passe ici |
 | `1` à `9` | panneau |
 | un signe de légende | unité, recrue ou décor déclaré dans l'en-tête |
@@ -147,7 +147,7 @@ Au même endroit, c'est toujours la même pancarte. Modèles : [`banderole`](../
 ## Les règles que le robot vérifie
 
 - Au moins 8 lignes ; au plus 400 colonnes sur 60 lignes.
-- Exactement un `D`, au moins un `S`, un `Y` si et seulement si l'en-tête a un `boss`.
+- Exactement un `D`, au moins un `S`, un `Y` au plus.
 - Chaque chiffre a son `panneau.N`, chaque signe sa légende, un `N` son `nasse.ennemi`.
 - La sortie doit être atteignable : aucun mur indestructible ne doit couper la carte en deux.
 - En plus, pour la campagne : un robot joueur doit réussir à traverser le niveau.

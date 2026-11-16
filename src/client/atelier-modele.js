@@ -125,7 +125,7 @@ function freeSign(model, id) {
 
 /**
  * Accorde l'en-tête à la carte : il ne déclare que ce qu'elle contient,
- * un boss s'il y a un « Y », l'unité de la nasse s'il y a un « N ».
+ * l'unité de la nasse s'il y a un « N ». Un « Y » n'impose aucun boss : il est tiré au hasard.
  */
 function settle(model, defaults) {
   const seen = new Set(model.rows.join(''));
@@ -140,7 +140,6 @@ function settle(model, defaults) {
     }),
   };
   if (!seen.has('Y')) next = setField(next, 'boss', '');
-  else if (!getField(next, 'boss')) next = setField(next, 'boss', defaults.boss);
   if (seen.has('N') && !getField(next, 'nasse.ennemi')) next = setField(next, 'nasse.ennemi', defaults.nasse);
   return next;
 }

@@ -96,12 +96,17 @@ export function citationOfWord(bundle, word) {
   return all.find((c) => c.mot && bare.startsWith(c.mot)) || all.find((c) => c.texte.toUpperCase().includes(bare));
 }
 
+/** Les boss qu'on peut croiser dans un niveau : aucun sans repère « Y » ; celui que la fiche impose ; sinon tous. */
+export function bossesOf(bundle, level) {
+  if (!level.carte.some((row) => row.includes('Y'))) return [];
+  return Object.hasOwn(bundle.boss, level.boss || '') ? [bundle.boss[level.boss]] : Object.values(bundle.boss);
+}
+
 /** Les unités qu'on croise dans un niveau : sa légende, sa nasse, les renforts qu'elles appellent, ceux du boss. */
 function unitsOf(bundle, level) {
   const ids = new Set(Object.values(level.legende).filter((l) => l.type === 'ennemi').map((l) => l.id));
   if (level.nasse?.ennemi) ids.add(level.nasse.ennemi);
-  const called = bundle.boss[level.boss]?.attaques?.invocation?.ennemi;
-  if (called) ids.add(called);
+  for (const boss of bossesOf(bundle, level)) if (boss.attaques?.invocation?.ennemi) ids.add(boss.attaques.invocation.ennemi);
   for (const id of [...ids]) if (bundle.ennemis[id]?.renfort?.ennemi) ids.add(bundle.ennemis[id].renfort.ennemi);
   return ids;
 }
@@ -118,16 +123,14 @@ export function whereToFind(bundle, kind, item) {
   const speakers = [...Object.values(bundle.heros), ...Object.values(bundle.ennemis)];
   switch (kind) {
     case 'niveaux': return [item.titre];
-    case 'heros': return titles((lv) => lv.heros === item.id || lv.camarades.includes(item.id));
-    case 'boss': return titles((lv) => lv.boss === item.id);
+    // Un personnage jouable peut ouvrir un niveau (au hasard la première fois) ou sortir de n'importe quelle garde à vue.
+    case 'heros': return item.statut === 'jouable' ? ['dans une garde à vue'] : titles((lv) => lv.heros === item.id || lv.camarades.includes(item.id));
+    case 'boss': return titles((lv) => bossesOf(bundle, lv).includes(item));
     case 'recrues': return titles(inLegend);
     case 'ennemis': return titles((lv) => unitsOf(bundle, lv).has(item.id));
     case 'drapeaux': return levels.some((lv) => lv.cortege) ? ['dans le cortège'] : [];
     case 'manchettes': return ['PANIQUE TV'];
-    case 'pancartes': {
-      const carriers = Object.values(bundle.recrues || {}).filter((r) => r.slogan.includes(item.texte)).map((r) => r.nom);
-      return carriers.length ? carriers : ['dans la manif'];
-    }
+    case 'pancartes': return ['dans la manif']; // tirée au hasard quand des gens rejoignent le cortège
     case 'citations': {
       if (item.categorie !== 'gauche') return ['PANIQUE TV'];
       const quoting = [...characters, ...levels].filter((x) => x.citation === item.id).map(cardName);

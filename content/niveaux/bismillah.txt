@@ -4,10 +4,8 @@ citation: bardella-guerre-civile
 fiche: comptage-31-janvier-2023
 fiche: bismillah-meme
 fond: ville
-boss: arnault-armure
 cortege: oui
 heros: zuc-man
-camarades: melenchotron | ecoterroriste | tyrannogauchiste
 nasse.ennemi: crs
 nasse.nombre: 3
 nasse.vitesse: 18

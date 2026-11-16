@@ -15,7 +15,7 @@ export const MARKERS = {
   S: 'sortie (camion-sono)',
   K: 'camarade en garde à vue',
   Q: 'piquet de grève (point de reprise)',
-  Y: 'boss',
+  Y: 'boss (un ultra-riche tiré au hasard, sauf si l’en-tête en impose un)',
   N: 'nasse (les lignes se referment quand le héros passe ici)',
 };
 
@@ -442,8 +442,8 @@ export function buildLevel(f, ctx, report) {
   if (rows.length < 8) report(map.line, 'Carte trop basse : il faut au moins 8 lignes.');
   if (count.D !== 1) report(map.line, `Il faut exactement un départ « D » (ici ${count.D}).`);
   if (count.S < 1) report(map.line, 'Il faut au moins une sortie « S ».');
-  if (out.boss && count.Y !== 1) report(map.line, 'Ce niveau a un boss : place exactement un « Y » dans la carte.');
-  if (!out.boss && count.Y) report(map.line, 'La carte contient un « Y » mais l’en-tête n’a pas de ligne « boss: … ».');
+  if (count.Y > 1) report(map.line, `Un seul boss par niveau : la carte contient ${count.Y} « Y ».`);
+  if (out.boss && !count.Y) report(map.line, 'L’en-tête impose un boss : place un « Y » dans la carte, là où il attend.');
   if (count.N && !out.nasse.ennemi) report(map.line, 'La carte contient une nasse « N » : ajoute « nasse.ennemi: … » dans l’en-tête.');
   if (start && count.S && !exitReachable(rows, start, ctx.symbols)) {
     report(map.line, 'La sortie « S » est inatteignable : un mur indestructible sépare le départ de la sortie.');

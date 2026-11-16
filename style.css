@@ -611,10 +611,13 @@ html.bas .choix-heros > * span { display: none; }
 .carton.sobre .plus-un { animation: none; }
 @keyframes plus-un { from { transform: rotate(9deg) scale(0); } to { transform: rotate(9deg) scale(1); } }
 
-.pile { display: inline-flex; align-items: center; vertical-align: middle; padding-left: 6px; }
-#hud .pile .tete { position: relative; display: inline-block; margin-left: -8px; line-height: 0; border: 2px solid var(--nuit); border-radius: 50%; overflow: hidden; background: var(--or); }
+.pile { display: inline-grid; gap: 3px; vertical-align: middle; padding-left: 8px; }
+.pile .tetes { display: inline-flex; align-items: center; }
+#hud .pile .tete { display: inline-block; margin-left: -8px; line-height: 0; border: 2px solid var(--nuit); border-radius: 50%; overflow: hidden; background: var(--or); }
 #hud .pile .tete.en-jeu { transform: scale(1.3); z-index: 1; margin-right: 3px; }
-/* La tête du personnage en jeu se vide par le haut à chaque coup reçu. */
-#hud .pile .tete::after { content: ''; position: absolute; left: 0; right: 0; top: 0; height: calc((1 - var(--vie, 1)) * 100%); background: rgb(26 28 44 / .8); }
 #hud .pile canvas { position: static; transform: none; display: block; } /* `#scene canvas` centre les calques du jeu : pas ceux-ci */
 .pile b { margin-left: 4px; }
+/* La barre de vie du personnage en jeu, sous la pile. */
+.pile .vie { display: block; min-width: 46px; height: 6px; margin-left: -8px; background: var(--nuit); border: 2px solid var(--nuit); }
+.pile .vie i { display: block; height: 100%; background: #38b764; transition: width .15s; }
+.pile .vie.basse i { background: var(--rouge); }
