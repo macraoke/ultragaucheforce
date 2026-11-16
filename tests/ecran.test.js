@@ -651,7 +651,7 @@ function play(r, game, frames) {
       acc -= DT;
       game.step({ right: true });
       game.events.length = 0;
-      r.follow(game);
+      r.follow?.(game); // sans `follow` (avant), la caméra avance au dessin : le test échoue sur le tremblement, pas sur une erreur
     }
     shot = new Map();
     signs = [];
