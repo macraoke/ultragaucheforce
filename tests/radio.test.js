@@ -406,14 +406,22 @@ test('une piste qui ne se charge jamais (réseau coupé en plein changement) : l
   assert.equal(s.radio.status, 'playing');
 });
 
-test('toutes les pistes ont échoué : le bouton, puis un toucher retente tout', async () => {
-  const s = setup({ list: [T('a', 'menu'), T('b', 'boss')] });
+test('toutes les pistes échouent (API de SoundCloud en panne) : injoignable ; aucun geste ne relance un tour, le bouton si', async () => {
+  const s = setup({ list: [T('a', 'menu'), T('b', 'boss'), T('c', 'jeu')] });
   s.radio.setEnabled(true);
   await s.flush();
   s.emit('ERROR');
   s.emit('ERROR');
-  assert.equal(s.radio.status, 'blocked');
-  s.radio.unblock();
+  s.emit('ERROR');
+  assert.equal(s.radio.status, 'unreachable');
+  assert.equal(s.radio.failed.size, 3);
+  const loads = s.widget.loads.length;
+  for (let i = 0; i < 160; i++) s.radio.unblock(); // 40 s de jeu au clavier
+  s.radio.play('raffinerie'); // niveau suivant
+  s.radio.play('boss');
+  assert.equal(s.widget.loads.length, loads);
+  s.radio.retry(); // le bouton « Relancer la musique »
   assert.equal(s.radio.failed.size, 0);
   assert.equal(s.radio.status, 'loading');
+  assert.equal(s.widget.loads.length, loads + 1);
 });

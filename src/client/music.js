@@ -121,7 +121,7 @@ export class Radio {
     const live = this.status === 'playing' || this.status === 'loading';
     if (again && live) return; // « Recommencer » : la même musique continue
     const track = this.choose();
-    if (!track) return this.block();
+    if (!track) return this.unreachable(); // plus aucune piste ne joue
     this.chosenFor = `${slot}|${named}`;
     if (track !== this.current) return this.start(track);
     if (!live) this.resume();
@@ -241,12 +241,16 @@ export class Radio {
     }));
   }
 
-  /** Une piste qui ne joue pas (retirée, privée, chiffrée sans module de lecture) : on passe à une autre. */
+  /**
+   * Une piste qui ne joue pas (retirée, privée, chiffrée sans module de lecture) : on passe à une autre.
+   * Toutes ont échoué (l'API de SoundCloud en panne, par exemple) : le lecteur est injoignable,
+   * et seuls le bouton ou le retour du réseau réessaient ; un geste ne relance pas tout un tour.
+   */
   fail(track) {
     this.failed.add(track.id);
     const next = this.choose();
     if (next) this.start(next);
-    else this.block();
+    else this.unreachable();
   }
 
   block() {
@@ -255,7 +259,7 @@ export class Radio {
     this.render();
   }
 
-  /** Le lecteur ne répond pas : on joue sans musique. Le bouton, ou le retour du réseau, réessaieront. */
+  /** Le lecteur ne répond pas, ou plus aucune piste ne joue : on joue sans musique. Le bouton, ou le retour du réseau, réessaieront. */
   unreachable() {
     this.cancelWatch();
     if (!this.widget) {
@@ -269,7 +273,6 @@ export class Radio {
   /** Un geste du joueur (toucher, clic, touche) : relance une lecture que le navigateur avait refusée. */
   unblock() {
     if (!this.enabled || this.status !== 'blocked') return;
-    if (!this.choose()) this.failed.clear(); // plus rien ne marchait : on retente tout
     const track = this.current && !this.failed.has(this.current.id) ? this.current : this.choose();
     if (!track) return;
     if (!this.widget || track !== this.current) return this.start(track);
@@ -285,9 +288,10 @@ export class Radio {
     if (!this.enabled) return;
     if (this.status === 'blocked') return this.unblock();
     if (this.status !== 'unreachable') return;
+    if (!this.choose()) this.failed.clear(); // plus rien ne jouait : on retente tout
     // La musique du moment présent (le jeu a pu avancer entre-temps), chargée à neuf.
     const track = this.choose();
-    if (!track) return this.block();
+    if (!track) return;
     this.chosenFor = `${this.slot}|${this.named}`;
     this.start(track);
   }
@@ -309,7 +313,7 @@ export class Radio {
     if (this.attempt && !this.attempt.loaded) return; // encore la piste d'avant
     if (name === 'FINISH') {
       const next = this.choose(this.current);
-      return next ? this.start(next) : this.block();
+      return next ? this.start(next) : this.unreachable();
     }
     if (name === 'PLAY') {
       this.ownPause = false;
@@ -365,17 +369,30 @@ export class Radio {
   }
 }
 
+// En pause, la place qu'il faut au lecteur dans la marge de l'écran de pause, et ce qui l'entoure (px).
+const ROOM = 90;
+const SHADOW = 8; // l'ombre de l'écran de pause
+const GAP = 12;
+const BUTTON = 8 + 27 + 4; // le bouton seul, à côté de la pause : sa hauteur et ses marges
+const TOP = 52; // sous le bouton pause
+
 /** Le panneau de Radio Manif : un bouton tant que rien n'est chargé, puis le lecteur et sa piste. */
 class RadioPanel {
   constructor(box) {
     this.box = box;
     this.frame = null;
+    // Les marges de sécurité de l'écran (encoche, barre d'accueil), lues par la feuille de style.
+    this.probe = h('i', { className: 'radio-marges' });
+    document.body.append(this.probe);
+    const screen = document.getElementById('ecran');
+    if (screen) new MutationObserver(() => this.fit()).observe(screen, { childList: true });
+    addEventListener('resize', () => requestAnimationFrame(() => this.fit()));
   }
 
   mount(frame) {
     this.frame = frame;
     this.caption = h('p', {});
-    this.retry = h('button', { type: 'button', className: 'relance', hidden: true, onclick: () => this.onRetry() }, '▶ Relancer la musique');
+    this.retry = h('button', { type: 'button', className: 'relance', hidden: true, onclick: () => this.onRetry() }, '▶ Relancer', h('span', {}, ' la musique'));
     this.box.replaceChildren(h('strong', {}, 'Radio Manif'), frame, this.caption, this.retry);
   }
 
@@ -402,6 +419,41 @@ class RadioPanel {
     this.retry.hidden = !stuck;
     const label = track ? `${track.titre} — ${track.artiste}` : '';
     if (this.caption.textContent !== label) this.caption.replaceChildren(track ? link(track.url, label) : '');
+    this.fit();
+  }
+
+  /**
+   * En pause, où poser le lecteur bloqué sans rien recouvrir : dans la marge à droite de l'écran de
+   * pause s'il y tient ; sinon son seul bouton, à côté de la pause, s'il reste de la place au-dessus ;
+   * sinon nulle part (le prochain toucher relance la musique quand même).
+   */
+  fit() {
+    const panel = document.querySelector('#ecran > .pause');
+    let place = '';
+    let width = 0;
+    let top = TOP;
+    if (panel) {
+      const pivoted = document.documentElement.classList.contains('pivote');
+      const p = panel.getBoundingClientRect();
+      const inset = getComputedStyle(this.probe);
+      const safe = parseFloat(pivoted ? inset.paddingBottom : inset.paddingRight) || 0;
+      // Dans le sens du jeu : pivoté, le haut du jeu est à droite du téléphone, et sa droite en bas.
+      width = (pivoted ? innerHeight - p.bottom : innerWidth - p.right) - SHADOW - GAP - Math.max(10, safe);
+      const above = pivoted ? innerWidth - p.right : p.top;
+      if (width >= ROOM) place = 'en-marge';
+      else if (above >= BUTTON) place = 'en-haut';
+      // Au pouce, le bandeau de PANIQUE TV passe en haut : le lecteur se pose dessous.
+      const band = document.getElementById('bandeau');
+      const b = band && !band.hidden ? band.getBoundingClientRect() : null;
+      const bandBottom = b ? (pivoted ? innerWidth - b.left : b.bottom) : 0;
+      const gameHeight = pivoted ? innerWidth : innerHeight;
+      top = bandBottom && bandBottom < gameHeight / 2 ? Math.max(TOP, Math.ceil(bandBottom + 6)) : TOP;
+    }
+    this.box.classList.toggle('en-marge', place === 'en-marge');
+    this.box.classList.toggle('en-haut', place === 'en-haut');
+    this.box.classList.toggle('serre', place === 'en-marge' && width < 170); // « ▶ Relancer », sans « la musique »
+    this.box.style.setProperty('--radio-place', `${Math.floor(Math.min(320, Math.max(width, 0)))}px`);
+    this.box.style.setProperty('--radio-haut', `${top}px`);
   }
 
   setVisible(on, inGame) {
