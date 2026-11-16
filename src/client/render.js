@@ -360,7 +360,11 @@ export class Renderer {
     if (board) fixed.push(board.box); // et autour du panneau lu
     // Le héros se lit au premier coup d'œil : aucune pancarte ne se lève devant lui ni juste au-dessus de sa tête.
     const { hero } = game;
-    if (!hero.dead) this.boxes.push({ x0: hero.x - 3 - cx, x1: hero.x + hero.w + 3 - cx, y0: hero.y - 8 - cy, y1: hero.y + hero.h - cy });
+    // Sa place se compte comme il est dessiné : par rapport à la caméra qui le suit (`camX`, `camY`).
+    if (!hero.dead) {
+      const { camX, camY } = this;
+      this.boxes.push({ x0: hero.x - 3 - camX, x1: hero.x + hero.w + 3 - camX, y0: hero.y - 8 - camY, y1: hero.y + hero.h - camY });
+    }
     // Les textes qui ont leur place (un coup, une ligne qui cède) d'abord : les pancartes s'effacent devant eux.
     // Les autres textes flottants, posés dans le monde, dérivent à l'écran quand on marche : ils ne font pas baisser
     // une pancarte levée, ils passent au-dessus d'elle (et une pancarte baissée attend qu'ils soient passés).
