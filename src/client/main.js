@@ -68,6 +68,7 @@ const screens = new Screens(screenRoot, {
     learn: (ids) => ids.forEach((id) => collect('fiches', id, true)),
     back: () => (mode === 'paused' ? screens.pause() : screens.menu()),
     playing: () => mode === 'paused',
+    device: () => input.device,
   },
 });
 
@@ -75,6 +76,7 @@ function setMode(next) {
   mode = next;
   if (next === 'playing') screens.close();
   hud.setVisible(next === 'playing' || next === 'paused' || next === 'card');
+  hud.live = next === 'playing'; // en pause ou sous un carton, la spéciale ne clignote pas
   document.body.classList.toggle('en-jeu', next === 'playing');
   radio.setVisible(next !== 'playing' && next !== 'card');
   renderer.demo = next === 'menu';
@@ -282,6 +284,8 @@ function frame(now) {
     renderer.tick(dt);
     if (demo && game.status !== 'playing') attract();
   }
+  renderer.device = input.device;
+  hud.device = input.device;
   renderer.draw(game, dt);
   if (!demo) hud.update(game);
 }
@@ -291,6 +295,7 @@ function frame(now) {
 hud.onQuote = (id) => mode === 'playing' && collect('citations', id, true);
 input.onPause = togglePause;
 input.onAny = () => audio.unlock();
+input.onDevice = () => screens.open && screens.refreshKeys(); // un carton ou une pause ouverts redisent les touches
 document.getElementById('pause').onclick = togglePause;
 addEventListener('pointerdown', () => audio.unlock(), true);
 const PHONE = 950; // plus grand côté d'un téléphone, en pixels : au-delà (tablette, ordinateur tactile), on ne pivote pas
@@ -309,6 +314,9 @@ function layout() {
   root.classList.toggle('bas', height <= 480);
   renderer.resize();
   renderer.anchor = thumbs ? 0.58 : 0.62; // les pouces occupent les coins du bas : on remonte un peu l'action
+  // Au clavier, les notes du coin gauche descendent jusqu'à 140 pixels environ : le panneau passe dessous.
+  // Au pouce, elles sont sous le bandeau, et le panneau reste entre le HUD et le bandeau.
+  renderer.signTop = thumbs ? 30 : Math.max(30, Math.ceil((140 * (window.devicePixelRatio || 1)) / renderer.scale));
   input.refreshTouch();
 }
 addEventListener('resize', layout);
@@ -317,9 +325,13 @@ document.addEventListener('visibilitychange', () => {
   acc = 0;
   if (document.hidden && mode === 'playing' && !window.__ugf) togglePause(); // pas en débogage : on pilote onglet caché
 });
-if (matchMedia('(pointer: coarse)').matches) document.body.classList.add('tactile');
+if (matchMedia('(pointer: coarse)').matches) {
+  document.body.classList.add('tactile');
+  input.device = 'pouce'; // un écran tactile : on montre les commandes du pouce, jusqu'à ce qu'un clavier ou une manette serve
+}
 addEventListener('touchstart', () => {
   document.body.classList.add('tactile');
+  input.use('pouce');
   layout();
 }, { once: true, passive: true });
 // Au premier toucher, on demande le plein écran, puis le paysage : là où le navigateur le permet.

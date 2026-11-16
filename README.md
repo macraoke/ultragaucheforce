@@ -63,13 +63,15 @@ Le jeu est sur http://localhost:8080.
 | | Clavier | Manette | Tactile |
 |---|---|---|---|
 | Avancer | ← → ou Q D | croix ou stick | moitié gauche : glisser le pouce |
-| Sauter, grimper | Espace, ↑ ou Z | A | SAUT, ou pousser le pouce gauche vers le haut |
+| Sauter, grimper | Espace, ↑ ou Z | A | SAUT, ou pouce gauche vers le haut |
 | Tirer (maintenir) | J, X ou Entrée | X ou gâchette droite | TIR |
 | Creuser, viser en haut | ↓ ou ↑ sans avancer, puis tirer | bas ou haut, puis tirer | pouce gauche vers le bas ou le haut, puis TIR |
 | Spéciale | K, C ou Maj | B ou gâchette gauche | SPÉ |
 | Pause | Échap ou P | Start | II |
 
 Sur téléphone, l'image remplit l'écran et tout l'écran répond. Le jeu se joue en paysage ; téléphone tenu debout, il pivote tout seul.
+
+Le tableau est aussi dans le jeu (**Commandes**, au menu et en pause). Les panneaux du premier niveau, le carton d'ouverture et la pause disent les touches de l'appareil en main : clavier, manette ou pouce.
 
 ## Contribuer
 
