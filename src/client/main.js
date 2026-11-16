@@ -192,7 +192,7 @@ function start(id, level = null) {
     begin = null;
     if (id) measure('niveau lancé', { niveau: id }); // chaque vraie partie, rejouée ou non ; pas un changement de héros sur le carton
     setMode('playing');
-    // « Recommencer » (pause, « Plus de vies ») : la même visite, sa piste continue ou revient après le boss.
+    // « Recommencer » (pause, « Game over ») : la même visite, sa piste continue ou revient après le boss.
     radio.play(current.id, current.level.musique, { restart: visited === current.id });
     visited = current.id;
   };
