@@ -198,7 +198,7 @@ auteur: ton pseudo
 | `panique` | points de panique par seconde quand elle « cadre », ou quand le héros est dans son faisceau | 0 à 30 |
 | `debordement` | une ligne : elle ne cède que devant ce nombre de manifestants | 0 à 5000 |
 | `fin` | à zéro point de vie | `greve`, `panne` (elle fume) |
-| `camp` | à qui elle appartient ; seules les unités de l'ordre comptent dans le bilan des blessés | `ordre`, `medias`, `pouvoir` |
+| `camp` | à qui elle appartient ; seules les unités de l'ordre comptent dans le bilan des blessés | `ordre` (par défaut), `medias`, `pouvoir` |
 | `ecriteau` | ce qu'on lit au-dessus d'elle une fois hors service | |
 | `replique` | une phrase qu'elle prononce ; répétable | |
 | `sommation` | réaction `charge` : dites une par une avant la première ruée ; répétable | |

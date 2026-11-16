@@ -201,7 +201,7 @@ export function updateKettle(game, dt) {
     game.kettleClock += dt;
     if (mark) startKettle(game, mark);
     else if (pace > 0 && game.kettleClock >= pace && hero.onGround && !game.boss?.active) startKettle(game, { x: cx, y: feet });
-    if (game.kettle) game.kettleClock = 0;
+    if (game.kettle || (pace > 0 && game.kettleClock >= pace && hero.onGround && !game.boss?.active)) game.kettleClock = 0; // un essai par période
     return;
   }
   k.t += dt;

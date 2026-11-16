@@ -4,7 +4,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { touchActions, ZONES } from '../src/client/input.js';
+import { touchActions, trackPoint, ZONES } from '../src/client/input.js';
 
 const VIEW = { w: 800, h: 360 }; // un téléphone tenu en paysage
 const at = (action) => {
@@ -63,8 +63,20 @@ test('deux pouces : avancer et tirer ; trois doigts : avancer, tirer, sauter', (
 });
 
 test('un doigt garde son côté : parti de la droite, il reste une action même s’il glisse à gauche', () => {
-  const slid = { ox: 700, oy: 300, x: 300, y: 300 };
-  assert.deepEqual(touchActions([slid], VIEW), { jump: true });
+  // Suivi réel du doigt, pas à pas : posé à droite de la frontière, il glisse loin à gauche.
+  let p = trackPoint(undefined, { x: 500, y: 300 }, VIEW);
+  for (let x = 480; x >= 200; x -= 20) p = trackPoint(p, { x, y: 300 }, VIEW);
+  assert.equal(p.stick, false);
+  assert.equal(p.ox, 500, 'son origine ne bouge pas : ce n’est pas un manche');
+  const pressed = touchActions([p], VIEW);
+  assert.ok(!pressed.left && !pressed.right, 'il ne fait pas marcher');
+  assert.ok(pressed.jump || pressed.fire || pressed.special, 'il reste une action');
+
+  // Et l'inverse : un manche tiré loin à droite reste un manche.
+  let stick = trackPoint(undefined, { x: 380, y: 300 }, VIEW);
+  for (let x = 400; x <= 700; x += 20) stick = trackPoint(stick, { x, y: 300 }, VIEW);
+  assert.equal(stick.stick, true);
+  assert.deepEqual(touchActions([stick], VIEW), { right: true });
   assert.deepEqual(touchActions([], VIEW), {});
 });
 

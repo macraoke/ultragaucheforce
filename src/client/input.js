@@ -34,14 +34,15 @@ export const ZONES = {
 
 /**
  * Quelles actions sont enfoncées, étant donné les doigts posés ? Fonction pure, testée dans Node.
- * @param {{x: number, y: number, ox: number, oy: number, ay?: number}[]} points  position de chaque doigt, point où il
- *        s'est posé, et `ay` : le point le plus haut d'où il redescend (sinon `oy`)
+ * @param {{x: number, y: number, ox: number, oy: number, ay?: number, stick?: boolean}[]} points  position de chaque
+ *        doigt, point où il s'est posé, `ay` : le point le plus haut d'où il redescend (sinon `oy`), et `stick` :
+ *        vrai s'il s'est posé à gauche (sinon on le déduit de `ox`)
  * @param {{w: number, h: number}} view  taille de l'écran de jeu, en pixels
  */
 export function touchActions(points, view) {
   const pressed = {};
   for (const p of points) {
-    if (p.ox < view.w * ZONES.split) {
+    if (p.stick ?? p.ox < view.w * ZONES.split) {
       const dx = p.x - p.ox;
       const down = p.y - (p.ay ?? p.oy);
       if (down > ZONES.pull && down > Math.abs(dx)) {
@@ -64,6 +65,24 @@ export function touchActions(points, view) {
     if (pair === 'fire+jump' && second.d - first.d < ZONES.both) pressed[second.action] = true; // le pouce à cheval
   }
   return pressed;
+}
+
+/**
+ * Suit un doigt d'un événement à l'autre. Son côté est fixé quand il se pose : parti de la droite, il reste une
+ * action même s'il glisse à gauche. Seul le manche déplace son origine pour suivre le pouce.
+ * @param {object | undefined} p  l'état du doigt (absent au premier contact)
+ * @param {{x: number, y: number}} at  sa position, dans le repère du jeu
+ * @param {{w: number, h: number}} view
+ */
+export function trackPoint(p, at, view) {
+  const next = { ...(p || { ox: at.x, oy: at.y, ay: at.y, stick: at.x < view.w * ZONES.split }), ...at };
+  if (!next.stick) return next;
+  // Le manche suit le pouce : on change de direction tout de suite, et on saute d'une poussée vers le haut.
+  if (Math.abs(next.x - next.ox) > ZONES.reach) next.ox = next.x - Math.sign(next.x - next.ox) * ZONES.reach;
+  if (next.y - next.oy > ZONES.dead) next.oy = next.y - ZONES.dead;
+  // Pour viser en bas, on mesure la descente depuis le point le plus haut atteint, sur la course du manche.
+  next.ay = Math.max(Math.min(next.ay, next.y), next.y - ZONES.reach);
+  return next;
 }
 
 export class Input {
@@ -101,14 +120,7 @@ export class Input {
 
     const track = (e) => {
       this.onAny();
-      const at = this.locate(e);
-      const p = this.pointers.get(e.pointerId) || { ox: at.x, oy: at.y, ay: at.y };
-      Object.assign(p, at);
-      // Le manche suit le pouce : on change de direction tout de suite, et on saute d'une poussée vers le haut.
-      if (Math.abs(p.x - p.ox) > ZONES.reach) p.ox = p.x - Math.sign(p.x - p.ox) * ZONES.reach;
-      if (p.y - p.oy > ZONES.dead) p.oy = p.y - ZONES.dead;
-      // Pour viser en bas, on mesure la descente depuis le point le plus haut atteint, sur la course du manche.
-      p.ay = Math.max(Math.min(p.ay, p.y), p.y - ZONES.reach);
+      const p = trackPoint(this.pointers.get(e.pointerId), this.locate(e), this.view);
       this.pointers.set(e.pointerId, p);
       this.refreshTouch();
       e.preventDefault();
@@ -154,7 +166,7 @@ export class Input {
     const points = [...this.pointers.values()];
     this.touch = touchActions(points, view);
     for (const mark of this.marks) mark.classList.toggle('appuye', Boolean(this.touch[mark.dataset.action]));
-    const thumb = points.find((p) => p.ox < view.w * ZONES.split);
+    const thumb = points.find((p) => p.stick);
     const at = thumb ? { x: thumb.ox, y: thumb.oy } : { x: ZONES.stick.x * view.w, y: ZONES.stick.y * view.h };
     this.stick.style.left = `${at.x}px`;
     this.stick.style.top = `${at.y}px`;
