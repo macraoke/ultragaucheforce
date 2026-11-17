@@ -7,8 +7,26 @@
 import { TILE } from './world.js';
 import { moveBox, overlap } from './physics.js';
 import { standDown, KETTLE_FLOOR } from './enemy.js';
+import { makeRng } from './rng.js';
 
 const MAX_CORTEGE = 40;
+/** Les deux drapeaux qui ouvrent toujours la manif, dans cet ordre. */
+const LEADING_FLAGS = ['tricolore', 'lfi'];
+
+/**
+ * L'ordre des drapeaux du cortège : le tricolore, puis LFI, puis tous les autres mélangés selon la graine
+ * de la partie (un hasard à part, qui ne tire pas dans game.rng). D'une partie à l'autre, chacun finit par défiler.
+ */
+export function flagOrder(ids, seed) {
+  const lead = LEADING_FLAGS.filter((id) => ids.includes(id));
+  const rest = ids.filter((id) => !lead.includes(id));
+  const rng = makeRng(seed);
+  for (let i = rest.length - 1; i > 0; i--) {
+    const j = rng.int(i + 1);
+    [rest[i], rest[j]] = [rest[j], rest[i]];
+  }
+  return [...lead, ...rest];
+}
 const SPACING = 7; // points de trace entre deux manifestants
 const KINDS = ['pancarte', 'drapeau', 'fanfare'];
 const INSTRUMENTS = ['tambour', 'trompette', 'soubassophone'];
@@ -105,7 +123,7 @@ export function syncCortege(game) {
   const { hero, bundle, cortege } = game;
   const wanted = visibleCortege(game.crowd);
   if (cortege.length > wanted) cortege.length = wanted;
-  const flags = Object.keys(bundle.drapeaux || {});
+  const flags = cortege.length < wanted ? flagOrder(Object.keys(bundle.drapeaux || {}), game.seed) : [];
   while (cortege.length < wanted) {
     const n = cortege.length;
     const kind = KINDS[n % KINDS.length];
@@ -113,9 +131,7 @@ export function syncCortege(game) {
     let label = INSTRUMENTS[turn % INSTRUMENTS.length];
     // Un nouveau porteur prend une pancarte déjà arrivée dans la manif, s'il en reste une que personne ne montre.
     if (kind === 'pancarte') label = game.signs.findLast((t) => !cortege.some((m) => m.label === t)) ?? '';
-    // Le cortège porte au plus MAX_CORTEGE / 3 drapeaux : la graine de la partie choisit par lequel il commence,
-    // pour que chaque drapeau finisse par défiler d'une partie à l'autre (sans tirer dans game.rng).
-    if (kind === 'drapeau') label = flags.length ? flags[((game.seed >>> 0) + turn) % flags.length] : '';
+    if (kind === 'drapeau') label = flags.length ? flags[turn % flags.length] : '';
     cortege.push({
       x: hero.x + hero.w / 2, y: hero.y + hero.h, facing: hero.facing, kind, label, gassed: 0, pushed: 0, shove: 0,
       animTime: n * 0.13, counted: false,
