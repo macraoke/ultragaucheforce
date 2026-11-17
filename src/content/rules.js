@@ -382,6 +382,30 @@ function buildMusic(f, ctx, report) {
 /** Les signes qu'une légende de niveau peut prendre : les minuscules, et quelques signes pour les niveaux très peuplés. */
 export const LEGEND = /^[a-z+*@&%$!?=~^<>_,;]$/;
 
+/** Deux textes de bandeau qui ne diffèrent que par la casse, les espaces ou l'apostrophe sont le même bandeau. */
+const sameHeadline = (s) => s.normalize('NFC').toLocaleLowerCase('fr').replaceAll('’', "'").replace(/\s+/g, ' ').trim();
+
+/**
+ * Les `manchette:` d'un niveau. Celle qui reprend le texte d'un bandeau de `content/manchettes/` (ou son ancien texte,
+ * noté « était: ») est ce bandeau : elle garde son texte, son crédit et sa carte. Les autres restent des textes seuls.
+ * Un crédit ne s'écrit pas dans le niveau : il vient de la ligne du fonds commun, avec sa source.
+ */
+function levelHeadlines(f, pool, report) {
+  const byText = new Map();
+  for (const b of pool) for (const t of [b.id, b.texte]) if (t && !byText.has(sameHeadline(t))) byText.set(sameHeadline(t), b);
+  const out = [];
+  for (const { key, value, line } of f.fields) {
+    if (key !== 'manchette' || !value) continue;
+    if (value.includes('|')) {
+      report(line, 'Une manchette de niveau ne porte pas de crédit. Pour un vrai bandeau, ajoute-le à content/manchettes/ avec sa source, puis reprends ici son texte : il garde son crédit.');
+      continue;
+    }
+    const banner = byText.get(sameHeadline(value));
+    out.push(banner ? { texte: banner.texte, credit: banner.credit } : value);
+  }
+  return out;
+}
+
 /** Un niveau : en-tête, légende (un signe = un ennemi, une recrue ou un décor), panneaux numérotés, puis la carte. */
 export function buildLevel(f, ctx, report) {
   const spec = {
@@ -405,6 +429,7 @@ export function buildLevel(f, ctx, report) {
     if (type) out.legende[key] = { type, id: value };
     else report(line, `« ${key}: ${value} » : aucun ennemi ni décor ne s'appelle « ${value} » (aucune recrue non plus).`);
   }
+  out.manchette = levelHeadlines(f, ctx.manchettes || [], report);
   // La manif de départ : dix personnes quand le niveau a un cortège, sauf indication contraire.
   if (!f.has('manif')) out.manif = out.cortege ? 10 : 0;
   if (out.nasse.ennemi && !has(ctx.ennemis, out.nasse.ennemi)) {

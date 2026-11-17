@@ -9,6 +9,7 @@ import { LINE_REACH, KETTLE_FLOOR } from '../../src/sim/enemy.js';
 import { spawnProjectile } from '../../src/sim/projectile.js';
 import { syncCortege, flagOrder, gameFlags } from '../../src/sim/manif.js';
 import { loadContent } from '../../tools/content.mjs';
+import { checkLevel } from '../../src/content/rules.js';
 
 const enemy = (id) => ({ type: 'ennemi', id });
 const recruit = (id) => ({ type: 'recrue', id });
@@ -489,6 +490,30 @@ test('alertes de PANIQUE TV : les manchettes du niveau d’abord, puis les bande
     ['BANDEAU RELEVÉ', 'Chaîne, janv. 2023 — https://exemple.org/bandeau'],
     ['FLASH SPÉCIAL', undefined],
   ]);
+});
+
+test('manchette de niveau : celle qui reprend un bandeau du fonds commun garde son crédit, sans en écrire dans le niveau', () => {
+  const credit = 'Chaîne, janv. 2023 — https://exemple.org/bandeau';
+  const bundle = { ...fixtureBundle(), manchettes: [{ id: 'Ancien texte', texte: 'Bandeau relevé', credit }] };
+  const map = ['..........', '..........', '..........', '..........', '..........', '..........', '.D......S.', 'AAAAAAAAAA'];
+  const text = (...lines) => ['titre: essai', ...lines, '--- carte', ...map, ''].join('\n');
+  const { level: lvl, errors } = checkLevel(text('manchette: BANDEAU  RELEVÉ', 'manchette: Texte du niveau', 'manchette: ancien texte'), bundle);
+  assert.deepEqual(errors, []);
+  assert.deepEqual(lvl.manchette, [{ texte: 'Bandeau relevé', credit }, 'Texte du niveau', { texte: 'Bandeau relevé', credit }],
+    'à la casse et aux espaces près, ou par son ancien texte (« était: »)');
+
+  const game = play({ ...lvl, heros: 'alpha' }, { bundle });
+  game.events.splice(0);
+  game.headline();
+  game.headline();
+  assert.deepEqual(of(game.events, 'headline').map((e) => [e.text, e.credit]), [['Bandeau relevé', credit], ['Texte du niveau', undefined]]);
+
+  const refused = checkLevel(text('manchette: UN BANDEAU | CNews, 2023 — https://exemple.org'), bundle);
+  assert.match(refused.errors.map((e) => e.message).join(), /ne porte pas de crédit/);
+  assert.deepEqual(refused.level.manchette, []);
+
+  const real = loadContent().bundle.niveaux['chaine-info'].manchette;
+  assert.ok(real.length && real.every((m) => /^CNews|^BFM-TV/.test(m.credit)), 'à la chaîne d’info, les bandeaux de CNews et de BFM-TV gardent leur crédit');
 });
 
 // ---------------------------------------------------------------- pancartes

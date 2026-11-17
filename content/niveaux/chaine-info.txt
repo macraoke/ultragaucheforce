@@ -12,6 +12,9 @@ fond: ville
 cortege: oui
 manif: 5
 camarades: sniper
+manchette: La France Indigne
+manchette: LFI : le nazisme est-il passé à l'extrême gauche ?
+manchette: Manif anti-police : Fallait-il l'interdire ?
 nasse.ennemi: crs
 nasse.nombre: 3
 nasse.vitesse: 20

@@ -69,7 +69,7 @@ Déposé dans `content/niveaux/`, il devient une étape du plan de campagne, à 
 | `nasse.nombre` | unités de chaque côté (1 à 6, défaut 3) |
 | `nasse.vitesse` | vitesse à laquelle les lignes se referment, en pixels par seconde (4 à 80, défaut 18) |
 | `nasse.rythme` | la nasse revient d'elle-même autour du héros, toutes les tant de secondes (0 à 600 ; 0, par défaut : seulement aux repères `N`) |
-| `manchette` | une alerte de PANIQUE TV propre au niveau ; répétable |
+| `manchette` | une alerte de PANIQUE TV propre au niveau ; répétable. Elle reprend le texte d'un vrai bandeau de [`content/manchettes/`](../content/manchettes) (à la casse près) : c'est ce bandeau, il passe avec sa chaîne et sa date, et débloque sa carte. Sinon, elle passe sans crédit. Un crédit ne s'écrit pas ici : ajoutez d'abord le bandeau au fonds commun, avec sa source |
 | `intro` | le texte du carton d'ouverture, quand il n'y a pas de `citation` |
 | `musique` | une piste de `content/musiques/`, jouée à chaque entrée dans le niveau ; si des pistes ont aussi `ou` : ce niveau, l'entrée tire au hasard entre elles et celle-ci. Ensuite, les pistes tournent |
 
