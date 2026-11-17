@@ -36,10 +36,10 @@ Le code : `src/client/mesure.js` (parties, héros), `src/client/music.js` (Radio
 |---|---|---|
 | `music_started` | une piste joue pour de bon (une fois par chargement ; une reprise après pause n'en est pas un) | `track`, `slot`, `level`, `cause` |
 | `music_skipped` | ⏭ ou N | `track`, `slot`, `level`, `seconds`, `percent`, `volume` |
-| `music_paused` | ⏸ de la Radio (`via: radio`), ou pause au bouton du lecteur SoundCloud, page à l'écran (`via: lecteur`) | `track`, `slot`, `level`, `seconds`, `percent`, `volume`, `via` |
-| `music_resumed` | ▶ après une pause | `track`, `slot`, `level`, `seconds`, `via` |
+| `music_paused` | ⏸ de la Radio (`via: radio`), ou pause au bouton du lecteur SoundCloud, page à l'écran (`via: lecteur`, comptée après une seconde : la PAUSE que le lecteur envoie juste avant la fin d'une piste ne compte pas) | `track`, `slot`, `level`, `seconds`, `percent`, `volume`, `via` |
+| `music_resumed` | ▶ après une pause (de la Radio, ou au bouton du lecteur après une pause comptée) | `track`, `slot`, `level`, `seconds`, `percent`, `via` |
 | `music_finished` | la piste est allée jusqu'au bout | `track`, `slot`, `level`, `volume` |
-| `music_muted` / `music_unmuted` | Radio Manif coupée ou remise (Options, « ▶ Radio Manif ») | `track`, `slot` |
+| `music_muted` / `music_unmuted` | Radio Manif coupée ou remise (Options, « ▶ Radio Manif ») | `track`, `slot` ; coupée : `seconds`, `percent` |
 | `music_failed` | une piste ne joue pas : une autre la remplace | `track`, `slot`, `level`, `reason` |
 | `music_blocked` | le lecteur SoundCloud n'a pas pu se charger : le message du bloqueur s'affiche (une fois par visite) | `online` |
 | `music_unreachable` | plus aucune musique ne joue alors qu'elle est demandée (une fois par visite) | `online` |

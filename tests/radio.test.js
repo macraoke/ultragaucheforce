@@ -4,7 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadContent } from '../tools/content.mjs';
-import { Radio, chooseTrack, nextLevelTrack, openingTrack, poolsFor, frameAttributes, START_TIMEOUT, LOAD_TIMEOUT, BLOCKED_MESSAGE } from '../src/client/music.js';
+import { Radio, PAUSE_REPORT_DELAY, chooseTrack, nextLevelTrack, openingTrack, poolsFor, frameAttributes, START_TIMEOUT, LOAD_TIMEOUT, BLOCKED_MESSAGE } from '../src/client/music.js';
 
 const { bundle } = loadContent();
 const real = Object.values(bundle.musiques);
@@ -1471,4 +1471,28 @@ test('mesure : une piste en erreur, sa remplaçante, et le lecteur bloqué', asy
   blocked.radio.retry();
   await blocked.flush();
   assert.deepEqual(blocked.sent.filter(([e]) => e === 'music_blocked'), [['music_blocked', { online: true }]], 'une fois par visite');
+});
+
+test('mesure : la PAUSE que le lecteur envoie juste avant la fin d’une piste ne compte pas', async () => {
+  const s = setup();
+  await s.on();
+  s.emit('PLAY_PROGRESS', { currentPosition: 180000, relativePosition: 0.999 });
+  s.emit('PAUSE');
+  s.emit('FINISH');
+  s.advance(PAUSE_REPORT_DELAY * 2);
+  assert.deepEqual(s.sent.map(([e]) => e), ['music_started', 'music_finished']);
+});
+
+test('mesure : pause puis reprise au bouton du lecteur SoundCloud, par paire', async () => {
+  const s = setup();
+  await s.on();
+  s.emit('PLAY_PROGRESS', { currentPosition: 20000, relativePosition: 0.1 });
+  s.emit('PAUSE');
+  assert.equal(s.sent.length, 1, 'pas encore : ce pourrait être la fin de la piste');
+  s.advance(PAUSE_REPORT_DELAY);
+  assert.deepEqual(s.sent[1], ['music_paused', { track: 'menu-a', slot: 'menu', seconds: 20, percent: 10, via: 'lecteur' }]);
+  s.emit('PLAY');
+  assert.deepEqual(s.sent[2], ['music_resumed', { track: 'menu-a', slot: 'menu', seconds: 20, percent: 10, via: 'lecteur' }]);
+  s.playing();
+  assert.equal(s.sent.length, 3, 'une reprise n’est pas un départ');
 });

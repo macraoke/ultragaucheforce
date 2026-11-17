@@ -82,7 +82,8 @@ let musicOn = null; // la musique demandée, à la dernière application des opt
 function applyOptions() {
   const music = save.options.musique;
   if (musicOn !== null && music !== musicOn) {
-    measure(music ? 'music_unmuted' : 'music_muted', { track: radio.current?.id ?? null, slot: radio.moment() });
+    const track = radio.current;
+    measure(music ? 'music_unmuted' : 'music_muted', { track: track?.id ?? null, slot: radio.moment(), ...(music || !track ? {} : radio.heardOf(track)) });
   }
   musicOn = music;
   audio.enabled = save.options.son;

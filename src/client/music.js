@@ -30,6 +30,8 @@ export const BLOCKED_MESSAGE = 'Un bloqueur empêche SoundCloud de jouer. Autori
 const EVENTS = ['READY', 'PLAY', 'PLAY_PROGRESS', 'PAUSE', 'FINISH', 'ERROR'];
 /** Le temps laissé au lecteur pour dire son volume avant qu'un événement parte sans. */
 const VOLUME_DELAY = 500;
+/** Le lecteur envoie PAUSE juste avant FINISH en fin de piste : une pause au lecteur ne se compte qu'après ce délai. */
+export const PAUSE_REPORT_DELAY = 1000;
 
 /**
  * Les pistes possibles pour un moment du jeu, de la plus précise à la plus large :
@@ -171,6 +173,28 @@ export class Radio {
     this.listen = null;
     this.why = 'auto'; // la cause de la prochaine piste chargée
     this.reportedBlocked = false; // le lecteur bloqué ne se compte qu'une fois par visite
+    // Une pause au bouton du lecteur SoundCloud : `pending`, pas encore comptée (une fin de piste l'annule) ;
+    // `counted`, comptée : la reprise au même bouton se compte aussi.
+    this.playerPause = null; // { timer, counted }
+  }
+
+  /** Une pause au bouton du lecteur : comptée dans un instant, sauf si la piste finit (sa PAUSE de fin) ou repart. */
+  deferPlayerPause() {
+    this.dropPlayerPause();
+    const properties = { ...this.about(), ...this.heardOf(this.current), via: 'lecteur' };
+    const pause = { timer: null, counted: false };
+    pause.timer = this.env.later(() => {
+      pause.timer = null;
+      if (this.playerPause !== pause) return;
+      pause.counted = true;
+      this.report('music_paused', properties, { volume: true });
+    }, PAUSE_REPORT_DELAY);
+    this.playerPause = pause;
+  }
+
+  dropPlayerPause() {
+    if (this.playerPause?.timer) this.env.cancel(this.playerPause.timer);
+    this.playerPause = null;
   }
 
   /** Les propriétés communes des événements de musique : la piste, le moment du jeu, et le niveau s'il y en a un. */
@@ -647,6 +671,7 @@ export class Radio {
     }
     if (this.attempt && !this.attempt.loaded) return; // encore la piste d'avant
     if (name === 'FINISH') {
+      this.dropPlayerPause(); // la PAUSE d'avant était celle de la fin de piste
       if (this.current) this.report('music_finished', this.about(), { volume: true });
       this.why = 'enchainee';
       const next = this.following(this.current) ?? this.choose(this.current);
@@ -654,6 +679,11 @@ export class Radio {
     }
     if (name === 'PLAY') {
       this.ownPause = false;
+      // Relancée au bouton du lecteur après une pause comptée : la reprise aussi.
+      if (this.playerPause?.counted && this.status === 'paused' && this.current) {
+        this.report('music_resumed', { ...this.about(), ...this.heardOf(this.current), via: 'lecteur' });
+      }
+      this.dropPlayerPause();
       // Relancée d'ailleurs (le bouton du lecteur, le système) : on vérifie qu'elle avance.
       if (!this.attempt && this.current && this.status !== 'playing') this.watch(this.current, { retried: true });
     }
@@ -675,9 +705,7 @@ export class Radio {
       if (!this.attempt) {
         // Pause après une vraie lecture : le joueur, ou le système (appel, autre application).
         // Page à l'écran : c'est le joueur, au bouton du lecteur SoundCloud.
-        if (this.status === 'playing' && !this.hidden && this.current) {
-          this.report('music_paused', { ...this.about(), ...this.heardOf(this.current), via: 'lecteur' }, { volume: true });
-        }
+        if (this.status === 'playing' && !this.hidden && this.current) this.deferPlayerPause();
         if (this.status === 'playing') this.status = 'paused';
         return this.render();
       }
