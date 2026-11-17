@@ -1,0 +1,11 @@
+texte: Le sniper a encore frappé.
+auteur: Florian Guadalupe
+fonction: journaliste à Puremédias
+date: 2023-01-31
+contexte: À propos de Guillaume Meurice, qui se moque sur France Inter des journalistes de la radio invités à déjeuner par Emmanuel Macron.
+categorie: gauche
+note: Dans la même chronique, Meurice appelle Dominique Seux « le petit prince du CAC 40 » et Yaël Goosz « le Pulitzer de la social-démocratie » ; au menu, « du gratin de couleuvres ». Le personnage Le Sniper lui doit son nom.
+source.titre: Puremédias — Guillaume Meurice se paye Yaël Goosz et Dominique Seux après leur déjeuner avec Emmanuel Macron
+source.url: https://www.ozap.com/actu/guillaume-meurice-se-paye-yael-goosz-et-dominique-seux-apres-leur-dejeuner-avec-emmanuel-macron/627263
+source.nature: presse
+verifie: 2026-11-17

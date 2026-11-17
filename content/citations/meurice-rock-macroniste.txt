@@ -1,0 +1,11 @@
+texte: Donc on assume notre rock macroniste.
+auteur: Guillaume Meurice
+fonction: humoriste de France Inter, membre des Disruptives
+date: 2018-10
+contexte: Entretien au webzine Lords of Rock sur The Disruptives, son groupe de rock parodique qui se dit « macroniste ».
+categorie: gauche
+note: Le site du groupe, cité par l'article : quatre « anciens étudiants d'HEC » venus des « Jeunes avec Jean-Pierre Raffarin » créent « le premier groupe de rock macroniste de l'Histoire ». Leur devise : « MAKE THE ROCK MACRONISTE GREAT AGAIN ! » Article publié le 28 octobre 2018. La spéciale du Sniper porte le nom du groupe, et le Sniper tire « ROCK MACRONISTE ! ».
+source.titre: Lords of Rock — The Disruptives (interview, Marie Maillot)
+source.url: https://www.lordsofrock.net/the-disruptives/
+source.nature: presse
+verifie: 2026-11-17

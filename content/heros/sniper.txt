@@ -1,9 +1,9 @@
 nom: Le Sniper
-origine: Un nom de l'équipe du jeu pour un humoriste qui vise de loin, et juste. Licencié par Radio France en juin 2024, il écrit à France Inter une lettre qui lui donne son cri et ses munitions.
+origine: « Le sniper a encore frappé », écrit Puremédias le 31 janvier 2023, quand il se moque des journalistes de France Inter invités à déjeuner par Emmanuel Macron. Licencié par Radio France en juin 2024, il écrit à France Inter une lettre qui lui donne son cri et ses munitions.
 inspiration: Guillaume Meurice
 traitement: l'humoriste licencié de France Inter, un micro à lunette en guise de fusil
 cri: C'ÉTAIT BIEN PEU. C'ÉTAIT VISIBLEMENT TROP.
-citation: meurice-visiblement-trop
+citation: puremedias-le-sniper
 pv: 2
 vitesse: 135
 saut: 3.2
@@ -19,12 +19,12 @@ arme.terrain: 1
 arme.perce: 1
 arme.blindage: 1
 arme.taille: 6
-arme.mots: SATIRE ! | LIBERTÉ DE TON ! | IRRÉVÉRENCE !
+arme.mots: SATIRE ! | LIBERTÉ DE TON ! | IRRÉVÉRENCE ! | VISIBLEMENT TROP ! | ROCK MACRONISTE !
 arme.son: tir
 
-# Spéciale : la bande de l'émission débarque et tire avec lui.
+# Spéciale : The Disruptives, son groupe de rock « macroniste », débarque et tire avec lui (citation meurice-rock-macroniste).
 speciale.type: clones
-speciale.nom: LE GRAND DIMANCHE SOIR !
+speciale.nom: THE DISRUPTIVES !
 speciale.charges: 2
 speciale.nombre: 3
 speciale.duree: 6
