@@ -4,6 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { fixtureBundle, flat, play, run, settle } from './helpers.js';
+import { bubbleTime } from '../../src/sim/enemy.js';
 
 const enemy = (id) => ({ type: 'ennemi', id });
 const decor = (id) => ({ type: 'decor', id });
@@ -101,4 +102,31 @@ test('même graine, mêmes feux : la partie reste déterministe', () => {
     return JSON.stringify([game.fires, game.enemies.map((e) => [e.def.id, Math.round(e.x), e.state, e.framing]), Math.round(game.panic * 100)]);
   };
   assert.equal(trace(), trace());
+});
+
+// Une réplique de trois lignes doit rester le temps d'être lue : sa durée suit le nombre de mots.
+test('une réplique longue reste plus longtemps à l’écran, une courte au moins 2 s, sans tirage de plus', () => {
+  const long = 'QUI SONT LES JEUNES QUI MANIFESTENT, QUI BLOQUENT, QUI FONT LA GRÈVE ?'; // douze mots, et un « ? » qui n'en est pas un
+  assert.ok(Math.abs(bubbleTime(long) - 3.5) <= 0.15, `12 mots : ${bubbleTime(long)} s`);
+  assert.equal(bubbleTime('LA FRANCE INDIGNE'), 2, 'trois mots : le minimum, 2 s');
+  assert.equal(bubbleTime('● REC', 1.2), 1.2, 'le « ● REC » garde sa durée');
+
+  const said = (line) => {
+    const b = bundle();
+    b.ennemis.equipe = { ...b.ennemis.equipe, replique: [line] };
+    const game = settle(play(street('poubelle'), { bundle: b, seed: 5 }));
+    game.addPanic(40);
+    const crew = game.enemies.find((e) => e.film);
+    for (let i = 0; i < 2000; i++) {
+      run(game, 1);
+      if (crew.bubble?.text === line) return { t: crew.bubble.t, rng: game.rng.next() };
+    }
+    return null;
+  };
+  const a = said(long);
+  const b = said('UN VRAI BANDEAU ?');
+  assert.ok(a && b, 'l’équipe a parlé');
+  assert.ok(a.t > 3.3, `la longue réplique reste ${a.t.toFixed(2)} s`);
+  assert.ok(b.t <= 2 && b.t > 1.9, `la courte reste ${b.t.toFixed(2)} s`);
+  assert.equal(a.rng, b.rng, 'la durée ne consomme aucun tirage : le hasard est au même point');
 });

@@ -200,7 +200,7 @@ auteur: ton pseudo
 | `interpelle` | combien de manifestants elle emmène quand elle atteint le cortège, une fois toutes les deux secondes et demie | 0 à 20 |
 | `fin` | à zéro point de vie | `greve` (elle s'assoit), `panne` (elle fume) |
 | `camp` | à qui elle appartient ; seules les unités de l'ordre comptent dans le bilan des blessés | `ordre` (par défaut), `medias`, `pouvoir` |
-| `replique` | une phrase qu'elle prononce ; répétable | |
+| `replique` | une phrase qu'elle prononce ; répétable. La bulle reste 0,3 s par mot, 2 s au moins | |
 | `sommation` | réaction `charge` : dites une par une avant la première ruée ; répétable | |
 | `citation`, `fiche`, `origine` | sa carte | |
 | `largeur`, `hauteur` | boîte de collision | 6 à 32 |

@@ -1,4 +1,4 @@
-# Bandeaux réellement affichés par des chaînes d'info, relevés par l'observatoire des médias Acrimed.
+# Bandeaux et titres réellement affichés par des chaînes d'info et des JT, relevés par l'observatoire des médias Acrimed.
 # Une ligne = un bandeau : TEXTE | chaîne, date — source
 LFI : le nazisme est-il passé à l'extrême gauche ? | CNews, 12 oct. 2023 — https://www.acrimed.org/Conflit-israelo-palestinien-calomnies-mediatiques | rareté: épique
 10 septembre : bloquer tout pour gagner rien ? | LCI, 10 sept. 2025 — https://www.acrimed.org/Bloquons-tout-haro-sur-les-ingenieurs-du-chaos | rareté: rare
@@ -15,5 +15,5 @@ La France sous le choc | France 2, édition spéciale du 20h, 18 oct. 2026 — h
 Au cœur des violences | France 2, reportage du 20h, 18 oct. 2026 — https://www.acrimed.org/Apres-le-17-octobre-dans-les-JT-de-TF1-et-France
 Retraites : Borne lâche du lest | BFM-TV, janv. 2023 — https://www.acrimed.org/IMG/pdf/mediacritiques45.pdf
 Retraites : Borne met de l'eau dans son vin | BFM-TV, janv. 2023 — https://www.acrimed.org/IMG/pdf/mediacritiques45.pdf | rareté: rare
-Grève à Marseille : la galère des parents d'élèves | BFM-TV, début 2023 — https://www.acrimed.org/IMG/pdf/mediacritiques46.pdf
+Grève à Marseille : la galère des parents d'élèves | BFM-TV, 2023, jour non précisé par la source — https://www.acrimed.org/IMG/pdf/mediacritiques46.pdf
 La France Indigne | CNews, 9 oct. 2023 — https://www.acrimed.org/IMG/pdf/mediacritiques49.pdf | rareté: rare

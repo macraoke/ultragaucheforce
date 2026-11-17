@@ -2,7 +2,7 @@ texte: Concrètement comment on en sort en fait ?
 auteur: Marc-Olivier Fogiel
 fonction: intervieweur, RTL
 date: 2026-09-30
-contexte: À Ryad Rani, président de l’Union syndicale lycéenne, dans la matinale de RTL. Il répète la question plusieurs fois.
+contexte: Au président de l’Union syndicale lycéenne, dans la matinale de RTL. Il répète la question plusieurs fois.
 categorie: diabolisation
 source.titre: Acrimed — Médiatiser les représentants des lycéens : tendre le micro… et confisquer la parole
 source.url: https://www.acrimed.org/Mediatiser-les-representants-des-lyceens-tendre

@@ -4,7 +4,7 @@ fonction: antenne de la chaîne
 date: 2026-10-19
 contexte: Après la mobilisation du 17 octobre 2026 : les cadres de La France insoumise sont qualifiés de « vautours du chaos ».
 categorie: diabolisation
-note: Acrimed écrit « Sur CNews » sans nommer qui parle. Le surlendemain, Mediapart publiait le témoignage d’un commissaire du renseignement territorial à qui l’on avait demandé « d’écrire que c’est LFI qui est derrière le mouvement ».
+note: Acrimed écrit « Sur CNews » sans nommer qui parle. Le même jour, Mediapart publiait le témoignage d’un commissaire du renseignement territorial à qui l’on avait demandé « d’écrire que c’est LFI qui est derrière le mouvement ».
 source.titre: Acrimed — LFI et le 17 octobre : les médias relaient la propagande d’État
 source.url: https://www.acrimed.org/LFI-et-le-17-octobre-les-medias-relaient-la
 source.nature: associative

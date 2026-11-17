@@ -54,8 +54,11 @@ export function createEnemy(def, cx, feetY, extra = {}) {
   };
 }
 
+/** Combien de secondes une bulle reste lisible : 0,3 s par mot, jamais moins que `t` (12 mots : environ 3,5 s). */
+export const bubbleTime = (text, t = 2) => Math.max(t, 0.3 * text.split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length);
+
 const say = (e, text, t = 2) => {
-  e.bubble = { text, t };
+  e.bubble = { text, t: bubbleTime(text, t) };
 };
 
 /** Ni recul ni étourdissement pour une ligne qui tient ou un véhicule. */
