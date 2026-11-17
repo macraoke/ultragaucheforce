@@ -2,11 +2,11 @@ texte: L'ultragauche est le cancer de notre démocratie.
 auteur: Jordan Bardella
 fonction: président du Rassemblement national, député européen
 date: 2026-10-19
-contexte: Conférence de presse, deux jours après la journée de mobilisation du 17 octobre contre la vie chère et les pillages en marge des cortèges. Il y annonce que ni lui ni Marine Le Pen n'iront à la réunion des chefs de parti convoquée par Sébastien Lecornu.
+contexte: Conférence de presse, deux jours après la journée de mobilisation du 17 octobre contre la vie chère et les pillages en marge des cortèges. Il y annonce que ni lui ni Marine Le Pen n'iront à la réunion des chefs de parti autour de Sébastien Lecornu, évoquée dimanche soir par Emmanuel Macron et dont la date n'est pas encore annoncée.
 categorie: diabolisation
 mot: CANCER
-note: Même conférence : LFI, dont « l'ultragauche est devenue le bras armé », et la demande d'inscrire « des groupes d'ultragauche sur la liste des organisations terroristes de l'Union européenne ». Il veut interdire de manifestation les « milliers de militants d'ultragauche fichés S », comme les hooligans. Dépêche AFP.
-source.titre: L'Info Durable (AFP) — Violences : ni Le Pen ni Bardella ne participeront à la réunion des chefs de parti autour de Lecornu, annonce Bardella
-source.url: https://www.linfodurable.fr/violences-ni-le-pen-ni-bardella-ne-participeront-la-reunion-des-chefs-de-parti-autour-de-lecornu-2
+note: Graphie de l'intertitre ; le corps de l'article écrit « L'ultra-gauche est le cancer de notre démocratie ». Même conférence : LFI, dont « l'ultragauche est devenue le bras armé », et la demande d'inscrire « des groupes d'ultragauche sur la liste des organisations terroristes de l'Union européenne ». Il veut interdire de manifestation les « milliers de militants d'ultragauche fichés S », comme les hooligans.
+source.titre: Le Figaro (avec AFP) — Violences du 17 octobre : Bardella affirme que ni lui ni Marine Le Pen ne participeront à la réunion des chefs de parti autour de Lecornu
+source.url: https://www.lefigaro.fr/politique/violences-du-17-octobre-bardella-affirme-que-ni-lui-ni-marine-le-pen-ne-participeront-a-la-reunion-des-chefs-de-parti-autour-de-lecornu-20261019
 source.nature: presse
 verifie: 2026-11-17
