@@ -153,7 +153,7 @@ export class Radio {
     this.slot = 'menu';
     this.named = null;
     this.chosenFor = null; // le moment pour lequel `current` a été choisie
-    this.visit = null; // la visite du niveau en cours : { key, track }, la piste de niveau qu'on y entend
+    this.visit = null; // la visite du niveau en cours : { key, track, queue }, la piste de niveau qu'on y entend, et celles qui la suivent
     // En partie, les pistes tournent : `heard`, celles du tour en cours (le sac) ; `opened`, la piste à lui par
     // laquelle chaque niveau a commencé la dernière fois.
     this.heard = new Set();
@@ -259,15 +259,18 @@ export class Radio {
 
   /**
    * Lance la musique d'un moment du jeu : « menu », « boss », ou l'identifiant d'un niveau, avec la piste que nomme
-   * le niveau s'il en nomme une (sa clé `musique` ; au boss, sa clé `musique-boss`).
+   * le niveau s'il en nomme une (sa clé `musique` ; au boss, sa clé `musique-boss`). Un niveau peut en nommer
+   * plusieurs (`musique` répétée) : la première ouvre la visite, les autres suivent dans l'ordre, puis le sac.
    * @param {{ restart?: boolean }} [how]  `restart` : « Recommencer » ; la visite du niveau continue, sa musique avec.
    *   Sinon, chaque arrivée dans un niveau en commence une nouvelle visite (« Rejouer » après une victoire aussi).
    */
   play(slot, named = null, { restart = false } = {}) {
+    const names = [named ?? []].flat().filter(Boolean);
+    named = names[0] ?? null;
     const key = `${slot}|${named}`;
     const level = !NOT_A_LEVEL.has(slot);
     const back = level && restart && this.visit?.key === key;
-    if (level && !back) this.visit = { key, track: null };
+    if (level && !back) this.visit = { key, track: null, queue: names.slice(1) };
     this.slot = slot;
     this.named = named;
     if (!this.enabled) return this.preload();
@@ -337,6 +340,11 @@ export class Radio {
 
   /** L'entrée dans un niveau : sa piste à lui, une autre que la fois d'avant s'il en a plusieurs. */
   open() {
+    // La première piste nommée a échoué : la suivante de la liste du niveau ouvre la visite.
+    if (this.named && this.failed.has(this.named)) {
+      const listed = this.listed();
+      if (listed) return listed;
+    }
     const track = openingTrack(this.tracks, {
       slot: this.slot, named: this.named, failed: this.failed, last: this.opened.get(this.slot), avoid: this.current, random: this.env.random,
     });
@@ -375,6 +383,20 @@ export class Radio {
   /** Le moment du jeu, pour la dernière piste entendue : le menu, le boss, ou les niveaux (un seul sac). */
   moment() {
     return NOT_A_LEVEL.has(this.slot) ? this.slot : 'niveau';
+  }
+
+  /**
+   * En niveau, la piste suivante de la liste que nomme sa clé `musique` (après la première), si elle peut jouer :
+   * elle sort de la liste, qu'elle vienne à la fin d'une piste, d'un ⏭ ou d'un échec. Liste épuisée : rien, le sac.
+   */
+  listed() {
+    const queue = !NOT_A_LEVEL.has(this.slot) && this.visit?.queue;
+    while (queue?.length) {
+      const track = this.tracks.find((t) => t.id === queue[0]);
+      queue.shift();
+      if (track && !this.failed.has(track.id)) return track;
+    }
+    return null;
   }
 
   /** La piste qui suit celle-ci (clé `puis`), si elle peut jouer. */
@@ -579,7 +601,7 @@ export class Radio {
     this.why = 'remplacement';
     // Jamais la dernière piste entendue à ce moment-là, même quand la piste en échec était la dernière du sac.
     if (!NOT_A_LEVEL.has(this.slot)) this.refill(); // l'échec a pu finir le tour
-    const next = this.following(track) ?? this.choose(this.lastHeard.get(this.moment()) ?? null);
+    const next = this.listed() ?? this.following(track) ?? this.choose(this.lastHeard.get(this.moment()) ?? null);
     if (next) this.start(next);
     else {
       this.why = 'auto';
@@ -693,7 +715,7 @@ export class Radio {
       this.dropPlayerPause(); // la PAUSE d'avant était celle de la fin de piste
       if (this.current) this.report('music_finished', this.about(), { volume: true });
       this.why = 'enchainee';
-      const next = this.following(this.current) ?? this.choose(this.current);
+      const next = this.listed() ?? this.following(this.current) ?? this.choose(this.current);
       return next ? this.start(next) : this.unreachable();
     }
     if (name === 'PLAY') {
@@ -786,7 +808,8 @@ export class Radio {
     const avoid = leader ? [skipped, leader] : skipped;
     const base = this.draw(avoid);
     // Au hasard parmi les pistes du moment, sans le sac : « randomize the "Next" button ».
-    const track = NOT_A_LEVEL.has(this.slot) ? chooseTrack(this.tracks, base) : nextLevelTrack(this.tracks, base) ?? chooseTrack(this.tracks, base);
+    // En niveau, la liste qu'il nomme (`musique`) d'abord, dans son ordre.
+    const track = NOT_A_LEVEL.has(this.slot) ? chooseTrack(this.tracks, base) : this.listed() ?? nextLevelTrack(this.tracks, base) ?? chooseTrack(this.tracks, base);
     if (!track) return;
     this.report('music_skipped', { ...this.about(skipped), ...this.heardOf(skipped) }, { volume: true });
     this.held = false;

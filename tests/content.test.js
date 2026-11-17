@@ -121,6 +121,12 @@ test('référence croisée : une fiche ne peut citer que ce qui existe', () => {
   expectError(errorsOf('content/heros/essai.txt', text), { message: /« citation-inventee » n'existe pas dans content\/citations\// });
 });
 
+test('référence croisée : chaque piste d’une liste « musique » doit exister', () => {
+  const text = textOf('content/niveaux/bismillah.txt').replace(/^musique: deux-passions-gochism$/m, 'musique: piste-inventee');
+  expectError(errorsOf('content/niveaux/essai.txt', text), { message: /« piste-inventee » n'existe pas dans content\/musiques\// });
+  assert.deepEqual(errorsOf('content/niveaux/essai.txt', textOf('content/niveaux/bismillah.txt')), []);
+});
+
 test('l’Atelier donne les mêmes erreurs que la CI', () => {
   const text = level([SKY, SKY, SKY, SKY, SKY, SKY, '..D...z.....', GROUND], 'fond: lune\n');
   const ci = errorsOf('content/niveaux/essai.txt', text).map(({ line, col, message }) => ({ line, col, message }));

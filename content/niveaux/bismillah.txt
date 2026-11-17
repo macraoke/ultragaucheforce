@@ -14,6 +14,8 @@ nasse.nombre: 3
 nasse.vitesse: 18
 nasse.rythme: 50
 musique: gen-z-nodey-remix
+musique: deux-passions-gochism
+musique: aya-sexy-nana-remix
 musique-boss: abattez-la-citadelle
 
 panneau.1: Tracts et manif : le barrage cède
