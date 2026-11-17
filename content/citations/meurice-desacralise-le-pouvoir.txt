@@ -1,0 +1,11 @@
+texte: Pour moi, l'humour, ça annule le pouvoir de domination, ça désacralise le pouvoir.
+auteur: Guillaume Meurice
+fonction: humoriste, chroniqueur du « Grand dimanche soir » sur France Inter
+date: 2024-03-20
+contexte: Entretien « Guillaume Meurice : J'ai autre chose à faire que de répondre aux gens qui sont choqués dans la vie », en réponse à la question « L'humour politique, notamment de gauche, est-il menacé ? ».
+categorie: gauche
+note: Il poursuit : « Le pouvoir ayant besoin de sacré pour exister, il n'aime pas trop ça. » Le Sniper en tire son cri.
+source.titre: Politis — Guillaume Meurice : « J'ai autre chose à faire que de répondre aux gens qui sont choqués dans la vie » (Pierre Jequier-Zalc et Léa Lebastard)
+source.url: https://www.politis.fr/articles/2024/03/guillaume-meurice-jai-autre-chose-a-faire-que-de-repondre-aux-gens-qui-sont-choques-dans-la-vie/
+source.nature: presse
+verifie: 2026-11-17

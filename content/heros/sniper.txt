@@ -1,8 +1,8 @@
 nom: Le Sniper
-origine: « Le sniper a encore frappé », écrit Puremédias le 31 janvier 2023, quand il se moque des journalistes de France Inter invités à déjeuner par Emmanuel Macron. Licencié par Radio France en juin 2024, il écrit à France Inter une lettre qui lui donne son cri et ses munitions.
+origine: « Le sniper a encore frappé », écrit Puremédias le 31 janvier 2023, quand il se moque des journalistes de France Inter invités à déjeuner par Emmanuel Macron. Licencié par Radio France en juin 2024, il écrit à France Inter une lettre qui lui donne ses munitions. Son cri vient d'un entretien à Politis en mars 2024 : l'humour « désacralise le pouvoir ».
 inspiration: Guillaume Meurice
 traitement: l'humoriste licencié de France Inter, un micro à lunette en guise de fusil
-cri: C'ÉTAIT BIEN PEU. C'ÉTAIT VISIBLEMENT TROP.
+cri: ÇA DÉSACRALISE LE POUVOIR !
 citation: puremedias-le-sniper
 pv: 2
 vitesse: 135
@@ -19,7 +19,7 @@ arme.terrain: 1
 arme.perce: 1
 arme.blindage: 1
 arme.taille: 6
-arme.mots: SATIRE ! | LIBERTÉ DE TON ! | IRRÉVÉRENCE ! | VISIBLEMENT TROP ! | ROCK MACRONISTE !
+arme.mots: SATIRE ! | LIBERTÉ DE TON ! | IRRÉVÉRENCE ! | VISIBLEMENT TROP ! | DÉSACRALISE LE POUVOIR ! | ROCK MACRONISTE !
 arme.son: tir
 
 # Spéciale : The Disruptives, son groupe de rock « macroniste », débarque et tire avec lui (citation meurice-rock-macroniste).
