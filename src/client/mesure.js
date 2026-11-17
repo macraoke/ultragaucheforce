@@ -1,22 +1,25 @@
-// Mesure d'audience, au minimum : combien de parties, sur quel niveau, avec quelle manif.
-// Rien n'est écrit sur l'appareil : ni cookie, ni stockage. Le numéro de visite est tiré ici
-// et ne vit que le temps de la page ; aucun profil n'est créé côté PostHog, et le lieu n'est pas déduit de l'adresse IP.
-// À la création du projet : cocher « Discard client IP data » dans ses réglages.
+// Mesure d'audience anonyme, au minimum : combien de joueurs, combien de parties, sur quel niveau,
+// comment elles finissent, et ce qui empêche de jouer.
+//
+// PostHog n'est chargé que dans la version en ligne : `npm run build` ajoute son chargeur à la page
+// quand POSTHOG_PROJECT_TOKEN est donné (`tools/mesure-template.js`, qui fixe aussi ses réglages).
+// Sans lui (en développement, dans les tests, script bloqué), `window.posthog` n'existe pas ou attend
+// son script dans sa file : rien ne part, et le jeu ne s'en aperçoit pas.
+//
+// Ce qui part : un nom d'événement et des propriétés de la partie (identifiant de niveau, durée, issue,
+// appareil de jeu). Jamais de texte saisi, jamais de niveau de l'Atelier.
 
-import { ANALYTICS } from './config.js';
-
-const visit = globalThis.crypto?.randomUUID?.() ?? `v${Math.random().toString(36).slice(2)}`;
-const local = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(globalThis.location?.hostname ?? 'localhost');
-
-/** Ce qui part : un nom d'événement et quelques nombres de la partie. Jamais de texte saisi, jamais d'adresse. */
-export function payload(event, properties = {}) {
-  return { api_key: ANALYTICS.token, event, distinct_id: visit, properties: { ...properties, $process_person_profile: false, $geoip_disable: true, $lib: 'ugf' } };
+/** La mesure est-elle branchée sur cette page ? */
+export function measuring() {
+  return typeof globalThis.posthog?.capture === 'function';
 }
 
-/** Compte un événement. Sans projet branché, en local ou hors-ligne : rien ne part. */
-export function measure(event, properties = {}) {
-  if (!ANALYTICS.token || local || globalThis.navigator?.onLine === false) return;
-  fetch(`${ANALYTICS.host}/i/v0/e/`, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload(event, properties)), keepalive: true,
-  }).catch(() => {}); // la mesure ne gêne jamais le jeu
+/** Compte un événement. `options` passe tel quel à PostHog (`{ transport: 'sendBeacon' }` à la fermeture de la page). */
+export function measure(event, properties = {}, options = undefined) {
+  if (!measuring()) return;
+  try {
+    globalThis.posthog.capture(event, properties, options);
+  } catch {
+    // la mesure ne gêne jamais le jeu
+  }
 }

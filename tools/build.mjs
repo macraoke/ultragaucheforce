@@ -15,6 +15,24 @@ import { makeIcons } from './png.mjs';
 
 const STATIC = ['index.html', 'galerie.html', 'style.css', 'manifest.webmanifest', 'apercu.jpg'];
 const ONLINE_ONLY = ['apercu.jpg']; // l'image d'un lien partagé : en ligne pour les aperçus, inutile dans le jeu
+const MEASURE_MARK = '<!-- mesure d’audience : ajoutée par le build -->';
+
+/**
+ * Le chargeur de la mesure d'audience (`tools/mesure-template.js`), prêt à entrer dans la page ; `''` sans clé.
+ * La clé de projet PostHog (`phc_…`) est publique : elle ne sert qu'à écrire des événements.
+ */
+export function measureSnippet({ token = '', host = '' } = {}) {
+  token = token.trim();
+  if (!token) return '';
+  if (!/^phc_[\w-]+$/.test(token)) throw new Error('POSTHOG_PROJECT_TOKEN : une clé de projet PostHog commence par « phc_ ».');
+  host = (host.trim() || 'https://eu.i.posthog.com').replace(/\/+$/, '');
+  if (!/^https:\/\/[\w.-]+$/.test(host)) throw new Error('POSTHOG_HOST : une adresse en https, sans chemin (https://eu.i.posthog.com).');
+  const code = readFileSync(join(ROOT, 'tools/mesure-template.js'), 'utf8')
+    .replace(/^\s*\/\/.*\n/gm, '') // les commentaires restent dans le modèle
+    .replace("'__TOKEN__'", () => JSON.stringify(token))
+    .replace("'__HOST__'", () => JSON.stringify(host));
+  return `<script>\n${code}</script>`;
+}
 
 /** Tous les fichiers `.js` d'un dossier, en chemins relatifs à la racine du dépôt. */
 function scripts(dir) {
@@ -47,7 +65,7 @@ export function startupModules(files, entry) {
  * @param {string} outDir  dossier de sortie (vidé puis rempli)
  * @returns {{outDir: string, version: string, files: string[], bytes: number}}
  */
-export function build(outDir = join(ROOT, 'dist')) {
+export function build(outDir = join(ROOT, 'dist'), env = process.env) {
   const { bundle, errors } = loadContent();
   if (errors.length) {
     const error = new Error(`Le contenu a ${errors.length} problème(s) : le build est annulé.\n${errors.map(formatError).join('\n')}`);
@@ -62,6 +80,11 @@ export function build(outDir = join(ROOT, 'dist')) {
   for (const { path, text } of readContentFiles()) if (text === null) files.set(path, readFileSync(join(ROOT, path)));
   files.set('content.json', Buffer.from(JSON.stringify(bundle)));
   for (const [path, png] of Object.entries(makeIcons(bundle))) files.set(path, png);
+  // Avant l'empreinte : brancher la mesure (ou changer de clé) change la version, et le service worker sert la nouvelle page.
+  const measure = measureSnippet({ token: env.POSTHOG_PROJECT_TOKEN, host: env.POSTHOG_HOST });
+  const source = files.get('index.html').toString();
+  if (!source.includes(MEASURE_MARK)) throw new Error(`index.html : repère « ${MEASURE_MARK} » introuvable.`);
+  files.set('index.html', Buffer.from(source.replace(MEASURE_MARK, () => measure))); // une fonction : le code contient des « $' »
 
   // La version est l'empreinte de tout ce qui est servi : un fichier change, le cache change.
   const hash = createHash('sha256');
