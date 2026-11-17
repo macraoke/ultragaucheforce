@@ -254,7 +254,9 @@ export class Screens {
     // Un héros déjà rencontré se joue depuis sa carte ; pas en pleine partie, où ce serait l'abandonner.
     const actionsFor = (card) => (card.kind === 'heros' && !this.go.playing() ? [this.button('Jouer avec', () => this.playAs(card.item.id), 'gros')] : []);
     let shown = null;
+    // Valentin, 17 novembre 2026 : « déplace le bouton Retour à gauche du Titre "Collection" et comme un bouton Primary ».
     this.show('biblio',
+      this.button('← Retour', leave, 'retour'),
       h('h2', {}, 'Collection ', h('small', {}, `${all.found} / ${all.total}`)),
       progress(all.found, all.total),
       h('div', { className: 'onglets' }, SHELVES.map((shelf) => {
@@ -265,8 +267,8 @@ export class Screens {
         if (shelf.id === tab) shown = button;
         return button;
       })),
-      // « Retour » ouvre la rangée des filtres : elle garde sa hauteur sur les rayons sans rareté, la grille ne saute pas.
-      h('div', { className: 'barre' }, this.back(leave),
+      // La rangée des filtres garde sa hauteur sur les rayons sans rareté : la grille ne saute pas (style.css).
+      h('div', { className: 'barre' },
         h('div', { className: 'raretes' }, rarityCounts(bundle, save, tab).reverse().map((r) => Object.assign(this.button(
           [`${r.name}s `, h('small', {}, `${r.found}/${r.total}`)],
           () => this.collection(tab, { rarity: rarity === r.rarity ? null : r.rarity, keep: r.rarity, back }), `rarete-${r.rarity}${rarity === r.rarity ? '' : ' discret'}`),
