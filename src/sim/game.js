@@ -15,6 +15,7 @@
 //     | 'touche' ; gone : où étaient les manifestants qui ne sont plus dessinés, six au plus)
 //   kettle {state: 'start', x} puis {state: 'end', reason: 'out' | 'broken' | 'time'} · drop {x, y, n}
 //   discover {kind: 'heros' | 'ennemi' | 'recrue' | 'boss' | 'mot', id} : une seule fois par partie
+//   decorDown {id, x, y} : un décor à `pv` est cassé · offAir {seconds, x} : la régie cassée coupe l'antenne
 //
 // La manif et le maintien de l'ordre :
 //   crowd        nombre de manifestants (entier, jamais plafonné) ; `cortege` en dessine 40 au plus
@@ -24,6 +25,7 @@
 //   power()      multiplicateur des dégâts des projectiles du héros : le nombre fait la force
 //   kettle       null | { x, t, limit, x0, x1 } : nasse en cours (x0, x1 = bords intérieurs des lignes)
 //   lines        les lignes qui tiennent au début du pas (débordement, nasse) : elles arrêtent les deux camps
+//   offAir       secondes d'antenne coupée qui restent (la régie cassée) : PANIQUE TV se tait (voir `cutAir`)
 //   truce        le boss est vaincu : en face, plus personne n'attaque, et ce qui vole encore ne blesse plus
 //   Ennemis : blocking, aim, jet, beam, rush, rope (voir enemy.js) · boss.seated (voir boss.js)
 //
@@ -81,6 +83,7 @@ export class Game {
     this.stack = [];
     this.panic = 0;
     this.panicLevel = 0;
+    this.offAir = 0; // secondes d'antenne coupée qui restent
     this.sign = null;
     this.stats = {
       breakdownsByPlayer: 0, breakdownsBySelf: 0, gassed: 0, tiles: 0, rescues: 0, tracts: 0, deaths: 0,
@@ -135,6 +138,7 @@ export class Game {
     };
     this.held = { jump: input.jump, special: Boolean(actions.special) };
     this.time += DT;
+    this.offAir = Math.max(0, this.offAir - DT);
 
     const { hero } = this;
     if (hero.dead) {
@@ -239,7 +243,45 @@ export class Game {
         cage.hp -= Math.max(1, damage);
         if (cage.hp <= 0) this.rescue(cage);
       }
+      for (const d of this.decors) if (d.hp > 0 && near(this.decorBox(d))) this.hitDecor(d, damage);
     }
+  }
+
+  /** La boîte d'un décor : son dessin, posé sur le bas de sa case. */
+  decorBox(d) {
+    const rows = this.bundle.decors?.[d.id]?.sprites?.image || [];
+    const w = rows[0]?.length || TILE;
+    const h = rows.length || TILE;
+    return { x: d.x, y: d.y - h, w, h };
+  }
+
+  /** Un tract ou un souffle de notre camp atteint un décor à `pv` : à zéro, il est cassé ; une régie coupe l'antenne. */
+  hitDecor(d, amount) {
+    if (!(d.hp > 0)) return;
+    const box = this.decorBox(d);
+    d.hp = Math.max(0, d.hp - Math.max(1, amount));
+    this.emit('debris', { x: box.x + box.w / 2, y: box.y + box.h / 2, color: 'K', n: 3 });
+    this.sfx('touche', box.x);
+    if (d.hp > 0) return;
+    d.broken = true;
+    this.emit('debris', { x: box.x + box.w / 2, y: box.y + box.h / 2, color: 'g', n: 14 });
+    this.emit('shake', { force: 4 });
+    this.emit('decorDown', { id: d.id, x: box.x + box.w / 2, y: box.y });
+    this.sfx('panne', box.x);
+    const def = this.bundle.decors[d.id];
+    if (def.coupe > 0 || def.coupePanique > 0) this.cutAir(def.coupe, def.coupePanique, box.x + box.w / 2);
+  }
+
+  /**
+   * Écran noir : pendant `seconds`, PANIQUE TV se tait. La panique ne monte plus (ni palier, ni renfort, ni feu),
+   * aucune alerte ne passe, et les unités des médias (`camp: medias`) restent sur place sans filmer ni rien dire.
+   * La panique perd `points`, sans repasser sous le palier déjà franchi.
+   */
+  cutAir(seconds, points, x) {
+    this.offAir = Math.max(this.offAir, seconds);
+    const floor = [0, ...PANIC_STEPS][this.panicLevel];
+    this.panic = Math.max(floor, this.panic - points);
+    this.emit('offAir', { seconds, x });
   }
 
   updateClouds() {
@@ -457,6 +499,7 @@ export class Game {
    * (`content/manchettes/` : de vrais bandeaux de chaînes d'info, avec leur crédit).
    */
   headline(text = null) {
+    if (this.offAir > 0) return; // antenne coupée : pas d'alerte
     const own = this.level.manchette || [];
     const pool = this.banners();
     const pick = text ?? own[this.headlines++] ?? drawSign(this, pool);
@@ -469,9 +512,12 @@ export class Game {
     return this.bundle.manchettes || [];
   }
 
-  /** La panique ne redescend jamais ; chaque palier franchi déclenche une manchette et des renforts bornés. */
+  /**
+   * La panique ne redescend que si l'on casse la régie (`cutAir`), et jamais sous un palier franchi ;
+   * chaque palier franchi déclenche une manchette et des renforts bornés. Antenne coupée, elle ne monte plus.
+   */
   addPanic(points) {
-    if (points <= 0 || this.status !== 'playing') return;
+    if (points <= 0 || this.status !== 'playing' || this.offAir > 0) return;
     this.panic = Math.min(100, this.panic + points);
     while (this.panicLevel < PANIC_STEPS.length && this.panic >= PANIC_STEPS[this.panicLevel]) {
       this.panicLevel++;

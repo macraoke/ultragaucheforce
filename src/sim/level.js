@@ -36,7 +36,10 @@ export function loadLevel(game) {
         const ref = level.legende?.[c]; // tout autre signe : la légende du niveau (ennemi, recrue ou décor)
         if (ref?.type === 'ennemi' && bundle.ennemis?.[ref.id]) game.enemies.push(createEnemy(bundle.ennemis[ref.id], cx, feet));
         else if (ref?.type === 'recrue' && bundle.recrues?.[ref.id]) game.recruits.push(createRecruit(bundle.recrues[ref.id], cx, feet));
-        else if (ref?.type === 'decor') game.decors.push({ id: ref.id, x, y: feet });
+        else if (ref?.type === 'decor') {
+          const pv = bundle.decors?.[ref.id]?.pv || 0; // un décor à `pv` se casse (la régie)
+          game.decors.push(pv ? { id: ref.id, x, y: feet, hp: pv, broken: false } : { id: ref.id, x, y: feet });
+        }
       }
     }
   });

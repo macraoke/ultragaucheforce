@@ -291,11 +291,25 @@ function buildDecor(f, ctx, report) {
   // `ecrit` : le jeu écrit dessus une vraie pancarte de `content/pancartes/`, choisie selon l'emplacement.
   // « pancarte » : texte sombre sur le dessin (banderole) ; « tag » : texte peint, sans fond (mur).
   // `brule` : quand la panique de la chaîne franchit un palier, ce décor peut prendre feu, et une équipe télé vient le filmer.
-  const spec = { nom: req(), devant: bool(), ecrit: pick(['', 'pancarte', 'tag']), 'ecrit.y': num(0, 96, 8), ...CREDITS };
-  const out = readFields(f, { nom: req(), devant: bool(), brule: bool(), ...CREDITS }, report, (key) => key === 'ecrit' || key === 'ecrit.y');
+  // `pv` : les tracts du héros le cassent ; `coupe` : cassé, il coupe l'antenne de PANIQUE TV tant de secondes,
+  // et `coupe.panique` retire autant de points de panique (sans repasser sous le palier atteint). Voir game.js, `cutAir`.
+  const extra = ['ecrit', 'ecrit.y', 'coupe', 'coupe.panique'];
+  const spec = {
+    nom: req(), devant: bool(), ecrit: pick(['', 'pancarte', 'tag']), 'ecrit.y': num(0, 96, 8),
+    coupe: num(0, 30, 0), 'coupe.panique': num(0, 33, 0), ...CREDITS,
+  };
+  const out = readFields(f, { nom: req(), devant: bool(), brule: bool(), pv: num(0, 12, 0), ...CREDITS }, report, (key) => extra.includes(key));
   out.ecrit = readValue(f, 'ecrit', spec.ecrit, report);
   out.ecritY = readValue(f, 'ecrit.y', spec['ecrit.y'], report);
+  out.coupe = readValue(f, 'coupe', spec.coupe, report);
+  out.coupePanique = readValue(f, 'coupe.panique', spec['coupe.panique'], report);
+  if ((out.coupe > 0 || out.coupePanique > 0) && !out.pv) report(f.lineOf(f.has('coupe') ? 'coupe' : 'coupe.panique'), 'Un décor qui coupe l’antenne doit pouvoir se casser : ajoute « pv: … » (1 à 12).');
   out.sprites = readSprites(f, ctx.palette, report, { required: ['image'] });
+  const { image, cassee } = out.sprites;
+  if (cassee && image && (cassee.length !== image.length || cassee[0].length !== image[0].length)) {
+    report(f.sections.cassee.line, `Le dessin « cassee » doit avoir la taille de « image » (${image[0].length} × ${image.length}).`);
+  }
+  if (cassee && !out.pv) report(f.sections.cassee.line, 'Le dessin « cassee » ne sert qu’à un décor qui se casse : ajoute « pv: … ».');
   return out;
 }
 
