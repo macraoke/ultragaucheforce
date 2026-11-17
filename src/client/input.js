@@ -78,10 +78,11 @@ export const shown = (el) => (el.checkVisibility
 export const padInUse = (pad) => PAD_BUTTONS.some((i) => pad.buttons[i]?.pressed) || PAD_AXES.some((i) => Math.abs(pad.axes[i] || 0) > 0.5);
 
 /**
- * Les zones tactiles, en fractions de l'écran tenu en paysage. Pas de boutons à viser : tout l'écran répond.
- * Moitié gauche : un manche flottant, là où le pouce se pose. Moitié droite : TIR et SAUT, le plus proche gagne, mais
- * un doigt posé près de SAUT ne fait que sauter, et un doigt qui glisse garde son action tant qu'il n'est pas sur
- * l'autre bouton ; au-dessus de TIR, le tir vise en haut. SPÉ ne répond qu'à un doigt posé sur elle.
+ * Les zones tactiles, en fractions de l'écran tenu en paysage.
+ * Moitié gauche : un manche flottant, là où le pouce se pose. Moitié droite : chaque bouton ne répond que dans un
+ * cercle autour de lui, à peine plus grand que son disque ; ailleurs, rien. Un doigt qui glisse garde son action
+ * tant qu'il n'est pas entré dans le cercle de l'autre bouton ; posé dans le vide, il ne fait rien jusqu'à entrer
+ * dans celui de TIR ou de SAUT. Au-dessus de TIR, le tir vise en haut. SPÉ ne répond qu'à un doigt posé sur elle.
  */
 export const ZONES = {
   split: 0.5, // frontière entre le manche et les actions
@@ -92,11 +93,13 @@ export const ZONES = {
   cone: 30, // poussé vers le haut à moins de 30° de la verticale : on ne marche pas, le tir vise en haut
   slack: 12, // … et on n'en sort qu'au-delà de 30 + 12° : un pouce qui tremble de 3 px ne fait pas clignoter la marche
   pull: 26, // tirer le manche vers le bas d'autant de pixels : le tir vise en bas (on creuse)
-  both: 26, // à peu près à égale distance de TIR et de SAUT (écart en pixels) : les deux
+  both: 26, // dans les cercles de TIR et de SAUT à la fois, à peu près à égale distance (écart en pixels) : les deux
   aim: 0.11, // un doigt de TIR monté au-dessus du bouton (en fraction du petit côté de l'écran) : le tir vise en haut
-  press: 0.15, // SPÉ : un doigt posé à moins de cette distance de son centre (fraction du petit côté), jamais glissé
-  near: { jump: 0.18, fire: 0.15 }, // posé à moins de cette distance du centre de SAUT ou de TIR (rayon 0,105 à l'écran) : ce bouton seul
-  onto: 0.12, // un doigt qui glisse ne change d'action qu'arrivé à cette distance du centre de l'autre bouton
+  // Le rayon des disques dessinés (`style.css` : 21vmin et 15vmin de diamètre), en fraction du petit côté de l'écran.
+  disc: { fire: 0.105, jump: 0.105, special: 0.075 },
+  // La marge autour d'un disque où il répond encore : 4 % du petit côté, 14 à 16 px sur un téléphone (342 à 390 px).
+  // Un pouce appuie sur 45 à 57 px : posé à 15 px hors du bord, plus de la moitié de son appui est sur le bouton.
+  margin: 0.04,
   stick: { x: 0.14, y: 0.72 }, // où le manche se repose quand personne n'y touche
   targets: [
     { action: 'fire', x: 0.87, y: 0.72 },
@@ -104,6 +107,9 @@ export const ZONES = {
     { action: 'special', x: 0.9, y: 0.34 },
   ],
 };
+
+/** Le rayon où un bouton répond, en fraction du petit côté de l'écran : son disque et la marge. */
+export const ring = (action) => ZONES.disc[action] + ZONES.margin;
 
 /** Le manche est-il poussé vers le haut ? Une fois en haut, il y reste tant qu'il ne redescend pas franchement. */
 const lifted = (rise, was) => rise > (was ? ZONES.drop : ZONES.lift);
@@ -119,27 +125,35 @@ function spots(view) {
   return { unit: Math.min(view.w, view.h), fire: spot('fire'), jump: spot('jump'), special: spot('special') };
 }
 
-/**
- * Ce que fait un doigt de droite là où il se pose : `special`, `jump`, `fire`, ou `jump fire` à cheval entre les deux.
- * Posé près de SAUT ou de TIR, ce bouton seul : un pouce qui vise SAUT et tombe un peu à côté ne tire pas.
- */
-function landing(x, y, view) {
-  const { unit, fire, jump, special } = spots(view);
-  const d = (t) => Math.hypot(x - t.x, y - t.y);
-  if (d(special) <= ZONES.press * unit && d(special) < d(fire)) return 'special';
-  if (d(jump) <= ZONES.near.jump * unit) return 'jump';
-  if (d(fire) <= ZONES.near.fire * unit) return 'fire';
-  const [first, second] = [fire, jump].map((t) => ({ action: t.action, d: d(t) })).sort((m, n) => m.d - n.d);
-  return second.d - first.d < ZONES.both ? 'jump fire' : first.action;
+/** Les boutons dont le cercle contient ce point, du plus proche au plus loin. */
+function under(x, y, view, actions) {
+  const s = spots(view);
+  return actions
+    .map((action) => ({ action, d: Math.hypot(x - s[action].x, y - s[action].y) }))
+    .filter((t) => t.d <= ring(t.action) * s.unit)
+    .sort((m, n) => m.d - n.d);
 }
 
-/** Un doigt de droite qui glisse garde son action, jusqu'à arriver sur l'autre bouton ; SPÉ ne se quitte ni ne se gagne. */
+/**
+ * Ce que fait un doigt de droite là où il se pose : `special`, `jump`, `fire`, `jump fire` à cheval entre les deux
+ * (seulement là où leurs cercles se recouvrent, ce qui n'arrive pas sur un téléphone), ou `''` : hors des cercles, rien.
+ */
+function landing(x, y, view) {
+  const [first, second] = under(x, y, view, ['special', 'jump', 'fire']);
+  if (!first) return '';
+  if (second && first.action !== 'special' && second.action !== 'special' && second.d - first.d < ZONES.both) return 'jump fire';
+  return first.action;
+}
+
+/**
+ * Un doigt de droite qui glisse garde son action, jusqu'à entrer dans le cercle de l'autre bouton ; posé dans le vide,
+ * il ne fait rien jusqu'à entrer dans celui de TIR ou de SAUT. SPÉ ne se quitte ni ne se gagne. Là où les deux
+ * cercles se recouvrent (pas sur un téléphone), il garde ce qu'il faisait.
+ */
 function gliding(act, x, y, view) {
   if (act === 'special') return act;
-  const { unit, fire, jump } = spots(view);
-  if (Math.hypot(x - jump.x, y - jump.y) <= ZONES.onto * unit) return 'jump';
-  if (Math.hypot(x - fire.x, y - fire.y) <= ZONES.onto * unit) return 'fire';
-  return act;
+  const hits = under(x, y, view, ['jump', 'fire']);
+  return hits.length === 1 ? hits[0].action : act;
 }
 
 /**
@@ -175,7 +189,9 @@ export function touchActions(points, view) {
       continue;
     }
     // SPÉ part d'un doigt posé sur elle, jamais d'un pouce qui glisse depuis TIR ou SAUT ; posé dessus, il reste SPÉ.
+    // Hors des cercles, le doigt ne fait rien : le coin en haut à droite ne tire pas.
     const act = p.act ?? gliding(landing(p.ox, p.oy, view), p.x, p.y, view);
+    if (!act) continue;
     for (const a of act.split(' ')) pressed[a] = true;
     if (act === 'fire' && fire.y - p.y > ZONES.aim * unit) pressed.up = true; // monté au-dessus de TIR
   }
