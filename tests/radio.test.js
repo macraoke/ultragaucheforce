@@ -4,7 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadContent } from '../tools/content.mjs';
-import { Radio, chooseTrack, nextLevelTrack, openingTrack, poolsFor, frameAttributes, START_TIMEOUT, LOAD_TIMEOUT, BLOCKED_MESSAGE } from '../src/client/music.js';
+import { Radio, PAUSE_REPORT_DELAY, chooseTrack, nextLevelTrack, openingTrack, poolsFor, frameAttributes, START_TIMEOUT, LOAD_TIMEOUT, BLOCKED_MESSAGE } from '../src/client/music.js';
 
 const { bundle } = loadContent();
 const real = Object.values(bundle.musiques);
@@ -79,7 +79,7 @@ function setup({ activated = true, connect = 'ok', list = tracks, random = () =>
     getCurrentSound(cb) { cb(this.sound); },
     isPaused(cb) { cb(this.paused); },
   };
-  const ctx = { widget, connects: [], connectOptions: [], activated, gesture, now: () => now };
+  const ctx = { widget, connects: [], connectOptions: [], activated, gesture, now: () => now, sent: [] };
   const view = { show(state) { ctx.shown = state; }, mount() {}, unmount() { ctx.unmounted = true; }, setVisible() {} };
   const radio = new Radio({ musiques: Object.fromEntries(list.map((t) => [t.id, t])) }, null, {
     random,
@@ -94,6 +94,7 @@ function setup({ activated = true, connect = 'ok', list = tracks, random = () =>
       emit = onEvent;
       return connect === 'ok' ? Promise.resolve(widget) : Promise.reject(new Error('hors ligne'));
     },
+    measure: (event, properties) => ctx.sent.push([event, properties]), // la mesure d'audience, ici notée
     view,
   });
   ctx.radio = radio;
@@ -1403,4 +1404,95 @@ test('lecteur préchargé prêt entre le clic et le geste vu par main.js : toujo
   assert.equal(s.widget.plays, 1);
   s.playing();
   assert.equal(s.radio.status, 'playing');
+});
+
+// ---------------------------------------------------------------- mesure d'audience
+
+test('mesure : une piste qui part, passée au ⏭, puis la suivante', async () => {
+  const s = setup();
+  await s.on();
+  assert.deepEqual(s.sent, [['music_started', { track: 'menu-a', slot: 'menu', cause: 'auto' }]]);
+  s.emit('PLAY_PROGRESS', { currentPosition: 42400, relativePosition: 0.25 });
+  s.emit('PLAY_PROGRESS', { currentPosition: 42900, relativePosition: 0.26 }); // rien ne part en cours d'écoute
+  assert.equal(s.sent.length, 1);
+  s.radio.next();
+  assert.deepEqual(s.sent[1], ['music_skipped', { track: 'menu-a', slot: 'menu', seconds: 43, percent: 26 }]);
+  s.ready();
+  s.playing();
+  assert.deepEqual(s.sent[2], ['music_started', { track: 'menu-b', slot: 'menu', cause: 'suivante' }]);
+  s.playing(); // elle continue : pas un second départ
+  assert.equal(s.sent.length, 3);
+});
+
+test('mesure : une piste écoutée jusqu’au bout, en niveau, avec le volume du lecteur', async () => {
+  const s = setup();
+  s.widget.getVolume = (cb) => cb(30.4);
+  await s.on();
+  s.radio.play('chaine-info');
+  s.ready();
+  s.playing();
+  assert.deepEqual(s.sent.at(-1), ['music_started', { track: 'seule', slot: 'niveau', level: 'chaine-info', cause: 'auto' }]);
+  s.emit('FINISH');
+  assert.deepEqual(s.sent.at(-1), ['music_finished', { track: 'seule', slot: 'niveau', level: 'chaine-info', volume: 30 }]);
+  s.ready();
+  s.playing();
+  assert.equal(s.sent.at(-1)[1].cause, 'enchainee');
+});
+
+test('mesure : ⏸ puis ▶, sans nouveau départ ; un lecteur muet sur son volume ne retient pas l’événement longtemps', async () => {
+  const s = setup();
+  s.widget.getVolume = () => {}; // ne répond jamais
+  await s.on();
+  s.emit('PLAY_PROGRESS', { currentPosition: 12000 });
+  s.radio.togglePause();
+  assert.equal(s.sent.length, 1, 'en attente du volume');
+  s.advance(1000);
+  assert.deepEqual(s.sent[1], ['music_paused', { track: 'menu-a', slot: 'menu', seconds: 12, via: 'radio' }]);
+  s.radio.togglePause();
+  assert.deepEqual(s.sent[2], ['music_resumed', { track: 'menu-a', slot: 'menu', seconds: 12, via: 'radio' }]);
+  s.playing();
+  assert.equal(s.sent.filter(([e]) => e === 'music_started').length, 1, 'une reprise n’est pas un départ');
+});
+
+test('mesure : une piste en erreur, sa remplaçante, et le lecteur bloqué', async () => {
+  const s = setup();
+  await s.on();
+  s.radio.play('chaine-info');
+  s.emit('ERROR');
+  assert.deepEqual(s.sent.at(-1), ['music_failed', { track: 'seule', slot: 'niveau', level: 'chaine-info', reason: 'erreur' }]);
+  s.ready(); // le rappel de la piste morte : la remplaçante se charge
+  s.ready();
+  s.playing();
+  assert.equal(s.sent.at(-1)[1].cause, 'remplacement');
+
+  const blocked = setup({ connect: 'non' });
+  blocked.radio.setEnabled(true);
+  await blocked.flush();
+  blocked.radio.retry();
+  await blocked.flush();
+  assert.deepEqual(blocked.sent.filter(([e]) => e === 'music_blocked'), [['music_blocked', { online: true }]], 'une fois par visite');
+});
+
+test('mesure : la PAUSE que le lecteur envoie juste avant la fin d’une piste ne compte pas', async () => {
+  const s = setup();
+  await s.on();
+  s.emit('PLAY_PROGRESS', { currentPosition: 180000, relativePosition: 0.999 });
+  s.emit('PAUSE');
+  s.emit('FINISH');
+  s.advance(PAUSE_REPORT_DELAY * 2);
+  assert.deepEqual(s.sent.map(([e]) => e), ['music_started', 'music_finished']);
+});
+
+test('mesure : pause puis reprise au bouton du lecteur SoundCloud, par paire', async () => {
+  const s = setup();
+  await s.on();
+  s.emit('PLAY_PROGRESS', { currentPosition: 20000, relativePosition: 0.1 });
+  s.emit('PAUSE');
+  assert.equal(s.sent.length, 1, 'pas encore : ce pourrait être la fin de la piste');
+  s.advance(PAUSE_REPORT_DELAY);
+  assert.deepEqual(s.sent[1], ['music_paused', { track: 'menu-a', slot: 'menu', seconds: 20, percent: 10, via: 'lecteur' }]);
+  s.emit('PLAY');
+  assert.deepEqual(s.sent[2], ['music_resumed', { track: 'menu-a', slot: 'menu', seconds: 20, percent: 10, via: 'lecteur' }]);
+  s.playing();
+  assert.equal(s.sent.length, 3, 'une reprise n’est pas un départ');
 });

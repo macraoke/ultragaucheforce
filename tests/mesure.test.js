@@ -6,7 +6,8 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, readFileSync, readdirSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { measure, measuring } from '../src/client/mesure.js';
+import { measure, measuring, runStarted, runEnded, heroRescued } from '../src/client/mesure.js';
+import { play, flat, run as steps } from './sim/helpers.js';
 import { build, measureSnippet } from '../tools/build.mjs';
 
 const ROOT = new URL('../', import.meta.url);
@@ -118,4 +119,42 @@ test('mesure : le build l’ajoute à la page avec une clé, et le service worke
   const worker = readFileSync(join(measured, 'sw.js'), 'utf8');
   assert.ok(!/posthog/i.test(worker), 'aucun fichier de PostHog dans le précache');
   assert.match(worker, /origin !== self\.location\.origin\) return/, 'les requêtes vers un autre site passent sans le cache');
+});
+
+test('mesure : une partie qui commence, un camarade libéré, puis la victoire ou la défaite', () => {
+  const sent = [];
+  globalThis.posthog = { capture: (...args) => sent.push(args) };
+  try {
+    const game = play(flat({ width: 100 }));
+    const run = runStarted({ level: 'bismillah', mode: 'campagne', hero: 'alpha', heroSource: 'choisi', input: 'clavier', again: false });
+    heroRescued(run, 'beta');
+    steps(game, 120, { right: true });
+    runEnded(run, game, 'won');
+    runEnded(run, game, 'lost');
+    runEnded(run, null, 'abandoned', 'fermeture', { transport: 'sendBeacon' });
+    runEnded(null, game, 'won'); // pas de partie mesurée : rien
+    const width = game.world.w * 16;
+    const progress = Math.round((100 * game.hero.x) / width);
+    assert.ok(progress > 0 && progress < 100, `${progress} %`);
+    assert.deepEqual(sent, [
+      ['game_started', { level: 'bismillah', mode: 'campagne', hero: 'alpha', hero_source: 'choisi', input: 'clavier', again: false }, undefined],
+      ['hero_rescued', { level: 'bismillah', mode: 'campagne', hero_from: 'alpha', hero_to: 'beta' }, undefined],
+      ['game_ended', { level: 'bismillah', mode: 'campagne', hero: 'alpha', outcome: 'won', seconds: 2, crowd: game.crowd, lives: game.lives, progress }, undefined],
+      ['game_ended', { level: 'bismillah', mode: 'campagne', hero: 'alpha', outcome: 'lost', seconds: 2, crowd: game.crowd, lives: game.lives, progress }, undefined],
+      ['game_ended', { level: 'bismillah', mode: 'campagne', hero: 'alpha', outcome: 'abandoned', seconds: 0, via: 'fermeture' }, { transport: 'sendBeacon' }],
+    ]);
+  } finally {
+    delete globalThis.posthog;
+  }
+});
+
+test('mesure : le filtre avant envoi garde les propriétés des événements du jeu, rien d’autre', () => {
+  const window = {};
+  const run = new Function('window', 'location', 'document', measureSnippet({ token: 'phc_essai123' }).replace(/<\/?script>/g, ''));
+  run(window, { hostname: 'macraoke.github.io' }, { createElement: () => ({}), getElementsByTagName: () => [{ parentNode: { insertBefore() {} } }] });
+  const [[, config]] = window.posthog._i;
+  const kept = { track: 'monarch', slot: 'niveau', level: 'bismillah', seconds: 43, percent: 26, volume: 30, cause: 'suivante', via: 'radio', reason: 'muette',
+    mode: 'campagne', hero: 'alpha', hero_source: 'choisi', again: false, crowd: 120, lives: 2, progress: 64, hero_from: 'alpha', hero_to: 'beta' };
+  const event = config.before_send({ event: 'music_skipped', properties: { ...kept, pseudo: 'x', texte: 'y' } });
+  assert.deepEqual(event.properties, { ...kept, $geoip_disable: true, $process_person_profile: false });
 });

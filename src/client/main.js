@@ -12,7 +12,7 @@ import { showHeroCard } from './herocard.js';
 import { showTaxScene, draw } from './tax.js';
 import { CRS_OCTOBRE_2026 } from './blesses.js';
 import { shareImage, openShare } from './share.js';
-import { measure } from './mesure.js';
+import { measure, runStarted, runEnded, heroRescued } from './mesure.js';
 import { loadSave, storeSave, discover, isFound } from './save.js';
 import { cardName, citationOfWord, levelOrder, signNote, taxShocks } from './collection.js';
 import { registerServiceWorker } from './sw-register.js';
@@ -45,7 +45,7 @@ let begin = null; // le carton d'ouverture attend : fonction qui lance vraiment 
 let bot = {};
 let won = []; // clés de ce qui a été débloqué depuis le début du niveau : la rangée de l'écran de fin
 let visited = null; // le niveau lancé, tant qu'il n'est ni gagné ni quitté : « Recommencer » y garde sa musique
-let run = null; // la partie de la campagne en cours, pour la mesure : { level } (pas les essais de l'Atelier)
+let run = null; // la partie en cours, pour la mesure : { level, mode, hero, playing } (`mesure.js`)
 // Le temps d'écran pas encore joué. Il repart d'un quart de pas, jamais de zéro : à 60 Hz, une image dure un pas,
 // et un reste nul laisserait le moindre écart d'horloge jouer tantôt zéro pas, tantôt deux (le décor saute).
 const PHASE = DT / 4;
@@ -70,14 +70,22 @@ radio.onUnreachable = () => {
   measure('music_unreachable', { online: navigator.onLine !== false });
 };
 
-radio.onAsk = () => {
+radio.onAsk = () => { // « ▶ Radio Manif » : la musique demandée (`applyOptions` le compte)
   save.options.musique = true;
   save.options.musiqueChoisie = true;
   storeSave(save);
   applyOptions();
 };
 
+let musicOn = null; // la musique demandée, à la dernière application des options : un changement se compte
+
 function applyOptions() {
+  const music = save.options.musique;
+  if (musicOn !== null && music !== musicOn) {
+    const track = radio.current;
+    measure(music ? 'music_unmuted' : 'music_muted', { track: track?.id ?? null, slot: radio.moment(), ...(music || !track ? {} : radio.heardOf(track)) });
+  }
+  musicOn = music;
   audio.enabled = save.options.son;
   renderer.reduced = save.options.sobre;
   document.body.classList.toggle('sobre', save.options.sobre); // la feuille de style coupe ses animations
@@ -130,15 +138,15 @@ function attract() {
   renderer.snap(game);
 }
 
-/** Une partie mesurée se termine : gagnée, perdue, ou abandonnée (menu, « Recommencer », page fermée). */
-function endRun(outcome, options) {
+/** Une partie mesurée se termine : gagnée, perdue, ou abandonnée (`via` : menu, « Recommencer », autre niveau, page fermée). */
+function endRun(outcome, via = null, options = undefined) {
   if (!run) return;
-  measure('game_ended', { level: run.level, outcome, seconds: Math.round(game?.time ?? 0) }, options);
+  runEnded(run, game, outcome, via, options);
   run = null;
 }
 
 function toMenu() {
-  endRun('abandoned');
+  endRun('abandoned', 'menu');
   begin = null;
   custom = null;
   current = null;
@@ -177,18 +185,19 @@ function collectCortege() {
 function startingHero() {
   const playable = Object.values(bundle.heros).filter((x) => x.statut === 'jouable').map((x) => x.id);
   const mine = playable.filter((x) => isFound(save, 'heros', x));
-  if (mine.includes(save.heros)) return save.heros;
+  if (mine.includes(save.heros)) return { id: save.heros, source: 'choisi' };
   const pool = mine.length ? mine : playable;
-  return pool[Math.floor(Math.random() * pool.length)] ?? '';
+  return { id: pool[Math.floor(Math.random() * pool.length)] ?? '', source: mine.length ? 'aleatoire' : 'premier' };
 }
 
 function start(id, level = null) {
-  endRun('abandoned');
-  custom = level;
   const again = current?.id === (id ?? 'atelier'); // « Recommencer » : ce qui a déjà été débloqué dans ce niveau reste
+  endRun('abandoned', again ? 'recommencer' : 'autre_niveau');
+  custom = level;
   current = { id: id ?? 'atelier', level: level ?? bundle.niveaux[id] };
   // Dans l'Atelier, on essaie le niveau avec le héros que dit sa fiche, pas celui de la sauvegarde.
-  game = new Game(bundle, id, { seed: Math.floor(Math.random() * 1e9), level, hero: level ? '' : startingHero() });
+  const hero = level ? { id: '', source: 'atelier' } : startingHero();
+  game = new Game(bundle, id, { seed: Math.floor(Math.random() * 1e9), level, hero: hero.id });
   renderer.snap(game);
   hud.reset();
   if (!begin && !again) won = []; // un changement de héros sur le carton d'ouverture garde ce qui a déjà été débloqué
@@ -201,10 +210,12 @@ function start(id, level = null) {
   fitRight();
   begin = () => {
     begin = null;
-    if (id) { // chaque vraie partie, rejouée ou non ; pas un changement de héros sur le carton
-      run = { level: id };
-      measure('game_started', { level: id, input: input.device });
-    }
+    // Chaque vraie partie, rejouée ou non ; pas un changement de héros sur le carton. Un niveau de l'Atelier
+    // compte sous le seul nom « atelier » : rien de ce qu'on y écrit ne part.
+    run = runStarted({
+      level: id ?? 'atelier', mode: id ? (bundle.campagne.includes(id) ? 'campagne' : 'hors_campagne') : 'atelier',
+      hero: game.hero.def.id, heroSource: hero.source, input: input.device, again: visited === current.id, // « Recommencer »
+    });
     setMode('playing');
     // « Recommencer » (pause, « Game over ») : la même visite, sa piste continue ou revient après le boss.
     radio.play(current.id, current.level.musique, { restart: visited === current.id });
@@ -337,7 +348,9 @@ function handle(events) {
       else collect({ ennemi: 'ennemis', recrue: 'recrues' }[e.kind] || e.kind, e.id);
     } else if (e.type === 'recruit') collectCortege();
     else if (e.type === 'sign') collect('pancartes', e.text);
+    else if (e.type === 'respawn' && run) run.playing = e.hero; // après une mort, le héros d'avant dans la pile
     else if (e.type === 'heroCard') {
+      heroRescued(run, e.hero);
       const hero = bundle.heros[e.hero];
       collect('heros', hero.id, true);
       collectCortege(); // les soutiens venus avec le camarade libéré
@@ -550,7 +563,7 @@ registerServiceWorker((apply) => {
   if (mode === 'menu' && screens.open) screens.menu();
 });
 // Fermer la page en pleine partie, c'est l'abandonner ; l'envoi part avec la page.
-addEventListener('pagehide', () => endRun('abandoned', { transport: 'sendBeacon' }));
+addEventListener('pagehide', () => endRun('abandoned', 'fermeture', { transport: 'sendBeacon' }));
 toMenu();
 // Le menu est là : la page a chargé. Une page vue sans cet événement est un jeu qui n'a pas démarré.
 measure('game_ready', { touch: document.body.classList.contains('tactile') });

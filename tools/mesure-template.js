@@ -12,7 +12,7 @@
 //   serveurs, par un hachage du jour, de l'IP, de l'agent utilisateur et du site, avec un sel renouvelé
 //   et effacé chaque jour. L'IP et l'agent utilisateur brut sont retirés de l'événement après ce calcul.
 //   Il faut aussi « Enable cookieless tracking » dans le projet, sinon PostHog jette les événements.
-// - Les seuls événements du jeu sont ceux de `src/client/mesure.js`, et les erreurs JavaScript.
+// - Les seuls événements du jeu sont ceux de `docs/mesure-d-audience.md` (`src/client/mesure.js`, `music.js`), et les erreurs JavaScript.
 
 (function () {
   if (/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)) return; // jamais en local
@@ -26,7 +26,9 @@
   var DROPPED = ['$screen_height', '$screen_width', '$viewport_height', '$viewport_width', '$device_id', '$initial_person_info', '$timezone_offset'];
   // Les seules propriétés sans « $ » : celles des événements du jeu (`src/client/mesure.js`), et ce dont PostHog a besoin.
   // Les paramètres de campagne lus dans l'adresse (utm_…, fbclid…) ne partent pas.
-  var KEPT = ['token', 'distinct_id', 'title', 'level', 'outcome', 'seconds', 'input', 'touch', 'online'];
+  var KEPT = ['token', 'distinct_id', 'title', 'level', 'outcome', 'seconds', 'input', 'touch', 'online',
+    'mode', 'hero', 'hero_source', 'again', 'crowd', 'lives', 'progress', 'via', 'hero_from', 'hero_to',
+    'track', 'slot', 'cause', 'percent', 'volume', 'reason'];
   // Ce que PostHog retient de l'entrée dans la visite : l'adresse, pas ses paramètres.
   var ENTRY = /^\$(session_entry|initial)_(?!(url|host|pathname|referrer|referring_domain)$)/;
 
