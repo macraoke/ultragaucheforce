@@ -25,7 +25,7 @@ arme.son: tir
 # Spéciale : la plus large possible, mais une seule charge.
 speciale.type: onde
 speciale.nom: RÉACTION EN CHAÎNE !
-speciale.charges: 1
+speciale.charges: 2
 speciale.rayon: 120
 speciale.degats: 4
 speciale.terrain: 6
