@@ -1514,15 +1514,19 @@ test('mesure : pause puis reprise au bouton du lecteur SoundCloud, par paire', a
 // musiques de niveaux ». Chaque niveau nomme la piste qui ouvre sa visite (`musique`) et celle qui ouvre son boss
 // (`musique-boss`) ; ensuite, le hasard, comme avant.
 
-test('chaque niveau de la campagne nomme sa première piste et celle de son boss, toutes différentes', () => {
-  const firsts = bundle.campagne.map((id) => bundle.niveaux[id].musique);
-  const bosses = bundle.campagne.map((id) => bundle.niveaux[id]['musique-boss']);
-  for (const id of [...firsts, ...bosses]) assert.ok(bundle.musiques[id], id);
-  assert.equal(new Set(firsts).size, firsts.length);
-  assert.equal(new Set(bosses).size, bosses.length);
-  for (const id of bosses) assert.equal(bundle.musiques[id].ou, 'boss', id);
-  assert.equal(bundle.niveaux.bismillah['musique-boss'], 'abattez-la-citadelle'); // « Citadelle chez Arnault »
-  assert.equal(bundle.niveaux.bismillah.boss, 'arnault');
+test('les premières pistes validées par Valentin, niveau par niveau', () => {
+  // Le tableau validé (« Valider tout ») : la première piste du niveau, puis celle de son boss.
+  const table = {
+    millevaches: ['countryside-explosions', 'siamo-tutti-antifascisti-1fam-bender'],
+    'rond-point': ['hey-hey-macron', 'macron-demission-peridurale'],
+    raffinerie: ['internationale', 'tout-le-monde-deteste-la-police-tekos-redon'],
+    'soir-du-49-3': ['casserolade-gueret', 'majes-macron-explosion'],
+    'chaine-info': ['jles-aime-pas', 'caca-sur-bardella-sketogan'],
+    bismillah: ['debordement-general-1312bpm', 'abattez-la-citadelle'], // « Citadelle chez Arnault »
+  };
+  for (const [id, pair] of Object.entries(table)) {
+    assert.deepEqual([bundle.niveaux[id].musique, bundle.niveaux[id]['musique-boss']], pair, id);
+  }
 });
 
 test('la piste nommée ouvre chaque visite, même quand le niveau a d’autres pistes à lui et qu’elle a ouvert la précédente', () => {
