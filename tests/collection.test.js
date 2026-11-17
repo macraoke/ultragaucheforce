@@ -49,6 +49,7 @@ test('collection : chaque carte se débloque quelque part en jouant', () => {
   assert.deepEqual(hint('pancartes', 'TAXEZ LES RICHES'), ['dans la manif']);
   assert.deepEqual(hint('citations', 'melenchon-bruit-et-fureur'), ["L'Ingénieur du chaos"], 'les mots du héros viennent de sa citation');
   assert.deepEqual(hint('fiches', 'procuration'), ['à la fin de la campagne']);
+  assert.deepEqual(hint('fiches', 'programme-energie'), ['dans À propos, « Le programme de L’Avenir en commun »'], 'le programme n’est pas sur l’écran du vote');
   assert.deepEqual(hint('fiches', 'patrimoine-moitie'), ['en taxant une fortune']);
   assert.ok(hint('ennemis', 'gendarme-mobile').length >= 1, 'les renforts de l’hélicoptère comptent');
 });
