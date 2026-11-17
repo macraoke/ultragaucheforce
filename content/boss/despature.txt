@@ -1,6 +1,6 @@
 # Un boss = une fortune documentée aux commandes d'une machine. Le dessin « ejecte » sert à sa sortie.
 nom: La famille Despature
-inspiration: Jean-Guillaume Despature et sa famille
+inspiration: Jean Guillaume Despature et sa famille
 traitement: une façade à volets roulants motorisés sur chenilles, l'antenne de la télécommande au toit ; le pilote s'éjecte sous un parachute gris volet
 pv: 70
 largeur: 30

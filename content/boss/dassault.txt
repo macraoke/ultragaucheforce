@@ -1,5 +1,5 @@
 # Un boss = une fortune documentée aux commandes d'une machine. Le dessin « ejecte » sert à sa sortie.
-nom: La Famille Dassault
+nom: La famille Dassault
 inspiration: Serge Dassault
 traitement: un Rafale dressé sur son train d'atterrissage, nez au ciel ; le pilote s'éjecte sur son siège éjectable
 pv: 65

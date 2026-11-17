@@ -1,5 +1,5 @@
 # Un boss = une fortune documentée aux commandes d'une machine. Le dessin « ejecte » sert à sa sortie.
-nom: La Famille Hermès
+nom: La famille Hermès
 inspiration: la famille Hermès, avec Axel Dumas, son gérant
 traitement: un sac de cuir orange sur quatre jambes de cheval, un carré de soie au vent ; le pilote s'éjecte sous un carré de soie
 pv: 80
