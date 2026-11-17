@@ -8,8 +8,10 @@ hauteur: 40
 vitesse: 30
 citation: dassault-riches-c-est-bien
 fiche: fortune-dassault
-# Les répliques sont celles de Serge Dassault, qui a dirigé le groupe de 1986 à 2000 (Politis, lu le 17 novembre 2026).
-origine: La fortune est celle de la famille Dassault : Laurent, Marie-Hélène et Thierry Dassault et leur famille, selon Challenges. Les répliques sont les mots de leur père, Serge Dassault, fils du fondateur Marcel Dassault, à la tête du groupe de 1986 à 2000, mort en 2018.
+# Les répliques : Serge Dassault, dans Politis (voir content/citations/dassault-*.txt). Ses dates (succède à Marcel Dassault en 1986,
+# passe la main en 2000, meurt en mai 2018) : la biographie de la fiche Challenges, lue le 17 novembre 2026,
+# https://www.challenges.fr/classements/fortune/laurent-marie-helene-et-thierry-dassault-et-leur-famille_26538
+origine: La fortune est celle de la famille Dassault : Laurent, Marie-Hélène et Thierry Dassault et leur famille, selon Challenges. Les répliques sont les mots de leur père, Serge Dassault, fils du fondateur Marcel Dassault, à la tête du groupe de 1986 à 2000, mort en mai 2018 (biographie de Challenges).
 # Assis sur sa fortune tant que sa vie n'est pas passée sous la moitié.
 assis: oui
 leve: 0.5
