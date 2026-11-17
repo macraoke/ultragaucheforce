@@ -3,7 +3,8 @@
 //   - avant « Taxer les riches » : sa fortune, à l'échelle de quelqu'un (et ce qu'elle rapporte en un an) ;
 //   - après : la fortune s'efface du récit (le tas et sa légende la gardent). D'abord, en petit, d'où vient l'argent
 //     (2 % par an, combien ça fait) ; dessous, en aussi gros que la fortune, ce que ça paierait ; puis ce que chacun paie
-//     déjà : autour de 52 % pour presque tout le monde, 27 % pour les milliardaires, ensemble. La part des 2 % quitte le tas.
+//     déjà : autour de 52 % pour presque tout le monde, 27 % pour les milliardaires, ensemble. La part des 2 % quitte le tas,
+//     en or, pour la caisse commune : un repère « 2 % » la désigne, puis ses liasses filent vers ce qu'elle paierait.
 // L'échelle et l'exemple se tirent au hasard dans les fiches sourcées de `content/fiches/` (clés `compare` et
 // `finance`) : d'une partie à l'autre, ce ne sont pas les mêmes. Le bouton suivant reprend un slogan scandé en manif.
 
@@ -23,6 +24,8 @@ const GROUND = 8;
 const SINK = 8; // le boss s'enfonce un peu dans son tas
 const GUARD = 450; // ms pendant lesquelles le bouton n'écoute pas, à l'ouverture et après un appui
 const SWAP = 260; // ms : la fortune s'efface du récit, puis ce que ça paierait prend sa place
+const FLY = 1300; // ms : les liasses d'or quittent le tas pour la caisse commune
+const STREAM = 8; // liasses d'or qui filent de la caisse vers ce que ça paierait
 
 /**
  * Le bouton qui mène au bilan du niveau : un slogan tiré au hasard. « On lâche rien ! », et des slogans courts
@@ -226,7 +229,23 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pi
     const legend = h('figcaption', { className: 'legende' },
       h('span', { className: 'cle' }, h('i', { className: 'liasse' }), ` 1 liasse = ${frenchNumber(stackYears, stackYears % 1 ? 1 : 0)} ${plural(stackYears, 'an', 'ans')} de revenus ${de(scale.compare)}`),
       goldKey);
-    const figure = h('figure', { className: 'tas' }, scene, legend);
+    // Le repère des 2 %, au-dessus de la caisse commune où les liasses d'or se rangent : ce qu'elles valent.
+    const mark = h('p', { className: 'repere', hidden: true }, h('b', {}, '2 %'), ` = ${money(tax)}`);
+    const frame = h('div', { className: 'cadre' }, scene, mark);
+    const figure = h('figure', { className: 'tas' }, frame, legend);
+    /** Le canvas garde ses proportions (`object-fit: contain`) : un point du tas, en pixels de la page, dans le cadre. */
+    const onPage = (x, y) => {
+      const r = scene.getBoundingClientRect();
+      const s = Math.min(r.width / W, r.height / H);
+      return { x: (r.width - W * s) / 2 + x * s, y: (r.height - H * s) / 2 + y * s, rect: r };
+    };
+    const chestTop = () => onPage(chest.x + chest.w / 2, chest.y - CELL.h * Math.ceil(taken / 2) + 1);
+    const placeMark = () => {
+      const { x, y } = chestTop();
+      mark.style.left = `${x}px`;
+      mark.style.top = `${y}px`;
+    };
+    addEventListener('resize', placeMark);
 
     // Avant la taxe : sa fortune.
     const first = step('fortune', `La fortune ${de(owner)}`, h('p', { className: 'montant' }, `${billions(boss.fortune.montant)} d’euros`),
@@ -238,7 +257,7 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pi
       [`Au plus : on déduit les impôts déjà payés sur ses revenus.`, under && ' Moins que ses dividendes.'], [rule, estimate, ...(under ? rent : [])]);
     // Ce que ça paierait : le titre, après la taxe.
     const result = use ? `${round(count)} ${use.finance}` : `Au plus ${money(tax)} par an`;
-    const third = use && step('paie', 'Ce que ça paierait', h('p', { className: 'nombre' }, h('b', {}, round(count)), ` ${use.finance}`),
+    const third = use && step('paie', 'Ces 2 % paieraient, à eux seuls', h('p', { className: 'nombre' }, h('b', {}, round(count)), ` ${use.finance}`),
       `${use.ponctuel ? 'En un an' : 'Chaque année'}, au plus.`, [use]);
     // Ce que chacun paie déjà : les deux taux, côte à côte.
     // « ≈ 52 % » : le rapport dit « close to » 52 % ; les 27 % des milliardaires, eux, sont fermes (« only pay 27% »).
@@ -264,11 +283,40 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pi
     // Le bouton a la main dès l'ouverture : un appui sur Entrée (la touche de tir) juste après la chute du boss, ou
     // la touche gardée enfoncée, ne doit ni taxer ni passer le résultat sans qu'on l'ait vu. Même délai que le carton.
     let ready = performance.now() + GUARD;
+    const still = () => document.body.classList.contains('sobre') || matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // Les liasses d'or quittent la caisse et filent vers ce que ça paierait, qui les reçoit.
+    const target = (third || second).querySelector('.nombre');
+    const receive = () => target.closest('li').classList.add('recoit');
+    const stream = () => {
+      if (!panel.isConnected) return;
+      const from = chestTop();
+      const to = target.getBoundingClientRect();
+      const start = { x: from.rect.left + from.x, y: from.rect.top + from.y };
+      const end = { x: to.left + Math.min(to.width, 120) / 2, y: to.top + to.height / 2 };
+      for (let i = 0; i < STREAM; i++) {
+        const bill = h('i', { className: 'liasse or volante' });
+        bill.style.left = `${start.x}px`;
+        bill.style.top = `${start.y}px`;
+        document.body.append(bill);
+        const dx = end.x - start.x;
+        const dy = end.y - start.y;
+        const flight = bill.animate([
+          { transform: 'translate(-50%, -50%)', opacity: 0 },
+          { transform: `translate(calc(${dx * 0.5}px - 50%), calc(${dy * 0.5 - 60}px - 50%))`, opacity: 1, offset: 0.5 },
+          { transform: `translate(calc(${dx}px - 50%), calc(${dy}px - 50%)) scale(.6)`, opacity: 0.9 },
+        ], { duration: 700, delay: i * 90, easing: 'ease-in', fill: 'both' });
+        flight.onfinish = () => {
+          bill.remove();
+          if (i === STREAM - 1) receive();
+        };
+      }
+    };
     button.onclick = () => {
       if (performance.now() < ready) return;
       ready = performance.now() + GUARD;
       audio?.play('clic');
       if (taxed) {
+        removeEventListener('resize', placeMark);
         root.replaceChildren();
         root.hidden = true;
         return resolve({ learned: taxFiches(bundle, boss, [scale, use].filter(Boolean)), said });
@@ -278,18 +326,31 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pi
       audio?.play('sauvetage');
       clearTimeout(rainTimer); // les dividendes sont tombés, ou ne tombent plus : ils ne retombent pas pendant l'envol
       finish('rain');
-      animate('fly', 1300);
-      // Même écran, deuxième temps : la fortune s'efface du récit, ce que ça paierait prend sa place. Effets réduits : d'un coup.
+      // Même écran, deuxième temps : la fortune s'efface du récit, ce que ça paierait prend sa place. Effets réduits : d'un coup,
+      // les liasses d'or déjà dans la caisse, le repère posé, sans liasses qui filent.
       const swap = () => {
         first.hidden = true;
         after.forEach((li) => { li.hidden = false; });
         panel.classList.add('faite');
       };
-      const still = document.body.classList.contains('sobre') || matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (still) swap();
-      else {
+      const showMark = () => {
+        placeMark();
+        mark.hidden = false;
+      };
+      if (still()) {
+        finish('fly');
+        paint();
+        swap();
+        showMark();
+        receive();
+      } else {
+        animate('fly', FLY);
         first.classList.add('part');
         setTimeout(swap, SWAP);
+        setTimeout(() => {
+          showMark();
+          stream();
+        }, FLY);
       }
       goldKey.hidden = false;
       // Le bouton suivant mène au bilan du niveau : un slogan de manif, tiré au hasard.
