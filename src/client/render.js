@@ -90,6 +90,10 @@ export class Renderer {
     this.ratio = 3; // pixels CSS par pixel du monde (3 sur ordinateur, 5/3 sur téléphone)
     this.hudBottom = 0; // où descend le HUD, en pixels CSS depuis le haut (main.js le mesure)
     this.floorBand = 0; // la hauteur du bandeau quand il est en bas de l'image, en pixels CSS (main.js le mesure)
+    // La note de déblocage à l'écran, en pixels du jeu : { x0, x1, y0, y1 } (main.js la mesure), null sans note.
+    // Rien de ce que le jeu écrit ne passe dessous : sa boîte est réservée, comme le panneau lu.
+    this.noteBox = null;
+    this.boardShift = { text: '', dy: 0 }; // le panneau lu, descendu sous la note : il y reste tant qu'il est à l'écran
     this.groups = new Map(); // à chaque image, où chaque genre de texte a déjà été écrit pour un groupe d'unités (`first`)
     this.lastSlogan = -Infinity;
     this.propSay = new WeakMap(); // accessoire en entier dans l'image → son étiquette est-elle écrite (muette → écrite, jamais l'inverse)
@@ -373,6 +377,8 @@ export class Renderer {
     // aucun ne recouvre l'autre, et les pancartes du cortège passent autour.
     const board = this.signBoard(game, dt);
     if (board) this.boxes.push(board.box);
+    const note = this.noteBox;
+    if (note) this.boxes.push(note);
     this.placeTags(game.props.map((p) => this.prop(p)).filter(Boolean), game.props);
     const gains = this.boxes.length;
     for (const r of game.recruits || []) this.recruit(r);
@@ -382,6 +388,9 @@ export class Renderer {
       .sort((a, b) => warns(b) - warns(a) || Math.abs(a.x - game.hero.x) - Math.abs(b.x - game.hero.x))[0];
     // Rien ne la recouvre : ni texte flottant, ni pancarte du cortège.
     this.voice = talker ? this.textBox(talker.bubble.text, talker.x + talker.w / 2 - cx, talker.y - 10 - cy, 5.5, 80) : null;
+    // Sous la note de déblocage, la voix descend juste sous elle.
+    this.voiceDy = this.voice && note && overlaps(this.voice, note) ? note.y1 + 2 - this.voice.y0 : 0;
+    if (this.voiceDy) Object.assign(this.voice, { y0: this.voice.y0 + this.voiceDy, y1: this.voice.y1 + this.voiceDy });
     if (this.voice) this.boxes.push(this.voice);
     this.combatBefore(game); // les coups se lisent : les pancartes du cortège s'effacent devant eux
     // La bulle du boss a sa place avant les textes flottants et les pancartes : ils passent autour d'elle.
@@ -392,6 +401,7 @@ export class Renderer {
     if (countdown) this.boxes.push(countdown.box);
     const fixed = this.boxes.slice(gains); // gains des recrues, voix, coups : les textes flottants passent autour
     if (board) fixed.push(board.box); // et autour du panneau lu
+    if (note) fixed.push(note); // et de la note de déblocage
     // Le héros se lit au premier coup d'œil : aucune pancarte ne se lève devant lui ni juste au-dessus de sa tête.
     const { hero } = game;
     // Sa place se compte comme il est dessiné : par rapport à la caméra qui le suit (`camX`, `camY`).
@@ -508,7 +518,16 @@ export class Renderer {
     if (this.sign.t <= 0 || this.demo) return null;
     const text = withKeys(this.sign.text, this.device);
     const lines = this.wrap(text, 7, 190).length;
-    const y = this.signTop + (lines - 1) * 7 * 1.1;
+    let y = this.signTop + (lines - 1) * 7 * 1.1;
+    // Une note de déblocage à sa place (au clavier, en haut à gauche) : le panneau passe dessous, et y reste tant qu'il
+    // est à l'écran. Au pouce, c'est la note qui attend que le panneau soit passé (`Hud.pump`).
+    if (this.boardShift.text !== this.sign.text) this.boardShift = { text: this.sign.text, dy: 0 };
+    const box = this.textBox(text, this.viewW / 2, y, 7, 190);
+    const note = this.noteBox;
+    if (note && overlaps({ ...box, y0: box.y0 + this.boardShift.dy, y1: box.y1 + this.boardShift.dy }, note)) {
+      this.boardShift.dy = Math.max(this.boardShift.dy, note.y1 + 3 - box.y0);
+    }
+    y += this.boardShift.dy;
     return { text, y, box: this.textBox(text, this.viewW / 2, y, 7, 190) };
   }
 
@@ -797,7 +816,7 @@ export class Renderer {
     else if (stunned) this.stars(e, cx, top);
     else this.warn(e, cx, top);
     if (this.frameOf(e)) this.viewfinder(e);
-    if (speaks) this.label(e.bubble.text, cx, e.y - 10 - this.cy, { size: 5.5, color: '#1a1c2c', bg: '#f4f4f4', width: 80 });
+    if (speaks) this.label(e.bubble.text, cx, e.y - 10 - this.cy + (this.voiceDy || 0), { size: 5.5, color: '#1a1c2c', bg: '#f4f4f4', width: 80 });
   }
 
   /**
@@ -1608,6 +1627,7 @@ export class Renderer {
       const voice = this.voice;
       const rises = (f.rise ?? 14) > 0;
       if (voice && rises && !f.edge && box.x0 < voice.x1 && box.x1 > voice.x0 && box.y0 < voice.y1 && box.y1 > voice.y0) shift(f, box, voice.y0 - 1 - box.y1);
+      if (this.noteBox && overlaps(box, this.noteBox)) shift(f, box, this.noteBox.y1 + 1 - box.y0); // sous la note de déblocage
       // Sous la bande du HUD, même au pied d'une ligne perchée tout en haut : il descend juste sous elle, sans en couvrir un autre.
       if (box.y0 < ceiling) {
         shift(f, box, ceiling - box.y0);

@@ -389,8 +389,6 @@ body.tactile #hud .droite { right: max(10px, env(safe-area-inset-right)); }
 body.tactile #toasts { left: auto; right: calc(max(10px, env(safe-area-inset-right)) + 3.2em); top: calc(var(--haut-bandeau) + 8px); justify-items: end; max-width: 44%; }
 body.tactile #toasts p { font-size: .72rem; padding: .35em .6em; }
 body.tactile #toasts.attend { visibility: hidden; } /* un panneau d'aide occupe le haut : la note attend (voir Hud.pump) */
-/* Pendant un boss, une seule ligne : la note s'arrête au-dessus de sa barre de vie. (Celle d'une pancarte a sa place à elle.) */
-body.tactile #hud:has(> #hud-boss:not([hidden])) ~ #toasts:not(.pancarte) p { max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 html.pivote body.tactile #bandeau { padding: 0 env(safe-area-inset-bottom) 0 env(safe-area-inset-top); }
 html.pivote body.tactile #hud .gauche { left: max(10px, env(safe-area-inset-top)); }
 html.pivote body.tactile #hud .droite { right: max(10px, env(safe-area-inset-bottom)); }
@@ -399,11 +397,12 @@ html.pivote body.tactile #toasts { right: calc(max(10px, env(safe-area-inset-bot
 body.tactile.essai #toasts { right: calc(max(10px, env(safe-area-inset-right)) + var(--hud-droite, 3.2em) + 8px); max-width: calc(52% - var(--hud-droite, 3.2em)); }
 html.pivote body.tactile.essai #toasts { right: calc(max(10px, env(safe-area-inset-bottom)) + var(--hud-droite, 3.2em) + 8px); }
 /*
- * Au pouce, la note d'une pancarte, sur deux ou trois lignes, ne tient pas sur la ligne du HUD : elle se pose à gauche,
- * sous tout le HUD (barre de vie comprise), au-dessus du manche ; ni sur la barre, ni sur SPÉ.
+ * Au pouce, la note d'une pancarte, sur deux ou trois lignes, ne tient pas sur la ligne du HUD ; quand une barre de vie
+ * est là, aucune note n'y tient. Elle se pose alors à gauche, sous tout le HUD (barre comprise), au-dessus du manche ; ni
+ * sur la barre, ni sur SPÉ, et jamais coupée. Le jeu écrit autour d'elle (`Renderer.noteBox`).
  */
-body.tactile #toasts.pancarte, body.tactile.essai #toasts.pancarte { left: max(10px, env(safe-area-inset-left)); right: auto; top: max(calc(var(--haut-bandeau) + 8px), calc(var(--bas-hud, 0px) + 6px)); justify-items: start; max-width: min(56%, 460px); }
-html.pivote body.tactile #toasts.pancarte { left: max(10px, env(safe-area-inset-top)); }
+body.tactile #toasts.pancarte, body.tactile.essai #toasts.pancarte, body.tactile #hud:has(> #hud-boss:not([hidden])) ~ #toasts { left: max(10px, env(safe-area-inset-left)); right: auto; top: max(calc(var(--haut-bandeau) + 8px), calc(var(--bas-hud, 0px) + 6px)); justify-items: start; max-width: min(56%, 460px); }
+html.pivote body.tactile #toasts.pancarte, html.pivote body.tactile #hud:has(> #hud-boss:not([hidden])) ~ #toasts { left: max(10px, env(safe-area-inset-top)); }
 
 /* ------------------------------------------------------------------ écrans */
 
