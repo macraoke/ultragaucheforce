@@ -1,9 +1,9 @@
 titre: Une plainte classée sans suite
 theme: droits
 texte: La plainte du ministère de l'Intérieur pour « injure publique », après la chronique de Pierre-Emmanuel Barré du 9 novembre 2025 sur Radio Nova, a été classée sans suite par le parquet de Paris.
-portee: Selon Le Parisien, repris par Puremédias en septembre 2026. Le parquet a invité les deux parties à se tourner vers la citation directe ou la plainte avec constitution de partie civile.
+portee: Selon Le Parisien, repris par Puremédias le 28 septembre 2026. Le parquet a invité les deux parties à se tourner vers la citation directe ou la plainte avec constitution de partie civile.
 periode: novembre 2025 à septembre 2026
-source.titre: Puremédias (Yahoo Actualités) — « Une bonne nouvelle pour la liberté d'expression » : La plainte initiée par Laurent Nuñez contre Pierre-Emmanuel Barré classée sans suite
-source.url: https://fr.news.yahoo.com/bonne-nouvelle-libert%C3%A9-dexpression-plainte-161500895.html
+source.titre: Puremédias — « Une bonne nouvelle pour la liberté d'expression » : La plainte initiée par Laurent Nuñez contre Pierre-Emmanuel Barré classée sans suite
+source.url: https://www.ozap.com/actu/une-bonne-nouvelle-pour-la-liberte-dexpression-la-plainte-initiee-par-laurent-nunez-contre-pierre-emmanuel-barre-classee-sans-suite/657187
 source.nature: presse
 verifie: 2026-11-17
