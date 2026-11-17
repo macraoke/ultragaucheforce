@@ -385,10 +385,11 @@ export class Screens {
       fold('Mentions légales', ...legalNotice()),
       fold('Références', h('ul', {}, REFERENCES.map((r) => h('li', {}, link(r.url, r.titre), ` — ${r.note}`)))),
       fold('Crédits et licences',
-        h('p', {}, 'Code : MIT. Contenus : CC BY-SA 4.0. Bruitages synthétisés avec ZzFX de Frank Force (MIT).'),
+        h('p', {}, 'Code : MIT. Contenus : CC BY-SA 4.0, sauf mention contraire. Bruitages synthétisés avec ZzFX de Frank Force (MIT).'),
         h('ul', {}, Object.values(this.bundle.sons).filter((x) => x.fichier).map((x) =>
           h('li', {}, link(x.source, x.nom), ` — ${x.auteur}, ${licenceName(x.licence)}`))),
-        h('p', {}, h('b', {}, 'Radio Manif : '), Object.values(this.bundle.musiques).map((m, i) => [i ? ' · ' : '', link(m.url, m.titre), ` — ${m.artiste}`]))),
+        h('p', {}, h('b', {}, 'Radio Manif : '), Object.values(this.bundle.musiques).map((m, i) => [i ? ' · ' : '', link(m.url, m.titre), ` — ${m.artiste}`,
+          /^CC-/.test(m.licence || '') ? `, ${licenceName(m.licence)}` : '']))),
       h('div', { className: 'pied' }, this.back()));
     this.escape = () => this.menu();
   }
