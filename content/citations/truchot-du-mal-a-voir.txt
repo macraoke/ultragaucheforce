@@ -1,0 +1,10 @@
+texte: On a du mal à voir concrètement quelles sont les revendications
+auteur: Olivier Truchot
+fonction: présentateur, BFM-TV
+date: 2026-10-01
+contexte: Face à Sabrine Kharbach, porte-parole de l’Union étudiante, interrompue par les deux présentateurs, Olivier Truchot et Alain Marschall, à 15 reprises au cours de sa première intervention, selon le décompte d’Acrimed.
+categorie: diabolisation
+source.titre: Acrimed — Médiatiser les représentants des lycéens : tendre le micro… et confisquer la parole
+source.url: https://www.acrimed.org/Mediatiser-les-representants-des-lyceens-tendre
+source.nature: associative
+verifie: 2026-11-17

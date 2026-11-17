@@ -1,0 +1,10 @@
+texte: mettre les pancartes entre notre reporter et la caméra, c'est non.
+auteur: David Doukhan
+fonction: présentateur, LCI
+date: 2026-11-02
+contexte: Après un duplex de Toulouse interrompu par des lycéens qui brandissaient leurs revendications, dont « 36 élèves, 1 prof, 0 miracle », pendant que la reporter filmait un feu de poubelle.
+categorie: diabolisation
+source.titre: Acrimed — Mouvement lycéen : les médias refusent la critique
+source.url: https://www.acrimed.org/Mouvement-lyceen-les-medias-refusent-la-critique
+source.nature: associative
+verifie: 2026-11-17

@@ -1,0 +1,11 @@
+texte: Vous savez déjà que de toute façon, à la fin, vous perdez.
+auteur: Apolline de Malherbe
+fonction: présentatrice, RMC et BFM-TV
+date: 2023-01-13
+contexte: À Philippe Martinez, secrétaire général de la CGT, six jours avant la première journée de grève contre la réforme des retraites.
+categorie: diabolisation
+note: Le tract d’Acrimed date l’entretien du « 13/01 » ; l’année se déduit de la réforme des retraites de 2023 (la grève du 19 janvier). Médiacritiques n° 46 reprend la phrase.
+source.titre: Acrimed — tract « Faisons battre en retraite les chiens de garde ! »
+source.url: https://www.acrimed.org/IMG/pdf/tract_retraites_2.pdf
+source.nature: associative
+verifie: 2026-11-17

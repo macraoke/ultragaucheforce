@@ -1,0 +1,10 @@
+texte: Ce qui s'est passé, c'est tout à fait normal
+auteur: Christophe Barbier
+fonction: éditorialiste, BFM-TV
+date: 2018-12-07
+contexte: Le matin sur BFM-TV, au lendemain de l’interpellation de 148 lycéens à Mantes-la-Jolie, filmés à genoux, les mains sur la tête. La phrase continue : « et c’est même pour protéger les lycéens qu’il faut comme ça les traiter ».
+categorie: diabolisation
+source.titre: Acrimed — Humiliations policières contre les lycéens, Barbier et Giesbert complices
+source.url: https://www.acrimed.org/Humiliations-policieres-contre-les-lyceens
+source.nature: associative
+verifie: 2026-11-17

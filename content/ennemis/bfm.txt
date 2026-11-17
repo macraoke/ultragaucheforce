@@ -1,4 +1,5 @@
-# Il ne blesse personne : il cadre le héros, et la panique monte. Ses répliques sont de vrais bandeaux de la chaîne.
+# Il ne blesse personne : il cadre le héros, et la panique monte. Ses répliques sont de vrais bandeaux de la chaîne
+# et les mots de ses journalistes à l'antenne, chacun avec sa fiche dans `content/citations/`.
 nom: Duplex de BFM-TV
 pv: 2
 vitesse: 34
@@ -13,6 +14,16 @@ hauteur: 17
 fiche: bandeau-fallait-il-l-interdire
 replique: MANIF ANTI-POLICE : FALLAIT-IL L'INTERDIRE ?
 replique: DÉPUTÉE FRAPPÉE ? UNE VIDÉO SÈME LE TROUBLE
+replique: JE TROUVE ÇA QUAND MÊME SACRÉMENT GONFLÉ
+replique: À CROIRE QU'ILS NE VEULENT PAS QU'ON PARLE DE LEURS REVENDICATIONS !
+replique: JE TROUVE ÇA TOUJOURS ASSEZ INOUÏ !
+replique: C'EST TOI QUI STIGMATISES BFM-TV
+replique: MOI JE TE TENDS LE MICRO LÀ.
+replique: ON A DU MAL À VOIR CONCRÈTEMENT QUELLES SONT LES REVENDICATIONS
+replique: VOUS SAVEZ DÉJÀ QUE DE TOUTE FAÇON, À LA FIN, VOUS PERDEZ.
+replique: CE QUI S'EST PASSÉ, C'EST TOUT À FAIT NORMAL
+replique: QUI SONT LES JEUNES QUI MANIFESTENT, QUI BLOQUENT, QUI FONT LA GRÈVE ?
+replique: QUI GALÈRE LE PLUS ? QUI ?!
 auteur: UltraGauche Force
 --- repos
 ....TTTT......kkkk..

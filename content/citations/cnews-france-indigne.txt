@@ -1,0 +1,11 @@
+texte: La France Indigne
+auteur: CNews
+fonction: antenne de la chaîne
+date: 2023-10-09
+contexte: Jeu sur le sigle LFI, deux jours après l’attaque du Hamas du 7 octobre 2023, le jour où le site du Point titrait « LFI ou La formation infréquentable ».
+categorie: diabolisation
+note: Médiacritiques n° 49 ne nomme pas qui l’a dit ou écrit à l’antenne.
+source.titre: Acrimed — Médiacritiques n° 49 (janvier-mars 2024)
+source.url: https://www.acrimed.org/IMG/pdf/mediacritiques49.pdf
+source.nature: associative
+verifie: 2026-11-17

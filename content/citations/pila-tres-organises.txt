@@ -1,0 +1,10 @@
+texte: Ils sont très peu nombreux, mais ils sont très organisés.
+auteur: Renaud Pila
+fonction: chroniqueur, LCI
+date: 2018-04-16
+contexte: Chronique sur « la montée de l’ultragauche » pendant l’occupation de Tolbiac par des étudiants opposés à Parcoursup.
+categorie: diabolisation
+source.titre: Acrimed — Mobilisations étudiantes : les éditocrates face au péril jeune
+source.url: https://www.acrimed.org/Mobilisations-etudiantes-les-editocrates-face-au
+source.nature: associative
+verifie: 2026-11-17

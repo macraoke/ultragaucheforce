@@ -1,0 +1,10 @@
+texte: on est dans un mouvement totalement irrationnel
+auteur: Bruno Dive
+fonction: journaliste, sur le plateau de « Punchline », CNews
+date: 2018-12-07
+contexte: Même émission, à propos des gilets jaunes : un mouvement « qui demande le départ d’Emmanuel Macron, qui conteste les élites ».
+categorie: diabolisation
+source.titre: Acrimed — Gilets jaunes : BFM-TV et CNews préparent le « siège » de Paris
+source.url: https://www.acrimed.org/Gilets-jaunes-BFM-TV-et-CNews-preparent-le-siege
+source.nature: associative
+verifie: 2026-11-17

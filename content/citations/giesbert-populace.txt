@@ -1,0 +1,12 @@
+texte: ce n'est pas le peuple qui a défilé mais la populace
+auteur: Franz-Olivier Giesbert
+fonction: éditorialiste au Point
+date: 2026-10-18
+contexte: Sur le site du Point, au lendemain de la mobilisation du 17 octobre 2026 : « Le 17 octobre, ce n’est pas le peuple qui a défilé mais la populace, marteaux en main. »
+categorie: diabolisation
+mot: POPULACE
+note: Lu dans la reprise d’Acrimed ; l’article du Point n’a pas été relu.
+source.titre: Acrimed — LFI et le 17 octobre : les médias relaient la propagande d’État
+source.url: https://www.acrimed.org/LFI-et-le-17-octobre-les-medias-relaient-la
+source.nature: associative
+verifie: 2026-11-17

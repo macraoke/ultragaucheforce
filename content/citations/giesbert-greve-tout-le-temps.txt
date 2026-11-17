@@ -1,0 +1,10 @@
+texte: Pourquoi on fait grève tout le temps ?
+auteur: Franz-Olivier Giesbert
+fonction: éditorialiste, sur le plateau de LCI
+date: 2019-12-13
+contexte: Pendant la grève contre la réforme des retraites : « Pourquoi on a 118 jours de grève alors qu’on a un système social beaucoup plus avancé que dans la plupart des autres pays ? »
+categorie: diabolisation
+source.titre: Acrimed — Médiacritiques n° 34 (janvier-mars 2020)
+source.url: https://www.acrimed.org/IMG/pdf/mediacritiques34.pdf
+source.nature: associative
+verifie: 2026-11-17
