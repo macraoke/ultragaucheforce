@@ -10,10 +10,11 @@ saut: 3.4
 fiche: programme-6e-republique
 auteur: UltraGauche Force
 
-# Arme : les pages du programme, en éventail, qui traversent les rangs.
+# Arme : les pages du programme, en éventail levé, qui traversent les rangs.
 arme.type: tir
 arme.nombre: 3
-arme.dispersion: 24
+arme.dispersion: 60
+arme.elan: 55
 arme.cadence: 2.5
 arme.vitesse: 250
 arme.portee: 220

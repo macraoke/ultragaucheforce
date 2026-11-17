@@ -115,8 +115,10 @@ kk......kkk.
 ..HHHHHHHHHHwHHHHHhhhhh.
 ..HHHHHHHHHHwHHHHHHHHHH.
 --- projectile
-lll..l.
-l.l.ll.
-l.l..l.
-l.l..l.
-lll.lll
+kkkkkkkkk
+klllkklkk
+klklkllkk
+klklkklkk
+klklkklkk
+klllklllk
+kkkkkkkkk
