@@ -1,0 +1,11 @@
+texte: Notre famille s'est toujours investie avec une vision long terme et responsable dans le développement de ses entreprises.
+auteur: Jean Guillaume Despature
+fonction: actionnaire familial de référence de Somfy
+date: 2022-11-15
+contexte: Communiqué annonçant l'offre publique d'achat simplifiée de sa famille sur les actions Somfy, à 143 euros par action, en vue de retirer l'entreprise de la Bourse. La famille détenait déjà 73,9 % du capital.
+categorie: puissants
+note: Première phrase de sa déclaration dans le communiqué de presse de Somfy, publié par l'AMF.
+source.titre: Somfy — Communiqué de presse du 15 novembre 2022 : dépôt d'un projet d'offre publique d'achat simplifiée visant les actions Somfy (AMF)
+source.url: https://echanges.dila.gouv.fr/OPENDATA/AMF/ECO/2022/11/FCECO069252_20221115.pdf
+source.nature: officielle
+verifie: 2026-11-17
