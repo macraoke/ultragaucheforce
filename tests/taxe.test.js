@@ -3,7 +3,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { loadContent } from '../tools/content.mjs';
-import { taxNumbers, perYear, round, money, draw, heap, stackYearsFor, usesFor, MIN_COUNT, SLOGANS } from '../src/client/tax.js';
+import { taxNumbers, perYear, round, money, draw, heap, stackYearsFor, usesFor, fortuneOwner, MIN_COUNT, SLOGANS } from '../src/client/tax.js';
+import { de } from '../src/client/dom.js';
 import { TAX_RATES, taxFiches, taxScales, taxUses, taxShocks } from '../src/client/collection.js';
 
 const { bundle } = loadContent();
@@ -131,4 +132,19 @@ test('taxe : une fortune d’un milliard se compte en liasses de moins d’un an
     const count = years / stackYearsFor(years);
     assert.ok(stackYearsFor(years) < 1 && count > 285 && count <= 380, `${years} années : ${count} liasses`);
   }
+});
+
+test('taxe : la fortune d’une famille ne se dit qu’une fois « famille », pour chaque boss', () => {
+  for (const boss of Object.values(bundle.boss)) {
+    const line = `La fortune ${de(fortuneOwner(boss))}`;
+    assert.equal((line.match(/famille/gi) || []).length <= 1, true, `${boss.id} : ${line}`);
+    assert.doesNotMatch(line, /de la la|de de|famille de la famille/i, boss.id);
+  }
+  const by = (nom, inspiration) => fortuneOwner({ nom, inspiration });
+  assert.equal(by('La Famille Hermès', 'la famille Hermès, avec Axel Dumas, son gérant'), 'la famille Hermès');
+  assert.equal(by('La famille Despature', 'Jean-Guillaume Despature et sa famille'), 'la famille Despature');
+  assert.equal(by('Famille Peugeot', 'Thierry Peugeot'), 'la famille Peugeot');
+  assert.equal(by('Le Paratonnerre', 'Vincent Bolloré'), 'la famille de Vincent Bolloré');
+  assert.equal(by('Un boss', 'un fondateur et sa famille'), 'un fondateur et sa famille');
+  assert.equal(by('Un boss', ''), 'Un boss');
 });

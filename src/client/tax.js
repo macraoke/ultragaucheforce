@@ -43,6 +43,19 @@ export const SLOGANS = [
 
 export { round, money }; // arrondis vers le bas : voir `dom.js`
 /** Ce que vaut une fiche sur un an : sa valeur, douze fois si elle est donnée par mois (`par: mois`). */
+/**
+ * À qui est la fortune, tel que l'écran de taxe et l'image à partager l'écrivent après « La fortune de ».
+ * Un boss nommé d'après une famille (« La Famille Hermès ») la nomme ; une inspiration qui parle déjà de famille
+ * (« Jean-Guillaume Despature et sa famille ») se dit telle quelle ; sinon, la famille de l'inspiration.
+ */
+export function fortuneOwner(boss) {
+  const family = /^(?:la\s+)?famille\s+(.+)$/i.exec(String(boss.nom).trim());
+  if (family) return `la famille ${family[1]}`;
+  if (!boss.inspiration) return boss.nom;
+  if (/\bfamille\b/i.test(boss.inspiration)) return boss.inspiration;
+  return `la famille ${de(boss.inspiration)}`;
+}
+
 export const perYear = (fact) => fact.valeur * (fact.par === 'mois' ? 12 : 1);
 
 /**
@@ -219,7 +232,7 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pi
       state[key] = 1;
     };
 
-    const owner = boss.inspiration ? `la famille ${de(boss.inspiration)}` : boss.nom;
+    const owner = fortuneOwner(boss);
     const under = yearly > tax; // 2 % pèsent moins que ce que la fortune rapporte en un an
     const rule = fiche('impot-plancher');
     const [most, billionaires] = TAX_RATES.map(fiche);
