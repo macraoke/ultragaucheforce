@@ -1,0 +1,20 @@
+# Ses mots blessent : un préavis, une tête qui blesse, des lettres qu'on abat.
+nom: Orateur
+pv: 10
+vitesse: 0
+deplacement: fixe
+reaction: tire
+vue: 260
+fin: panne
+arme.type: tir
+arme.cadence: 1
+arme.vitesse: 90
+arme.portee: 260
+arme.degats: 1
+arme.terrain: 0
+arme.taille: 10
+arme.visee: 0.4
+arme.mots: TERRORISME INTELLECTUEL !
+--- repos
+kk
+kk

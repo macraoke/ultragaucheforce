@@ -6,6 +6,7 @@
 import { crown, hand, seated, sprite } from './sprites.js';
 import { withKeys } from './input.js';
 import { KETTLE_FLOOR } from '../sim/enemy.js';
+import { wordBox } from '../sim/projectile.js';
 
 const TILE = 16;
 export const SIGN_LINGER = 1.6; // secondes pendant lesquelles un panneau dépassé reste lisible, en s'effaçant
@@ -805,7 +806,7 @@ export class Renderer {
     const shoved = !still && e.push > 0 && Math.floor(this.clock * 16) % 2 ? 1 : 0; // une ligne que la manif pousse tremble
     this.actor(e, rows, { flash: e.flash > 0, dx: flinch + cough + shoved, ...(set && { flip: false }) });
     const top = e.y + e.h - (rows?.length || e.h) - this.cy;
-    if (e.aim) this.aim(e);
+    if (e.aim) (e.aim.straight ? this.windup(e) : this.aim(e));
     if (e.rush?.phase === 'ruee') {
       this.ctx.fillStyle = '#f4f4f4';
       for (let k = 0; k < 3; k++) this.ctx.fillRect(Math.round(e.x + (e.facing > 0 ? -8 - k * 5 : e.w + 4 + k * 5) - this.cx), Math.round(e.y + 3 + k * 5 - this.cy), 4, 1);
@@ -1024,6 +1025,17 @@ export class Renderer {
     const { ctx } = this;
     ctx.strokeStyle = Math.floor(this.clock * 12) % 2 ? '#e43b44' : '#f4f4f4';
     ctx.strokeRect(Math.round(x - r - this.cx) + 0.5, Math.round(y - r - this.cy) + 0.5, r * 2, r * 2);
+  }
+
+  /** Le préavis d'un tir droit devant : la bouche s'ouvre, un « ! » rouge qui clignote et grossit jusqu'au tir. */
+  windup(e) {
+    const { t } = e.aim;
+    const total = e.def.arme.visee || 1;
+    const mouth = e.facing > 0 ? e.x + e.w + 4 : e.x - 4;
+    const blink = Math.floor(this.clock * 14) % 2;
+    this.label('!', mouth - this.cx, e.y + e.h * 0.35 - 6 - this.cy, {
+      size: 7 + 5 * (1 - t / total), color: blink ? '#e43b44' : '#f4f4f4',
+    });
   }
 
   /** Le jet du canon à eau. */
@@ -1500,6 +1512,11 @@ export class Renderer {
   projectile(p) {
     const x = p.x - this.cx;
     const y = p.y - this.cy;
+    if (p.word && p.text) { // un mot d'en face : sa tête devant, ses lettres derrière (wordBox)
+      const box = wordBox(p);
+      this.label(p.word, box.x - this.cx + box.w / 2, y - 1, { size: 7.5, color: '#e43b44' });
+      return;
+    }
     if (p.word) {
       this.label(p.word, x + p.w / 2, y - 1, { size: 7.5, color: p.team === 'ordre' ? '#e43b44' : '#f4f4f4' });
       return;
