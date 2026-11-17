@@ -616,7 +616,8 @@ test('« Sa piste en premier » : chaque entrée dans un niveau commence par sa 
   // Valentin, 16 novembre 2026 : « Sa piste en premier : chaque entrée dans un niveau commence par sa piste à lui,
   // et le sac prend le relais ensuite. »
   for (const id of bundle.campagne) {
-    const own = real.filter((t) => t.ou === id).map((t) => t.id);
+    const following = new Set(real.map((t) => t.puis).filter(Boolean)); // une suite (`puis`) ne s'ouvre jamais
+    const own = real.filter((t) => t.ou === id && !following.has(t.id)).map((t) => t.id);
     for (let seed = 1; seed <= 20; seed++) {
       const s = setup({ list: real, random: seeded(seed) });
       await s.on();
@@ -656,8 +657,11 @@ test('« Recommencer » n’est pas une entrée ; après sa piste, le sac, jamai
   s.radio.play('chaine-info', null, { restart: true }); // « Recommencer »
   assert.equal(s.widget.loads.length, loads, 'la musique continue');
   s.emit('FINISH');
-  assert.equal(s.radio.current.ou, 'jeu', 'le sac prend le relais');
-  assert.notEqual(s.radio.current.id, 'jles-aime-pas');
+  assert.equal(s.radio.current.id, 'monsieur-propagandiste', 'sa suite (`puis`) vient après elle');
+  s.ready();
+  s.playing();
+  s.emit('FINISH');
+  assert.equal(s.radio.current.ou, 'jeu', 'puis le sac prend le relais');
   s.ready();
   s.playing();
   s.radio.play('boss');
@@ -666,7 +670,9 @@ test('« Recommencer » n’est pas une entrée ; après sa piste, le sac, jamai
   s.radio.play('chaine-info'); // nouvelle entrée : sa piste, de nouveau
   assert.equal(s.radio.current.id, 'jles-aime-pas');
   s.emit('ERROR'); // chiffrée, sans module de lecture
-  assert.equal(s.radio.current.ou, 'jeu', 'sa piste échoue : le sac');
+  assert.equal(s.radio.current.id, 'monsieur-propagandiste', 'sa piste échoue : sa suite prend sa place');
+  s.emit('ERROR');
+  assert.equal(s.radio.current.ou, 'jeu', 'la suite échoue aussi : le sac');
   // Plus tard, sa piste en échec n'est plus proposée à l'entrée : le sac directement.
   s.ready();
   s.playing();
