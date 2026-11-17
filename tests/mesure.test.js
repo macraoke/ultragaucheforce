@@ -80,6 +80,20 @@ test('mesure : le filtre avant envoi retire les paramètres des adresses et ce q
   });
   assert.equal(event.$set, undefined);
 
+  // Une erreur dans un script de la page : l'adresse est aussi dans la pile d'appels et dans le message.
+  const error = config.before_send({
+    event: '$exception',
+    properties: { $exception_list: [{
+      type: 'Error', value: 'échec à https://macraoke.github.io/ultragaucheforce/?fbclid=x#a ligne 3',
+      stacktrace: { frames: [{ filename: 'https://macraoke.github.io/ultragaucheforce/?fbclid=x#a', lineno: 3 }, { filename: 'https://macraoke.github.io/ultragaucheforce/src/client/main.js', lineno: 9 }] },
+    }] },
+  });
+  const [exception] = error.properties.$exception_list;
+  assert.equal(exception.value, 'échec à https://macraoke.github.io/ultragaucheforce/ ligne 3');
+  assert.deepEqual(exception.stacktrace.frames.map((f) => f.filename),
+    ['https://macraoke.github.io/ultragaucheforce/', 'https://macraoke.github.io/ultragaucheforce/src/client/main.js']);
+  assert.ok(!JSON.stringify(error).includes('fbclid'), 'aucun paramètre, à aucune profondeur');
+
   const local = {};
   run(local, { hostname: 'localhost' }, document);
   assert.equal(local.posthog, undefined, 'en local, rien');

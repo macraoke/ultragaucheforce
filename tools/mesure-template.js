@@ -23,13 +23,20 @@
   // Ce que PostHog retient de l'entrée dans la visite : l'adresse, pas ses paramètres.
   var ENTRY = /^\$(session_entry|initial)_(?!(url|host|pathname|referrer|referring_domain)$)/;
 
+  // Une adresse dans un texte : ce qui suit son « ? » ou son « # » ne part pas.
+  var QUERY = /(https?:\/\/[^\s?#"'<>]*)[?#][^\s"'<>]*/g;
+
+  /** Toutes les adresses, à toute profondeur (les piles d'appels d'une erreur comprises), sans paramètres ni ancre. */
+  function bare(value) {
+    if (typeof value === 'string') return value.replace(QUERY, function (all, url) { return url; });
+    if (value && typeof value === 'object') for (var key in value) value[key] = bare(value[key]);
+    return value;
+  }
+
   /** Avant chaque envoi : les adresses sans paramètres ni ancre, pas de propriété de personne, pas de lieu déduit de l'IP. */
   function clean(event) {
     if (!event) return event;
-    var p = event.properties || (event.properties = {});
-    for (var key in p) {
-      if (typeof p[key] === 'string' && /^https?:\/\//.test(p[key])) p[key] = p[key].replace(/[?#].*$/, '');
-    }
+    var p = bare(event.properties || (event.properties = {}));
     for (var name in p) {
       if (name.charAt(0) === '$' ? ENTRY.test(name) : KEPT.indexOf(name) < 0) delete p[name];
     }
