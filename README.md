@@ -71,7 +71,7 @@ Le jeu est sur http://localhost:8080.
 | Pause | Échap ou P | Start | II |
 | Piste suivante (en pause) | N | croix jusqu’à ⏭, puis A | ⏭, à côté de « Pause » |
 
-Sur téléphone, l'image remplit l'écran et tout l'écran répond. Le jeu se joue en paysage ; téléphone tenu debout, il pivote tout seul.
+Sur téléphone, l'image remplit l'écran : le pouce gauche se pose où il veut, et à droite chaque bouton répond dans un cercle à peine plus grand que lui. Le jeu se joue en paysage ; téléphone tenu debout, il pivote tout seul.
 
 Le tableau est aussi dans le jeu (**Commandes**, au menu et en pause). Les panneaux du premier niveau, le carton d'ouverture et la pause disent les touches de l'appareil en main : clavier, manette ou pouce.
 
