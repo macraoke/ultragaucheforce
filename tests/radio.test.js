@@ -16,9 +16,9 @@ test('chaque niveau de la campagne a sa musique : la sienne, sinon celle de tous
     const level = bundle.niveaux[id];
     const own = real.filter((t) => t.ou === id);
     for (const random of randoms) {
-      const track = chooseTrack(real, { slot: id, named: level.musique, random });
+      const track = chooseTrack(real, { slot: id, named: level.musique[0], random });
       assert.ok(track, `${id} : aucune piste`);
-      if (level.musique) assert.equal(track.id, level.musique, id);
+      if (level.musique.length) assert.equal(track.id, level.musique[0], id);
       else assert.equal(track.ou, own.length ? id : 'jeu', `${id} : ${track.id}`);
     }
   }
@@ -622,7 +622,7 @@ test('« Sa piste en premier » : chaque entrée dans un niveau commence par sa 
       const s = setup({ list: real, random: seeded(seed) });
       await s.on();
       const [first, again] = await campaignOpenings(s, [id, id]); // deux entrées, le boss entre les deux
-      const fixed = bundle.niveaux[id].musique;
+      const fixed = bundle.niveaux[id].musique[0];
       if (fixed) {
         // Valentin : « fixe aussi les 1eres musiques de niveaux » : la même piste ouvre chaque entrée.
         assert.deepEqual([first, again], [fixed, fixed], `${id}, graine ${seed}`);
@@ -1515,14 +1515,15 @@ test('mesure : pause puis reprise au bouton du lecteur SoundCloud, par paire', a
 // (`musique-boss`) ; ensuite, le hasard, comme avant.
 
 test('les premières pistes validées par Valentin, niveau par niveau', () => {
-  // Le tableau validé (« Valider tout ») : la première piste du niveau, puis celle de son boss.
+  // Le tableau validé (« Valider tout ») : les pistes qui ouvrent le niveau, dans l'ordre, puis celle de son boss.
   const table = {
-    millevaches: ['countryside-explosions', 'siamo-tutti-antifascisti-1fam-bender'],
-    'rond-point': ['hey-hey-macron', 'macron-demission-peridurale'],
-    raffinerie: ['internationale', 'tout-le-monde-deteste-la-police-tekos-redon'],
-    'soir-du-49-3': ['casserolade-gueret', 'majes-macron-explosion'],
-    'chaine-info': ['jles-aime-pas', 'caca-sur-bardella-sketogan'],
-    bismillah: ['gen-z-nodey-remix', 'abattez-la-citadelle'], // « Citadelle chez Arnault »
+    millevaches: [['countryside-explosions'], 'siamo-tutti-antifascisti-1fam-bender'],
+    'rond-point': [['hey-hey-macron'], 'macron-demission-peridurale'],
+    raffinerie: [['internationale'], 'tout-le-monde-deteste-la-police-tekos-redon'],
+    'soir-du-49-3': [['casserolade-gueret'], 'majes-macron-explosion'],
+    'chaine-info': [['jles-aime-pas'], 'caca-sur-bardella-sketogan'],
+    // « Citadelle chez Arnault » ; « et pour ce niveau mets "j'ai deux passions<3" comme 2e chanson, puis Sexy Nana . »
+    bismillah: [['gen-z-nodey-remix', 'deux-passions-gochism', 'aya-sexy-nana-remix'], 'abattez-la-citadelle'],
   };
   for (const [id, pair] of Object.entries(table)) {
     assert.deepEqual([bundle.niveaux[id].musique, bundle.niveaux[id]['musique-boss']], pair, id);
@@ -1531,7 +1532,7 @@ test('les premières pistes validées par Valentin, niveau par niveau', () => {
 
 test('la piste nommée ouvre chaque visite, même quand le niveau a d’autres pistes à lui et qu’elle a ouvert la précédente', () => {
   for (const id of bundle.campagne) {
-    const named = bundle.niveaux[id].musique;
+    const named = bundle.niveaux[id].musique[0];
     for (const random of randoms) {
       assert.equal(openingTrack(real, { slot: id, named, last: named, random }).id, named, id);
     }
@@ -1557,7 +1558,7 @@ test('au boss, la piste que nomme le niveau ouvre l’arrivée, à chaque fois ;
     for (let seed = 1; seed <= 10; seed++) {
       const s = setup({ list: real, random: seeded(seed) });
       await s.on();
-      assert.equal(await levelThenBoss(s, id), bundle.niveaux[id].musique, `${id}, graine ${seed}`);
+      assert.equal(await levelThenBoss(s, id), bundle.niveaux[id].musique[0], `${id}, graine ${seed}`);
       assert.equal(s.radio.current.id, bundle.niveaux[id]['musique-boss'], `${id}, graine ${seed}`);
       assert.equal(s.lastUrl(), s.radio.current.url);
       s.ready();
@@ -1644,4 +1645,119 @@ test('la piste nommée du boss ne joue pas : le hasard parmi les pistes du boss 
   await levelThenBoss(m, 'bismillah');
   m.emit('ERROR');
   assert.equal(m.radio.current.id, 'abattez-la-citadelle-ryukken');
+});
+
+// ---------------------------------------------------------------------- un enchaînement par niveau
+// Valentin, 17 novembre 2026 : « et pour ce niveau mets "j'ai deux passions<3" comme 2e chanson, puis Sexy Nana . »
+// Un niveau peut répéter `musique` : la première ouvre la visite, les suivantes viennent dans l'ordre, puis le sac.
+
+const BISMILLAH = ['gen-z-nodey-remix', 'deux-passions-gochism', 'aya-sexy-nana-remix'];
+
+/** Bismillah, comme main.js l'annonce, dans une Radio aux vraies pistes. */
+async function bismillah(seed = 1, failed = []) {
+  const s = setup({ list: real, random: seeded(seed) });
+  await s.on();
+  for (const id of failed) s.radio.failed.add(id);
+  s.radio.play('bismillah', bundle.niveaux.bismillah.musique);
+  return s;
+}
+
+test('Bismillah : Gen Z, puis « j’ai 2 passions<3 », puis Sexy Nana, puis le sac', async () => {
+  for (let seed = 1; seed <= 20; seed++) {
+    const s = await bismillah(seed);
+    const heard = [];
+    for (let i = 0; i < 4; i++) {
+      heard.push(s.radio.current.id);
+      assert.equal(s.lastUrl(), s.radio.current.url);
+      s.ready();
+      s.playing();
+      s.emit('FINISH');
+    }
+    assert.deepEqual(heard.slice(0, 3), BISMILLAH, `graine ${seed}`);
+    assert.ok(!BISMILLAH.includes(heard[3]), `puis le sac, sans revenir à la liste : ${heard[3]}`);
+    assert.ok(['jeu', 'partout', 'bismillah'].includes(bundle.musiques[heard[3]].ou), heard[3]);
+  }
+});
+
+test('l’enchaînement : ⏭ passe à la suivante de la liste ; une piste qui ne joue pas aussi', async () => {
+  const s = await bismillah();
+  s.ready();
+  s.playing();
+  s.radio.next();
+  assert.equal(s.radio.current.id, 'deux-passions-gochism');
+  s.ready();
+  s.playing();
+  s.radio.next();
+  assert.equal(s.radio.current.id, 'aya-sexy-nana-remix');
+  s.ready();
+  s.playing();
+  s.radio.next();
+  assert.ok(!BISMILLAH.includes(s.radio.current.id), 'liste épuisée : le sac');
+
+  const f = await bismillah();
+  f.ready();
+  f.playing();
+  f.emit('FINISH');
+  assert.equal(f.radio.current.id, 'deux-passions-gochism');
+  f.emit('ERROR'); // elle ne joue pas : la suivante de la liste
+  assert.equal(f.radio.current.id, 'aya-sexy-nana-remix');
+
+  const g = await bismillah(1, ['gen-z-nodey-remix']); // la première a déjà échoué : la deuxième ouvre la visite
+  assert.equal(g.radio.current.id, 'deux-passions-gochism');
+  g.ready();
+  g.playing();
+  g.emit('FINISH');
+  assert.equal(g.radio.current.id, 'aya-sexy-nana-remix');
+});
+
+test('l’enchaînement : « Recommencer » garde la piste en cours et la suite ; une nouvelle entrée reprend au début', async () => {
+  const s = await bismillah();
+  s.ready();
+  s.playing();
+  s.emit('FINISH');
+  assert.equal(s.radio.current.id, 'deux-passions-gochism');
+  s.ready();
+  s.playing();
+  const loads = s.widget.loads.length;
+  s.radio.play('bismillah', bundle.niveaux.bismillah.musique, { restart: true }); // « Recommencer »
+  assert.equal(s.widget.loads.length, loads, 'la musique continue');
+  s.radio.play('boss', 'abattez-la-citadelle'); // mort au boss…
+  s.ready();
+  s.playing();
+  s.radio.play('bismillah', bundle.niveaux.bismillah.musique, { restart: true }); // … « Recommencer »
+  assert.equal(s.radio.current.id, 'deux-passions-gochism', 'la piste de la visite revient');
+  s.ready();
+  s.playing();
+  s.emit('FINISH');
+  assert.equal(s.radio.current.id, 'aya-sexy-nana-remix', 'puis la suite de la liste');
+  s.ready();
+  s.playing();
+  s.radio.play('boss', 'abattez-la-citadelle');
+  s.ready();
+  s.playing();
+  s.radio.play('bismillah', bundle.niveaux.bismillah.musique); // « Rejouer » : une nouvelle entrée
+  assert.equal(s.radio.current.id, 'gen-z-nodey-remix');
+  s.ready();
+  s.playing();
+  s.emit('FINISH');
+  assert.equal(s.radio.current.id, 'deux-passions-gochism');
+});
+
+test('une seule piste nommée : comme avant, le sac vient après elle, qu’elle soit en liste ou en chaîne', async () => {
+  const s = setup({ list: real, random: seeded(3) });
+  await s.on();
+  s.radio.play('rond-point', bundle.niveaux['rond-point'].musique);
+  assert.equal(s.radio.current.id, 'hey-hey-macron');
+  s.ready();
+  s.playing();
+  s.emit('FINISH');
+  assert.notEqual(s.radio.current.id, 'hey-hey-macron');
+  const n = setup({ random: () => 0 });
+  await n.on();
+  n.radio.play('rond-point', 'jeu-b');
+  assert.equal(n.radio.current.id, 'jeu-b');
+  n.ready();
+  n.playing();
+  n.emit('FINISH');
+  assert.equal(n.radio.current.id, 'jeu-a');
 });
