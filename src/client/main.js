@@ -77,18 +77,6 @@ radio.onAsk = () => {
   applyOptions();
 };
 
-/**
- * La réponse à « Radio Manif ? » : retenue. « Oui » charge le lecteur et lance la musique : dans Chromium, ce toucher
- * suffit ; dans Safari, la lecture attend le toucher suivant (« ▶ Relancer la musique », ou n'importe où).
- */
-function answerMusic(yes) {
-  save.options.musique = yes;
-  save.options.musiqueChoisie = true;
-  storeSave(save);
-  applyOptions();
-  screens.menu();
-}
-
 function applyOptions() {
   audio.enabled = save.options.son;
   renderer.reduced = save.options.sobre;
@@ -112,7 +100,6 @@ const screens = new Screens(screenRoot, {
     edit: () => backToEdit(),
     testing: () => Boolean(custom),
     options: () => applyOptions(),
-    music: (yes) => answerMusic(yes),
     radio: () => radio.controls(),
     learn: (ids) => ids.forEach((id) => collect('fiches', id, true)),
     back: () => (mode === 'paused' ? screens.pause() : screens.menu()),
@@ -463,8 +450,11 @@ addEventListener('pointerdown', () => audio.unlock(), true);
 // Une musique que le navigateur a refusé de lancer sans geste repart au prochain toucher, clic ou touche.
 // Juste après le geste, pas pendant : si ce geste lance un niveau, la piste du niveau passe d'abord.
 // (Un dixième de seconde : le geste compte encore pour le navigateur.)
-const unblockRadio = () => setTimeout(() => radio.unblock(), 100);
+// Un geste sur ⏸/▶ ou ⏭ est le leur : ils décident eux-mêmes (▶ lance, ⏸ coupe).
+const onRadio = (e) => Boolean(e.target?.closest?.('.radio-bouton'));
+const unblockRadio = (e) => onRadio(e) || setTimeout(() => radio.unblock(), 100);
 addEventListener('pointerup', unblockRadio, true);
+addEventListener('touchend', (e) => onRadio(e) || radio.unblock(), true); // Safari sur iPhone : la fin du toucher, aussitôt
 addEventListener('keydown', unblockRadio, true);
 // N, dans le menu de pause : la piste suivante de Radio Manif, comme son bouton ⏭.
 addEventListener('keydown', (e) => {

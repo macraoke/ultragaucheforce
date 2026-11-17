@@ -1,5 +1,5 @@
-// Garde-fous relevés en relecture : des identifiants piégés, des liens douteux, et la
-// musique qui ne doit rien charger tant que le joueur ne l'a pas demandée.
+// Garde-fous relevés en relecture : des identifiants piégés, des liens douteux, et la musique de la
+// première visite.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -25,6 +25,7 @@ test('la source d’un bruitage est une adresse https, rien d’autre', () => {
   assert.ok(errors.some((e) => e.file === 'content/sons/saut.txt' && e.message.includes('https://')));
 });
 
-test('première visite : la musique est coupée, donc aucun lecteur externe n’est chargé', () => {
-  assert.equal(loadSave().options.musique, false);
+test('première visite : la musique est activée, le lecteur se charge d’office', () => {
+  // Valentin, 17 novembre 2026 : « auto play by default ».
+  assert.equal(loadSave().options.musique, true);
 });
