@@ -242,10 +242,10 @@ export class Screens {
     // Un héros déjà rencontré se joue depuis sa carte ; pas en pleine partie, où ce serait l'abandonner.
     const actionsFor = (card) => (card.kind === 'heros' && !this.go.playing() ? [this.button('Jouer avec', () => this.playAs(card.item.id), 'gros')] : []);
     let shown = null;
-    // Valentin, 17 novembre 2026 : « déplace le bouton Retour à gauche du Titre "Collection" et comme un bouton Primary ».
+    // Valentin, 17 novembre 2026 : « passe le bouton retour à droite du titre "Collection: finalement ." » (après « à gauche du titre », même jour).
     this.show('biblio',
-      this.button('← Retour', leave, 'retour'),
       h('h2', {}, 'Collection ', h('small', {}, `${all.found} / ${all.total}`)),
+      this.button('← Retour', leave, 'retour'),
       progress(all.found, all.total),
       h('div', { className: 'onglets' }, SHELVES.map((shelf) => {
         const { found, total } = collectionCount(bundle, save, shelf.id);

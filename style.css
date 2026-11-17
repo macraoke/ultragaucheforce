@@ -829,15 +829,15 @@ article.carte.cachee h3 { letter-spacing: .2em; }
 .panneau.biblio {
   height: min(100%, 800px);
   display: grid;
-  grid-template-columns: auto auto minmax(0, 1fr);
+  grid-template-columns: auto minmax(0, 1fr) auto;
   grid-template-rows: auto auto auto auto minmax(0, 1fr);
   column-gap: 12px;
   overflow: hidden;
 }
 .biblio > * { grid-column: 1 / -1; }
-/* « Retour », bouton principal, à gauche du titre et sur sa ligne. */
-.biblio > .retour { grid-column: 1; align-self: center; margin: 0 0 .5em; }
-.biblio > h2 { grid-column: 2 / -1; align-self: center; }
+/* « Retour », bouton principal, à droite du titre et sur sa ligne. */
+.biblio > .retour { grid-column: 3; grid-row: 1; justify-self: end; align-self: center; margin: 0 0 .5em; }
+.biblio > h2 { grid-column: 1 / 3; grid-row: 1; align-self: center; min-width: 0; }
 .biblio > .jauge { height: 10px; margin: -.3em 0 .9em; }
 .biblio > .onglets { margin: 0 0 10px; }
 /* La rangée des filtres a toujours la hauteur d'un filtre, que le rayon ait des raretés ou non : la grille ne saute pas. */
@@ -849,13 +849,13 @@ article.carte.cachee h3 { letter-spacing: .2em; }
 .biblio.serre > h2, .biblio.serre > .jauge { display: none; }
 /* Le titre replié, « Retour » descend sur la rangée des filtres, à leur gauche. */
 .biblio.serre > .onglets { grid-row: 1; }
-.biblio.serre > .retour { grid-row: 2; margin: 0 0 2px; }
+.biblio.serre > .retour { grid-row: 2; grid-column: 1; justify-self: start; margin: 0 0 2px; }
 .biblio.serre > .barre { grid-row: 2; grid-column: 2 / -1; }
 :is(html, html.bas) .panneau.biblio.serre > :is(.onglets, .barre) { margin-bottom: 2px; }
 /* Plus bas encore : tout le panneau défile, les rayons restent collés en haut. Au repos, rien ne bouge d'un rayon à l'autre. */
 .panneau.biblio.tout-defile { display: flex; flex-flow: row wrap; align-content: flex-start; align-items: center; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; scroll-padding-bottom: 8px; }
 .biblio.tout-defile > * { flex: 1 0 100%; }
-.biblio.tout-defile > .retour { flex: 0 0 auto; margin-right: 12px; }
+.biblio.tout-defile > .retour { flex: 0 0 auto; margin-left: 12px; }
 .biblio.tout-defile > h2 { flex: 1 1 0; }
 /* Collés tout en haut, marge du panneau comprise : aucune carte ne passe au-dessus d'eux. */
 .biblio.tout-defile > .onglets { position: sticky; top: -6px; z-index: 1; background: var(--nuit); box-shadow: 0 4px 0 var(--nuit); }
@@ -949,8 +949,8 @@ html.bas .carte-ouverte article.carte.niveaux > .vignette { float: none; width: 
  */
 html.bas .panneau.biblio { padding-block: 6px; grid-template-rows: auto auto auto minmax(0, 1fr); column-gap: 12px; }
 html.bas .biblio > .retour { font-size: .85rem; padding: .4em .75em; margin: 0 0 4px; }
-html.bas .biblio h2 { grid-column: 2; font-size: 1.3rem; margin: 0 0 4px; }
-html.bas .biblio > .jauge { grid-column: 3; align-self: center; height: 6px; margin: 0 0 4px; }
+html.bas .biblio h2 { grid-column: 1; grid-row: 1; font-size: 1.3rem; margin: 0 0 4px; }
+html.bas .biblio > .jauge { grid-column: 2; grid-row: 1; align-self: center; height: 6px; margin: 0 0 4px; }
 html.bas .biblio.tout-defile > h2 { flex: 0 0 auto; margin-right: 12px; }
 html.bas .biblio.tout-defile > .jauge { flex: 1 1 0; }
 html.bas .biblio .onglets { gap: 4px 6px; margin: 0 0 4px; }
