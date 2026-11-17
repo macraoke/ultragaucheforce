@@ -719,16 +719,6 @@ html.bas .atelier .liens a.bouton { padding: .42em .6em; }
 body.tactile .atelier input[type='text'], body.tactile .atelier select, body.tactile .atelier textarea { font-size: 16px; }
 
 /* Premier lancement : « Radio Manif ? », à la place du panneau de la radio, tant que le joueur n'a pas répondu. */
-.menu .question-radio { position: fixed; z-index: 1; right: max(10px, env(safe-area-inset-right)); bottom: max(10px, env(safe-area-inset-bottom)); width: min(320px, calc(100vw - 20px)); display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; background: var(--nuit); border: 3px solid var(--blanc); box-shadow: 4px 4px 0 var(--rouge); padding: 8px 10px; text-align: left; }
-.question-radio b { flex: 1; font: 900 1rem/1 var(--titre); text-transform: uppercase; letter-spacing: .05em; color: var(--or); white-space: nowrap; }
-.question-radio button { font-size: .85rem; padding: .45em .8em; }
-.question-radio small { flex-basis: 100%; font-size: .68rem; opacity: .85; }
-body:has(#ecran .question-radio) #radio { display: none; }
-html.bas .menu .question-radio { width: 240px; gap: 4px 6px; padding: 5px 7px; border-width: 2px; box-shadow: 3px 3px 0 var(--rouge); }
-html.bas .question-radio b { font-size: .85rem; }
-html.bas .question-radio button { font-size: .75rem; padding: .4em .65em; }
-html.bas .question-radio small { font-size: .62rem; }
-html.bas.pivote .menu .question-radio { right: max(10px, env(safe-area-inset-bottom)); bottom: max(10px, env(safe-area-inset-left)); }
 
 /* Radio Manif */
 #radio { position: fixed; right: max(10px, env(safe-area-inset-right)); bottom: max(10px, env(safe-area-inset-bottom)); z-index: 30; width: min(320px, calc(100vw - 20px)); background: var(--nuit); border: 3px solid var(--blanc); box-shadow: 4px 4px 0 var(--rouge); padding: 6px 8px; font-size: .72rem; }
@@ -738,29 +728,29 @@ html.bas.pivote .menu .question-radio { right: max(10px, env(safe-area-inset-bot
 #radio strong { font: 900 .85rem/1 var(--titre); text-transform: uppercase; letter-spacing: .05em; color: var(--or); }
 #radio iframe { display: block; width: 100%; height: 76px; border: 0; margin: 4px 0; }
 #radio p { margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-/* ⏭ : la piste suivante, au bout de la ligne du titre (au menu), et à droite de « Pause ». */
+/* ⏸ et ⏭ : la pause et la piste suivante, au bout de la ligne du titre (au menu), et à droite de « Pause ». */
 #radio .piste { display: flex; align-items: center; gap: 8px; }
 #radio .piste p { flex: 1; min-width: 0; }
-.suivante { flex: none; font-size: .8rem; line-height: 1; padding: .3em .55em; box-shadow: 3px 3px 0 var(--rouge); }
-.suivante[hidden] { display: none; }
-html.bas #radio .suivante { font-size: .7rem; padding: .2em .45em; border-width: 2px; box-shadow: 2px 2px 0 var(--rouge); }
-body.tactile #radio .suivante { min-width: 36px; min-height: 26px; }
+.radio-bouton { flex: none; font-size: .8rem; line-height: 1; padding: .3em .55em; box-shadow: 3px 3px 0 var(--rouge); }
+.radio-bouton[hidden] { display: none; }
+html.bas #radio .radio-bouton { font-size: .7rem; padding: .2em .45em; border-width: 2px; box-shadow: 2px 2px 0 var(--rouge); }
+body.tactile #radio .radio-bouton { min-width: 36px; min-height: 26px; }
 /* Au doigt, ⏭ se touche sur 44×44 px au moins sans grandir à l'écran : une zone transparente qui part juste sous
    le lecteur (3 px au-dessus du bouton) et descend vers le bord de l'écran ; en pause, vers la ligne des touches. */
-body.tactile .suivante { position: relative; }
-body.tactile .suivante::after { content: ''; position: absolute; top: -5px; left: 50%; width: max(100% + 6px, 44px); height: max(100% + 10px, 44px); transform: translateX(-50%); }
+body.tactile .radio-bouton { position: relative; }
+body.tactile .radio-bouton::after { content: ''; position: absolute; top: -5px; left: 50%; width: max(100% + 6px, 44px); height: max(100% + 10px, 44px); transform: translateX(-50%); }
 .pause > .entete { display: flex; align-items: center; gap: 12px; min-width: 0; }
 .pause > .entete h2 { flex: none; margin: 0; }
 .radio-pause { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: flex-end; gap: 8px; font-size: .8rem; }
 .radio-pause[hidden] { display: none; }
 .radio-pause .note { color: var(--or); }
 .radio-pause .titre { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; opacity: .85; }
-.radio-pause .suivante { font-size: 1rem; }
-body.tactile .radio-pause .suivante { min-width: 44px; min-height: 36px; }
+.radio-pause .radio-bouton { font-size: 1rem; }
+body.tactile .radio-pause .radio-bouton { min-width: 44px; min-height: 36px; }
 /* Écran bas (téléphone couché) : ⏭ pas plus haut que « Pause », la pause tient sans défiler ; au doigt, sa zone
    transparente garde ses 44×44 px. */
-html.bas .radio-pause .suivante { font-size: .8rem; padding: .15em .5em; border-width: 2px; box-shadow: 2px 2px 0 var(--rouge); }
-html.bas body.tactile .radio-pause .suivante { min-width: 36px; min-height: 0; }
+html.bas .radio-pause .radio-bouton { font-size: .8rem; padding: .15em .5em; border-width: 2px; box-shadow: 2px 2px 0 var(--rouge); }
+html.bas body.tactile .radio-pause .radio-bouton { min-width: 36px; min-height: 0; }
 body.tactile .radio-pause kbd { display: none; }
 /* Téléphone couché : le lecteur de SoundCloud en une ligne (son « mini » lecteur), sous les boutons du menu. */
 html.bas #radio strong { display: none; }

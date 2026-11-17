@@ -932,27 +932,31 @@ test('un nouveau tour ne commence ni par la dernière piste entendue, ni par la 
 // ---------------------------------------------------------------------- « Suivant »
 // Valentin, 17 novembre 2026 : « autorise à faire suivant dans la radio manif, par exemple depuis le menu de pause ».
 
-test('« Suivant » en niveau : la suivante du sac, ni celle en cours ni une déjà entendue ; la piste passée compte', async () => {
+test('« Suivant » en niveau : au hasard parmi les pistes du niveau, jamais celle en cours', async () => {
+  // Valentin, 17 novembre 2026 : « Keep that and randomize the "Next" button ».
   const jeu = real.filter((t) => t.ou === 'jeu').map((t) => t.id);
-  for (let seed = 1; seed <= 30; seed++) {
-    const s = setup({ list: real, random: seeded(seed) });
-    await s.on();
-    s.radio.play('rond-point');
-    const heard = [s.radio.current.id];
+  const s = setup({ list: real, random: seeded(5) });
+  await s.on();
+  s.radio.play('rond-point');
+  s.ready();
+  s.playing();
+  const drawn = new Map();
+  let repeats = 0;
+  const seen = new Set([s.radio.current.id]);
+  for (let i = 0; i < 600; i++) {
+    const before = s.radio.current;
+    s.radio.next();
+    assert.notEqual(s.radio.current, before, 'jamais la piste en cours');
+    assert.ok(jeu.includes(s.radio.current.id), s.radio.current.id);
+    if (i < jeu.length && seen.has(s.radio.current.id)) repeats++; // un sac n'en redonnerait aucune avant la fin du tour
+    seen.add(s.radio.current.id);
+    drawn.set(s.radio.current.id, (drawn.get(s.radio.current.id) || 0) + 1);
     s.ready();
     s.playing();
-    while (heard.length < jeu.length) {
-      const before = s.radio.current;
-      s.radio.next();
-      assert.notEqual(s.radio.current, before);
-      heard.push(s.radio.current.id);
-      s.ready();
-      if (heard.length % 3) s.playing(); // une sur trois est passée avant d'avoir joué : elle compte quand même
-    }
-    assert.equal(new Set(heard).size, jeu.length, `graine ${seed} : un tour entier sans doublon (${heard.join(', ')})`);
-    s.radio.next(); // le tour suivant ne commence pas par la piste qu'on vient de passer
-    assert.notEqual(s.radio.current.id, heard.at(-1));
   }
+  assert.equal(drawn.size, jeu.length, 'toutes les pistes du niveau sortent');
+  assert.ok(repeats > 0, 'un vrai tirage au hasard, pas le sac');
+  for (const id of jeu) assert.ok(drawn.get(id) > 600 / jeu.length / 3, `${id} : ${drawn.get(id)}`);
 });
 
 test('« Suivant » au boss et au menu : un autre tirage ; passer Monarch saute Ryukken', async () => {
@@ -1025,8 +1029,10 @@ test('« Suivant » pendant un chargement : pas de second chargement, la piste d
   const s = setup({ list: [...tracks, T('jeu-c', 'jeu')] });
   await s.on();
   s.radio.play('rond-point'); // « jeu-a », en chargement
+  s.radio.next(); // « jeu-b »
+  s.radio.next(); // trois appuis rapides : « jeu-a » ou « jeu-c », jamais « jeu-b »
+  s.radio.env.random = () => 0.99;
   s.radio.next();
-  s.radio.next(); // trois appuis rapides
   assert.equal(s.radio.current.id, 'jeu-c');
   assert.equal(s.widget.loads.length, 1, 'pas de load() avant le rappel du premier');
   s.ready();
@@ -1066,6 +1072,126 @@ test('« Suivant », musique coupée ou refusée : le bouton est masqué et rien
   p.radio.next();
   assert.equal(p.radio.status, 'loading');
   assert.equal(p.radio.current.id, 'menu-b');
+});
+
+// ---------------------------------------------------------------------- lecture automatique et ⏸
+// Valentin, 17 novembre 2026 : « En arrivant sur le jeu il faut que je clique "Relancer la musique" alors que
+// j'aimerais bien que ce soit auto play by default […] Left to the "Next" button, add a Pause button ».
+
+test('lecture automatique : refusée faute de geste, pas de « Relancer » à toucher ; le premier geste, n’importe où, la lance', async () => {
+  const s = setup({ activated: false });
+  s.radio.setEnabled(true); // dès le chargement
+  await s.flush();
+  s.advance(START_TIMEOUT); // le navigateur n'a rien lancé
+  assert.equal(s.radio.status, 'blocked');
+  assert.equal(s.shown.waiting, true, 'en attente du premier geste : pas de bouton « Relancer »');
+  assert.equal(s.shown.pause, true, '⏸ est déjà là, pour l’empêcher de partir');
+  s.activated = true; // un toucher, un clic ou une touche, ailleurs que sur la radio
+  s.radio.unblock();
+  assert.equal(s.widget.plays, 1);
+  s.playing();
+  assert.equal(s.radio.status, 'playing');
+  // Refusée encore après un geste (Safari, à chaque nouvelle piste) : le geste suivant la lance aussi.
+  s.radio.play('rond-point');
+  s.ready();
+  s.emit('PAUSE');
+  s.emit('PAUSE');
+  assert.equal(s.radio.status, 'blocked');
+  assert.equal(s.shown.waiting, false);
+  s.radio.unblock();
+  assert.equal(s.widget.plays, 3);
+});
+
+test('le premier geste pendant un chargement passe au lecteur', async () => {
+  const s = setup({ activated: false });
+  await s.on();
+  s.radio.play('rond-point');
+  s.ready(); // chargée, pas encore partie
+  const plays = s.widget.plays;
+  s.activated = true;
+  s.radio.unblock();
+  assert.equal(s.widget.plays, plays + 1);
+});
+
+test('⏸ tient : ni un niveau, ni le boss, ni « Recommencer », ni le menu ne relancent la musique ; ▶ la remet', async () => {
+  const list = [...tracks, T('propre-a', 'rond-point')];
+  const s = setup({ list });
+  await s.on();
+  s.radio.play('rond-point');
+  s.ready();
+  s.playing();
+  assert.equal(s.shown.held, false);
+  s.radio.togglePause();
+  assert.equal(s.radio.status, 'paused');
+  assert.equal(s.shown.held, true);
+  const loads = s.widget.loads.length;
+  const plays = s.widget.plays;
+  s.radio.play('boss');
+  s.radio.play('rond-point', null, { restart: true });
+  s.radio.play('raffinerie');
+  s.radio.play('menu');
+  s.radio.unblock(); // des gestes, en jouant
+  s.radio.setHidden(true);
+  s.radio.setHidden(false);
+  s.advance(LOAD_TIMEOUT * 2);
+  assert.equal(s.widget.loads.length, loads, 'aucune piste chargée');
+  assert.equal(s.widget.plays, plays, 'rien relancé');
+  assert.equal(s.radio.status, 'paused');
+  s.radio.togglePause(); // ▶ : la musique du moment (le menu), sa piste par défaut
+  assert.equal(s.radio.current.id, 'menu-a');
+  assert.equal(s.radio.status, 'loading');
+  s.ready();
+  s.playing();
+  assert.equal(s.radio.status, 'playing');
+  // ⏸ puis ▶ au même moment : la même piste reprend, sans recharger.
+  s.radio.togglePause();
+  const again = s.widget.loads.length;
+  s.radio.togglePause();
+  assert.equal(s.widget.loads.length, again);
+  assert.equal(s.radio.current.id, 'menu-a');
+  // Après ⏸ au menu, l'entrée dans un niveau garde sa piste à lui quand on remet la musique.
+  s.playing();
+  s.radio.togglePause();
+  s.radio.play('rond-point');
+  s.radio.togglePause();
+  assert.equal(s.radio.current.id, 'propre-a');
+});
+
+test('⏸ pendant un chargement : la piste chargée ne part pas ; avant le premier geste, ⏸ l’empêche de partir', async () => {
+  const s = setup();
+  await s.on();
+  s.radio.play('rond-point');
+  s.radio.togglePause();
+  const pauses = s.widget.pauses;
+  s.ready();
+  assert.equal(s.widget.pauses, pauses + 1);
+  assert.equal(s.radio.status, 'paused');
+  const b = setup({ activated: false });
+  b.radio.setEnabled(true);
+  await b.flush();
+  b.advance(START_TIMEOUT);
+  assert.equal(b.radio.status, 'blocked');
+  b.radio.togglePause(); // le premier geste : ⏸
+  b.activated = true;
+  b.radio.unblock(); // le même geste, vu par main.js
+  assert.equal(b.widget.plays, 0);
+  assert.equal(b.radio.status, 'paused');
+});
+
+test('⏭ en pause : la suivante joue ; couper puis remettre la musique dans les options lève la pause', async () => {
+  const s = setup();
+  await s.on();
+  s.radio.togglePause();
+  s.radio.next();
+  assert.equal(s.radio.held, false);
+  assert.equal(s.radio.status, 'loading');
+  s.ready();
+  s.playing();
+  s.radio.togglePause();
+  s.radio.setEnabled(false);
+  s.radio.setEnabled(true);
+  assert.equal(s.radio.held, false);
+  assert.notEqual(s.radio.status, 'paused');
 });
 
 test('« Gabber au boss, Internationale en niveau »', () => {

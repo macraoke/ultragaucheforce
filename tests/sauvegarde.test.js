@@ -25,8 +25,11 @@ test('une sauvegarde ancienne remonte à la version d’aujourd’hui sans rien 
     assert.ok(save.decouvertes.length >= stored.decouvertes.length, `${name} : découvertes`);
     const lost = save.decouvertes.filter((k) => !keys.has(k));
     assert.deepEqual(lost, [], `${name} : ces déblocages ne mènent plus à aucune carte. Texte corrigé ? Ajoute « | était: l’ancien texte » au bout de la ligne`);
-    // `musiqueChoisie` (version 2) : qui avait mis la musique l'a choisie ; les autres auront la question une fois.
-    assert.deepEqual(save.options, { son: true, musique: false, sobre: false, musiqueChoisie: stored.options?.musique === true, ...stored.options }, name);
+    // `musiqueChoisie` (version 2) : qui avait mis la musique l'a choisie. Version 3 : qui n'avait jamais choisi
+    // a désormais la musique, d'office ; un choix fait est gardé.
+    const chosen = stored.options?.musiqueChoisie ?? stored.options?.musique === true;
+    const music = chosen ? stored.options.musique === true : true;
+    assert.deepEqual(save.options, { son: true, sobre: false, ...stored.options, musique: music, musiqueChoisie: chosen }, name);
   }
 });
 
