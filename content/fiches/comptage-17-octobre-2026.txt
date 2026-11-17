@@ -1,0 +1,9 @@
+titre: 17 octobre 2026, deux comptages
+theme: ordre
+texte: Samedi 17 octobre 2026, lycéens, étudiants et syndicalistes manifestent partout en France contre la vie chère : 550 000 manifestants, dont 110 000 à Paris, selon le ministère de l'Intérieur ; quelque 800 000 selon les organisateurs. À Mayotte, personnels, enseignants et parents d'élèves bloquaient déjà le lycée du Nord d'Acoua depuis le 31 août.
+portee: Chiffres rapportés par ICI (France Bleu) le 17 octobre 2026 : « 550.000 personnes ont manifesté en France dont 110.000 à Paris, selon les chiffres de Laurent Nuñez » ; « quelque 800.000 personnes ont participé aux actions et défilés partout en France samedi », selon les organisateurs. La CGT avait d'abord avancé plus de 500 000 manifestants à 17 heures avant de s'aligner sur 800 000. Mayotte : Mayotte Hebdo, 9 septembre 2026, parle du blocage du lycée du Nord d'Acoua depuis le 31 août (https://www.mayottehebdo.com/actualite/education/au-lycee-du-nord-la-visite-de-la-rectrice-ne-met-pas-fin-a-la-crise/).
+periode: 17 octobre 2026, avec le blocage du lycée du Nord à Acoua depuis le 31 août 2026
+source.titre: ICI — Mobilisation du 17 octobre : 550.000 manifestants selon le gouvernement, des violences « d'une gravité inouïe »
+source.url: https://www.ici.fr/infos/societe/direct-mobilisation-du-17-octobre-150000-personnes-attendues-dans-les-rues-ce-samedi-hors-agglomeration-parisienne-4822424
+source.nature: presse
+verifie: 2026-11-17

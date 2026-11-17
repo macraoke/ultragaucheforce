@@ -1,8 +1,9 @@
 titre: Bismillah, c'est les ténèbres
 auteur: UltraGauche Force
-accroche: Paris, en manif, jusqu'à la Citadelle.
+accroche: D'un lycée bloqué à Mayotte à 800 000 manifestants, selon les organisateurs, le 17 octobre dans toute la France.
 citation: bardella-guerre-civile
 fiche: comptage-31-janvier-2023
+fiche: comptage-17-octobre-2026
 fiche: bismillah-meme
 fond: ville
 cortege: oui
