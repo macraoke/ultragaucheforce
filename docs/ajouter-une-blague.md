@@ -68,7 +68,7 @@ LE SLOGAN TEL QU'IL EST SCANDÉ | scandé à Paris, sept. 2025 — https://adres
 
 - En majuscules, mot pour mot, comme la source le rapporte.
 - « vue à … » pour une pancarte, « scandé à … » pour un slogan : la ville, le mois, l'année.
-- La source : un article ou un reportage que vous avez lu. Pas une image qui circule.
+- La source : un article ou un reportage que vous avez lu. Une image qui circule suffit pour proposer : donnez son lien.
 
 Une recrue peut la reprendre : clé `slogan` de [sa fiche](ajouter-un-personnage.md#une-recrue).
 
