@@ -1,5 +1,5 @@
 nom: Drapeau du Soudan
-description: Au Darfour, les crimes des FSR à El Fasher « présentent les caractéristiques d'un génocide », selon la mission d'enquête de l'ONU.
+description: Les crimes des FSR à El Fasher « présentent les caractéristiques d'un génocide », selon la mission d'enquête de l'ONU.
 auteur: UltraGauche Force
 ressource.1.titre: Soudan : « El Obeid ne doit pas devenir la prochaine scène de crime » — ONU Info
 ressource.1.url: https://news.un.org/fr/story/2026/07/1159122

@@ -1,5 +1,5 @@
 nom: Drapeau rohingya
-description: Pour une mission de l'ONU (2018), l'armée birmane doit répondre de génocide ; la Gambie a saisi la Cour internationale de justice.
+description: Pour une mission de l'ONU (2018), les chefs de l'armée birmane doivent répondre d'accusations de génocide ; la CIJ, saisie par la Gambie, rend son arrêt le 19 novembre 2026.
 auteur: UltraGauche Force
 ressource.1.titre: Myanmar : les dirigeants de l'armée doivent répondre du chef d'accusation de génocide — ONU Info
 ressource.1.url: https://news.un.org/fr/story/2018/08/1022072

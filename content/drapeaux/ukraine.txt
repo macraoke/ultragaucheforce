@@ -4,7 +4,7 @@ auteur: UltraGauche Force
 ressource.1.titre: L'ONU exige le départ des forces russes d'Ukraine — Nations unies (UNRIC)
 ressource.1.url: https://unric.org/fr/lonu-exige-le-depart-des-forces-russes-dukraine/
 ressource.1.nature: officielle
-ressource.2.titre: Enfants ukrainiens transférés en Russie : crimes contre l'humanité et crimes de guerre, selon la commission d'enquête — ONU Info
+ressource.2.titre: Enfants ukrainiens transférés en Russie : le témoignage d'une mère et les preuves d'un crime de guerre — ONU Info
 ressource.2.url: https://news.un.org/fr/story/2026/03/1158544
 ressource.2.nature: officielle
 ressource.3.titre: Poutine, l'Ukraine et après ? — Le Dessous des cartes, ARTE (vidéo, 25 min)
