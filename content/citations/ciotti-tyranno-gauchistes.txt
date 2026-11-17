@@ -7,5 +7,5 @@ mot: TYRANNO-GAUCHISTES
 note: Le héros Le TyrannoGauchiste lui doit son nom.
 source.titre: X — Éric Ciotti (@eciotti), 3 novembre 2026
 source.url: https://x.com/eciotti/status/2117691180028932335
-source.nature: officielle
+source.nature: militante
 verifie: 2026-11-16
