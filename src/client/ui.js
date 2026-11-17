@@ -169,7 +169,9 @@ export class Screens {
   // ------------------------------------------------------------------ menu
 
   menu() {
-    const heroes = Object.values(this.bundle.heros).filter((x) => x.statut === 'jouable');
+    // Cinq héros tirés au hasard à chaque affichage de l'accueil (tous s'il y en a moins de cinq).
+    const heroes = Object.values(this.bundle.heros).filter((x) => x.statut === 'jouable')
+      .map((x) => [Math.random(), x]).sort((a, b) => a[0] - b[0]).slice(0, 5).map(([, x]) => x);
     this.show('menu',
       h('div', { className: 'logo' }, h('span', {}, 'UltraGauche'), h('span', {}, 'Force')),
       h('p', { className: 'devise' }, 'Taxez les riches. Abattez la Citadelle.'),
