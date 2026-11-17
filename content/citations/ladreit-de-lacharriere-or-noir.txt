@@ -1,0 +1,11 @@
+texte: L'or noir de ce métier, ce sont les data, c'est-à-dire les données des centaines de millions de visiteurs et d'abonnés à travers le monde que les annonceurs convoitent.
+auteur: Marc Ladreit de Lacharrière
+fonction: PDG de Fimalac et de Webedia
+date: 2019-05-05
+contexte: Entretien au Journal du Dimanche, sur l'avenir de Webedia.
+categorie: puissants
+note: Entretien repris en entier sur le blog de son groupe.
+source.titre: Le blog de Fimalac — Interview de Marc Ladreit de Lacharrière dans le Journal du Dimanche (propos recueillis par Renaud Revel)
+source.url: https://blog.fimalac.com/2019/05/interview-de-marc-ladreit-de-lacharriere-dans-le-jdd.html
+source.nature: presse
+verifie: 2026-11-17

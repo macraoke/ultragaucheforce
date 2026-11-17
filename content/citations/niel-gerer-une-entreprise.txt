@@ -1,0 +1,11 @@
+texte: Je ne sais pas faire des journaux mais je sais gérer une entreprise.
+auteur: Xavier Niel
+fonction: fondateur et actionnaire du groupe Iliad
+date: 2022-02-18
+contexte: Sous serment devant la commission d'enquête du Sénat sur la concentration des médias, quand on lui demande pourquoi il ne laisse pas tout le contrôle du Monde à ses journalistes.
+categorie: puissants
+note: Compte rendu rédigé du Sénat, pas le mot à mot de la vidéo. Il parle sous serment. Juste avant : « les gens qui gèrent les entreprises ne sont pas ceux qui savent faire des journaux ».
+source.titre: Sénat — CE Concentration dans les médias : compte rendu de la semaine du 14 février 2022 (audition de Xavier Niel, 18 février 2022)
+source.url: https://www.senat.fr/compte-rendu-commissions/20220214/ce_medias.html
+source.nature: officielle
+verifie: 2026-11-17

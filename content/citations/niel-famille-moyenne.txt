@@ -1,0 +1,11 @@
+texte: Je suis originaire d'une ville qui s'appelle Créteil, en banlieue parisienne. Je viens d'une famille moyenne française.
+auteur: Xavier Niel
+fonction: fondateur et actionnaire du groupe Iliad
+date: 2022-02-18
+contexte: Début de son audition sous serment devant la commission d'enquête du Sénat sur la concentration des médias.
+categorie: puissants
+note: Compte rendu rédigé du Sénat, pas le mot à mot de la vidéo. Il parle sous serment. Challenges estime sa fortune professionnelle et celle de sa famille à 30,1 milliards d'euros en 2026.
+source.titre: Sénat — CE Concentration dans les médias : compte rendu de la semaine du 14 février 2022 (audition de Xavier Niel, 18 février 2022)
+source.url: https://www.senat.fr/compte-rendu-commissions/20220214/ce_medias.html
+source.nature: officielle
+verifie: 2026-11-17

@@ -1,0 +1,12 @@
+texte: J'ai racheté Libération au moment où cette entreprise avait besoin de 14 millions d'euros pour ne pas se déclarer en faillite auprès du tribunal de commerce. J'étais en train de faire un chèque de 14 milliards.
+auteur: Patrick Drahi
+fonction: fondateur et propriétaire d'Altice
+date: 2022-02-02
+contexte: Sous serment devant la commission d'enquête du Sénat sur la concentration des médias. Les 14 milliards sont ceux du rachat de SFR, en 2014.
+categorie: puissants
+mot: CHÈQUE DE 14 MILLIARDS
+note: Compte rendu rédigé du Sénat, pas le mot à mot de la vidéo. Il parle sous serment. Il raconte la suite : une journaliste de Libération lui demande « Vous allez dépenser 14 milliards. Nous avons besoin de 14 millions pour finir le trimestre. »
+source.titre: Sénat — CE Concentration dans les médias : compte rendu de la semaine du 31 janvier 2022 (audition de Patrick Drahi, 2 février 2022)
+source.url: https://www.senat.fr/compte-rendu-commissions/20220131/ce_medias.html
+source.nature: officielle
+verifie: 2026-11-17
