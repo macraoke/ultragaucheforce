@@ -42,9 +42,13 @@ export { round, money }; // arrondis vers le bas : voir `dom.js`
 /** Ce que vaut une fiche sur un an : sa valeur, douze fois si elle est donnée par mois (`par: mois`). */
 export const perYear = (fact) => fact.valeur * (fact.par === 'mois' ? 12 : 1);
 
-/** Ce que vaut une liasse, en années de revenus : le plus petit des nombres ronds qui garde le tas sous STACKS liasses. */
+/**
+ * Ce que vaut une liasse, en années de revenus : le plus petit des nombres ronds qui garde le tas sous STACKS liasses.
+ * Dès un dixième d'année : une fortune d'un milliard, comptée en revenus d'un patron du CAC 40, fait moins de
+ * 285 années, et des liasses d'un an laisseraient le cadre à moitié vide.
+ */
 export function stackYearsFor(years) {
-  for (let power = 0; power < 15; power++) {
+  for (let power = -1; power < 15; power++) {
     for (const step of STEPS) {
       const value = Math.round(step * 10 ** power * 10) / 10;
       if (years / value <= STACKS) return value;

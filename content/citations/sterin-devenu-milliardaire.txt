@@ -1,0 +1,11 @@
+texte: Je ne suis donc pas né milliardaire : je le suis devenu.
+auteur: Pierre-Édouard Stérin
+fonction: président du conseil d'administration du Fonds du bien commun
+date: 2026-06-04
+contexte: Audition sous serment devant la commission d'enquête du Sénat sur le financement des politiques publiques par des organismes privés, après avoir chiffré son patrimoine.
+categorie: puissants
+note: Phrase complète : « Je ne suis donc pas né milliardaire : je le suis devenu grâce à cette ambition, à cette volonté et à cette très importante capacité de travail. » Juste avant : « les 5 000 euros que m'avaient prêtés mes parents en 2003 ont crû pour atteindre, en ce début d'année 2026, un peu plus de 1,4 milliard d'euros. » Juste après : « J'ai donc réalisé mon rêve d'enfant. » Compte rendu rédigé du Sénat.
+source.titre: Sénat — Commission d'enquête sur le financement des politiques publiques par des organismes privés : comptes rendus de la semaine du 1er juin 2026 (audition de M. Pierre-Édouard Stérin, 4 juin 2026)
+source.url: https://www.senat.fr/compte-rendu-commissions/20260601/ce_politiques_publiques.html
+source.nature: officielle
+verifie: 2026-11-17

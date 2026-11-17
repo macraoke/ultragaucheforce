@@ -1,0 +1,11 @@
+texte: Ce qui fonctionne le mieux chez Pathé aujourd'hui, ce sont les salles premium.
+auteur: Jérôme Seydoux
+fonction: coprésident du groupe Pathé
+date: 2023-03-15
+contexte: Audition par la commission de la culture du Sénat, sur la situation du cinéma, à une question sur le prix des places.
+categorie: puissants
+note: Phrase complète : « Je vais répondre de manière très simple : ce qui fonctionne le mieux chez Pathé aujourd'hui, ce sont les salles premium. » Compte rendu rédigé du Sénat.
+source.titre: Sénat — Commission de la culture : comptes rendus de la semaine du 13 mars 2023 (audition de MM. Jérôme Seydoux et Ardavan Safaee, 15 mars 2023)
+source.url: https://www.senat.fr/compte-rendu-commissions/20230313/cult.html
+source.nature: officielle
+verifie: 2026-11-17

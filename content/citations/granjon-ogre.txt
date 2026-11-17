@@ -1,0 +1,12 @@
+texte: L'ogre de l'e-commerce adopte un nom générique pour l'ensemble du groupe en janvier 2019, « Veepee ».
+auteur: La Libre Belgique
+fonction: quotidien
+date: 2019-11-16
+contexte: Portrait de Jacques-Antoine Granjon en tête de l'entretien. Le boss lui doit son nom.
+categorie: puissants
+mot: OGRE
+note: Juste avant : « Son appétit d'expansion assouvi », après le rachat, entre 2015 et 2017, de ses concurrents européens.
+source.titre: La Libre Belgique — « Nous développons des secteurs moins dépendants des stocks des marques »
+source.url: https://www.lalibre.be/economie/entreprises-startup/2019/11/16/nous-developpons-des-secteurs-moins-dependants-des-stocks-des-marques-FKDCZ7S6PZC5DK7DLDB4EFUCIQ/
+source.nature: presse
+verifie: 2026-11-17

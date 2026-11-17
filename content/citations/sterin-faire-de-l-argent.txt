@@ -1,0 +1,11 @@
+texte: Tout en continuant à utiliser mon principal talent, à savoir faire de l'argent.
+auteur: Pierre-Édouard Stérin
+fonction: président du conseil d'administration du Fonds du bien commun
+date: 2026-06-04
+contexte: Audition sous serment devant la commission d'enquête du Sénat sur le financement des politiques publiques par des organismes privés, sur ce qui l'a mené à la philanthropie.
+categorie: puissants
+note: Phrase complète : « C'est alors que la lumière est apparue et que j'ai décidé de donner un sens différent à ma vie, tout en continuant à utiliser mon principal talent, à savoir faire de l'argent. » Compte rendu rédigé du Sénat.
+source.titre: Sénat — Commission d'enquête sur le financement des politiques publiques par des organismes privés : comptes rendus de la semaine du 1er juin 2026 (audition de M. Pierre-Édouard Stérin, 4 juin 2026)
+source.url: https://www.senat.fr/compte-rendu-commissions/20260601/ce_politiques_publiques.html
+source.nature: officielle
+verifie: 2026-11-17

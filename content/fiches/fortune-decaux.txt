@@ -1,0 +1,9 @@
+titre: 3,8 milliards estimés
+theme: richesses
+texte: Selon le classement Challenges publié le 8 juillet 2026, la famille Decaux (JCDecaux) est au 32e rang des fortunes professionnelles, avec 150 millions d'euros de plus qu'en 2025 (+4,1 %) : environ 3,8 milliards d'euros.
+portee: La page en accès libre ne publie pas le montant : il se déduit de la hausse et de son pourcentage (150 millions, c'est 4,1 % d'environ 3,7 milliards). Estimation du magazine des actifs professionnels ; les biens personnels ne sont pas comptés. Ce n'est pas de l'argent disponible. Challenges écrit que les héritiers du fondateur conservent près des deux tiers de JCDecaux, plus de 20 % d'Eurazeo et 9,5 % de Bouygues Telecom.
+periode: classement 2026, publié le 8 juillet 2026
+source.titre: Challenges — Famille Decaux : analyse de sa fortune (classement des 500 plus grandes fortunes de France 2026)
+source.url: https://www.challenges.fr/classements/fortune/famille-decaux_26566
+source.nature: presse
+verifie: 2026-11-17

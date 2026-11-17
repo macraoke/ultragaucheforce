@@ -1,0 +1,11 @@
+texte: Si nos prix sont trop chers, il ne viendra pas.
+auteur: Jérôme Seydoux
+fonction: coprésident du groupe Pathé
+date: 2023-03-15
+contexte: Audition par la commission de la culture du Sénat, sur la situation du cinéma, à une question sur le prix des places ; « il », c'est le spectateur.
+categorie: puissants
+note: Suite : « On fera alors autre chose... C'est notre responsabilité de chef d'entreprise. » Compte rendu rédigé du Sénat.
+source.titre: Sénat — Commission de la culture : comptes rendus de la semaine du 13 mars 2023 (audition de MM. Jérôme Seydoux et Ardavan Safaee, 15 mars 2023)
+source.url: https://www.senat.fr/compte-rendu-commissions/20230313/cult.html
+source.nature: officielle
+verifie: 2026-11-17

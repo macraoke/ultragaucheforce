@@ -1,0 +1,11 @@
+texte: Nous participons à l'effort collectif, puisque nous payons nos taxes en France et que nous y sommes basés.
+auteur: Stéphane Courbit
+fonction: président de Banijay Group
+date: 2026-02-25
+contexte: Audition sous serment devant la commission d'enquête de l'Assemblée nationale sur l'audiovisuel public, interrogé sur les aides publiques reçues par son groupe.
+categorie: puissants
+note: Suite : « Nous en sommes très heureux et nous n'avons pas envie de bouger. »
+source.titre: Assemblée nationale — Commission d'enquête sur la neutralité, le fonctionnement et le financement de l'audiovisuel public, compte rendu n° 44 du 25 février 2026 (audition de Banijay Group)
+source.url: https://www.assemblee-nationale.fr/dyn/opendata/CRCANR5L17S2026PO874480N044.html
+source.nature: officielle
+verifie: 2026-11-17

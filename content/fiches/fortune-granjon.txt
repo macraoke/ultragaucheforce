@@ -1,0 +1,9 @@
+titre: 1,3 milliard estimé
+theme: richesses
+texte: Selon le classement Challenges publié le 8 juillet 2026, Jacques-Antoine Granjon (Veepee) est au 107e rang des fortunes professionnelles, avec 100 millions d'euros de plus qu'en 2025 (+8,3 %) : environ 1,3 milliard d'euros.
+portee: La page en accès libre ne publie pas le montant : il se déduit de la hausse et de son pourcentage (100 millions, c'est 8,3 % d'environ 1,2 milliard). Estimation du magazine des actifs professionnels ; les biens personnels ne sont pas comptés. Ce n'est pas de l'argent disponible. Challenges écrit qu'il conserve 30 % de Veepee.
+periode: classement 2026, publié le 8 juillet 2026
+source.titre: Challenges — Jacques-Antoine Granjon : analyse de sa fortune (classement des 500 plus grandes fortunes de France 2026)
+source.url: https://www.challenges.fr/classements/fortune/jacques-antoine-granjon_26626
+source.nature: presse
+verifie: 2026-11-17

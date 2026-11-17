@@ -1,0 +1,12 @@
+texte: Je suis encore aujourd'hui un « exilé fiscal ».
+auteur: Pierre-Édouard Stérin
+fonction: président du conseil d'administration du Fonds du bien commun
+date: 2026-06-04
+contexte: Audition sous serment devant la commission d'enquête du Sénat sur le financement des politiques publiques par des organismes privés, dans son propos liminaire. Le boss lui doit son nom.
+categorie: puissants
+mot: EXILÉ FISCAL
+note: Phrase complète : « C'est ce qui m'a conduit à déménager et je suis encore aujourd'hui un « exilé fiscal » : vivre en Belgique plutôt qu'en France me permet d'économiser chaque année entre 100 000 euros et 200 000 euros, soit près de 3 millions d'euros depuis mon départ, en sachant que j'ai redistribué - mes associés l'ont évoqué il y a quelques jours - 150 millions d'euros en France, en direction de projets d'intérêt général ou à caractère métapolitique. » Juste avant : « Nous habitons en Belgique depuis 2012, date qui correspond à l'élection de François Hollande. Ce dernier n'aime pas les riches. Pour ma part, je n'aime pas les socialo-communistes ! » Plus tard, après la remarque de la rapporteure sur sa résidence belge et le « Vous êtes exilé fiscal ! » de la sénatrice Karine Daniel, il dit : « Je me permets de vous corriger sur ce point précis, madame la rapporteure. Je verse chaque année des dizaines de millions d'euros d'impôts en France. » Il parle de son « écosystème », une centaine d'entreprises en grande majorité implantées en France, qui paient l'impôt sur les sociétés, la taxe foncière et les taxes sur les salaires. « Ce n'est pas mon cas comme personne physique, à l'exception de l'impôt sur la fortune immobilière (IFI) auquel je suis assujetti pour quelques biens en France ». Compte rendu rédigé du Sénat, pas le mot à mot de la vidéo.
+source.titre: Sénat — Commission d'enquête sur le financement des politiques publiques par des organismes privés : comptes rendus de la semaine du 1er juin 2026 (audition de M. Pierre-Édouard Stérin, 4 juin 2026)
+source.url: https://www.senat.fr/compte-rendu-commissions/20260601/ce_politiques_publiques.html
+source.nature: officielle
+verifie: 2026-11-17

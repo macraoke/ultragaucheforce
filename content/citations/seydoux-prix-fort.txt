@@ -1,0 +1,11 @@
+texte: Dans nos recettes, les gens qui payent le prix fort représentent 20 % des clients.
+auteur: Jérôme Seydoux
+fonction: coprésident du groupe Pathé
+date: 2023-03-15
+contexte: Audition par la commission de la culture du Sénat, sur la situation du cinéma, à une question sur le prix des places : salles premium ou salles moins confortables.
+categorie: puissants
+note: Juste avant : « Aujourd'hui, en France, Pathé doit posséder environ 700 salles, dont 100 salles premium. » Compte rendu rédigé du Sénat.
+source.titre: Sénat — Commission de la culture : comptes rendus de la semaine du 13 mars 2023 (audition de MM. Jérôme Seydoux et Ardavan Safaee, 15 mars 2023)
+source.url: https://www.senat.fr/compte-rendu-commissions/20230313/cult.html
+source.nature: officielle
+verifie: 2026-11-17

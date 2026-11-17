@@ -1,0 +1,11 @@
+texte: Périclès est un projet métapolitique, et non politique.
+auteur: Pierre-Édouard Stérin
+fonction: président du conseil d'administration du Fonds du bien commun
+date: 2026-06-04
+contexte: Audition sous serment devant la commission d'enquête du Sénat sur le financement des politiques publiques par des organismes privés, interrogé sur le projet Périclès.
+categorie: puissants
+note: Phrase complète : « Une fois encore, Périclès est un projet métapolitique, et non politique. » La rapporteure, Colombe Brossel, répond peu après ne guère saisir « la différence avec des objectifs « politiques » ». Compte rendu rédigé du Sénat.
+source.titre: Sénat — Commission d'enquête sur le financement des politiques publiques par des organismes privés : comptes rendus de la semaine du 1er juin 2026 (audition de M. Pierre-Édouard Stérin, 4 juin 2026)
+source.url: https://www.senat.fr/compte-rendu-commissions/20260601/ce_politiques_publiques.html
+source.nature: officielle
+verifie: 2026-11-17

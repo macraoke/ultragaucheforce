@@ -122,3 +122,13 @@ test('taxe : les slogans du bouton ont été scandés en manif', () => {
     assert.ok(slogan.length <= 40, `« ${slogan} » tient sur un bouton`);
   }
 });
+
+test('taxe : une fortune d’un milliard se compte en liasses de moins d’un an', () => {
+  // Granjon (1,3 milliard) et Seydoux (1,15), comptés en revenus d’un patron du CAC 40 (6,5 millions par an).
+  assert.equal(stackYearsFor(1.3e9 / 6.5e6), 0.6, 'Granjon : 200 années, des liasses de 0,6 an');
+  assert.equal(stackYearsFor(1.15e9 / 6.5e6), 0.5, 'Seydoux : 177 années, des liasses d’une demi-année');
+  for (const years of [100, 177, 200, 284]) {
+    const count = years / stackYearsFor(years);
+    assert.ok(stackYearsFor(years) < 1 && count > 285 && count <= 380, `${years} années : ${count} liasses`);
+  }
+});

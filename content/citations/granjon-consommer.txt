@@ -1,0 +1,11 @@
+texte: Les gens veulent consommer intelligemment et ils veulent de la créativité.
+auteur: Jacques-Antoine Granjon
+fonction: fondateur et PDG de Veepee
+date: 2019-11-16
+contexte: Entretien à La Libre Belgique, sur l'évolution de l'e-commerce.
+categorie: puissants
+note: Suite : « Ils sont sensibles aux marques qui racontent des histoires. »
+source.titre: La Libre Belgique — « Nous développons des secteurs moins dépendants des stocks des marques »
+source.url: https://www.lalibre.be/economie/entreprises-startup/2019/11/16/nous-developpons-des-secteurs-moins-dependants-des-stocks-des-marques-FKDCZ7S6PZC5DK7DLDB4EFUCIQ/
+source.nature: presse
+verifie: 2026-11-17
