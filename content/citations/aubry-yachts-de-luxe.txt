@@ -1,0 +1,11 @@
+texte: Quand je dénonce les yachts de luxe, l'imbécile regarde le bateau à voile.
+auteur: Manon Aubry
+fonction: eurodéputée La France insoumise
+date: 2026-06-26
+contexte: Réponse sur X à une polémique où on la traitait de « petite bobo gauchiste ».
+categorie: gauche
+note: Juste avant : « Bernard Arnault, lui, possède de nombreux yachts, tous immatriculés dans les paradis fiscaux ». Juste après : « Heureusement que je n'ai pas critiqué les Porsche avant de conduire une Clio, on aurait pu me demander de me justifier. » La même phrase est citée par BFMTV et par Le Figaro le 26 juin 2026. Le Parisien rapporte l'expression « petite bobo gauchiste » ; le personnage La Petite Bobo gauchiste la reprend.
+source.titre: Le Parisien — Filmée sur un voilier, Manon Aubry dénonce une polémique « relayée par toute la fachosphère »
+source.url: https://www.leparisien.fr/politique/filmee-sur-un-voilier-manon-aubry-denonce-une-polemique-relayee-par-toute-la-fachosphere-27-06-2026-KAH2V2QTHVFGVKMBWYCL7PQ5MI.php
+source.nature: presse
+verifie: 2026-11-17

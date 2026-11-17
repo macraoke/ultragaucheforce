@@ -1,0 +1,11 @@
+texte: Je me suis toujours sentie en colère
+auteur: Clémence Guetté
+fonction: députée du Val-de-Marne, première vice-présidente de l'Assemblée nationale
+date: 2025-01-29
+contexte: Entretien avec Politis, à son bureau de l'Assemblée nationale, sur son parcours militant.
+categorie: gauche
+note: Politis la présente comme « la cheffe d'orchestre du programme insoumis », dont elle est coresponsable avec Hadrien Clouet. Autre phrase du même entretien : « J'étais une intello, c'était naturel ». Le personnage La Cheffe d'orchestre lui doit son nom et son cri.
+source.titre: Politis — Faire mieux : et si c'était Clémence Guetté ?
+source.url: https://www.politis.fr/articles/2025/01/clemence-guette-et-si-cetait-elle/
+source.nature: presse
+verifie: 2026-11-17

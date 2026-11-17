@@ -1,0 +1,11 @@
+texte: moi, je ne scande pas ce slogan, parce qu'il est factuellement faux !
+auteur: Manuel Bompard
+fonction: député, cadre de La France insoumise
+date: 2023-07-20
+contexte: Invité de la matinale de CNews. Le journaliste lui demande s'il part ou s'il reste quand une manifestation se met à scander « Tout le monde déteste la police ».
+categorie: gauche
+note: Phrase complète : « Mais que les choses soient très claires, moi, je ne scande pas ce slogan, parce qu'il est factuellement faux ! Mais jusqu'à preuve du contraire, dire quelque chose de faux n'est pas encore un crime, sinon peut-être qu'un certain nombre d'entre vous seraient déjà en prison ». Seul le début est repris. Le personnage Le Supercalculateur lui doit son cri.
+source.titre: Puremédias — "Pardon ?! Ca veut dire quoi ça ?!" : Clash entre Gauthier Le Bret et Manuel Bompard sur CNews
+source.url: https://www.ozap.com/actu/-pardon-ca-veut-dire-quoi-ca-clash-entre-gauthier-le-bret-et-manuel-bompard-sur-cnews/634834
+source.nature: presse
+verifie: 2026-11-17
