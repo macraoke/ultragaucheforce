@@ -1,0 +1,12 @@
+texte: Je n'ai pas gagné au loto...
+auteur: Bernard Arnault
+fonction: PDG de LVMH
+date: 2022-01-20
+contexte: Sous serment devant la commission d'enquête du Sénat sur la concentration des médias, à propos de sa fortune. Juste avant : « tout cela n'est pas sur mon compte en banque... »
+categorie: puissants
+mot: LOTO
+note: Il ouvre sa réponse ainsi : « l'essentiel de ce que recouvre ce terme correspond à des actions du groupe LVMH ». Compte rendu rédigé du Sénat.
+source.titre: Sénat — CE Concentration dans les médias : compte rendu de la semaine du 17 janvier 2022
+source.url: https://www.senat.fr/compte-rendu-commissions/20220117/ce_medias.html
+source.nature: officielle
+verifie: 2026-11-17

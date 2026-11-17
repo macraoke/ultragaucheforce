@@ -1,0 +1,12 @@
+texte: Si quelqu'un quitte l'entreprise, c'est qu'il a trouvé un emploi.
+auteur: Bernard Arnault
+fonction: PDG de LVMH
+date: 2025-05-21
+contexte: Sous serment devant la commission d'enquête du Sénat sur les aides publiques aux grandes entreprises. Le rapporteur venait de parler de 1 200 emplois supprimés ; lui parle de départs non remplacés.
+categorie: puissants
+mot: TROUVÉ UN EMPLOI
+note: Suite : « Il ne va pas partir pour se mettre lui-même au chômage. » Compte rendu rédigé du Sénat.
+source.titre: Sénat — CE Aides publiques aux entreprises : compte rendu de la semaine du 19 mai 2025
+source.url: https://www.senat.fr/compte-rendu-commissions/20250519/ce_aides_publiques.html
+source.nature: officielle
+verifie: 2026-11-17

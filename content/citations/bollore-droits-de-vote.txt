@@ -1,0 +1,12 @@
+texte: j'ai donné mes actions mais conservé mes droits de vote, on ne sait jamais…
+auteur: Vincent Bolloré
+fonction: ancien président du conseil de surveillance de Vivendi et du groupe Canal+
+date: 2024-03-13
+contexte: Sous serment devant la commission d'enquête de l'Assemblée nationale sur la TNT, à propos de sa place dans le groupe.
+categorie: puissants
+mot: DROITS DE VOTE
+note: Page 12 du compte rendu. Phrase complète : « Il est vrai que je suis l'actionnaire ultime – j'ai donné mes actions mais conservé mes droits de vote, on ne sait jamais… –, mais je ne devrais pas être ici. »
+source.titre: Assemblée nationale — Compte rendu n° 18, commission d'enquête sur la TNT, 13 mars 2024
+source.url: https://www.assemblee-nationale.fr/dyn/16/comptes-rendus/cetnt/l16cetnt2324018_compte-rendu.pdf
+source.nature: officielle
+verifie: 2026-11-17

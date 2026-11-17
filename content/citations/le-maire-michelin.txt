@@ -1,0 +1,12 @@
+texte: Très honnêtement, je n'ai pas de souvenir précis de cet épisode avec Michelin.
+auteur: Bruno Le Maire
+fonction: ancien ministre de l'Économie
+date: 2025-05-07
+contexte: Sous serment devant la commission d'enquête du Sénat sur les aides publiques aux grandes entreprises. Le rapporteur venait de rappeler que 4,3 millions d'euros de CICE versés à Michelin pour son usine de La Roche-sur-Yon avaient acheté huit machines-outils, dont six expédiées en Espagne, en Pologne et en Roumanie.
+categorie: puissants
+mot: SOUVENIR PRÉCIS
+note: Compte rendu rédigé du Sénat. Le rapporteur dit l'avoir alerté par une question écrite.
+source.titre: Sénat — CE Aides publiques aux entreprises : compte rendu de la semaine du 5 mai 2025
+source.url: https://www.senat.fr/compte-rendu-commissions/20250505/ce_aides_publiques.html
+source.nature: officielle
+verifie: 2026-11-17
