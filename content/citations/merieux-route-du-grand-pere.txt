@@ -1,4 +1,4 @@
-texte: A Marcy-l'Etoile où se situe notre site principal, la route est la même que du temps de mon grand-père, alors que cette commune regroupe aujourd'hui plus de 4.000 emplois.
+texte: A Marcy-l'Etoile où se situe notre site principal, la route est la même que du temps de mon grand-père alors que cette commune regroupe aujourd'hui plus de 4.000 emplois.
 auteur: Alain Mérieux
 fonction: président de l'Institut Mérieux, fondateur de bioMérieux
 date: 2011-10-06
