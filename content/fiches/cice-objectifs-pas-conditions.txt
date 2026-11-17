@@ -1,0 +1,10 @@
+titre: CICE : des objectifs, pas des conditions
+theme: richesses
+texte: En janvier 2017, le gouvernement écrit que, pour le CICE, « il ne s'agit pas de se substituer aux chefs d'entreprise pour leur imposer des choix de gestion ».
+portee: Réponse du ministère de l'Économie et des Finances à un député socialiste qui demandait de renforcer le contrôle de l'utilisation du CICE et de l'assortir de contreparties en emplois. Le texte exact : « Les objectifs affectés au CICE doivent s'entendre comme des éléments de cadrage et non comme des conditions d'octroi du crédit d'impôt. » La même formule figure dans la réponse à la question n° 57501, publiée le 7 mars 2017. Pour le pacte de responsabilité, la même réponse renvoie aux partenaires sociaux : « les contreparties demandées aux entreprises en termes d'emploi, de formation professionnelle et de qualité d'emploi, ont été présentées dans leurs grandes lignes dans l'accord conclu entre les partenaires sociaux le 5 mars 2014, et ont déjà été précisées dans plusieurs accords de branche. »
+periode: question du 16 février 2016, réponse publiée au Journal officiel le 24 janvier 2017
+choc: oui
+source.titre: Assemblée nationale — Question écrite n° 93243 de M. Hervé Féron, crédit d'impôt pour la compétitivité et l'emploi
+source.url: https://www.assemblee-nationale.fr/dyn/14/questions/QANR5L14QE93243
+source.nature: officielle
+verifie: 2026-11-17

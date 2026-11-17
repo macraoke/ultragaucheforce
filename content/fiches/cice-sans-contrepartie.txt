@@ -1,0 +1,10 @@
+titre: Le CICE, sans contrepartie
+theme: richesses
+texte: Le CICE n'exigeait aucune contrepartie en emploi : il a coûté près de 20 milliards d'euros par an pendant six ans, pour environ 100 000 emplois selon France Stratégie, d'après une commission d'enquête du Sénat.
+portee: Le rapport écrit : « aucune contrepartie en termes d'emploi n'était demandée aux entreprises bénéficiaires du dispositif. Dès lors, il était impossible en droit d'exiger de leurs bénéficiaires des efforts en termes d'emploi. » Selon les méthodes, l'effet estimé va de 100 000 à 400 000 emplois, pour un coût de l'ordre de 18 milliards d'euros en 2016. François Hollande a refusé deux fois d'être entendu par la commission sur la création du CICE.
+periode: 2013-2018 (rapport remis le 1er juillet 2025)
+choc: oui
+source.titre: Sénat — Rapport de la commission d'enquête sur l'utilisation des aides publiques aux grandes entreprises et à leurs sous-traitants, tome I
+source.url: https://www.senat.fr/rap/r24-808-1/r24-808-11.pdf
+source.nature: officielle
+verifie: 2026-11-17
