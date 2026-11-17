@@ -108,9 +108,62 @@ test('TIR glissé vers le haut : le tir vise en haut ; le glissement entre SAUT 
   assert.deepEqual(drag(fire, { x: fire.x + 10, y: fire.y - 2 * rise }).end, { fire: true, up: true }, 'plus haut, un peu de côté');
   const { seen, end } = drag(at('jump'), fire);
   assert.deepEqual(seen[0], { jump: true });
-  assert.ok(seen.some((s) => s.fire && s.jump), 'à cheval en chemin : les deux');
+  const on = seen.findIndex((s) => s.fire);
+  assert.ok(seen.slice(0, on).every((s) => s.jump && !s.fire), 'il saute jusqu’à arriver sur TIR');
   assert.deepEqual(end, { fire: true });
   assert.deepEqual(drag(fire, at('jump')).end, { jump: true }, 'et dans l’autre sens');
+});
+
+// « je me retrouve à tirer sans l'avoir voulu » : sur les deux tailles d'iPhone tenu en paysage.
+const PHONES = [{ w: 844, h: 390 }, { w: 750, h: 342 }];
+const spotIn = (view, action) => {
+  const t = ZONES.targets.find((z) => z.action === action);
+  return { x: t.x * view.w, y: t.y * view.h };
+};
+/** Le point à `k` (fraction du petit côté) du centre de `from`, en direction de `to`. */
+const toward = (view, from, to, k) => {
+  const [a, b] = [spotIn(view, from), spotIn(view, to)];
+  const d = Math.hypot(b.x - a.x, b.y - a.y);
+  const r = k * Math.min(view.w, view.h);
+  return { x: a.x + ((b.x - a.x) * r) / d, y: a.y + ((b.y - a.y) * r) / d };
+};
+
+test('un pouce posé sur SAUT qui roule vers TIR ne tire pas tant qu’il n’est pas sur TIR', () => {
+  for (const view of PHONES) {
+    let p = trackPoint(undefined, spotIn(view, 'jump'), view);
+    // Le pouce glisse jusqu'au bord de TIR (rayon 0,105 à l'écran), sans y entrer.
+    for (let k = 0.01; k <= 0.22; k += 0.01) {
+      p = trackPoint(p, toward(view, 'jump', 'fire', k), view);
+      assert.deepEqual(touchActions([p], view), { jump: true }, `${view.w}×${view.h}, ${Math.round(k * Math.min(view.w, view.h))} px vers TIR`);
+    }
+    // Et en haut à droite de SAUT, là où le pouce remonte en appuyant : toujours le saut seul.
+    const j = spotIn(view, 'jump');
+    for (let dy = 0; dy <= 60; dy += 6) {
+      p = trackPoint(p, { x: j.x + dy, y: j.y - dy }, view);
+      assert.ok(!touchActions([p], view).fire, `${view.w}×${view.h}, remonté de ${dy} px`);
+    }
+  }
+});
+
+test('un pouce qui vise SAUT et tombe à côté, du côté de TIR, saute sans tirer', () => {
+  for (const view of PHONES) {
+    for (const k of [0.12, 0.15, 0.17]) {
+      const p = trackPoint(undefined, toward(view, 'jump', 'fire', k), view);
+      assert.deepEqual(touchActions([p], view), { jump: true }, `${view.w}×${view.h}, posé à ${Math.round(k * Math.min(view.w, view.h))} px de SAUT`);
+    }
+  }
+});
+
+test('SPÉ manquée de peu fait la spéciale, pas un tir', () => {
+  for (const view of PHONES) {
+    const s = spotIn(view, 'special');
+    const unit = Math.min(view.w, view.h);
+    // SPÉ fait 15 % du petit côté à l'écran : posé à gauche, au-dessus, à droite, un peu hors du disque.
+    for (const [dx, dy] of [[-0.12, 0], [0, -0.12], [0.1, 0], [-0.09, 0.06]]) {
+      const p = trackPoint(undefined, { x: s.x + dx * unit, y: s.y + dy * unit }, view);
+      assert.deepEqual(touchActions([p], view), { special: true }, `${view.w}×${view.h}, (${dx}, ${dy})`);
+    }
+  }
 });
 
 test('le pouce à cheval entre TIR et SAUT fait les deux ; jamais avec SPÉ', () => {
