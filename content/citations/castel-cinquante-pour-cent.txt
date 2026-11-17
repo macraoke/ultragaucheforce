@@ -1,0 +1,12 @@
+texte: Lorsqu'on vous prend plus de 50% de vos revenus, vous ne pouvez pas l'accepter.
+auteur: Pierre Castel
+fonction: fondateur du groupe Castel (vins, bières)
+date: 2014
+contexte: Entretien à Challenges, sur son départ de France pour la Suisse en 1981.
+categorie: puissants
+mot: 50% DE VOS REVENUS
+note: Suite : « D'ailleurs, le bouclier fiscal était une bonne mesure. Mais je suis Français et j'investis beaucoup en France avec l'argent gagné en Afrique. » L'entretien original de Challenges n'a pas pu être ouvert : le texte est celui de sa reprise, signée « Thierry Fabre | Challenges ». Il y a 87 ans, donc l'entretien date de fin 2013 ou de 2014 ; L'Essentiel de l'éco date de 2014 la phrase sur l'Afrique.
+source.titre: Cameroun24 — Comment Pierre Castel a fait fortune en Afrique (entretien de Thierry Fabre pour Challenges, repris)
+source.url: https://cameroun24.net/article/16151-Comment_Pierre_Castel_a_fait_fortune_en_Afrique.html
+source.nature: presse
+verifie: 2026-11-17

@@ -1,0 +1,9 @@
+titre: 2,7 milliards estimés
+theme: richesses
+texte: Selon le classement Challenges 2025, la famille Peugeot est la 44e fortune professionnelle de France et la première de l'automobile, avec 2,7 milliards d'euros.
+portee: Estimation de Challenges, lue dans sa reprise par le Journal de l'Automobile le 15 juillet 2025 : le chiffre de 2026 n'a été trouvé sur aucune page ouverte. Fortune surtout faite de la part de la famille dans Stellantis, par Peugeot Invest. Les biens personnels ne sont pas comptés. Ce n'est pas de l'argent disponible.
+periode: classement 2025, repris le 15 juillet 2025
+source.titre: Journal de l'Automobile — Le classement des plus grandes fortunes françaises du secteur auto en 2025
+source.url: https://journalauto.com/distribution/__trashed-13/
+source.nature: presse
+verifie: 2026-11-17

@@ -1,0 +1,12 @@
+texte: La seule réforme fiscale qui vaille, c'est la baisse des impôts pour tous.
+auteur: Serge Dassault
+fonction: propriétaire du Figaro, sénateur UMP
+date: 2014-01-02
+contexte: Ses vœux aux lecteurs, en une du Figaro, rapportés par Politis.
+categorie: puissants
+mot: BAISSE DES IMPÔTS
+note: Politis cite : « La seule réforme fiscale qui vaille, écrit-il, c'est la baisse des impôts pour tous. » Il y compare les effets de « l'impôt sur le patrimoine » à « la révocation de l'édit de Nantes ». L'éditorial du Figaro n'a pas été ouvert : le texte est celui de Politis.
+source.titre: Politis — Des vœux en Rafale (9 janvier 2014)
+source.url: https://www.politis.fr/articles/2014/01/des-voeux-en-rafale-25159/
+source.nature: presse
+verifie: 2026-11-17

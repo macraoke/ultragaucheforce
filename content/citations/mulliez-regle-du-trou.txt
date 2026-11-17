@@ -1,0 +1,12 @@
+texte: Il vaut mieux faire le trou parce que sinon on ne remplace jamais.
+auteur: Gérard Mulliez
+fonction: fondateur d'Auchan
+date: 2025
+contexte: Dans la série documentaire « Le Club » (Canal+), en marchant avec son petit-fils Alexandre, sur les salariés qui ne suivent pas « la direction » donnée. Le boss lui doit son nom.
+categorie: puissants
+mot: FAIRE LE TROU
+note: Juste avant : « Tant qu'il n'y a pas de trou, on ne remplace pas. Quand il y a le trou, après on remplace. » Purepeople appelle cette philosophie de management « la "règle du trou" ». Extrait relayé sur TikTok ; l'article ne donne pas la date de diffusion, seulement la sienne (8 décembre 2025).
+source.titre: Purepeople — Le milliardaire Gérard Mulliez, fondateur d'Auchan, a misé sur cette règle d'or pour construire son empire (8 décembre 2025)
+source.url: https://www.purepeople.com/article/le-milliardaire-gerard-mulliez-fondateur-dauchan-a-mise-sur-cette-regle-dor-pour-construire-son-empire_a544070/1
+source.nature: presse
+verifie: 2026-11-17

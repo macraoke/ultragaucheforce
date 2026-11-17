@@ -1,0 +1,12 @@
+texte: Soit on les forme et ils se laissent former, soit on ne sait pas les former et ils n'ont plus qu'à aller travailler ailleurs.
+auteur: Gérard Mulliez
+fonction: fondateur d'Auchan
+date: 2025
+contexte: Dans la série documentaire « Le Club » (Canal+), réponse à son petit-fils Alexandre, qui lui demande ce qu'il fait des gens qui ne vont pas dans la direction qu'il a mise en place.
+categorie: puissants
+mot: TRAVAILLER AILLEURS
+note: L'article ne donne pas la date de diffusion, seulement la sienne (8 décembre 2025).
+source.titre: Purepeople — Le milliardaire Gérard Mulliez, fondateur d'Auchan, a misé sur cette règle d'or pour construire son empire (8 décembre 2025)
+source.url: https://www.purepeople.com/article/le-milliardaire-gerard-mulliez-fondateur-dauchan-a-mise-sur-cette-regle-dor-pour-construire-son-empire_a544070/1
+source.nature: presse
+verifie: 2026-11-17

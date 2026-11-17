@@ -1,0 +1,12 @@
+texte: Dès les années 50, on a commencé à empoisonner la France avec des produits chimiques dans les sols, pour nourrir les gens.
+auteur: Gérard Mulliez
+fonction: fondateur d'Auchan
+date: 2022-12
+contexte: Entretien à La Voix du Nord, repris par 24matins le 27 décembre 2022, où il défend la permaculture et le « circuit court ».
+categorie: puissants
+mot: EMPOISONNER
+note: Juste avant : « Je sais qu'avec Auchan j'étais loin de ce 'circuit court' seulement, on ne savait pas à l'époque, maintenant on sait ! » L'entretien de La Voix du Nord n'a pas été ouvert : le texte est celui de 24matins.
+source.titre: 24matins — Le fondateur d'Auchan, Gérard Mulliez, ne veut pas d'alliance Auchan - Carrefour (27 décembre 2022)
+source.url: https://www.24matins.fr/le-fondateur-dauchan-gerard-mulliez-ne-veut-pas-dalliance-auchan-carrefour-1349423
+source.nature: presse
+verifie: 2026-11-17

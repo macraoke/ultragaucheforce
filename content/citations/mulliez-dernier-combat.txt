@@ -1,0 +1,12 @@
+texte: Mon refus de nous allier avec Carrefour, c'est mon dernier combat.
+auteur: Gérard Mulliez
+fonction: fondateur d'Auchan
+date: 2022-12
+contexte: Entretien à La Voix du Nord, à 91 ans, repris par 24matins le 27 décembre 2022.
+categorie: puissants
+mot: DERNIER COMBAT
+note: Suite : « Au-delà, je ne me préoccupe plus des affaires des entreprises. Il n'est pas question de discuter et d'échanger pour se rapprocher de quiconque, encore moins de vendre Auchan… » L'entretien de La Voix du Nord n'a pas été ouvert : le texte est celui de 24matins.
+source.titre: 24matins — Le fondateur d'Auchan, Gérard Mulliez, ne veut pas d'alliance Auchan - Carrefour (27 décembre 2022)
+source.url: https://www.24matins.fr/le-fondateur-dauchan-gerard-mulliez-ne-veut-pas-dalliance-auchan-carrefour-1349423
+source.nature: presse
+verifie: 2026-11-17

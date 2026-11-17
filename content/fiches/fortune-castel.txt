@@ -1,0 +1,9 @@
+titre: 13,5 milliards estimés
+theme: richesses
+texte: Selon le classement Challenges 2026, Pierre Castel et sa famille (groupe Castel : vins en France, bières en Afrique) ont une fortune professionnelle estimée à 13,5 milliards d'euros, au 11e rang, contre le 13e en 2025.
+portee: Estimation du magazine, lue dans sa reprise par iDealwine (la fiche de Challenges n'a pas pu être ouverte). Le groupe n'est pas coté : ses actifs sont estimés. Les biens personnels ne sont pas comptés. Ce n'est pas de l'argent disponible.
+periode: classement 2026
+source.titre: iDealwine — Les plus grandes fortunes du vin (édition 2026 du classement Challenges)
+source.url: https://www.idealwine.net/les-plus-grosses-fortunes-du-vin/
+source.nature: presse
+verifie: 2026-11-17

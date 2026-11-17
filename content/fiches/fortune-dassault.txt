@@ -1,0 +1,9 @@
+titre: 27,7 milliards estimés
+theme: richesses
+texte: Selon le classement Challenges publié le 8 juillet 2026, Laurent, Marie-Hélène et Thierry Dassault et leur famille sont la septième fortune professionnelle de France, avec un patrimoine estimé à 27,7 milliards d'euros, 7,9 milliards de moins qu'en 2025.
+portee: Estimation du magazine. Par le holding Groupe industriel Marcel Dassault, la famille détient, selon Challenges, 66,3 % de Dassault Aviation, 40 % de Dassault Systèmes et le groupe Le Figaro. Les biens personnels ne sont pas comptés. Ce n'est pas de l'argent disponible. Ce sont les enfants de Serge Dassault, mort en mai 2018.
+periode: classement 2026, publié le 8 juillet 2026
+source.titre: Challenges — Laurent, Marie-Hélène et Thierry Dassault et leur famille, Les 500 plus grandes fortunes de France 2026
+source.url: https://www.challenges.fr/classements/fortune/laurent-marie-helene-et-thierry-dassault-et-leur-famille_26538
+source.nature: presse
+verifie: 2026-11-17

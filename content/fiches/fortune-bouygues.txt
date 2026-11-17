@@ -1,0 +1,9 @@
+titre: 3,5 milliards de dollars
+theme: richesses
+texte: Forbes estime en temps réel la fortune de Martin Bouygues à 3,5 milliards de dollars le 17 novembre 2026, soit environ 3,2 milliards d'euros au cours de référence de la BCE du 16 novembre 2026 (1 euro = 1,1014 dollar).
+portee: Estimation de Forbes, qui bouge avec la Bourse. Selon Forbes, Martin Bouygues et son frère Olivier contrôlent plus de 28 % du groupe Bouygues (BTP, Colas, Bouygues Telecom, TF1) par leur holding SCDM ; la page ne dit pas si ce montant compte la part d'Olivier. Le classement Challenges 2026 de la famille n'a pas pu être lu. Ce n'est pas de l'argent disponible.
+periode: 17 novembre 2026
+source.titre: Forbes — Martin Bouygues, profil et fortune en temps réel
+source.url: https://www.forbes.com/profile/martin-olivier-bouygues/
+source.nature: presse
+verifie: 2026-11-17
