@@ -5,7 +5,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { loadContent } from '../tools/content.mjs';
-import { queueNote, readTime } from '../src/client/ui.js';
+import { queueNote, readTime, scrollTiming } from '../src/client/ui.js';
 import { Game, DT } from '../src/sim/game.js';
 
 // ---------------------------------------------------------------- un faux canevas
@@ -267,6 +267,33 @@ test('une pancarte qui vient d’arriver se lève tout de suite, puis rejoint la
   r.boxes = [];
   r.raiseSigns(cortege);
   assert.ok(r.raised.has(resting), 'levée tout de suite');
+});
+
+test('une pancarte qui vient d’être débloquée reste levée quatre secondes et demie, même hors de son tour', () => {
+  const r = renderer();
+  const carrier = { x: 100, y: 170, facing: 1, kind: 'pancarte', label: '', gassed: 0, animTime: 0 };
+  const at = (t) => {
+    r.clock = t;
+    r.boxes = [];
+    r.raiseSigns([carrier]);
+    return r.raised.has(carrier);
+  };
+  // Seul porteur, son tour revient toutes les douze secondes, pour six : de 6 à 12 s, ce n'est pas son tour.
+  carrier.label = 'ELLE VIENT D’ARRIVER';
+  const raised = [];
+  for (let t = 6; t <= 11; t += 1 / 60) raised.push([t, at(t)]);
+  assert.ok(raised.filter(([t]) => t < 6 + 4.45).every(([, up]) => up), 'levée quatre secondes et demie');
+  assert.ok(raised.filter(([t]) => t > 6 + 4.55).every(([, up]) => !up), 'puis elle rejoint la rotation : ce n’est pas son tour');
+});
+
+test('le fil de PANIQUE TV : une ligne trop longue défile un tiers moins vite, et reste 2,4 s sur son dernier mot', () => {
+  const short = scrollTiming(300, 10);
+  assert.equal(short.travel, 310, 'jusqu’au dernier mot, avec un peu d’air');
+  assert.ok(Math.abs(short.time - 310 / 30) < 1e-9, 'trois hauteurs de lettre par seconde');
+  assert.equal(short.airtime, 15, 'quinze secondes d’antenne au moins');
+  const long = scrollTiming(900, 10);
+  assert.ok(Math.abs(long.airtime - (1.2 + long.time + 2.4)) < 1e-9, 'une pause avant, le défilement, 2,4 s sur le dernier mot');
+  assert.equal(scrollTiming(900, 10, 40).airtime, 40, 'une ligne qui demande plus d’antenne la garde');
 });
 
 test('une recrue sur plusieurs, à quelques secondes d’écart, crie son slogan ; le gain s’affiche toujours', () => {
