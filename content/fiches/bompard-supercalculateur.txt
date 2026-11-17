@@ -1,0 +1,9 @@
+titre: Le supercalculateur
+theme: luttes
+texte: Le 5 mars 2017, Slate titre : « Manuel Bompard, le supercalculateur derrière Mélenchon ».
+portee: Portrait du directeur de campagne de Jean-Luc Mélenchon, signé Noé Michalon, dans une série sur les proches des candidats à la présidentielle, rédigée par les étudiants de l'école de journalisme de Sciences Po. Le même article le décrit en « mathématicien d'exception », auteur d'une thèse en mathématiques appliquées sur l'aérodynamique, et le dit aussi « Matheux mais pas calculateur ».
+periode: 5 mars 2017
+source.titre: Slate.fr — Manuel Bompard, le supercalculateur derrière Mélenchon
+source.url: https://www.slate.fr/story/139136/manuel-bompard-supercalculateur-melenchon
+source.nature: presse
+verifie: 2026-11-17
