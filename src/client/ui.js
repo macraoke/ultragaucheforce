@@ -723,6 +723,7 @@ export class Hud {
     this.el.hidden = !on;
     el.hidden = !on;
     if (!on) {
+      this.room = 0; // masqué : un seul morceau sur la piste, mesuré quand il revient
       cancelAnimationFrame(this.frame);
       this.frame = 0;
       this.then = undefined;

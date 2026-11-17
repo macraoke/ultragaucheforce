@@ -138,6 +138,24 @@ const toFile = (canvas) => new Promise((resolve) =>
  */
 export const saveMode = ({ coarse, files }) => (coarse && files ? 'partage' : 'telechargement');
 
+/**
+ * Enregistre l'image selon `saveMode`. Au doigt, par la feuille de partage : annulée (`AbortError`), rien de plus ;
+ * refusée pour une autre raison (`NotAllowedError`…), on la télécharge. Rend ce qui a été fait.
+ * @returns {Promise<'partage' | 'annule' | 'telechargement'>}
+ */
+export async function saveImage(file, { coarse, files, share, save }) {
+  if (saveMode({ coarse, files }) === 'partage') {
+    try {
+      await share({ files: [file] });
+      return 'partage';
+    } catch (e) {
+      if (e?.name === 'AbortError') return 'annule';
+    }
+  }
+  save(file);
+  return 'telechargement';
+}
+
 /** Télécharge `file` : une adresse « blob: », un lien posé dans la page le temps du clic, libérée une minute après. */
 function download(file) {
   const href = URL.createObjectURL(file);
@@ -159,6 +177,7 @@ export async function copyText(text, { clipboard = globalThis.navigator?.clipboa
   } catch {
     // pas d'API, ou refusée : on essaie à l'ancienne
   }
+  const focused = doc.activeElement; // le bouton « Copier le lien » : il retrouve le focus après la copie
   const field = doc.createElement('textarea');
   field.value = text;
   field.setAttribute('readonly', '');
@@ -172,6 +191,7 @@ export async function copyText(text, { clipboard = globalThis.navigator?.clipboa
     done = false;
   }
   field.remove();
+  focused?.focus?.({ preventScroll: true });
   return Boolean(done);
 }
 
@@ -213,7 +233,7 @@ export async function openShare(canvas, { text, url, button }) {
   const files = Boolean(navigator.canShare?.({ files: [file] }));
   const coarse = Boolean(globalThis.matchMedia?.('(pointer: coarse)').matches);
   const shared = (data) => navigator.share(data).catch(() => {}); // partage annulé : rien à dire
-  const save = () => (saveMode({ coarse, files }) === 'partage' ? shared({ files: [file] }) : download(file));
+  const save = () => saveImage(file, { coarse, files, share: (data) => navigator.share(data), save: download });
   const status = h('p', { className: 'copie', role: 'status' });
   let copied = 0;
   const copy = async () => {

@@ -2,7 +2,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { copyText, saveMode } from '../src/client/share.js';
+import { copyText, saveImage, saveMode } from '../src/client/share.js';
 
 test('« Enregistrer l’image » télécharge un fichier sur ordinateur, passe par la feuille de partage au doigt', () => {
   // Valentin, 17 novembre 2026 : « le bouton enregistrer l'image semble ne pas fonctionner pour moi »
@@ -12,11 +12,29 @@ test('« Enregistrer l’image » télécharge un fichier sur ordinateur, passe 
   assert.equal(saveMode({ coarse: true, files: false }), 'telechargement', 'téléphone sans partage d’image : un téléchargement');
 });
 
+test('au doigt, une feuille de partage refusée laisse place au téléchargement ; annulée, rien de plus', async () => {
+  const file = { name: 'ultragauche-force.png' };
+  const run = async (share, where = { coarse: true, files: true }) => {
+    const saved = [];
+    const result = await saveImage(file, { ...where, share, save: (f) => saved.push(f) });
+    return { result, saved: saved.length };
+  };
+  const fail = (name) => async () => { throw Object.assign(new Error(name), { name }); };
+  assert.deepEqual(await run(async () => {}), { result: 'partage', saved: 0 });
+  assert.deepEqual(await run(fail('AbortError')), { result: 'annule', saved: 0 }, 'annulée par le joueur');
+  assert.deepEqual(await run(fail('NotAllowedError')), { result: 'telechargement', saved: 1 }, 'refusée par le navigateur');
+  assert.deepEqual(await run(fail('TypeError')), { result: 'telechargement', saved: 1 });
+  let asked = false;
+  assert.deepEqual(await run(async () => { asked = true; }, { coarse: false, files: true }), { result: 'telechargement', saved: 1 });
+  assert.equal(asked, false, 'sur ordinateur, pas de feuille de partage');
+});
+
 /** Un document minimal : un champ, une sélection, `execCommand`. */
 function fakeDocument(copies) {
   const appended = [];
-  return {
+  const doc = {
     appended,
+    activeElement: { focus() { doc.refocused = true; } },
     body: { append: (el) => appended.push(el) },
     createElement: () => {
       const el = { value: '', style: {}, setAttribute() {}, select() { el.selected = true; }, remove() { el.removed = true; } };
@@ -29,6 +47,7 @@ function fakeDocument(copies) {
       return true;
     },
   };
+  return doc;
 }
 
 test('« Copier le lien » : par le presse-papiers, sinon par un champ sélectionné', async () => {
@@ -45,6 +64,7 @@ test('« Copier le lien » : par le presse-papiers, sinon par un champ sélectio
   assert.equal(await copyText(url, { clipboard: refused, doc: old }), true, 'refusé : à l’ancienne');
   assert.equal(old.copied, url);
   assert.ok(old.appended[0].removed, 'le champ est retiré');
+  assert.ok(old.refocused, 'le focus revient au bouton');
 
   assert.equal(await copyText(url, { clipboard: undefined, doc: fakeDocument(true) }), true, 'sans API du presse-papiers');
   assert.equal(await copyText(url, { clipboard: undefined, doc: fakeDocument(false) }), false, 'rien ne marche : on le dit');
