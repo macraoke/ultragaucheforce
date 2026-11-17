@@ -459,7 +459,7 @@ html.pivote body.tactile #toasts.pancarte, html.pivote body.tactile #hud:has(> #
 @media (pointer: coarse) and (orientation: portrait) and (max-height: 949px) { .menu.chargement { transform: rotate(90deg); } }
 
 /* carton d'ouverture, fin de niveau, vote */
-.panneau.intro { text-align: center; width: min(100%, 640px); }
+.panneau.intro { text-align: center; width: min(100%, 640px); display: flex; flex-direction: column; } /* la rangée des héros prend ce qui reste (plus bas) */
 .intro .tv { display: inline-flex; font: 900 1.1rem/1 var(--titre); letter-spacing: .04em; margin-bottom: 12px; }
 .intro .tv strong { background: var(--rouge); color: var(--blanc); padding: .45em .7em; }
 .intro .tv em { background: var(--or); color: var(--nuit); padding: .45em .7em; font-style: normal; }
@@ -1006,6 +1006,64 @@ html.bas .choix-heros { align-items: flex-start; }
 html.bas .choix-heros > * span { display: none; }
 html.bas .choix-heros > .choisi { width: auto; min-width: 76px; gap: 1px; padding: 2px 6px; }
 html.bas .choix-heros > .choisi span { display: block; white-space: nowrap; }
+/*
+ * Le carton d'ouverture tient dans l'écran : la déclaration, le titre et les boutons restent à l'écran, la rangée des
+ * héros prend la place qui reste et défile dans sa case (au moins une rangée visible). En hauteur d'ordinaire ; sur un
+ * écran bas, sur une seule ligne, en largeur. Un fondu au bord dit qu'il y en a d'autres de ce côté (`.avant`, `.apres`,
+ * posés par `Screens.heroScroll`).
+ */
+.panneau.intro > * { flex: none; }
+.intro .tv { align-self: center; }
+.intro .choix-heros {
+  --fondu: 28px;
+  flex: 0 1 auto;
+  min-height: 118px;
+  position: relative; /* le repère des `offsetLeft` et `offsetTop` des cases */
+  overflow: hidden auto;
+  overscroll-behavior: contain;
+  scroll-snap-type: y proximity;
+  scroll-padding-block: 6px;
+  padding: 2px 10px 8px 6px; /* l'ombre et le contour de la case choisie ne sont pas coupés */
+  scrollbar-width: thin;
+  scrollbar-color: var(--or) transparent;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 var(--fondu-avant, 0px), #000 calc(100% - var(--fondu-apres, 0px)), transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 var(--fondu-avant, 0px), #000 calc(100% - var(--fondu-apres, 0px)), transparent 100%);
+}
+.intro .choix-heros > * { flex: none; scroll-snap-align: start; }
+.intro .choix-heros.avant { --fondu-avant: var(--fondu); }
+.intro .choix-heros.apres { --fondu-apres: var(--fondu); }
+html.bas .intro .choix-heros {
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  flex-shrink: 0; /* une seule ligne : elle garde sa hauteur, c'est la déclaration qui rapetisse au besoin */
+  min-height: auto;
+  overflow: auto hidden;
+  scroll-snap-type: x mandatory;
+  scroll-padding-block: 0;
+  scroll-padding-inline: var(--fondu);
+  margin-inline: calc(-1 * clamp(14px, 3vmin, 28px) + 4px); /* la rangée va jusqu'aux bords du carton */
+  padding: 2px 10px 6px;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 var(--fondu-avant, 0px), #000 calc(100% - var(--fondu-apres, 0px)), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 var(--fondu-avant, 0px), #000 calc(100% - var(--fondu-apres, 0px)), transparent 100%);
+}
+/* Centrée quand elle tient ; quand elle déborde, les marges automatiques tombent à zéro et rien n'est coupé à gauche. */
+html.bas .intro .choix-heros > :first-child { margin-left: auto; }
+html.bas .intro .choix-heros > :last-child { margin-right: auto; }
+html.bas .intro .choix-heros > * { scroll-snap-align: center; }
+/*
+ * Plus bas encore (un iPhone en paysage, sous la barre du navigateur) : le carton se resserre avant que la déclaration
+ * rapetisse (`.serre`, posée par `Screens.intro`). Bandeau, signature, portraits et boutons perdent quelques pixels.
+ */
+.panneau.intro.serre .tv { margin-bottom: 2px; font-size: .72rem; }
+.panneau.intro.serre .signature { margin: 0; font-size: .8rem; }
+.panneau.intro.serre h2 { margin: .1em 0; font-size: 1.35rem; }
+.panneau.intro.serre p.accroche { margin: .1em 0; font-size: .76rem; line-height: 1.25; }
+.panneau.intro.serre .choix-heros { margin-block: 2px 4px; }
+.panneau.intro.serre .choix-heros canvas { width: auto !important; height: 44px !important; } /* la taille est écrite sur la toile */
+html.bas .panneau.intro.serre .choix-heros > :not(.choisi) { width: 60px; } /* sans nom : la case suit le portrait */
+.panneau.intro.serre .depart { margin-top: 0; }
+.panneau.intro.serre .boutons button.gros { font-size: 1.1rem; padding: .45em .9em; }
+.panneau.intro.serre .boutons button.discret { padding-block: .3em; }
 
 .carton .portrait { position: relative; }
 .carton .plus-un { position: absolute; top: -.35em; right: -.3em; font: 900 clamp(2.6rem, 13vmin, 6.5rem)/1 var(--titre); color: var(--or); -webkit-text-stroke: clamp(3px, .8vmin, 6px) var(--nuit); paint-order: stroke fill; text-shadow: 5px 5px 0 var(--rouge); transform: rotate(9deg); animation: plus-un .5s cubic-bezier(.2, 1.9, .4, 1) .7s both; }
