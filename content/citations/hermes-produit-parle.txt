@@ -1,0 +1,11 @@
+texte: Nous espérons que le produit parle de lui-même.
+auteur: Axel Dumas
+fonction: gérant d'Hermès
+date: 2026-06-29
+contexte: Phrase rapportée par une chronique du Journal du luxe, juste après : « Notre premier outil marketing réside dans le prix du produit. »
+categorie: puissants
+note: Propos rapportés par la chronique du 29 juin 2026, qui ne date pas chaque phrase : la date est celle de la chronique.
+source.titre: Journal du luxe — Axel Dumas, ou l'art du fatalisme enjoué (chronique d'Eric Briones)
+source.url: https://www.journalduluxe.fr/fr/mode/axel-dumas-art-fatalisme-enjoue-hermes
+source.nature: presse
+verifie: 2026-11-17

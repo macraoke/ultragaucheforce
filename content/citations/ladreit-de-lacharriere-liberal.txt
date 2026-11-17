@@ -1,0 +1,11 @@
+texte: Je suis libéral dans la tête et progressiste dans le coeur
+auteur: Marc Ladreit de Lacharrière
+fonction: président de Fimalac
+date: 2012
+contexte: Confié au magazine Capital, selon FrenchWeb, qui écrit en juillet 2013 que la phrase date de « l'année dernière ».
+categorie: puissants
+note: Lu dans FrenchWeb (11 juillet 2013) ; l'article de Capital n'a pas été ouvert.
+source.titre: FrenchWeb — Qui est l'énigmatique Marc Ladreit de Lacharrière, patron de Fimalac ?
+source.url: https://www.frenchweb.fr/qui-est-enigmatique-marc-ladreit-de-lacharriere-patron-de-fimalac/116375
+source.nature: presse
+verifie: 2026-11-17

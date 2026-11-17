@@ -1,0 +1,9 @@
+titre: 4,3 milliards de dollars
+theme: richesses
+texte: Selon Forbes, la fortune de Marc Ladreit de Lacharrière est de 4,3 milliards de dollars le 17 novembre 2026, soit environ 3,9 milliards d'euros.
+portee: Estimation en temps réel de Forbes, en dollars ; convertie au cours de référence de la Banque centrale européenne du 16 novembre 2026 (1 euro = 1,1014 dollar, https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml). Challenges le classe 28e fortune de France en 2026, stable sur un an, mais son montant est réservé aux abonnés (https://www.challenges.fr/classements/fortune/marc-ladreit-de-lacharriere_26562). Ce n'est pas de l'argent disponible.
+periode: 17 novembre 2026
+source.titre: Forbes — Marc Ladreit de Lacharrière, profil et fortune en temps réel
+source.url: https://www.forbes.com/profile/marc-ladreit-de-lacharriere/
+source.nature: presse
+verifie: 2026-11-17

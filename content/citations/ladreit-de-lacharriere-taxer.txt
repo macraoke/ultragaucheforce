@@ -1,0 +1,12 @@
+texte: J'aurais préféré qu'on les crée, plutôt que d'en être réduit à les taxer !
+auteur: Marc Ladreit de Lacharrière
+fonction: PDG de Fimalac et de Webedia
+date: 2019-05-05
+contexte: Entretien au Journal du Dimanche. Il parle des Gafa, « ces mastodontes qui ont fait de l'Europe continentale leur marché ».
+categorie: puissants
+mot: LES TAXER
+note: Entretien repris en entier sur le blog de son groupe.
+source.titre: Le blog de Fimalac — Interview de Marc Ladreit de Lacharrière dans le Journal du Dimanche (propos recueillis par Renaud Revel)
+source.url: https://blog.fimalac.com/2019/05/interview-de-marc-ladreit-de-lacharriere-dans-le-jdd.html
+source.nature: presse
+verifie: 2026-11-17

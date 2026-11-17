@@ -1,0 +1,9 @@
+titre: 30,1 milliards estimés
+theme: richesses
+texte: Selon le classement Challenges publié le 8 juillet 2026, Xavier Niel et sa famille sont la sixième fortune professionnelle de France, avec un patrimoine estimé à 30,1 milliards d'euros.
+portee: Estimation surtout fondée sur Iliad, dont il contrôle la quasi-totalité, et sur 15 % d'Unibail-Rodamco-Westfield ; en hausse de 2,2 milliards (8 %) sur un an. Ce n'est pas de l'argent disponible, et les biens personnels ne sont pas comptés.
+periode: classement 2026, publié le 8 juillet 2026
+source.titre: Challenges — Les 500 plus grandes fortunes de France en 2026
+source.url: https://www.challenges.fr/classements/fortune/
+source.nature: presse
+verifie: 2026-11-17

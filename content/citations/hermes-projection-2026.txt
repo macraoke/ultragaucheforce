@@ -1,0 +1,11 @@
+texte: Je ne peux pas faire de projection sur 2026.
+auteur: Axel Dumas
+fonction: gérant d'Hermès
+date: 2026-02-12
+contexte: Échange avec des journalistes à la publication des résultats 2025 : le bénéfice net recule, à cause de la contribution exceptionnelle des grandes entreprises, « qui représente 330 millions d'euros en 2025 ».
+categorie: puissants
+note: Dépêche AFP reprise par FashionUnited le 12 février 2026. Suite : « On est revenu dans le monde où tous les deux ans il y a un pépin quelque part ».
+source.titre: FashionUnited (AFP) — Hermès : le bénéfice net recule en 2025, affecté par la surtaxe des entreprises
+source.url: https://fashionunited.fr/actualite/business/hermes-le-benefice-net-recule-en-2025-affecte-par-la-surtaxe-des-entreprises/2026021240702
+source.nature: presse
+verifie: 2026-11-17

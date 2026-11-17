@@ -1,0 +1,9 @@
+titre: 114 milliards estimés
+theme: richesses
+texte: Selon le classement Challenges publié le 8 juillet 2026, la famille Hermès est la deuxième fortune professionnelle de France, avec un patrimoine estimé à 114 milliards d'euros.
+portee: Estimation des parts que les branches de la famille fondatrice détiennent dans Hermès, via leurs holdings ; elle perd 49,4 milliards (30 %) sur un an avec le cours de Bourse. Ce n'est pas de l'argent disponible, et les biens personnels ne sont pas comptés.
+periode: classement 2026, publié le 8 juillet 2026
+source.titre: Challenges — Les 500 plus grandes fortunes de France en 2026
+source.url: https://www.challenges.fr/classements/fortune/
+source.nature: presse
+verifie: 2026-11-17

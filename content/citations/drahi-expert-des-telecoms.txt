@@ -1,0 +1,12 @@
+texte: Je n'ai pas racheté Sotheby's pour des questions de pouvoir ou d'influence. En tant qu'expert des télécoms, je numérise Sotheby's et cela va nous faire gagner trois fois plus d'argent.
+auteur: Patrick Drahi
+fonction: fondateur et propriétaire d'Altice
+date: 2022-02-02
+contexte: Sous serment devant la commission d'enquête du Sénat sur la concentration des médias. Il est venu, dit-il, « avec un masque Sotheby's parce que je trouvais que cela faisait chic ».
+categorie: puissants
+mot: EXPERT DES TÉLÉCOMS
+note: Compte rendu rédigé du Sénat, pas le mot à mot de la vidéo. Il parle sous serment. Le boss L'Expert des télécoms lui doit son nom.
+source.titre: Sénat — CE Concentration dans les médias : compte rendu de la semaine du 31 janvier 2022 (audition de Patrick Drahi, 2 février 2022)
+source.url: https://www.senat.fr/compte-rendu-commissions/20220131/ce_medias.html
+source.nature: officielle
+verifie: 2026-11-17

@@ -1,0 +1,11 @@
+texte: Vous ne pouvez pas savoir ce bonheur qu'est le mien de participer à l'émergence, à la construction d'un monde nouveau.
+auteur: Marc Ladreit de Lacharrière
+fonction: PDG de Fimalac et de Webedia
+date: 2019-05-05
+contexte: Dernière phrase de son entretien au Journal du Dimanche, après avoir promis de doubler le chiffre d'affaires de Webedia « dans les cinq ans ».
+categorie: puissants
+note: Entretien repris en entier sur le blog de son groupe.
+source.titre: Le blog de Fimalac — Interview de Marc Ladreit de Lacharrière dans le Journal du Dimanche (propos recueillis par Renaud Revel)
+source.url: https://blog.fimalac.com/2019/05/interview-de-marc-ladreit-de-lacharriere-dans-le-jdd.html
+source.nature: presse
+verifie: 2026-11-17

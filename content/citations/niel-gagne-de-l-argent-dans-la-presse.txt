@@ -1,0 +1,12 @@
+texte: Pour moi, c'est une activité industrielle. J'ai gagné de l'argent dans la presse.
+auteur: Xavier Niel
+fonction: fondateur et actionnaire du groupe Iliad
+date: 2022-02-18
+contexte: Sous serment devant la commission d'enquête du Sénat sur la concentration des médias, en réponse à une question sur ses titres de presse.
+categorie: puissants
+mot: ACTIVITÉ INDUSTRIELLE
+note: Compte rendu rédigé du Sénat, pas le mot à mot de la vidéo. Il parle sous serment. Il ajoute aussitôt avoir vendu à « un concurrent, Patrick Drahi, qui a payé un prix incroyable ».
+source.titre: Sénat — CE Concentration dans les médias : compte rendu de la semaine du 14 février 2022 (audition de Xavier Niel, 18 février 2022)
+source.url: https://www.senat.fr/compte-rendu-commissions/20220214/ce_medias.html
+source.nature: officielle
+verifie: 2026-11-17
