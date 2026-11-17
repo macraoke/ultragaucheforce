@@ -325,6 +325,13 @@ test('le fil de PANIQUE TV : une ligne trop longue défile un tiers moins vite, 
   const long = scrollTiming(900, 10);
   assert.ok(Math.abs(long.airtime - (1.2 + long.time + 2.4)) < 1e-9, 'une pause avant, le défilement, 2,4 s sur le dernier mot');
   assert.equal(scrollTiming(900, 10, 40).airtime, 40, 'une ligne qui demande plus d’antenne la garde');
+  // Valentin, 17 novembre 2026 : « le bandeau de panique TV: ne casse pas sur plusieurs lignes, fait défiler plutôt ! »
+  assert.deepEqual(scrollTiming(0, 10), { travel: 0, time: 0, airtime: 15 }, 'une ligne qui tient ne défile pas');
+  assert.deepEqual(scrollTiming(-40, 10, 7), { travel: 0, time: 0, airtime: 7 });
+  const slow = scrollTiming(900, 10, 15, true);
+  assert.equal(slow.travel, long.travel, 'en effets réduits, elle défile aussi jusqu’au dernier mot');
+  assert.ok(Math.abs(slow.time - 2 * long.time) < 1e-9, 'deux fois moins vite');
+  assert.ok(Math.abs(slow.airtime - (1.2 + slow.time + 2.4)) < 1e-9, 'avec les mêmes pauses');
 });
 
 test('une recrue sur plusieurs, à quelques secondes d’écart, crie son slogan ; le gain s’affiche toujours', () => {

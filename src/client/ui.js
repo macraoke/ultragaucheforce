@@ -17,6 +17,7 @@ const MENTION = 'Satire citoyenne, libre et collaborative.';
 const PANIC_NAMES = ['calme', 'alerte', 'hystérie']; // les trois crans de la chaîne
 const AIRTIME = 15; // secondes d'antenne d'une citation qui tient sur le fil
 const SCROLL = 3; // vitesse de défilement d'une ligne trop longue, en hauteurs de lettre par seconde
+const SCROLL_SLOW = 1.5; // en effets réduits : elle défile quand même, deux fois moins vite (elle ne passe jamais à la ligne)
 const SCROLL_BEFORE = 1.2; // secondes de pause avant qu'une ligne trop longue défile (le délai de `defile`, style.css)
 const SCROLL_AFTER = 2.4; // secondes de pause sur son dernier mot, avant la ligne suivante
 const HYSTERIA = 2; // le cran où la chaîne ne lâche plus sa citation : plus de rotation
@@ -59,11 +60,13 @@ export function lineBar(game, memo) {
 /**
  * Une ligne trop longue pour le fil de PANIQUE TV, de `over` pixels de trop, en lettres de `em` pixels : jusqu'où elle
  * défile (son dernier mot, avec un peu d'air), en combien de secondes, et son temps d'antenne : une pause avant, le
- * défilement, une pause sur son dernier mot ; `seconds` au moins.
+ * défilement, une pause sur son dernier mot ; `seconds` au moins. `slow` : effets réduits, deux fois moins vite.
+ * Une ligne qui tient (`over` ≤ 0) ne défile pas.
  */
-export function scrollTiming(over, em, seconds = AIRTIME) {
+export function scrollTiming(over, em, seconds = AIRTIME, slow = false) {
+  if (!(over > 0)) return { travel: 0, time: 0, airtime: seconds };
   const travel = over + em;
-  const time = travel / (em * SCROLL);
+  const time = travel / (em * (slow ? SCROLL_SLOW : SCROLL));
   return { travel, time, airtime: Math.max(seconds, SCROLL_BEFORE + time + SCROLL_AFTER) };
 }
 
@@ -749,28 +752,19 @@ export class Hud {
     const inner = line.firstElementChild;
     this.airtime = this.seconds ?? AIRTIME;
     if (!inner) return;
-    line.classList.remove('replie');
     inner.style.animation = 'none'; // sans défilement tant qu'on ne sait pas s'il en faut un
     const style = getComputedStyle(line);
     const room = line.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
     const over = inner.scrollWidth - room;
     if (room <= 0 || over <= 0) return; // bandeau masqué, ou la ligne tient
+    // Jamais sur deux lignes : la ligne défile, sur une seule ligne, dans un bandeau de hauteur fixe. En effets réduits,
+    // elle défile deux fois moins vite, sans les autres animations du bandeau (style.css).
     const still = document.body.classList.contains('sobre') || matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (still) {
-      // Effets réduits : la ligne se replie, en réduisant le corps jusqu'à ce qu'elle tienne dans le bandeau.
-      line.classList.add('replie');
-      for (const size of [0.86, 0.74, 0.62, 0.54, 0.46, 0.4]) {
-        line.style.setProperty('--corps', `${size}em`);
-        if (inner.offsetHeight <= line.clientHeight) break;
-      }
-      this.airtime += 2;
-      return;
-    }
-    const { travel, time, airtime } = scrollTiming(over, parseFloat(style.fontSize), this.airtime);
+    const { travel, time, airtime } = scrollTiming(over, parseFloat(style.fontSize), this.airtime, still);
     inner.style.setProperty('--decalage', `${-travel}px`);
     void inner.offsetWidth; // relance le défilement depuis le début
-    inner.style.animation = '';
-    inner.style.animationDuration = `${time.toFixed(2)}s`;
+    // Écrit ici en entier : il passe aussi quand les effets réduits arrêtent les autres animations du bandeau.
+    inner.style.animation = `defile ${time.toFixed(2)}s linear ${SCROLL_BEFORE}s both`;
     this.airtime = airtime;
   }
 
