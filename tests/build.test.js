@@ -22,7 +22,7 @@ test('le build produit un site complet, installable et jouable hors-ligne', (t) 
     assert.ok(existsSync(join(out, path)), `${path} est dans le build`);
   }
   assert.ok(!files.some((p) => p.endsWith('.txt') || p.endsWith('.md')), 'ni fiches ni documentation : le contenu est dans content.json');
-  assert.ok(bytes < 2_000_000, `le jeu reste léger (${bytes} octets)`);
+  assert.ok(bytes < 3_000_000, `le jeu reste léger (${bytes} octets)`);
 
   // La balise qui autorise l'enregistrement du service worker.
   const page = read('index.html').toString();

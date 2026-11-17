@@ -1,0 +1,9 @@
+titre: 27 milliards estimés
+theme: richesses
+texte: Selon le classement Challenges publié le 8 juillet 2026, Gérard Mulliez et sa famille (groupe Mulliez : Auchan, Decathlon, Leroy Merlin…) sont la huitième fortune professionnelle de France, avec un patrimoine estimé à 27 milliards d'euros, 1,1 milliard de plus qu'en 2025.
+portee: Estimation du magazine, pour une « grande famille nordiste (plus de 1 000 personnes) » qui contrôle Auchan par les holdings Elo et Adeo, selon la fiche de Challenges. Les actifs non cotés sont estimés ; les biens personnels ne sont pas comptés. Ce n'est pas de l'argent disponible.
+periode: classement 2026, publié le 8 juillet 2026
+source.titre: Challenges — Gérard Mulliez et sa famille, Les 500 plus grandes fortunes de France 2026
+source.url: https://www.challenges.fr/classements/fortune/gerard-mulliez-et-sa-famille_26540
+source.nature: presse
+verifie: 2026-11-17

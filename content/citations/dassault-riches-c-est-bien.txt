@@ -1,0 +1,12 @@
+texte: Alors les riches c'est bien, il faut les garder.
+auteur: Serge Dassault
+fonction: sénateur UMP, président du groupe Dassault
+date: 2012-02-08
+contexte: Depuis le public d'une réunion sur les délocalisations au siège de l'UMP, à Paris, alors sénateur UMP de l'Essonne, à propos de l'impôt sur la fortune.
+categorie: puissants
+mot: LES RICHES C'EST BIEN
+note: FranceTransactions rapporte la même phrase ainsi : « Alors les riches, c'est bien, faut les garder ! » La version retenue est celle de Politis, qui publie le passage entier.
+source.titre: Politis — Serge Dassault se lâche (Xavier Frison, 8 février 2012)
+source.url: https://www.politis.fr/articles/2012/02/serge-dassault-se-lache-17086
+source.nature: presse
+verifie: 2026-11-17

@@ -1,0 +1,12 @@
+texte: Financièrement et économiquement, la France devient dangereuse.
+auteur: Pierre Castel
+fonction: fondateur du groupe Castel (vins, bières)
+date: 2014
+contexte: Dans un « rare entretien accordé à Challenges en 2014 », selon franceinfo, sur son départ de France pour la Suisse après l'élection de François Mitterrand en 1981.
+categorie: puissants
+mot: DANGEREUSE
+note: franceinfo cite d'un seul tenant : « J'ai toujours eu peur des socialistes [...]. Financièrement et économiquement, la France devient dangereuse. Lorsqu'on vous prend plus de 50% de vos revenus, vous ne pouvez pas l'accepter. » L'entretien original de Challenges n'a pas pu être ouvert : le texte est celui de franceinfo.
+source.titre: franceinfo (cellule investigation de Radio France) — Paradis fiscaux : la face cachée de l'empire Castel, rattrapé par le fisc suisse (26 mai 2023)
+source.url: https://www.franceinfo.fr/monde/afrique/centrafrique/enquete-paradis-fiscaux-la-face-cachee-de-l-empire-castel-rattrape-par-le-fisc-suisse_5848793.html
+source.nature: presse
+verifie: 2026-11-17

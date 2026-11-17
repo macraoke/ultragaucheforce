@@ -1,0 +1,9 @@
+titre: 6,15 milliards estimés
+theme: richesses
+texte: Selon le classement Challenges 2026, Martin et Olivier Bouygues et leur famille ont une fortune professionnelle estimée à 6,15 milliards d'euros, au 19e rang, contre le 26e en 2025.
+portee: Estimation du magazine, lue dans sa reprise par iDealwine (la fiche de Challenges n'a pas pu être ouverte). Elle repose surtout sur la part de la famille dans le groupe Bouygues (BTP, Colas, Bouygues Telecom, TF1). Les biens personnels ne sont pas comptés. Ce n'est pas de l'argent disponible.
+periode: classement 2026
+source.titre: iDealwine — Les plus grandes fortunes du vin (édition 2026 du classement Challenges)
+source.url: https://www.idealwine.net/les-plus-grosses-fortunes-du-vin/
+source.nature: presse
+verifie: 2026-11-17

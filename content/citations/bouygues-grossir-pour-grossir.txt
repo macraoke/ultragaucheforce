@@ -1,0 +1,12 @@
+texte: Ce que nous souhaitons faire, ce n'est pas grossir pour grossir.
+auteur: Martin Bouygues
+fonction: président du groupe Bouygues
+date: 2022-02-18
+contexte: Audition sous serment devant la commission d'enquête du Sénat sur la concentration des médias, à propos du projet de fusion TF1-M6.
+categorie: puissants
+mot: GROSSIR POUR GROSSIR
+note: Suite : « Nous avons seulement besoin qu'on nous permette de faire pivoter notre modèle. » Le même article l'appelle « le prince du béton » : le boss lui doit son nom. Le compte rendu du Sénat n'a pas été ouvert : le texte est celui de Public Sénat.
+source.titre: Public Sénat — Martin Bouygues minimise l'influence du groupe TF1 et riposte aux propos de Xavier Niel (18 février 2022)
+source.url: https://www.publicsenat.fr/article/parlementaire/martin-bouygues-minimise-l-influence-du-groupe-tf1-et-riposte-aux-propos-de
+source.nature: presse
+verifie: 2026-11-17

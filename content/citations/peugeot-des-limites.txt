@@ -1,0 +1,12 @@
+texte: Nous sommes prêts à accepter la critique, mais il y a des limites.
+auteur: Thierry Peugeot
+fonction: président du conseil de surveillance de PSA Peugeot Citroën
+date: 2012-07-19
+contexte: Entretien au Figaro.fr, rapporté par l'AFP, après l'annonce de 8 000 suppressions de postes en France et de la fermeture de l'usine d'Aulnay, en réponse aux critiques du président de la République et du gouvernement.
+categorie: puissants
+mot: DES LIMITES
+note: Juste avant : « Il y a des mots que je n'ai pas aimés et qui ont été répétés : +mensonge+ et +dissimulation+. »
+source.titre: Webmanagercenter (dépêche AFP) — PSA : « Il y a des limites » à la critique, affirme Thierry Peugeot (19 juillet 2012)
+source.url: https://www.webmanagercenter.com/2012/07/19/122482/psa-il-y-a-des-limites-a-la-critique-affirme-thierry-peugeot/
+source.nature: presse
+verifie: 2026-11-17
