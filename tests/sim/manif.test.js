@@ -7,6 +7,7 @@ import { fixtureBundle, flat, level, play, run, settle } from './helpers.js';
 import { TILE } from '../../src/sim/world.js';
 import { LINE_REACH, KETTLE_FLOOR } from '../../src/sim/enemy.js';
 import { spawnProjectile } from '../../src/sim/projectile.js';
+import { syncCortege } from '../../src/sim/manif.js';
 
 const enemy = (id) => ({ type: 'ennemi', id });
 const recruit = (id) => ({ type: 'recrue', id });
@@ -528,4 +529,24 @@ test('pancartes : les rares sortent moins souvent, et le cortège ne montre que 
   }
   assert.ok(empty > 120 && empty < 280, `une fois sur deux, le cortège de départ n'en a pas (${empty} sur 400)`);
   assert.ok(seen.LÉGENDAIRE > 0 && seen.COMMUNE > seen.LÉGENDAIRE * 2, `une légendaire sort trois fois moins qu’une commune : ${JSON.stringify(seen)}`);
+});
+
+// ---------------------------------------------------------------- drapeaux
+
+test('drapeaux : plus de drapeaux que de porteurs, chacun finit par défiler d’une partie à l’autre', () => {
+  const base = fixtureBundle();
+  const one = Object.values(base.drapeaux)[0];
+  const drapeaux = Object.fromEntries(Array.from({ length: 23 }, (_, i) => [`lutte-${i}`, one]));
+  const bundle = { ...base, drapeaux };
+  const seen = new Set();
+  for (let seed = 1; seed <= 23; seed++) {
+    const game = settle(play(flat({ cortege: true }), { bundle, seed }));
+    game.crowd = 1000;
+    syncCortege(game);
+    const flags = game.cortege.filter((m) => m.kind === 'drapeau').map((m) => m.label);
+    assert.ok(flags.length < 23, `un cortège plein porte moins de drapeaux qu’il n’en existe (${flags.length})`);
+    assert.equal(new Set(flags).size, flags.length, 'pas deux fois le même drapeau dans un cortège');
+    flags.forEach((f) => seen.add(f));
+  }
+  assert.equal(seen.size, 23, 'la graine change le premier drapeau : aucun ne reste au vestiaire');
 });

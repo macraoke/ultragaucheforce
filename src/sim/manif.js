@@ -113,7 +113,9 @@ export function syncCortege(game) {
     let label = INSTRUMENTS[turn % INSTRUMENTS.length];
     // Un nouveau porteur prend une pancarte déjà arrivée dans la manif, s'il en reste une que personne ne montre.
     if (kind === 'pancarte') label = game.signs.findLast((t) => !cortege.some((m) => m.label === t)) ?? '';
-    if (kind === 'drapeau') label = flags.length ? flags[turn % flags.length] : '';
+    // Le cortège porte au plus MAX_CORTEGE / 3 drapeaux : la graine de la partie choisit par lequel il commence,
+    // pour que chaque drapeau finisse par défiler d'une partie à l'autre (sans tirer dans game.rng).
+    if (kind === 'drapeau') label = flags.length ? flags[((game.seed >>> 0) + turn) % flags.length] : '';
     cortege.push({
       x: hero.x + hero.w / 2, y: hero.y + hero.h, facing: hero.facing, kind, label, gassed: 0, pushed: 0, shove: 0,
       animTime: n * 0.13, counted: false,

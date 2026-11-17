@@ -52,6 +52,7 @@ export function showHeroCard(bundle, hero, { audio = null, reduced = false, resc
     const half = Math.ceil(flags.length / 2);
     [['haut', flags.slice(0, half)], ['bas', flags.slice(half)]].forEach(([side, list]) => {
       const row = el('div', `drapeaux ${side}`);
+      row.style.setProperty('--n', String(Math.max(1, list.length)));
       list.forEach((f) => {
         const flag = spriteElement(f.sprites.image, bundle.palette, 4);
         flag.title = f.nom;
