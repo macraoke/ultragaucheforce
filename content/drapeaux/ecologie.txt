@@ -1,5 +1,6 @@
 nom: Drapeau de l’écologie
 description: Le tournesol des marches pour le climat.
+proximite: 3
 auteur: UltraGauche Force
 ressource.1.titre: A69 : les conclusions du rapporteur spécial de l'ONU
 ressource.1.url: https://unric.org/fr/ecureuils-mobilises-contre-la69-conclusions-du-rapporteur-special-de-lonu/

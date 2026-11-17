@@ -1,5 +1,6 @@
 nom: Drapeau de l'Ukraine
 description: L'agression russe, déplorée par l'Assemblée générale de l'ONU le 2 mars 2022.
+proximite: 1
 auteur: UltraGauche Force
 ressource.1.titre: L'ONU exige le départ des forces russes d'Ukraine — Nations unies (UNRIC)
 ressource.1.url: https://unric.org/fr/lonu-exige-le-depart-des-forces-russes-dukraine/

@@ -1,5 +1,6 @@
 nom: Drapeau de l'Arménie
 description: Plus de 100 000 Arméniens ont fui le Haut-Karabakh en 2023 ; pour le Parlement européen, cela « s'apparente à un nettoyage ethnique ».
+proximite: 2
 auteur: UltraGauche Force
 ressource.1.titre: Résolution sur la situation au Haut-Karabakh après l'attaque menée par l'Azerbaïdjan et la persistance des menaces contre l'Arménie — Parlement européen, 5 octobre 2023
 ressource.1.url: https://oeil.europarl.europa.eu/oeil/fr/document-summary?id=1760852

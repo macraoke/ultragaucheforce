@@ -564,3 +564,26 @@ test('drapeaux : le tricolore ouvre la manif, LFI suit, puis le hasard ; chacun 
   }
   assert.equal(marched.size, 23, 'aucun drapeau ne reste au vestiaire');
 });
+
+test('drapeaux : une lutte proche (proximité 3) défile plus tôt qu’une lutte lointaine (proximité 1)', () => {
+  const near = Array.from({ length: 6 }, (_, i) => `proche-${i}`);
+  const far = Array.from({ length: 6 }, (_, i) => `loin-${i}`);
+  const ids = ['tricolore', 'lfi', ...near, ...far];
+  const weight = (id) => (id.startsWith('proche') ? 3 : 1);
+  const rank = { proche: 0, loin: 0 };
+  let farFirst = 0;
+  const seeds = 2000;
+  for (let seed = 1; seed <= seeds; seed++) {
+    const order = flagOrder(ids, seed, weight);
+    assert.deepEqual(order.slice(0, 2), ['tricolore', 'lfi'], `graine ${seed} : le tricolore, puis LFI`);
+    assert.equal(new Set(order).size, ids.length, 'chaque drapeau une fois');
+    assert.deepEqual(flagOrder(ids, seed, weight), order, 'même graine, même ordre');
+    order.forEach((id, i) => { if (i >= 2) rank[id.split('-')[0]] += i; });
+    if (order[2].startsWith('loin')) farFirst++;
+  }
+  const avgNear = rank.proche / (seeds * near.length);
+  const avgFar = rank.loin / (seeds * far.length);
+  assert.ok(avgNear + 2 < avgFar, `les proches passent devant : rang moyen ${avgNear.toFixed(2)} contre ${avgFar.toFixed(2)}`);
+  // Un poids, pas un tri : une lutte lointaine ouvre encore la marche de temps en temps (1/(1+3) par drapeau, soit 1/4 ici).
+  assert.ok(farFirst > seeds * 0.15 && farFirst < seeds * 0.35, `une lutte lointaine passe troisième ${farFirst} fois sur ${seeds}`);
+});

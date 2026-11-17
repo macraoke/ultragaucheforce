@@ -14,17 +14,19 @@ const MAX_CORTEGE = 40;
 const LEADING_FLAGS = ['tricolore', 'lfi'];
 
 /**
- * L'ordre des drapeaux du cortège : le tricolore, puis LFI, puis tous les autres mélangés selon la graine
- * de la partie (un hasard à part, qui ne tire pas dans game.rng). D'une partie à l'autre, chacun finit par défiler.
+ * L'ordre des drapeaux du cortège : le tricolore, puis LFI, puis les autres tirés selon la graine de la partie
+ * (un hasard à part, qui ne tire pas dans game.rng). `weightOf(id)` donne la proximité d'une lutte (1 à 3) :
+ * plus elle est proche, plus elle sort tôt. Tirage pondéré sans remise (Efraimidis–Spirakis) : chaque drapeau
+ * reçoit la clé u^(1/poids), on range par clé décroissante. D'une partie à l'autre, chacun finit par défiler.
  */
-export function flagOrder(ids, seed) {
+export function flagOrder(ids, seed, weightOf = () => 1) {
   const lead = LEADING_FLAGS.filter((id) => ids.includes(id));
-  const rest = ids.filter((id) => !lead.includes(id));
   const rng = makeRng(seed);
-  for (let i = rest.length - 1; i > 0; i--) {
-    const j = rng.int(i + 1);
-    [rest[i], rest[j]] = [rest[j], rest[i]];
-  }
+  const rest = ids
+    .filter((id) => !lead.includes(id))
+    .map((id) => ({ id, key: Math.pow(rng.next(), 1 / Math.max(1, weightOf(id) || 1)) }))
+    .sort((a, b) => b.key - a.key)
+    .map((d) => d.id);
   return [...lead, ...rest];
 }
 const SPACING = 7; // points de trace entre deux manifestants
@@ -123,7 +125,7 @@ export function syncCortege(game) {
   const { hero, bundle, cortege } = game;
   const wanted = visibleCortege(game.crowd);
   if (cortege.length > wanted) cortege.length = wanted;
-  const flags = cortege.length < wanted ? flagOrder(Object.keys(bundle.drapeaux || {}), game.seed) : [];
+  const flags = cortege.length < wanted ? flagOrder(Object.keys(bundle.drapeaux || {}), game.seed, (id) => bundle.drapeaux[id].proximite) : [];
   while (cortege.length < wanted) {
     const n = cortege.length;
     const kind = KINDS[n % KINDS.length];

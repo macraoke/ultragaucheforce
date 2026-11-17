@@ -1,5 +1,6 @@
 nom: Convergence des luttes
 description: Tous les drapeaux dans le même cortège.
+proximite: 3
 auteur: UltraGauche Force
 ressource.1.titre: C'est quoi la « convergence des luttes » ? — Brut (vidéo, 2 min)
 ressource.1.url: https://www.youtube.com/watch?v=YF1XLdNhZbI

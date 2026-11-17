@@ -31,10 +31,19 @@ YYYYYYYYYYYYYYYYYY
 |---|---|
 | `nom` | obligatoire |
 | `description` | une phrase |
+| `proximite` | `1`, `2` ou `3` (`2` sans le champ) : à quel point la lutte est proche de nous |
 | `ressource.1.titre` | le titre, avec son auteur ou son média |
 | `ressource.1.url` | l'adresse, en `https://` |
 | `ressource.1.nature` | `officielle`, `presse`, `associative`, `militante` ou `createur` |
 | `ressource.2.…`, `ressource.3.…` | trois ressources au plus |
+
+## La proximité
+
+Le cortège s'ouvre toujours sur le tricolore, puis LFI. Les autres drapeaux sont tirés au hasard, mais une lutte proche sort plus tôt et plus souvent qu'une lutte lointaine.
+
+- `3` : une lutte d'ici, au cœur du programme insoumis (le social, l'écologie, le féminisme, l'antiracisme, les fiertés, la Palestine, Kanaky…).
+- `2` : une lutte que la gauche porte à l'Assemblée ou dans la rue, sans qu'elle soit au cœur du cortège.
+- `1` : une lutte lointaine, ou sur laquelle la gauche se divise.
 
 ## Le dessin
 
