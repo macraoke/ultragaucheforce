@@ -4,6 +4,8 @@ slogan: JUSQU'AU RETRAIT
 slogan: AUGMENTEZ LES SALAIRES !
 fiche: programme-smic
 fiche: smic
+fiche: penn-sardin-1924
+fiche: ibis-batignolles
 auteur: UltraGauche Force
 --- image
 ....TTTT....kkkk....rrrr....GGGG....TTTT....

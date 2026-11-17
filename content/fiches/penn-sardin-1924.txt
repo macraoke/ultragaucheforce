@@ -1,0 +1,9 @@
+titre: Les Penn sardin, 1924
+theme: luttes
+texte: En novembre 1924, à Douarnenez, plus de 2 000 ouvrières des conserveries, payées 0,80 franc de l'heure, se mettent en grève. Leur slogan : « Pemp real a vo » (25 sous). Après 46 jours de grève, elles obtiennent 1 franc de l'heure.
+portee: Dossier de presse du centenaire, Ville de Douarnenez (novembre 2024). « Penn sardin » veut dire « tête de sardine » en breton ; 25 sous font 1,25 franc de l'heure. Elles obtiennent aussi 50 % de plus après 22 heures et après la dixième heure de travail, et la reconnaissance du droit syndical.
+periode: 1924-1925
+source.titre: Ville de Douarnenez — Dossier de presse : le centenaire de la grève des sardinières
+source.url: https://www.douarnenez.bzh/wp-content/uploads/2024/11/DP-centenaire-de-la-greve_20241108-2.pdf
+source.nature: officielle
+verifie: 2026-11-17

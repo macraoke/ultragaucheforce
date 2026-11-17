@@ -1,0 +1,9 @@
+titre: Lip, 1973 : on fabrique, on vend, on se paye
+theme: luttes
+texte: En 1973, à Besançon, les travailleurs de l'usine horlogère Lip confisquent le stock de montres le 12 juin, relancent la production le 18 juin et organisent la première paie ouvrière le 2 août.
+portee: Politis, 29 septembre 2023, pour les cinquante ans. Le 29 septembre 1973, 100 000 personnes manifestent à Besançon, sous une pluie battante, pour soutenir la lutte. Sur la façade de l'usine occupée, une banderole : « C'est possible : on fabrique, on vend, on se paye. »
+periode: 1973
+source.titre: Politis — Lip : 50 ans après la lutte, se souvenir des possibles
+source.url: https://www.politis.fr/articles/2023/09/50-ans-lip-apres-la-lutte-se-souvenir-des-possibles/
+source.nature: presse
+verifie: 2026-11-17
