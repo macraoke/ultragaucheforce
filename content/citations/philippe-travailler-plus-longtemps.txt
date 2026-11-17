@@ -1,0 +1,12 @@
+texte: Dire qu'il faut travailler plus longtemps n'est pas très populaire en France, mais je veux protéger les Français.
+auteur: Édouard Philippe
+fonction: président d'Horizons, maire du Havre, candidat à l'élection présidentielle
+date: 2026-09-29
+contexte: Vidéo publiée sur ses réseaux sociaux pour présenter sa réforme des retraites : reprendre l'âge légal de 64 ans de la réforme de 2023, puis le porter à 65 ans et 45 annuités « en moins de 10 ans ».
+categorie: puissants
+mot: TRAVAILLER PLUS LONGTEMPS
+note: Dans l'article, « reconnaît-il » coupe la phrase en deux. Il y ajoute une part de capitalisation et promet qu'« un Français sur trois » pourra partir avant 65 ans.
+source.titre: Public Sénat — Retraites : Édouard Philippe sort du bois et propose un âge de départ à 65 ans
+source.url: https://www.publicsenat.fr/actualites/politique/retraites-edouard-philippe-sort-du-bois-et-propose-un-age-de-depart-a-65-ans
+source.nature: presse
+verifie: 2026-11-17

@@ -1,0 +1,12 @@
+texte: On est dans une situation trop fragile pour imposer en quelque sorte, de manière autoritaire, une augmentation du SMIC de 10%.
+auteur: Marine Le Pen
+fonction: présidente du groupe Rassemblement national à l'Assemblée nationale, candidate à l'élection présidentielle
+date: 2026-11-05
+contexte: Devant la presse au salon Euronaval de Villepinte (Seine-Saint-Denis), à propos de la hausse du Smic de 10 % réclamée notamment par la CGT.
+categorie: puissants
+mot: SMIC
+note: L'article insère « (aux entreprises) » entre parenthèses après « imposer » ; ce n'est pas d'elle. Ensuite : « On ne peut pas faire ça de manière coercitive parce que sinon on change de régime », et si on y oblige les entreprises, « on rentre dans l'URSS (et) je ne suis pas absolument convaincue de l'efficacité de l'URSS ». Elle propose d'exonérer de cotisations les entreprises qui augmentent les salaires de 10 %.
+source.titre: Boursorama — Salaires : "On rentre dans l'URSS", Marine Le Pen refuse d'imposer aux entreprises une augmentation du SMIC "de manière autoritaire"
+source.url: https://www.boursorama.com/actualite-economique/actualites/salaires-on-rentre-dans-l-urss-marine-le-pen-refuse-d-imposer-aux-entreprises-une-augmentation-du-smic-de-maniere-autoritaire-71635b42f595593cbd2dd898282b91f2
+source.nature: presse
+verifie: 2026-11-17

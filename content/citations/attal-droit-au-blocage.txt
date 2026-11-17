@@ -1,0 +1,12 @@
+texte: Il n'y aura jamais de droit au blocage.
+auteur: Gabriel Attal
+fonction: Premier ministre
+date: 2024-04-27
+contexte: En déplacement à Pirou (Manche), au lendemain du blocage et de l'occupation partielle de Sciences Po Paris par des étudiants mobilisés pour la Palestine.
+categorie: diabolisation
+mot: DROIT AU BLOCAGE
+note: Phrase complète : « Il n'y aura jamais de droit au blocage, jamais de tolérance avec l'action d'une minorité agissante et dangereuse qui cherche à imposer ses règles à nos étudiants et nos enseignants. »
+source.titre: Europe 1 — Mobilisation propalestinienne à Sciences Po : «Il n'y aura jamais de droit au blocage», affirme Gabriel Attal
+source.url: https://www.europe1.fr/politique/mobilisation-propalestinienne-a-sciences-po-il-ny-aura-jamais-de-droit-au-blocage-affirme-gabriel-attal-4243899
+source.nature: presse
+verifie: 2026-11-17

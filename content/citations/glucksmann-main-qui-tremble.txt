@@ -1,0 +1,12 @@
+texte: Il va falloir agir de manière extrêmement ferme, il ne faut pas avoir la main qui tremble.
+auteur: Raphaël Glucksmann
+fonction: député européen, candidat du Parti socialiste et de Place publique à l'élection présidentielle
+date: 2026-10-19
+contexte: Sur RTL, deux jours après la journée de mobilisation du 17 octobre contre la vie chère, à propos des « bandes » qui ont pillé en marge des cortèges et du peu de policiers sur le terrain.
+categorie: diabolisation
+mot: MAIN QUI TREMBLE
+note: Juste après : « Il faut que ceux qui ont été identifiés soient recherchés, qu'on aille les traquer, qu'on aille les chercher chez eux, qu'ils répondent de leurs actes devant la justice. » Il accuse Jean-Luc Mélenchon d'être « le marchepied de l'extrême droite », et demande au président de répondre « aux lycéens qui ont des revendications depuis des semaines ». Dépêche AFP.
+source.titre: La Gazette France (AFP) — Violences: Glucksmann appelle à une réponse "extrêmement ferme" sinon "Le Pen bénéficiera du chaos"
+source.url: https://www.lagazettefrance.fr/article/violences-glucksmann-appelle-a-une-reponse-extremement-ferme-sinon-le-pen-beneficiera-du-chaos
+source.nature: presse
+verifie: 2026-11-17

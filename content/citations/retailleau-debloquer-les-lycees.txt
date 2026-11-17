@@ -1,0 +1,12 @@
+texte: Requérir les forces de sécurité pour débloquer les lycées.
+auteur: Bruno Retailleau
+fonction: président des Républicains, sénateur de la Vendée, candidat à l'élection présidentielle
+date: 2026-11-05
+contexte: Sur franceinfo, le matin d'une journée de mobilisation sociale à laquelle lycéens et étudiants étaient appelés. C'est ce qu'il demande à l'Éducation nationale.
+categorie: diabolisation
+mot: DÉBLOQUER LES LYCÉES
+note: Le même matin : « Il est temps de ne pas bloquer », « la violence d'une minorité bruyante », et « Quand vous avez 15 lycéens qui empêchent des centaines [d'autres] d'entrer dans un lycée, je dis qu'il y un acte de violence » (sic). Il ajoute : « L'angoisse sociale, la colère, je la comprends. »
+source.titre: franceinfo — Bruno Retailleau appelle à "ne pas bloquer" les lycées et dénonce "la violence d'une minorité bruyante"
+source.url: https://www.franceinfo.fr/politique/bruno-retailleau/bruno-retailleau-appelle-a-ne-pas-bloquer-les-lycees-et-denonce-la-violence-d-une-minorite-bruyante_8268953.html
+source.nature: presse
+verifie: 2026-11-17

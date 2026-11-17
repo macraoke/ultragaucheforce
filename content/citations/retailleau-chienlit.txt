@@ -1,0 +1,12 @@
+texte: Il faut décréter l'état d'urgence. La chienlit, ça suffit.
+auteur: Bruno Retailleau
+fonction: président des Républicains, sénateur de la Vendée, candidat à l'élection présidentielle
+date: 2026-10-21
+contexte: Aux questions d'actualité au gouvernement du Sénat, quatre jours après la journée de mobilisation du 17 octobre contre la vie chère, marquée par des pillages en marge des cortèges.
+categorie: diabolisation
+mot: CHIENLIT
+note: Phrase complète : « Monsieur le Premier ministre, il faut décréter l'état d'urgence. La chienlit, ça suffit. Donnez aux préfets, donnez aux forces de l'ordre les moyens qu'ils n'ont pas, y compris en matière de réseaux sociaux. » Même séance : « Un policier, un gendarme, ça n'est pas un animateur socioculturel. » Laurent Nuñez lui répond : « Nous ne sommes pas à un stade où il y aura déclaration de l'état d'urgence. »
+source.titre: Public Sénat — Violences urbaines : « Nous ne sommes pas à un stade où il y aura déclaration de l'état d'urgence », affirme le ministre de l'Intérieur
+source.url: https://www.publicsenat.fr/actualites/politique/violences-urbaines-nous-ne-sommes-pas-a-un-stade-ou-il-y-aura-declaration-de-letat-durgence-affirme-le-ministre-de-linterieur
+source.nature: presse
+verifie: 2026-11-17

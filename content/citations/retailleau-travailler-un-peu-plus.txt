@@ -1,0 +1,12 @@
+texte: Si on veut moins de pauvreté en France, il faut plus de travail, créer plus de richesse et travailler un peu plus.
+auteur: Bruno Retailleau
+fonction: président des Républicains, sénateur de la Vendée, candidat à l'élection présidentielle
+date: 2026-11-16
+contexte: Débat de LCI entre cinq candidats à l'élection présidentielle, dans un entrepôt des Restos du Cœur, ouvert par la question d'une mère seule de trois enfants qui saute des repas pour qu'ils mangent à leur faim.
+categorie: puissants
+mot: TRAVAILLER UN PEU PLUS
+note: Le même soir, selon l'AFP : « la pauvreté, on ne la combat pas avec des impôts ». Son dernier mot : « Oui à la solidarité, non à l'assistanat. »
+source.titre: Public Sénat — Présidentielle 2027 : pauvreté, pouvoir d'achat, logement… Le Pen, Melenchon, Glucksmann, Retailleau, Attal confrontent leurs visions de la solidarité aux Restos du Cœur
+source.url: https://www.publicsenat.fr/actualites/politique/presidentielle-2027-pauvrete-pouvoir-dachat-logement-le-pen-melenchon-glucksmann-retailleau-attal-confrontent-leurs-visions-de-la-solidarite-aux-restos
+source.nature: presse
+verifie: 2026-11-17

@@ -1,0 +1,12 @@
+texte: Il faut assumer que la majorité de nos économies soient faites sur nos dépenses sociales.
+auteur: Gabriel Attal
+fonction: président du groupe Ensemble pour la République à l'Assemblée nationale, candidat à l'élection présidentielle
+date: 2026-08-27
+contexte: Premier débat des candidats à l'élection présidentielle, à l'université de rentrée du Medef à Roland-Garros, à propos de la réduction du déficit.
+categorie: puissants
+mot: DÉPENSES SOCIALES
+note: Suite : « assurance maladie, arrêts maladie, assurance chômage. Il faut assumer de changer profondément notre système social ». Son objectif : « revenir sous les 3 % de déficit en 2032 et à l'équilibre en 2037 ». Texte du corps de l'article ; son intertitre porte une coquille (« soient être faites »).
+source.titre: Public Sénat — Dette, retraites, fiscalité… que retenir du premier débat des candidats à l'élection présidentielle ?
+source.url: https://www.publicsenat.fr/actualites/politique/dette-retraites-fiscalite-que-retenir-du-premier-debat-des-candidats-a-lelection-presidentielle
+source.nature: presse
+verifie: 2026-11-17
