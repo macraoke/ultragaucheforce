@@ -69,7 +69,7 @@ Déposé dans `content/niveaux/`, il devient une étape du plan de campagne, à 
 | `nasse.nombre` | unités de chaque côté (1 à 6, défaut 3) |
 | `nasse.vitesse` | vitesse à laquelle les lignes se referment, en pixels par seconde (4 à 80, défaut 18) |
 | `nasse.rythme` | la nasse revient d'elle-même autour du héros, toutes les tant de secondes (0 à 600 ; 0, par défaut : seulement aux repères `N`) |
-| `manchette` | une alerte de PANIQUE TV propre au niveau ; répétable |
+| `manchette` | une alerte de PANIQUE TV propre au niveau ; répétable. Elle reprend le texte d'un vrai bandeau de [`content/manchettes/`](../content/manchettes) (à la casse près) : c'est ce bandeau, il passe avec sa chaîne et sa date, et débloque sa carte. Sinon, elle passe sans crédit. Un crédit ne s'écrit pas ici : ajoutez d'abord le bandeau au fonds commun, avec sa source |
 | `intro` | le texte du carton d'ouverture, quand il n'y a pas de `citation` |
 | `musique` | une piste de `content/musiques/`, jouée à chaque entrée dans le niveau ; si des pistes ont aussi `ou` : ce niveau, l'entrée tire au hasard entre elles et celle-ci. Ensuite, les pistes tournent |
 
@@ -137,7 +137,7 @@ Il faut du sol plat de chaque côté du `N`, et une issue en hauteur (un étage 
 
 ## Un décor
 
-Un fichier `content/decors/mon-decor.txt` : un dessin `image` (et `image2` pour l'animer), sans collision.
+Un fichier `content/decors/mon-decor.txt` : un dessin `image` (et `image2` pour l'animer), sans collision : on passe à travers, mais un décor à `pv` arrête les tracts.
 
 | Clé | Rôle |
 |---|---|
@@ -146,6 +146,9 @@ Un fichier `content/decors/mon-decor.txt` : un dessin `image` (et `image2` pour 
 | `ecrit` | `pancarte` : le jeu écrit sur le dessin une vraie pancarte de `content/pancartes/` (une banderole) ; `tag` : il la peint au-dessus, sans fond (un mur) |
 | `ecrit.y` | hauteur du texte, en pixels depuis le haut du dessin (0 à 96, défaut 8) |
 | `brule` | `oui` : quand la panique de PANIQUE TV franchit un palier près de lui, il prend feu, et une unité télé de la légende (réaction `cadre`) vient filmer le feu plutôt que la manif. Modèle : [`poubelles`](../content/decors/poubelles.txt) |
+| `pv` | les tracts et les explosions du héros le cassent, en autant de coups (1 à 12 ; 0, par défaut : il ne se casse pas). Un dessin `--- cassee`, de la taille de `image`, le remplace alors |
+| `coupe` | cassé, il coupe l'antenne de PANIQUE TV pendant tant de secondes (0 à 30) : le bandeau passe au noir, « ÉCRAN NOIR » ; la panique ne monte plus, aucune alerte ne passe, et les unités des médias (`camp: medias`) restent sur place sans filmer, sans tirer ni rien dire. Demande `pv`. Modèle : [`regie-antenne`](../content/decors/regie-antenne.txt), au dernier étage de la chaîne d'info |
+| `coupe.panique` | cassé, il retire autant de points de panique (0 à 33), sans repasser sous le palier déjà franchi. Demande `pv` |
 
 Au même endroit, c'est toujours la même pancarte. Modèles : [`banderole`](../content/decors/banderole.txt), [`tag`](../content/decors/tag.txt).
 

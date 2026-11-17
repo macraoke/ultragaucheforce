@@ -337,6 +337,11 @@ body.tactile #pause::after { content: ''; position: absolute; left: 50%; top: 50
 #bandeau[data-niveau='2'] .chaine i { background: var(--rouge); animation: hysterie .5s steps(2) 6; }
 @keyframes hysterie { 50% { opacity: .55; } } /* un autre nom que « clignote » : l'animation repart au passage du cran */
 #bandeau[data-niveau='2'][data-alerte] em { background: var(--nuit); color: var(--or); }
+/* La régie cassée : écran noir, quel que soit le cran de panique. */
+#bandeau[data-ecran][data-niveau] { --fond: #000; --encre-fil: #8a8f98; --filet: #000; }
+#bandeau[data-ecran][data-niveau] .chaine, #bandeau[data-ecran][data-niveau] em { background: #000; color: #5b6068; }
+#bandeau[data-ecran][data-niveau] .chaine b { background: #333c57; color: #000; }
+#bandeau[data-ecran][data-niveau] .chaine i { background: #333c57; animation: none; }
 /* Une alerte tombe : le fil se déroule depuis l'étiquette, qui clignote. */
 #bandeau.entre .fil { animation: bandeau-deroule .4s ease-out; }
 #bandeau.entre em { animation: clignote .22s steps(2) 3; }

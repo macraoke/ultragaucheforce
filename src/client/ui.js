@@ -622,6 +622,7 @@ export class Hud {
     this.airtime = AIRTIME; // secondes d'antenne de la ligne affichée
     this.turn = 0;
     this.level = 0; // le cran de panique de la chaîne
+    this.dark = false; // la régie cassée : écran noir, la chaîne se tait (voir `offAir`)
     this.notes = []; // notes en attente : une seule à l'écran à la fois
     this.note = null; // { el, until } : la note affichée, et jusqu'à quand (temps de jeu)
     this.onQuote = () => {}; // une vraie citation passe à l'antenne : la Collection la note
@@ -640,8 +641,10 @@ export class Hud {
     this.crowd = 0;
     this.ask = null;
     this.level = 0;
+    this.dark = false;
     clearTimeout(this.bannerTimer);
     delete this.q('bandeau').dataset.alerte; // une alerte interrompue ne fige pas le fil de la partie suivante
+    delete this.q('bandeau').dataset.ecran;
     this.notes = [];
     this.note = null;
     this.now = undefined;
@@ -666,7 +669,7 @@ export class Hud {
   /** La prochaine citation, dans `airtime` secondes ; en hystérie, la chaîne garde celle qu'elle a. */
   schedule() {
     clearTimeout(this.rotation);
-    if (!this.q('bandeau').hidden && this.level < HYSTERIA) this.rotation = setTimeout(() => this.nextQuote(), this.airtime * 1000);
+    if (!this.q('bandeau').hidden && this.level < HYSTERIA && !this.dark) this.rotation = setTimeout(() => this.nextQuote(), this.airtime * 1000);
   }
 
   nextQuote() {
@@ -677,8 +680,29 @@ export class Hud {
     this.schedule();
   }
 
+  /**
+   * La régie cassée : le bandeau passe au noir, « ÉCRAN NOIR », tant que dure la coupure (temps de jeu : la pause
+   * l'arrête aussi). Quand l'antenne revient, le fil reprend.
+   */
+  offAir(dark) {
+    if (dark === this.dark) return;
+    this.dark = dark;
+    const el = this.q('bandeau');
+    clearTimeout(this.rotation);
+    clearTimeout(this.bannerTimer);
+    delete el.dataset.alerte;
+    if (dark) {
+      el.dataset.ecran = 'noir';
+      this.show('ÉCRAN NOIR', 'Antenne coupée', AIRTIME);
+    } else {
+      delete el.dataset.ecran;
+      this.nextQuote();
+    }
+  }
+
   update(game) {
     this.pump(game.time, Boolean(game.sign));
+    this.offAir(game.offAir > 0);
     const { hero, boss } = game;
     const special = hero.def.speciale;
     // Un panneau demande la spéciale : la puce et le bouton SPÉ clignotent jusqu'à ce qu'elle serve.

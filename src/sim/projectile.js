@@ -168,6 +168,13 @@ function touchActors(game, p) {
       if (cage.hp <= 0) game.rescue(cage);
       if (!p.pierce) return burst(game, p);
     }
+    // Un décor qui se casse (`pv`) : la régie de la chaîne.
+    for (const d of game.decors) {
+      if (!(d.hp > 0) || p.hits.has(d) || !overlap(p, game.decorBox(d))) continue;
+      p.hits.add(d);
+      game.hitDecor(d, p.damage);
+      if (!p.pierce) return burst(game, p);
+    }
     // Un tract tendu à une recrue : elle rejoint la manif.
     for (const r of game.recruits) {
       if (r.joined || !overlap(p, r)) continue;

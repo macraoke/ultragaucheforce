@@ -226,6 +226,8 @@ export function updateEnemy(game, e, dt) {
 
   // Le boss vaincu, l'ordre cesse le feu : chacun reste où il est, sans attaquer ni rien dire de plus.
   if (game.truce) return standBy(game, e, dt);
+  // La régie cassée, l'antenne est coupée : les médias restent sur place, sans filmer ni rien dire.
+  if (game.offAir > 0 && def.camp === 'medias') return standBy(game, e, dt);
 
   // Une équipe télé venue pour un feu de poubelle : c'est lui qu'elle filme, pas la manif.
   if (e.film) return film(game, e, dt);

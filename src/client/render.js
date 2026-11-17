@@ -1346,7 +1346,9 @@ export class Renderer {
     const def = this.bundle.decors[d.id];
     if (!def) return;
     const two = def.sprites.image2 && Math.floor(this.clock * 2 + d.x) % 2;
-    const img = sprite(two ? def.sprites.image2 : def.sprites.image, this.palette);
+    // Un décor cassé (la régie) : son dessin `cassee`, s'il en a un.
+    const rows = d.broken && def.sprites.cassee ? def.sprites.cassee : two ? def.sprites.image2 : def.sprites.image;
+    const img = sprite(rows, this.palette);
     const x = Math.round(d.x - this.cx);
     const y = Math.round(d.y - img.height - this.cy);
     if (x > this.viewW || x + img.width < 0) return;

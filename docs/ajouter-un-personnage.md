@@ -200,7 +200,7 @@ auteur: ton pseudo
 | `ligne.poussee` | une ligne : les points de vie que lui retirent cent manifestants qui poussent, par seconde | 0 à 50, 10 par défaut |
 | `interpelle` | combien de manifestants elle emmène quand elle atteint le cortège, une fois toutes les deux secondes et demie | 0 à 20 |
 | `fin` | à zéro point de vie | `greve` (elle s'assoit), `panne` (elle fume) |
-| `camp` | à qui elle appartient ; seules les unités de l'ordre comptent dans le bilan des blessés | `ordre` (par défaut), `medias`, `pouvoir` |
+| `camp` | à qui elle appartient ; seules les unités de l'ordre comptent dans le bilan des blessés ; celles des médias se taisent quand on casse la régie (voir le décor à `coupe` dans [ajouter-un-niveau.md](ajouter-un-niveau.md)) | `ordre` (par défaut), `medias`, `pouvoir` |
 | `replique` | une phrase qu'elle prononce ; répétable. La bulle reste 0,3 s par mot, 2 s au moins | |
 | `sommation` | réaction `charge` : dites une par une avant la première ruée ; répétable | |
 | `citation`, `fiche`, `origine` | sa carte | |
