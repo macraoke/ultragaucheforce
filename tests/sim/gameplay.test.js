@@ -231,6 +231,33 @@ test('spéciale « billes » : elles roulent, restent au sol, et qui marche dess
   assert.equal(game.projectiles.filter((p) => p.slip > 0).length, 0, 'speciale.duree : elles disparaissent');
 });
 
+test('spéciale « billes » : ni ce qui vole, ni le boss, ni le héros ne glissent', () => {
+  const bundle = structuredClone(fixtureBundle());
+  bundle.heros.alpha.speciale = {
+    type: 'billes', nombre: 5, vitesse: 120, duree: 4, glisse: 2, recul: 160, degats: 2, son: '', nom: 'BILLES', charges: 1,
+  };
+  const game = settle(play(flat({
+    width: 40, boss: 'gros', legende: { d: enemy('drone') },
+    draw: (put, ground) => {
+      put(ground, 2, '.');
+      put(ground, 6, 'D');
+      put(ground, 8, 'd');
+      put(ground, 10, 'Y');
+    },
+  }), { bundle, invincible: true }));
+  const [drone] = game.enemies;
+  const { boss, hero } = game;
+  const hp = boss.hp;
+  game.step({ special: true });
+  run(game, 40);
+  assert.ok(game.projectiles.some((p) => p.slip > 0), 'les billes sont au sol');
+  assert.notEqual(drone.daze, 'glisse', 'un drone ne glisse pas');
+  assert.equal(boss.hp, hp, 'les billes ne touchent pas le boss, même avec des dégâts');
+  assert.notEqual(boss.state, 'stunned');
+  assert.equal(hero.stun ?? 0, 0, 'le héros ne glisse pas sur ses billes');
+  assert.ok(!hero.daze);
+});
+
 test('spéciale « mur » : fait pousser des tuiles, jamais sur un personnage', () => {
   const game = settle(play(flat({ heros: 'beta' })));
   const ground = game.world.h - 2;

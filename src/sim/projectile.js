@@ -134,6 +134,7 @@ function touchActors(game, p) {
       else if (!blast) game.parry(e, e.facing > 0 ? e.x + e.w : e.x); // l'étincelle jaillit sur le bouclier, côté tireur
       if (!p.pierce) return burst(game, p, true);
     }
+    if (p.slip > 0) return; // les billes n'agissent que sur les ennemis : ni boss, ni cage, ni recrue
     const boss = game.boss;
     if (boss && boss.state !== 'ejecting' && boss.state !== 'gone' && !p.hits.has(boss) && overlap(p, boss)) {
       p.hits.add(boss);
