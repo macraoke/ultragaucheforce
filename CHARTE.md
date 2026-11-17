@@ -1,48 +1,37 @@
 # La charte
 
-La culture est politique. Cette page dit, une fois pour toutes, ce qui entre dans le jeu et ce qui n'y entre pas.
+Un jeu qui rit du pouvoir, fait par des gens qui vont en manif. Peu de règles : des principes.
 
-## On tape sur
+## On vise les puissants, pas les gens
 
-- Des **discours** : la panique morale, les mots qui font peur, les éléments de langage.
-- Des **pouvoirs** : économiques, médiatiques, institutionnels.
-- Des **personnalités publiques**, pour ce qu'elles disent et font en public.
-- **Nous-mêmes** : les AG interminables, les sous-comités, la couleur du tract.
+Leurs discours, la panique morale, les éléments de langage. Les fortunes, les médias, les institutions. Les personnalités publiques, pour ce qu'elles disent et font en public. Et nous-mêmes, nos AG interminables et la couleur du tract.
 
-## On ne fait pas
+## Ce qui n'entre pas
 
-- De haine : rien qui vise l'origine, la religion, le genre, l'orientation, l'identité de genre ou le handicap.
-- De personnes privées, ni de vie privée.
-- De faits graves inventés sur une personne réelle.
-- D'appels à la violence, ni de violence réaliste : personne n'est blessé à l'écran. Une unité se met hors service, un boss est une machine dont le pilote s'éjecte indemne.
-- De procès à la place des juges : personne n'est désigné dans une affaire en cours.
-- De copie : ni images, ni sons, ni niveaux, ni code d'une œuvre qui n'est pas libre.
+- La haine : rien contre l'origine, la religion, le genre, l'orientation ou le handicap.
+- Les personnes privées, et la vie privée.
+- Les faits graves inventés. Personne n'est désigné dans une affaire en cours : on laisse juger les juges.
+- Les appels à la violence, et la violence réaliste : personne n'est blessé à l'écran. On disperse, on se met en grève, le pilote s'éjecte indemne.
+- Les copies : ce qu'on apporte est à soi, ou déjà libre.
 
-## Le vrai et le faux ne se mélangent pas
+## Le réel est exact, la parodie se voit
 
-| | Le réel | La parodie |
-|---|---|---|
-| Où | citations, fiches, pancartes, bandeaux télé, ce que disent les personnages, ressources des drapeaux | les noms des personnages, les situations du jeu, la chaîne PANIQUE TV |
-| Règle | exact, daté, relié à une source lue | ne se présente jamais comme une citation |
+Les citations, les chiffres, les pancartes, les bandeaux, ce que disent les personnages : tout est exact, daté et sourcé. Les noms des personnages, les situations et la chaîne PANIQUE TV sont à nous, et ça se voit. On ne prête jamais une phrase inventée à une personne réelle.
 
-Une phrase inventée n'est jamais attribuée à une personne réelle. Le mode d'emploi : [ajouter une source](docs/ajouter-une-source.md).
+Une image qui circule suffit pour proposer un ajout. Le mode d'emploi : [ajouter une source](docs/ajouter-une-source.md).
 
 ## Les drapeaux
 
-Ceux des luttes d'émancipation. Aucun symbole de haine. Les drapeaux d'organisations sont stylisés, comme on les croise en manif : ni soutien, ni affiliation.
+Ceux des luttes d'émancipation, jamais un symbole de haine. Ceux des organisations sont stylisés, comme on les croise en manif : ni soutien, ni affiliation.
 
 ## Qui parle
 
-Une initiative individuelle de citoyens, open source et collaborative. Aucun parti ne l'a commandée ni financée. Le jeu appelle à voter ; il ne dit pas pour qui.
+Des citoyens, à titre individuel, en open source. Aucun parti ne l'a commandé ni financé. Le jeu appelle à aller voter les dimanche 18 avril et 2 mai 2027.
 
-## Le cadre légal
+## Le droit
 
-Ceci n'est pas un conseil juridique. Dans le doute, on s'abstient.
-
-- Injure, diffamation, provocation à la haine ou à la violence : [loi du 29 juillet 1881](https://www.legifrance.gouv.fr/loda/id/LEGITEXT000006070722/).
-- « La parodie, le pastiche et la caricature, compte tenu des lois du genre » sont permis : [article L122-5 du code de la propriété intellectuelle](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000048603495).
-- « Chacun a droit au respect de la présomption d'innocence » : [article 9-1 du code civil](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006419316).
+Pas un conseil juridique, juste des repères : la [loi du 29 juillet 1881](https://www.legifrance.gouv.fr/loda/id/LEGITEXT000006070722/) (injure, diffamation, provocation), le droit à « la parodie, le pastiche et la caricature » ([article L122-5 du code de la propriété intellectuelle](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000048603495)) et la présomption d'innocence ([article 9-1 du code civil](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006419316)).
 
 ## Qui décide
 
-Les mainteneurs, avec quatre questions : drôle ? jouable ? sourcé ? dans la charte ? Un refus est expliqué dans la proposition, et se discute au même endroit. Un contenu publié pose problème ? Issue « Source à corriger » : traitée en priorité.
+Les mainteneurs, avec quatre questions : drôle ? jouable ? sourcé ? dans la charte ? Un doute, un refus : ça s'explique et ça se discute dans la proposition. Un contenu publié pose problème ? Issue « Source à corriger », traitée en priorité.
