@@ -5,8 +5,8 @@ date: 2026-10-19
 contexte: Sur CNews et Europe 1, à propos de La France insoumise, deux jours après les manifestations du 17 octobre 2026 marquées par des violences et des pillages.
 categorie: diabolisation
 mot: GUERRE CIVILE
-note: Dans le même entretien, les casseurs sont selon lui « la branche armée et le bras armé » de La France insoumise. Le 17 octobre, il parlait d'une « convergence d'un terrorisme d'ultra-gauche et de populations délinquantes de banlieue » (LCP).
+note: Dans le même entretien, les casseurs sont selon lui « la branche armée et le bras armé » de La France insoumise.
 source.titre: Europe 1 — Après les pillages, Jordan Bardella affirme que « LFI pousse à la guerre civile »
 source.url: https://www.europe1.fr/politique/apres-les-pillages-jordan-bardella-affirme-que-lfi-pousse-a-la-guerre-civile-1162437
 source.nature: presse
-verifie: 2026-11-15
+verifie: 2026-11-17

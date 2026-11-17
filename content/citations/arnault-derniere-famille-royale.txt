@@ -1,12 +1,12 @@
-texte: En 1984, on m'appelait Terminator, je préfère la dernière famille royale, c'est plus élégant et c'est meilleur pour les ventes chez Dior.
+texte: Je préfère « la dernière famille royale » : c'est plus élégant, et c'est meilleur pour les ventes chez Dior.
 auteur: Bernard Arnault
 fonction: PDG de LVMH
 date: 2026-07-26
-contexte: Réponse à une enquête du Monde sur sa succession, publiée le 24 juillet 2026.
+contexte: Communiqué « Merci », publié sur les réseaux sociaux en réponse à une enquête du Monde en six épisodes sur sa famille.
 categorie: puissants
 mot: DERNIÈRE FAMILLE ROYALE
-note: Lu dans la reprise de Presse-citron (27 juillet 2026), qui renvoie à un message du compte LVMH_Presse du 26 juillet 2026 ; ni ce message ni l'enquête du Monde n'ont été relus. Le boss lui doit son nom.
-source.titre: Presse-citron — Bernard Arnault répond à l'enquête du Monde
-source.url: https://www.presse-citron.net/1984-terminator-prefere-derniere-famille-royale-mieux-pour-ventes-dior-bernard-arnault-repond/
+note: Juste avant : « Je n'avais pas eu droit à pareil traitement depuis la reprise de [l'entreprise textile] Boussac en 1984. On m'appelait alors 'The Terminator'. » Presse-citron condense les deux phrases en une. Les boss La Dernière Famille royale et The Terminator lui doivent leur nom.
+source.titre: Puremédias — « J'offre à ce feuilleton le projecteur qu'il espérait peut-être » : la réponse pleine d'ironie de Bernard Arnault après une enquête du « Monde » sur son « empire »
+source.url: https://www.ozap.com/actu/joffre-a-ce-feuilleton-le-projecteur-quil-esperait-peut-etre-la-reponse-pleine-dironie-de-bernard-arnault-apres-une-enquete-du-monde-sur-son-empire/656193
 source.nature: presse
-verifie: 2026-11-16
+verifie: 2026-11-17

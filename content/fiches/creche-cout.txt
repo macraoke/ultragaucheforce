@@ -1,0 +1,11 @@
+titre: 19 450 euros la place en crèche
+theme: richesses
+texte: Le coût de revient annuel moyen d'une place en crèche atteindrait 19 450 euros en 2024, selon la Caisse nationale des allocations familiales.
+portee: Rapport 2025 de l'Observatoire national de la petite enfance (Cnaf et partenaires), repris par la Banque des Territoires le 12 décembre 2025 : crèches financées par la prestation de service unique (PSU). Coût de revient, tous financeurs confondus. Les micro-crèches coûtent le plus (20 729 euros), les jardins d'enfants le moins (14 075 euros).
+periode: 2024
+valeur: 19450
+finance: places en crèche
+source.titre: Banque des Territoires — Petite enfance : 17,5 milliards d'euros de dépenses publiques en 2024
+source.url: https://www.banquedesterritoires.fr/petite-enfance-175-milliards-deuros-de-depenses-publiques-en-2024
+source.nature: officielle
+verifie: 2026-11-17

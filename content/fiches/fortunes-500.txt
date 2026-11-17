@@ -1,10 +1,10 @@
 titre: 500 fortunes : de 124 à 1 128 milliards
 theme: richesses
 texte: Les 500 premières fortunes professionnelles de France totalisent 1 128 milliards d'euros en 2025, contre 124 milliards en 2003, selon Challenges.
-portee: Fortunes « professionnelles », c'est-à-dire la valeur estimée par un magazine des entreprises détenues par 500 familles ; ce n'est ni un patrimoine déclaré ni une donnée fiscale. Euros courants : la page indique +38 % de prix à la consommation de 2005 à 2025.
+portee: Fortunes « professionnelles », c'est-à-dire la valeur estimée par un magazine des entreprises détenues par 500 familles ; ce n'est ni un patrimoine déclaré ni une donnée fiscale. Euros courants : la page indique +38 % de prix à la consommation de 2005 à 2025. En 2026, Challenges donne « 1 076 Mds € au total dans les 500 » (https://www.challenges.fr/classements/fortune/).
 periode: 2003 à 2025 (page publiée le 4 juin 2026)
 choc: oui
 source.titre: Observatoire des inégalités — La croissance démesurée des 500 plus grandes fortunes
 source.url: https://www.inegalites.fr/La-croissance-demesuree-des-500-plus-grandes-fortunes
 source.nature: associative
-verifie: 2026-11-16
+verifie: 2026-11-17

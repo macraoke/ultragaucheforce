@@ -1,6 +1,6 @@
 texte: Il y a des camps d'entraînement terroristes sur le plateau des Millevaches.
 auteur: David Lisnard
-fonction: maire de Cannes, candidat à l'élection présidentielle
+fonction: maire de Cannes
 date: 2026-10-19
 contexte: Sur TF1, deux jours après l'incendie de l'hôtel de ville de Limoges, à propos de l'ultragauche installée sur le plateau de Millevaches (Limousin).
 categorie: diabolisation
@@ -9,4 +9,4 @@ note: Citation et date d'après l'analyse de The Conversation (7 novembre 2026),
 source.titre: The Conversation — Incendie de Limoges : de l'« émeutier » au « terroriste », comment les mots construisent une menace politique
 source.url: https://theconversation.com/incendie-de-limoges-de-l-emeutier-au-terroriste-comment-les-mots-construisent-une-menace-politique-295565
 source.nature: presse
-verifie: 2026-11-15
+verifie: 2026-11-17

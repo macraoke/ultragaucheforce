@@ -1,0 +1,9 @@
+titre: Larzac : des brebis sous la tour Eiffel
+theme: luttes
+texte: Le 25 octobre 1972, 60 brebis peintes du slogan « Gardarem lo Larzac » sont lâchées sous la tour Eiffel. Le 3 juin 1981, François Mitterrand annule le projet d'extension du camp militaire du Larzac.
+portee: L'info durable, 23 mars 2024, à la sortie de la bande dessinée « Larzac : histoire d'une résistance paysanne ». « Gardarem lo Larzac » veut dire « Nous garderons le Larzac », en langue d'oc. La lutte contre l'extension du camp a duré de 1971 à 1981.
+periode: 1971 à 1981
+source.titre: L'info durable — Une BD qui retrace les dix ans de lutte du Larzac
+source.url: https://www.linfodurable.fr/culture/une-bd-qui-retrace-les-dix-ans-de-lutte-du-larzac-44444
+source.nature: presse
+verifie: 2026-11-17

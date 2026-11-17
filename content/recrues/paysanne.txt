@@ -2,7 +2,9 @@ nom: Paysanne
 apport: 30
 slogan: LA PLANÈTE AVANT LE PROFIT
 slogan: - DE RICHES, + DE RUCHES
+slogan: GARDAREM LO LARZAC
 fiche: programme-planification-ecologique
+fiche: larzac-brebis
 auteur: UltraGauche Force
 --- image
 .h.........

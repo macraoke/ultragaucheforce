@@ -1,7 +1,7 @@
 texte: Il n'y a pas d'argent magique.
 auteur: Emmanuel Macron
 fonction: président de la République
-date: 2018-04-05
+date: 2018-04
 contexte: Au CHU de Rouen, à une soignante qui réclamait davantage de moyens pour l'hôpital.
 categorie: puissants
 mot: ARGENT MAGIQUE
@@ -9,4 +9,4 @@ note: France 24 et franceinfo datent l'échange d'avril 2018 sans préciser le j
 source.titre: France 24 — Emmanuel Macron, le bilan (3/4) : la réduction des dépenses sociales contrariée par les crises
 source.url: https://www.france24.com/fr/france/20220319-emmanuel-macron-le-bilan-3-4-la-r%C3%A9duction-des-d%C3%A9penses-sociales-contrari%C3%A9e-par-les-crises
 source.nature: presse
-verifie: 2026-11-15
+verifie: 2026-11-17

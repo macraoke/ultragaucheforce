@@ -1,0 +1,10 @@
+titre: 53 contre 32 millions
+theme: richesses
+texte: Selon Oxfam, les 53 milliardaires français sont plus riches que plus de 32 millions de personnes réunies, soit près de la moitié de la population.
+portee: Rapport d'Oxfam sur les inégalités publié en janvier 2026, repris sur son site le 16 octobre 2026. Oxfam compte comme milliardaire qui détient un patrimoine net d'au moins un milliard d'euros : la comparaison porte sur des patrimoines, pas sur des revenus.
+periode: rapport de janvier 2026
+choc: oui
+source.titre: Oxfam France — Combien y a-t-il de milliardaires en France et qui sont-ils ?
+source.url: https://www.oxfamfrance.org/a-la-une/combien-y-a-t-il-de-milliardaires-en-france-et-qui-sont-ils/
+source.nature: associative
+verifie: 2026-11-17

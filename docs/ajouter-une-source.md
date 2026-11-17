@@ -9,12 +9,12 @@ L'une et l'autre deviennent des cartes de la Collection : rayons « Paroles », 
 
 ## La méthode
 
-1. Ouvrez la source et retrouvez-y les mots ou le chiffre. Un souvenir ou une capture qui circule ne compte pas.
+1. Ouvrez la source et retrouvez-y les mots ou le chiffre. Un souvenir ne compte pas ; une image qui circule suffit pour proposer, avec son lien.
 2. Recopiez exactement.
 3. Datez votre relecture dans `verifie`.
-4. Un doute ? N'ajoutez pas.
+4. Un doute ? Dites-le dans la proposition.
 
-Ce qui tient : textes officiels (Insee, service-public.gouv.fr, Légifrance, Conseil d'État, Assemblée nationale, Défenseur des droits), grands médias, agences, recherche. Ce qui ne tient pas : blogs anonymes, agrégateurs, réseaux sociaux.
+Ce qui tient : textes officiels (Insee, service-public.gouv.fr, Légifrance, Conseil d'État, Assemblée nationale, Défenseur des droits), grands médias, agences, recherche. Le compte public d'une personnalité, pour ses propres mots : nature `militante`, comme une page de campagne. Ce qui ne tient pas : blogs anonymes, agrégateurs.
 
 ## Une citation
 

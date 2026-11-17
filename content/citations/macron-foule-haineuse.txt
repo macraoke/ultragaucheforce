@@ -1,12 +1,12 @@
-texte: Et n'étant en fait que les porte-voix d'une foule haineuse, s'en prennent aux élus, aux forces de l'ordre, aux journalistes, aux juifs, aux étrangers, aux homosexuels, c'est tout simplement la négation de la France !
+texte: N'étant en fait que les porte-voix d'une foule haineuse…
 auteur: Emmanuel Macron
 fonction: président de la République
 date: 2018-12-31
 contexte: Vœux aux Français pour 2019, en plein mouvement des gilets jaunes. La phrase commence par « certains prennent pour prétexte de parler au nom du peuple ».
 categorie: diabolisation
 mot: FOULE HAINEUSE
-note: Le discours ne nomme pas les gilets jaunes : il vise « certains ». La page de l'Élysée donne le texte des vœux.
+note: Phrase complète : « Et n'étant en fait que les porte-voix d'une foule haineuse, s'en prennent aux élus, aux forces de l'ordre, aux journalistes, aux juifs, aux étrangers, aux homosexuels, c'est tout simplement la négation de la France ! » Le discours ne nomme pas les gilets jaunes : il vise « certains ».
 source.titre: Élysée — Vœux 2019 aux Français
 source.url: https://www.elysee.fr/emmanuel-macron/2018/12/31/voeux-aux-francais-2019
 source.nature: officielle
-verifie: 2026-11-16
+verifie: 2026-11-17

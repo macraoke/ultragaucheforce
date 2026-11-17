@@ -1,9 +1,9 @@
 # Marches pour le climat : pancartes vues et slogans scandés, relevés dans la presse.
 # Une ligne = une pancarte : TEXTE | où et quand — source
-PLUS DE PINGOUINS SUR LA BANQUISE, MOINS DE MANCHOTS À L’ELYSÉE | vue à Paris, mai 2019 — https://reporterre.net/Le-succes-des-marches-pour-le-climat-prepare-des-actions-plus-engagees | rareté: épique
+PLUS DE PINGOUINS SUR LA BANQUISE, MOINS DE MANCHOTS À L'ELYSÉE | vue à Paris, mai 2019 — https://reporterre.net/Le-succes-des-marches-pour-le-climat-prepare-des-actions-plus-engagees | rareté: épique | était: PLUS DE PINGOUINS SUR LA BANQUISE, MOINS DE MANCHOTS À L’ELYSÉE
 LA PLANÈTE EST PLUS CHAUDE QUE NOTRE-DAME-DE-PARIS | vue à Paris, mai 2019 — https://reporterre.net/Le-succes-des-marches-pour-le-climat-prepare-des-actions-plus-engagees | rareté: épique
-LA DÉFORESTATION, C’EST UNIQUEMENT DANS LE CALEÇON | vue à Paris, mai 2019 — https://reporterre.net/Le-succes-des-marches-pour-le-climat-prepare-des-actions-plus-engagees | rareté: épique
-ARRÊTEZ DE REMPLIR VOS RÉSERVOIRS, VOUS SIPHONNEZ L’ESPOIR ! | vue à Paris, mai 2019 — https://reporterre.net/Le-succes-des-marches-pour-le-climat-prepare-des-actions-plus-engagees
+LA DÉFORESTATION, C'EST UNIQUEMENT DANS LE CALEÇON | vue à Paris, mai 2019 — https://reporterre.net/Le-succes-des-marches-pour-le-climat-prepare-des-actions-plus-engagees | rareté: épique | était: LA DÉFORESTATION, C’EST UNIQUEMENT DANS LE CALEÇON
+ARRÊTEZ DE REMPLIR VOS RÉSERVOIRS, VOUS SIPHONNEZ L'ESPOIR ! | vue à Paris, mai 2019 — https://reporterre.net/Le-succes-des-marches-pour-le-climat-prepare-des-actions-plus-engagees | était: ARRÊTEZ DE REMPLIR VOS RÉSERVOIRS, VOUS SIPHONNEZ L’ESPOIR !
 ÉCOLOGIE LIBÉRALE, MENSONGE DU CAPITAL ! | scandé à Paris, mai 2019 — https://reporterre.net/Le-succes-des-marches-pour-le-climat-prepare-des-actions-plus-engagees
 EN T-SHIRT LE 22/02, VOUS TROUVEZ ÇA NORMAL ? | vue à Paris, févr. 2019 — https://reporterre.net/La-greve-pour-le-climat-s-epanouit-dans-les-rues-de-Paris | rareté: rare
 PHOQUE LE RÉCHAUFFEMENT CLIMATIQUE | vue à Paris, févr. 2019 — https://reporterre.net/La-greve-pour-le-climat-s-epanouit-dans-les-rues-de-Paris | rareté: rare
@@ -11,10 +11,10 @@ SAUVONS LES OURS POLAIRES, PAS LES ACTIONNAIRES | vue à Paris, févr. 2019 — 
 ILS NE FONT RIEN, LA PLANÈTE FOND | vue à Paris, févr. 2019 — https://reporterre.net/La-greve-pour-le-climat-s-epanouit-dans-les-rues-de-Paris | rareté: rare
 EN 2050 VOUS SEREZ MORTS, PAS NOUS | vue à Paris, févr. 2019 — https://reporterre.net/La-greve-pour-le-climat-s-epanouit-dans-les-rues-de-Paris | rareté: rare
 MMM SYMPA LA MARCHE PENDANT LE PIC DE POLLUTION | vue à Paris, févr. 2019 — https://reporterre.net/La-greve-pour-le-climat-s-epanouit-dans-les-rues-de-Paris | rareté: rare
-LE CLIMAT, ENCORE + VOUÉ À L’ÉCHEC QUE NOTRE BAC DE MATHS | vue à Paris, févr. 2019 — https://reporterre.net/La-greve-pour-le-climat-s-epanouit-dans-les-rues-de-Paris | rareté: épique
+LE CLIMAT, ENCORE + VOUÉ À L'ÉCHEC QUE NOTRE BAC DE MATHS | vue à Paris, févr. 2019 — https://reporterre.net/La-greve-pour-le-climat-s-epanouit-dans-les-rues-de-Paris | rareté: épique | était: LE CLIMAT, ENCORE + VOUÉ À L’ÉCHEC QUE NOTRE BAC DE MATHS
 LYCÉE JAURÈS MONTREUIL, CHAUD DEVANT ! LES ÉTATS RESTERONT-ILS FROIDS ? | vue à Paris, févr. 2019 — https://reporterre.net/La-greve-pour-le-climat-s-epanouit-dans-les-rues-de-Paris
 MAMAN, PAPA, SI LA PLANÈTE SÈCHE, MOI AUSSI ! | vue à Paris, févr. 2019 — https://www.ladn.eu/nouveaux-usages/usages-par-generation/rencontre-jeunes-manifestants-etudiants-climat/
-IL N’Y A PAS DE PLANÈTE B | vue à Paris, févr. 2019 — https://www.ladn.eu/nouveaux-usages/usages-par-generation/rencontre-jeunes-manifestants-etudiants-climat/
+IL N'Y A PAS DE PLANÈTE B | vue à Paris, févr. 2019 — https://www.ladn.eu/nouveaux-usages/usages-par-generation/rencontre-jeunes-manifestants-etudiants-climat/ | était: IL N’Y A PAS DE PLANÈTE B
 L'ETAT ME RADICALISE | vue à Paris, sept. 2019 — https://www.linfodurable.fr/educationcitoyennete/greve-mondiale-pour-le-climat-des-jeunes-moins-nombreux-mais-toujours-dans-la | rareté: rare
 LES PETITS PAS, ÇA SUFFIT PAS | scandé à Lyon, sept. 2019 — https://www.linfodurable.fr/educationcitoyennete/greve-mondiale-pour-le-climat-des-jeunes-moins-nombreux-mais-toujours-dans-la
 SOS DE TERRIENS EN DÉTRESSE | vue à Strasbourg, sept. 2019 — https://www.linfodurable.fr/educationcitoyennete/greve-mondiale-pour-le-climat-des-jeunes-moins-nombreux-mais-toujours-dans-la | rareté: rare

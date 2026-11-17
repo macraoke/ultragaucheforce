@@ -1,0 +1,12 @@
+titre: 2 258 euros net par mois
+theme: richesses
+texte: En 2023, les aides-soignants et agents de service hospitalier gagnent en moyenne 2 258 euros net par mois en équivalent temps plein, selon la DREES.
+portee: Les établissements de santé, édition 2026, fiche 08, tableau 1 : salaire mensuel net moyen en équivalent temps plein, secteurs public et privé ensemble. 2 397 euros dans le public, 1 988 dans le privé à but non lucratif, 1 911 dans le privé à but lucratif.
+periode: 2023, édition 2026
+valeur: 2258
+par: mois
+compare: un aide-soignant
+source.titre: DREES — Les établissements de santé, édition 2026, fiche 08 : les salaires dans les établissements de santé
+source.url: https://drees.solidarites-sante.gouv.fr/sites/default/files/2026-07/ES%202026%20-%20Fiche%2008%20-%20Les%20salaires%20dans%20les%20%C3%A9tablissements%20de%20sant%C3%A9.pdf
+source.nature: officielle
+verifie: 2026-11-17

@@ -266,6 +266,8 @@ Jusqu'à cinq phases (`phase.1` à `phase.5`). Les dessins `repos` et `portrait`
 
 Pour l'asseoir sur sa fortune, le niveau pose le `Y` au sommet d'un tas de tuiles `L` (liasses). Si on creuse le tas, il tombe avec.
 
+Un autre nom sourcé pour le même ultra-riche : copiez sa fiche sous un autre nom de fichier, changez `nom` et dites d'où il vient dans `origine`. Même fortune, même comportement. Le boss d'un niveau est tiré parmi les fichiers de `content/boss/` : un ultra-riche qui a deux noms sort deux fois plus souvent. Exemple : [`arnault-terminator`](../content/boss/arnault-terminator.txt), « The Terminator ».
+
 ## Les comportements disponibles
 
 Déclarés dans [`src/sim/behaviors.js`](../src/sim/behaviors.js), bornes comprises : le robot refuse ce qui dépasse.
