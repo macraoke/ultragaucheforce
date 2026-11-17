@@ -245,6 +245,19 @@ export function climbAssist(touch, hero, world, memo, button = false) {
   return touch;
 }
 
+/**
+ * Un nouvel appui sur le saut, d'où qu'il vienne. Le manche poussé en haut tient déjà le saut ; SAUT enfoncé par-dessus
+ * est pourtant un nouvel appui, et le héros doit sauter. Pareil pour ↑ tenu puis Espace au clavier. Chaque source compte
+ * à part : il suffit qu'une d'elles vienne de s'enfoncer.
+ * @param {string[]} sources  ce qui tient le saut à ce pas (`manche`, `SAUT`, `manette`, ou le code d'une touche)
+ * @param {{from?: Set<string>}} memo  ce qui le tenait au pas d'avant
+ */
+export function freshJump(sources, memo) {
+  const fresh = sources.some((s) => !memo.from?.has(s));
+  memo.from = new Set(sources);
+  return fresh;
+}
+
 export class Input {
   /** @param {HTMLElement} pad  la surface tactile : elle couvre tout l'écran de jeu */
   constructor(pad) {
@@ -259,6 +272,7 @@ export class Input {
     this.onDevice = () => {}; // le joueur a changé d'appareil : les écrans ouverts redisent les touches
     this.held = new Set(); // boutons de manette tenus en quittant un menu : ils ne comptent en jeu qu'une fois relâchés
     this.climb = {}; // au pouce, le mur que le héros grimpe (voir `climbAssist`)
+    this.jumps = {}; // ce qui tenait le saut au pas d'avant (voir `freshJump`)
     // L'appareil dont on montre les touches : le dernier qui a servi.
     this.device = document.body.classList.contains('tactile') ? 'pouce' : 'clavier';
 
@@ -335,6 +349,7 @@ export class Input {
     const points = [...this.pointers.values()];
     this.touch = touchActions(points, view);
     this.button = Boolean(touchActions(points.filter((p) => !p.stick), view).jump); // SAUT, sous le pouce droit
+    this.lever = Boolean(touchActions(points.filter((p) => p.stick), view).jump); // le manche poussé en haut
     for (const mark of this.marks) mark.classList.toggle('appuye', Boolean(this.touch[mark.dataset.action]));
     // La flèche de TIR s'allume quand le tir part vraiment en haut : sans avancer (la règle de la simulation, partout).
     const { fire, up, left, right, down } = this.touch;
@@ -456,6 +471,11 @@ export class Input {
     const touch = game ? climbAssist(this.touch, game.hero, game.world, this.climb, this.button) : this.touch;
     const out = {};
     for (const a of ACTIONS) out[a] = Boolean(held[a] || touch[a] || pad[a]);
+    const sources = Object.keys(this.keys).filter((code) => this.keys[code].split(' ').includes('jump'));
+    if (pad.jump) sources.push('manette');
+    if (this.lever) sources.push('manche');
+    if (this.button) sources.push('SAUT');
+    out.jumpPressed = freshJump(sources, this.jumps) && out.jump;
     return out;
   }
 }

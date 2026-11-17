@@ -4,7 +4,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { touchActions, trackPoint, climbAssist, ZONES } from '../src/client/input.js';
+import { touchActions, trackPoint, climbAssist, freshJump, ZONES } from '../src/client/input.js';
 import { flat, level, play, run, settle } from './sim/helpers.js';
 
 const VIEW = { w: 800, h: 360 }; // un téléphone tenu en paysage
@@ -328,4 +328,71 @@ test('l’aide à la grimpe ne touche qu’au saut tenu en l’air, pouce pench�
   const straight = { jump: true, up: true, fire: true };
   assert.equal(climbAssist(straight, air, world, {}), straight, 'pouce tout droit en haut : rien ne change');
   assert.deepEqual(climbAssist({}, air, world, {}), {}, 'le clavier et la manette ne passent pas par là');
+});
+
+// « Bug sur mobile : Haut et Saut en même temps ça bug. Le Saut ne fait rien. » Le manche poussé en haut tient déjà le
+// saut : SAUT enfoncé par-dessus doit pourtant faire sauter, comme Espace tapé avec ↑ tenu au clavier.
+/** Le pouce gauche tenu tout droit en haut, au sol ; SAUT tapé par le pouce droit aux pas que dit `saut`. */
+function upThenJump(saut, { fire = false, steps = 200 } = {}) {
+  const game = settle(play(flat()));
+  const memo = {};
+  const jumps = [];
+  let stick = trackPoint(undefined, { x: 130, y: 260 }, VIEW);
+  let vy = 0;
+  let aimedUp = 0;
+  for (let i = 0; i < steps; i++) {
+    stick = trackPoint(stick, { x: 130, y: 260 - 50 * Math.min(i, 6) / 6 }, VIEW);
+    const button = saut(i);
+    const right = [fire && trackPoint(undefined, at('fire'), VIEW), button && trackPoint(undefined, at('jump'), VIEW)];
+    const touch = touchActions([stick, ...right.filter(Boolean)], VIEW);
+    const sources = [touchActions([stick], VIEW).jump && 'manche', button && 'SAUT'].filter(Boolean);
+    const jumpPressed = freshJump(sources, memo) && Boolean(touch.jump);
+    const before = game.hero.onGround;
+    if (run(game, 1, { ...touch, jumpPressed }).some((e) => e.type === 'sfx' && e.id === 'saut')) {
+      jumps.push(i);
+      if (before) vy = Math.min(vy, game.hero.vy);
+    }
+    if (game.hero.aim === -1) aimedUp++;
+  }
+  return { jumps, vy, aimedUp: aimedUp / steps, game };
+}
+
+test('deux doigts : le manche en haut et SAUT, chacun dit le saut ; SAUT par-dessus est un nouvel appui', () => {
+  let stick = trackPoint(undefined, { x: 130, y: 260 }, VIEW);
+  for (let i = 1; i <= 6; i++) stick = trackPoint(stick, { x: 130, y: 260 - (50 * i) / 6 }, VIEW);
+  const button = trackPoint(undefined, at('jump'), VIEW);
+  assert.deepEqual(touchActions([stick], VIEW), { jump: true, up: true });
+  assert.deepEqual(touchActions([stick, button], VIEW), { jump: true, up: true }, 'les deux doigts comptent');
+  const memo = {};
+  assert.equal(freshJump(['manche'], memo), true, 'le manche poussé : un appui');
+  assert.equal(freshJump(['manche'], memo), false, 'tenu : plus d’appui');
+  assert.equal(freshJump(['manche', 'SAUT'], memo), true, 'SAUT enfoncé par-dessus : un nouvel appui');
+  assert.equal(freshJump(['manche', 'SAUT'], memo), false);
+  assert.equal(freshJump(['manche'], memo), false, 'SAUT relâché : rien');
+  assert.equal(freshJump(['ArrowUp', 'Space'], {}), true);
+});
+
+test('Haut tenu au sol puis SAUT : le héros saute, à chaque appui', () => {
+  const held = upThenJump((i) => i >= 100 && i < 108);
+  assert.equal(held.jumps.length, 2, `un saut au manche, puis un à SAUT (${held.jumps})`);
+  assert.ok(held.jumps[1] >= 100 && held.jumps[1] < 104, `SAUT fait sauter tout de suite (pas ${held.jumps[1]})`);
+  assert.ok(held.vy < 0, 'il monte');
+  const taps = upThenJump((i) => i >= 60 && i % 40 < 8, { steps: 260 });
+  assert.ok(taps.jumps.length >= 5, `chaque appui posé au sol est un saut (${taps.jumps})`);
+});
+
+test('Haut tenu, SAUT tapé, TIR tenu : il saute et le tir reste en haut', () => {
+  const both = upThenJump((i) => i >= 100 && i < 108, { fire: true });
+  assert.equal(both.jumps.length, 2);
+  assert.ok(both.aimedUp > 0.9, `le tir reste en haut (${Math.round(both.aimedUp * 100)} % des pas)`);
+});
+
+test('la simulation : saut tenu par une touche, un nouvel appui d’une autre fait sauter ; sans, rien', () => {
+  const game = settle(play(flat()));
+  run(game, 90, { jump: true, up: true }); // ↑ tenu : un saut, puis posé
+  assert.ok(game.hero.onGround);
+  run(game, 1, { jump: true, up: true });
+  assert.ok(game.hero.onGround, 'tenu sans nouvel appui : il reste au sol');
+  run(game, 1, { jump: true, up: true, jumpPressed: true });
+  assert.ok(game.hero.vy < 0, 'Espace par-dessus ↑ : il saute');
 });

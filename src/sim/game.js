@@ -121,13 +121,16 @@ export class Game {
 
   // ------------------------------------------------------------ un pas de simulation
 
-  /** @param {{left?: boolean, right?: boolean, jump?: boolean, fire?: boolean, special?: boolean}} actions */
+  /**
+   * @param {{left?: boolean, right?: boolean, jump?: boolean, fire?: boolean, special?: boolean, jumpPressed?: boolean}} actions
+   *        `jumpPressed` : un nouvel appui sur le saut alors qu'une autre touche le tenait déjà (manche en haut puis SAUT)
+   */
   step(actions = {}) {
     if (this.status !== 'playing') return;
     const input = {
       left: Boolean(actions.left), right: Boolean(actions.right), jump: Boolean(actions.jump),
       up: Boolean(actions.up), down: Boolean(actions.down), fire: Boolean(actions.fire),
-      jumpPressed: Boolean(actions.jump) && !this.held.jump,
+      jumpPressed: Boolean(actions.jump) && (!this.held.jump || Boolean(actions.jumpPressed)),
       specialPressed: Boolean(actions.special) && !this.held.special,
     };
     this.held = { jump: input.jump, special: Boolean(actions.special) };
