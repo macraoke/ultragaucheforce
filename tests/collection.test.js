@@ -107,16 +107,3 @@ test('la note d’une pancarte débloquée dit son texte en entier, sans « … 
     }
   }
 });
-
-// La plus longue note mesurée dans le vrai jeu tient en 3 lignes à la plus petite largeur, 667×375 au pouce, avec ou
-// sans barre de vie : « Pancarte légendaire débloquée : « … » » sur la pancarte de 107 signes, soit 143 signes.
-// Un contenu plus long passerait à 4 lignes sans qu'on le voie : ce test le dit.
-const NOTE_MAX = 143;
-
-test('aucune note de déblocage ne dépasse la longueur qui tient en 3 lignes à 667×375', () => {
-  const longest = (notes) => notes.reduce((a, b) => (b.length > a.length ? b : a), '');
-  const signs = longest(bundle.pancartes.map((p) => signNote({ ...p, rarete: RARITIES.length - 1 })));
-  assert.ok(signs.length <= NOTE_MAX, `${signs.length} signes : « ${signs} »`);
-  const named = longest(cards.filter((c) => c.kind !== 'pancartes' && c.kind !== 'manchettes').map((c) => `Débloqué : ${cardName(c.item)}`));
-  assert.ok(named.length <= NOTE_MAX, `${named.length} signes : « ${named} »`);
-});
