@@ -1,0 +1,12 @@
+texte: J'entends ou je lis qu'on me dépeint comme quelqu'un d'ultra-extrême gauche. Si c'est le cas, je me demande ce que devient Poutou.
+auteur: Jean-Luc Mélenchon
+fonction: candidat de la France insoumise à l'élection présidentielle
+date: 2017-04-16
+contexte: Entretien avec des lecteurs du Parisien, paru le dimanche 16 avril 2017.
+categorie: gauche
+mot:
+note: Il poursuit : « Non je ne suis pas d'extrême gauche ». Philippe Poutou était le candidat du Nouveau Parti anticapitaliste. Lu dans la dépêche reprise par Public Sénat ; l'entretien du Parisien n'a pas été relu. Magma gauche, les Dinos gauchistes et Gauche atomique la portent sur leur carte.
+source.titre: Public Sénat — Mélenchon : « Je ne suis pas d'extrême gauche »
+source.url: https://www.publicsenat.fr/actualites/politique/melenchon-je-ne-suis-pas-d-extreme-gauche-58808
+source.nature: presse
+verifie: 2026-11-17
