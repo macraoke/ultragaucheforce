@@ -4,8 +4,8 @@ fonction: quotidien
 date: 2023-02-28
 contexte: Une de Libération, qui consacre un long portrait à Rodolphe Saadé, propriétaire de l'armateur CMA CGM. Le boss lui doit son nom.
 categorie: puissants
-note: Une connue par sa reprise : Daily Mercato écrit le jour même « "Le vrai boss de Marseille". Rodolphe Saadé s'affiche ce mardi en une de Libération ». La page de l'article de Libération n'a pas pu être ouverte. France 3 Régions le reprend aussi, le 26 mars 2024 : « Libération le décrit même comme "le vrai boss de Marseille" » (https://france3-regions.franceinfo.fr/provence-alpes-cote-d-azur/bouches-du-rhone/marseille/le-vrai-boss-de-marseille-comment-la-cma-cgm-et-rodolphe-saade-ont-assis-leur-emprise-sur-la-ville-2945058.html).
-source.titre: Daily Mercato — Vente OM : « Rodolphe Saadé finira par racheter l'Olympique de Marseille » (28 février 2023)
-source.url: https://www.dailymercato.com/news/vente-om-rodolphe-saade-finira-par-racheter-lolympique-de-marseille
+note: France 3 Régions, le 26 mars 2024 : « Au moment du rachat du quotidien régional, Libération le décrit même comme "le vrai boss de Marseille" ». Le jour vient de Daily Mercato, le 28 février 2023 : « "Le vrai boss de Marseille". Rodolphe Saadé s'affiche ce mardi en une de Libération » (https://www.dailymercato.com/news/vente-om-rodolphe-saade-finira-par-racheter-lolympique-de-marseille). La page de l'article de Libération n'a pas pu être ouverte.
+source.titre: France 3 Régions — « Le vrai boss de Marseille » : comment la CMA CGM et Rodolphe Saadé ont assis leur emprise sur la ville
+source.url: https://france3-regions.franceinfo.fr/provence-alpes-cote-d-azur/bouches-du-rhone/marseille/le-vrai-boss-de-marseille-comment-la-cma-cgm-et-rodolphe-saade-ont-assis-leur-emprise-sur-la-ville-2945058.html
 source.nature: presse
-verifie: 2026-11-16
+verifie: 2026-11-17

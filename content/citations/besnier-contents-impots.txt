@@ -1,11 +1,11 @@
-texte: Au regard de cette charge fiscale, nous serions de bien mauvais optimisateurs fiscaux... Nous sommes très contents de payer beaucoup d'impôts.
+texte: Nous sommes très contents de payer beaucoup d'impôts.
 auteur: Emmanuel Besnier
 fonction: PDG de Lactalis
 date: 2025-06-17
 contexte: Audition sous serment devant la commission d'enquête du Sénat sur l'utilisation des aides publiques aux grandes entreprises, en réponse au rapporteur Fabien Gay (compte rendu officiel, p. 566).
 categorie: puissants
 mot: CONTENTS DE PAYER
-note: Il parle des impôts du groupe Lactalis, pas des siens.
+note: Juste avant : « Au regard de cette charge fiscale, nous serions de bien mauvais optimisateurs fiscaux... » Il parle des impôts du groupe Lactalis, pas des siens.
 source.titre: Sénat — rapport n° 808 (2024-2025), tome III, compte rendu de l'audition de M. Emmanuel Besnier, 17 juin 2025
 source.url: https://www.senat.fr/rap/r24-808-3/r24-808-31.pdf
 source.nature: officielle

@@ -4,7 +4,7 @@ fonction: député européen, président du Parti de gauche
 date: 2010-11-21
 contexte: Discours de clôture du congrès du Parti de gauche, au Parc des expositions du Mans.
 categorie: gauche
-mot:
+mot: LE BRUIT ET LA FUREUR
 note: L'INA conserve une variante datée du 20 novembre 2010, au même congrès : « Je suis le bruit et la fureur, comme mon époque. »
 source.titre: franceinfo — Le fondateur et président du Parti de Gauche s'est montré offensif dimanche dans la perspective de 2012
 source.url: https://www.franceinfo.fr/politique/le-fondateur-et-president-du-parti-de-gauche-s-est-montre-offensif-dimanche-dans-la-perspective-de-2012_231671.html

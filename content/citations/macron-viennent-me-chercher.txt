@@ -4,7 +4,7 @@ fonction: président de la République
 date: 2018-07-24
 contexte: Devant les élus de la majorité réunis à la Maison de l'Amérique latine à Paris, en pleine affaire Benalla.
 categorie: puissants
-mot:
+mot: QU'ILS VIENNENT LE CHERCHER
 note: Passée à la postérité sous la forme « Qu'ils viennent me chercher » (titres de presse, tweet de Marine Le Pen), mais les mots rapportés par franceinfo et Public Sénat sont « qu'ils viennent le chercher ».
 source.titre: franceinfo — "Trahison", "le responsable, c'est moi" : ce qu'a dit Emmanuel Macron aux élus LREM à propos de l'affaire Benalla
 source.url: https://www.franceinfo.fr/politique/emmanuel-macron/agression-d-un-manifestant-par-un-collaborateur-de-l-elysee/trahison-le-responsable-c-est-moi-ce-qu-il-faut-retenir-de-la-premiere-intervention-d-emmanuel-macron-sur-l-affaire-benalla_2865935.html

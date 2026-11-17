@@ -4,7 +4,7 @@ fonction: président de la République
 date: 2017-06-29
 contexte: Discours d'inauguration de Station F, incubateur de start-up installé dans l'ancienne gare de la Halle Freyssinet à Paris.
 categorie: puissants
-mot:
+mot: QUI NE SONT RIEN
 note: Souvent citée sous la forme « ceux qui ne sont rien » ; les mots rapportés sont « les gens qui ne sont rien ». La phrase se poursuit : « parce que c'est un lieu où on passe, un lieu que l'on partage ».
 source.titre: Public Sénat — Macron critiqué pour avoir évoqué « les gens qui ne sont rien »
 source.url: https://www.publicsenat.fr/actualites/non-classe/macron-critique-pour-avoir-evoque-les-gens-qui-ne-sont-rien-75440
