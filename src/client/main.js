@@ -14,7 +14,7 @@ import { CRS_OCTOBRE_2026 } from './blesses.js';
 import { shareImage, openShare } from './share.js';
 import { measure } from './mesure.js';
 import { loadSave, storeSave, discover, isFound } from './save.js';
-import { cardName, citationOfWord, levelOrder, rarityName, taxShocks } from './collection.js';
+import { cardName, citationOfWord, levelOrder, signNote, taxShocks } from './collection.js';
 import { registerServiceWorker } from './sw-register.js';
 
 const bundle = await (await (window.contentRequest ?? fetch('content.json'))).json(); // partie dès index.html
@@ -27,6 +27,10 @@ const input = new Input(document.getElementById('tactile'));
 const hud = new Hud(bundle);
 let floorMarks = undefined; // les mesures du HUD avec lesquelles le bandeau du bas a été mesuré
 const editButton = document.getElementById('edition'); // en essai depuis l'Atelier : retour à l'édition, à côté de la pause
+const toasts = document.getElementById('toasts');
+let noteShown = null; // la note dont la boîte a été donnée au rendu
+let noteMarks = null; // les mesures du HUD d'alors
+let hudBand = -1; // le bas du HUD déjà donné aux notes (`--bas-hud`) : on ne le réécrit que s'il change
 
 /** @type {Game | null} */
 let game = null;
@@ -139,9 +143,6 @@ function toMenu() {
   radio.play('menu');
 }
 
-/** Une note à l'écran reste courte : le texte entier est dans la Collection. */
-const short = (text, max = 44) => (text.length > max ? `${text.slice(0, max - 1).trimEnd()}…` : text);
-
 /**
  * Une rencontre : la carte entre dans la Collection, avec la citation et le fait qui l'expliquent.
  * La première fois, on l'annonce (sauf `quiet`).
@@ -151,7 +152,7 @@ function collect(kind, id, quiet = false) {
   const item = lines ? bundle[kind].find((p) => p.texte === id) : bundle[kind]?.[id];
   if (!item || !discover(save, kind, item.id)) return;
   won.push(`${kind}:${item.id}`);
-  if (kind === 'pancartes') hud.toast(`Pancarte ${rarityName(item)} débloquée : « ${short(item.texte)} »`, `rarete-${item.rarete}`, 'pancartes');
+  if (kind === 'pancartes') hud.toast(signNote(item), `rarete-${item.rarete} pancarte`, 'pancartes');
   else if (!quiet) hud.toast(`Débloqué : ${cardName(item)}`, '', 'cartes');
   collect('citations', item.citation, true);
   for (const fiche of [item.fiche].flat()) collect('fiches', fiche, true);
@@ -389,6 +390,20 @@ function frame(now) {
  * quand elle est là ; textes flottants, étiquettes et bulle du boss restent sous tout le HUD, compteur de la manif
  * compris, même quand la puce passe à la ligne.
  */
+/** La boîte d'un élément du HUD, en pixels du jeu, dans le repère de l'image (null s'il n'est pas affiché). */
+function sceneBox(el) {
+  if (!el.offsetParent) return null;
+  const scene = hud.el.offsetParent; // le repère du HUD, comme `Hud.measures`
+  let x = 0;
+  let y = 0;
+  for (let e = el; e && e !== scene; e = e.offsetParent) {
+    x += e.offsetLeft;
+    y += e.offsetTop;
+  }
+  const r = renderer.ratio;
+  return { x0: x / r - 2, x1: (x + el.offsetWidth) / r + 2, y0: y / r - 2, y1: (y + el.offsetHeight) / r + 2 };
+}
+
 function placeOverHud(demo) {
   const { row, bar, band } = demo ? { row: 0, bar: 0, band: 0 } : hud.measures();
   renderer.hudBottom = band;
@@ -398,6 +413,16 @@ function placeOverHud(demo) {
     floorMarks = marks;
     const ticker = document.getElementById('bandeau');
     renderer.floorBand = !demo && !document.body.classList.contains('tactile') && !ticker.hidden ? ticker.offsetHeight : 0;
+  }
+  // La note d'une pancarte, sur deux ou trois lignes, se pose sous tout le HUD, barre de vie comprise (voir style.css).
+  if (band !== hudBand) toasts.style.setProperty('--bas-hud', `${(hudBand = band)}px`);
+  // La note à l'écran : le jeu écrit autour d'elle (bulle du boss, étiquettes, voix, gains, pancartes, panneau lu).
+  // Mesurée dans la mise en page (juste aussi quand tout pivote), seulement quand elle change ou que le HUD bouge.
+  const shown = !demo && !toasts.classList.contains('attend') ? hud.note?.el ?? null : null;
+  if (shown !== noteShown || hud.marks !== noteMarks) {
+    noteShown = shown;
+    noteMarks = hud.marks;
+    renderer.noteBox = shown ? sceneBox(shown) : null;
   }
   if (!demo && document.body.classList.contains('tactile')) renderer.signTop = Math.max(30, Math.ceil((Math.max(row, bar) + 6) / renderer.ratio));
 }
@@ -444,7 +469,8 @@ function layout() {
   root.classList.toggle('bas', height <= 480);
   renderer.resize();
   renderer.anchor = thumbs ? 0.58 : 0.62; // les pouces occupent les coins du bas : on remonte un peu l'action
-  // Au clavier, les notes du coin gauche descendent jusqu'à 140 pixels environ : le panneau passe dessous.
+  // Au clavier, le panneau se pose à 140 pixels environ ; une note du coin gauche plus longue (une pancarte, sur trois
+  // lignes) le fait descendre sous elle, tant qu'il est à l'écran (`Renderer.signBoard`).
   // Au pouce, le HUD est sous le bandeau : le panneau se pose sous sa première ligne (`placeOverHud`).
   renderer.signTop = thumbs ? 30 : Math.max(30, Math.ceil((140 * (window.devicePixelRatio || 1)) / renderer.scale));
   hud.marks = null; // à remesurer

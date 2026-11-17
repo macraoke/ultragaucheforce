@@ -73,6 +73,9 @@ export function markSeen(save, shelf) {
 /** Une pancarte ou un bandeau a une rareté ; les autres cartes n'en ont pas. */
 export const rarityName = (item) => (item.rarete === undefined ? '' : RARITIES[item.rarete]);
 
+/** La note d'une pancarte débloquée : son texte entier, jamais coupé ; la note prend une ligne de plus s'il le faut. */
+export const signNote = (item) => `Pancarte ${rarityName(item)} débloquée : « ${item.texte} »`;
+
 /**
  * Le plan de campagne : tous les niveaux, dans l'ordre des étapes. `content/campagne.txt` fixe les premières ;
  * les autres suivent, par ordre de titre. Une seule catégorie : un niveau déposé est une étape comme une autre.

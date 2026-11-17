@@ -3,7 +3,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { loadContent } from '../tools/content.mjs';
-import { SHELVES, allCards, cardId, cardName, citationOfWord, hintLine, levelOrder, whereToFind } from '../src/client/collection.js';
+import { SHELVES, allCards, cardId, cardName, citationOfWord, hintLine, levelOrder, signNote, whereToFind } from '../src/client/collection.js';
+import { RARITIES } from '../src/content/rarities.js';
 
 const { bundle } = loadContent();
 const cards = allCards(bundle);
@@ -89,5 +90,20 @@ test('collection : un mot crié en jeu retrouve sa citation, par son mot-clé ou
   assert.equal(citationOfWord(bundle, 'MOT INCONNU !'), undefined);
   for (const speaker of [...Object.values(bundle.heros), ...Object.values(bundle.ennemis)]) {
     for (const word of speaker.arme?.mots || []) assert.ok(citationOfWord(bundle, word), `${speaker.id} : « ${word} » ne vient d'aucune citation`);
+  }
+});
+
+// Valentin, 17 novembre 2026 : « évite de couper les textes comme ici pour la pancarte débloquée. tu peux rajouter une
+// ligne c'est ok . »
+test('la note d’une pancarte débloquée dit son texte en entier, sans « … », quelle que soit sa longueur ou sa rareté', () => {
+  const longest = Math.max(...bundle.pancartes.map((p) => p.texte.length));
+  assert.ok(longest > 100, `la plus longue pancarte fait ${longest} signes`);
+  for (const p of bundle.pancartes) {
+    for (let rarete = 0; rarete < RARITIES.length; rarete++) {
+      const note = signNote({ ...p, rarete });
+      assert.ok(note.includes(`« ${p.texte} »`), `${p.texte} : en entier`);
+      assert.ok(!note.replace(p.texte, '').includes('…'), `${p.texte} : pas de « … » ajouté`);
+      assert.ok(note.startsWith(`Pancarte ${RARITIES[rarete]} débloquée : `), note);
+    }
   }
 });

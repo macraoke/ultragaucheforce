@@ -346,6 +346,12 @@ body.sobre #bandeau *, body.sobre #bandeau.entre * { animation: none; }
 /* Les notes : une à la fois, sous le HUD, à la même échelle que lui ; jamais sur la barre de vie du boss. */
 #toasts { position: absolute; left: 10px; top: 4.6em; z-index: 6; display: grid; justify-items: start; gap: 6px; max-width: min(34%, 360px); font-size: clamp(.75rem, 2.2vmin, 1.1rem); pointer-events: none; }
 body:not(.tactile) #hud:has(> #hud-boss:not([hidden])) ~ #toasts { top: 6.6em; }
+/*
+ * La note d'une pancarte dit son texte en entier, sur deux ou trois lignes : elle est plus large, et se pose sous tout le
+ * HUD (`--bas-hud`, mesuré par main.js : le compteur de la manif, la barre de vie quand elle est là).
+ */
+#toasts.pancarte { top: max(4.6em, calc(var(--bas-hud, 0px) + 6px)); max-width: min(46%, 470px); }
+body:not(.tactile) #hud:has(> #hud-boss:not([hidden])) ~ #toasts.pancarte { top: max(6.6em, calc(var(--bas-hud, 0px) + 6px)); }
 #toasts p.rarete-1 { border-left-color: var(--rare); }
 #toasts p.rarete-2 { border-left-color: var(--epique); }
 #toasts p.rarete-3 { border-left-color: var(--or); background: #4a3a0c; }
@@ -383,8 +389,6 @@ body.tactile #hud .droite { right: max(10px, env(safe-area-inset-right)); }
 body.tactile #toasts { left: auto; right: calc(max(10px, env(safe-area-inset-right)) + 3.2em); top: calc(var(--haut-bandeau) + 8px); justify-items: end; max-width: 44%; }
 body.tactile #toasts p { font-size: .72rem; padding: .35em .6em; }
 body.tactile #toasts.attend { visibility: hidden; } /* un panneau d'aide occupe le haut : la note attend (voir Hud.pump) */
-/* Pendant un boss, une seule ligne : la note s'arrête au-dessus de sa barre de vie. */
-body.tactile #hud:has(> #hud-boss:not([hidden])) ~ #toasts p { max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 html.pivote body.tactile #bandeau { padding: 0 env(safe-area-inset-bottom) 0 env(safe-area-inset-top); }
 html.pivote body.tactile #hud .gauche { left: max(10px, env(safe-area-inset-top)); }
 html.pivote body.tactile #hud .droite { right: max(10px, env(safe-area-inset-bottom)); }
@@ -392,6 +396,13 @@ html.pivote body.tactile #toasts { right: calc(max(10px, env(safe-area-inset-bot
 /* En essai, le retour à l'édition s'ajoute à côté de la pause : les notes s'arrêtent avant lui (`--hud-droite`, mesuré). */
 body.tactile.essai #toasts { right: calc(max(10px, env(safe-area-inset-right)) + var(--hud-droite, 3.2em) + 8px); max-width: calc(52% - var(--hud-droite, 3.2em)); }
 html.pivote body.tactile.essai #toasts { right: calc(max(10px, env(safe-area-inset-bottom)) + var(--hud-droite, 3.2em) + 8px); }
+/*
+ * Au pouce, la note d'une pancarte, sur deux ou trois lignes, ne tient pas sur la ligne du HUD ; quand une barre de vie
+ * est là, aucune note n'y tient. Elle se pose alors à gauche, sous tout le HUD (barre comprise), au-dessus du manche ; ni
+ * sur la barre, ni sur SPÉ, et jamais coupée. Le jeu écrit autour d'elle (`Renderer.noteBox`).
+ */
+body.tactile #toasts.pancarte, body.tactile.essai #toasts.pancarte, body.tactile #hud:has(> #hud-boss:not([hidden])) ~ #toasts { left: max(10px, env(safe-area-inset-left)); right: auto; top: max(calc(var(--haut-bandeau) + 8px), calc(var(--bas-hud, 0px) + 6px)); justify-items: start; max-width: min(56%, 460px); }
+html.pivote body.tactile #toasts.pancarte, html.pivote body.tactile #hud:has(> #hud-boss:not([hidden])) ~ #toasts { left: max(10px, env(safe-area-inset-top)); }
 
 /* ------------------------------------------------------------------ écrans */
 
