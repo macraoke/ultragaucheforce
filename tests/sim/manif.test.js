@@ -7,6 +7,7 @@ import { fixtureBundle, flat, level, play, run, settle } from './helpers.js';
 import { TILE } from '../../src/sim/world.js';
 import { LINE_REACH, KETTLE_FLOOR } from '../../src/sim/enemy.js';
 import { spawnProjectile } from '../../src/sim/projectile.js';
+import { syncCortege, flagOrder } from '../../src/sim/manif.js';
 
 const enemy = (id) => ({ type: 'ennemi', id });
 const recruit = (id) => ({ type: 'recrue', id });
@@ -528,4 +529,38 @@ test('pancartes : les rares sortent moins souvent, et le cortège ne montre que 
   }
   assert.ok(empty > 120 && empty < 280, `une fois sur deux, le cortège de départ n'en a pas (${empty} sur 400)`);
   assert.ok(seen.LÉGENDAIRE > 0 && seen.COMMUNE > seen.LÉGENDAIRE * 2, `une légendaire sort trois fois moins qu’une commune : ${JSON.stringify(seen)}`);
+});
+
+// ---------------------------------------------------------------- drapeaux
+
+test('drapeaux : le tricolore ouvre la manif, LFI suit, puis le hasard ; chacun finit par défiler', () => {
+  const base = fixtureBundle();
+  const one = Object.values(base.drapeaux)[0];
+  const ids = ['tricolore', 'lfi', ...Array.from({ length: 21 }, (_, i) => `lutte-${i}`)].sort();
+  const bundle = { ...base, drapeaux: Object.fromEntries(ids.map((id) => [id, one])) };
+  const seen = new Set();
+  const thirds = new Set();
+  for (let seed = 1; seed <= 23; seed++) {
+    const game = settle(play(flat({ cortege: true }), { bundle, seed }));
+    game.crowd = 1000;
+    syncCortege(game);
+    const flags = game.cortege.filter((m) => m.kind === 'drapeau').map((m) => m.label);
+    assert.deepEqual(flags.slice(0, 2), ['tricolore', 'lfi'], `graine ${seed} : le tricolore, puis LFI`);
+    assert.equal(new Set(flags).size, flags.length, 'pas deux fois le même drapeau dans un cortège');
+    assert.equal(flagOrder(ids, seed).length, ids.length, 'l’ordre contient chaque drapeau une fois');
+    flagOrder(ids, seed).forEach((f) => seen.add(f));
+    flags.forEach((f) => seen.add(f));
+    thirds.add(flags[2]);
+  }
+  assert.equal(seen.size, 23);
+  assert.ok(thirds.size > 5, `le troisième drapeau change d’une partie à l’autre (${thirds.size} différents)`);
+  // Chacun défile vraiment dans un cortège plein, sur assez de parties.
+  const marched = new Set();
+  for (let seed = 1; seed <= 200; seed++) {
+    const game = settle(play(flat({ cortege: true }), { bundle, seed }));
+    game.crowd = 1000;
+    syncCortege(game);
+    game.cortege.filter((m) => m.kind === 'drapeau').forEach((m) => marched.add(m.label));
+  }
+  assert.equal(marched.size, 23, 'aucun drapeau ne reste au vestiaire');
 });

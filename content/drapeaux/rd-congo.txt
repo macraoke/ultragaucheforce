@@ -1,0 +1,25 @@
+nom: Drapeau de la RD Congo
+description: Dans l'est du pays, de graves violences, possibles crimes de guerre et crimes contre l'humanité, « commises par toutes les parties », selon l'ONU (2025).
+auteur: UltraGauche Force
+ressource.1.titre: Des crimes de guerre auraient été commis par tous les belligérants dans l'est de la RDC — ONU Info
+ressource.1.url: https://news.un.org/fr/story/2025/09/1157412
+ressource.1.nature: officielle
+ressource.2.titre: RDC - Rwanda : guerre oubliée — L'Essentiel du Dessous des cartes, ARTE (vidéo, 3 min)
+ressource.2.url: https://www.youtube.com/watch?v=tZ_-75mqdWU
+ressource.2.nature: presse
+ressource.3.titre: Les clés pour comprendre pourquoi l'est de la RDC s'embrase — Courrier international (vidéo, 4 min)
+ressource.3.url: https://www.youtube.com/watch?v=KIdBPEXK0_0
+ressource.3.nature: presse
+--- image
+bbbbbbbbbbbbbbYYRR
+bbYbbbbbbbbbbYRRRY
+bYYYbbbbbbbYYRRRYb
+bbYbbbbbbbYRRRYYbb
+bbbbbbbbYYRRRYbbbb
+bbbbbbbYRRRYYbbbbb
+bbbbbYYRRRYbbbbbbb
+bbbbYRRRYYbbbbbbbb
+bbYYRRRYbbbbbbbbbb
+bYRRRYYbbbbbbbbbbb
+YRRRYbbbbbbbbbbbbb
+RRYYbbbbbbbbbbbbbb

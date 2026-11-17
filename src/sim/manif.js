@@ -7,8 +7,26 @@
 import { TILE } from './world.js';
 import { moveBox, overlap } from './physics.js';
 import { standDown, KETTLE_FLOOR } from './enemy.js';
+import { makeRng } from './rng.js';
 
 const MAX_CORTEGE = 40;
+/** Les deux drapeaux qui ouvrent toujours la manif, dans cet ordre. */
+const LEADING_FLAGS = ['tricolore', 'lfi'];
+
+/**
+ * L'ordre des drapeaux du cortège : le tricolore, puis LFI, puis tous les autres mélangés selon la graine
+ * de la partie (un hasard à part, qui ne tire pas dans game.rng). D'une partie à l'autre, chacun finit par défiler.
+ */
+export function flagOrder(ids, seed) {
+  const lead = LEADING_FLAGS.filter((id) => ids.includes(id));
+  const rest = ids.filter((id) => !lead.includes(id));
+  const rng = makeRng(seed);
+  for (let i = rest.length - 1; i > 0; i--) {
+    const j = rng.int(i + 1);
+    [rest[i], rest[j]] = [rest[j], rest[i]];
+  }
+  return [...lead, ...rest];
+}
 const SPACING = 7; // points de trace entre deux manifestants
 const KINDS = ['pancarte', 'drapeau', 'fanfare'];
 const INSTRUMENTS = ['tambour', 'trompette', 'soubassophone'];
@@ -105,7 +123,7 @@ export function syncCortege(game) {
   const { hero, bundle, cortege } = game;
   const wanted = visibleCortege(game.crowd);
   if (cortege.length > wanted) cortege.length = wanted;
-  const flags = Object.keys(bundle.drapeaux || {});
+  const flags = cortege.length < wanted ? flagOrder(Object.keys(bundle.drapeaux || {}), game.seed) : [];
   while (cortege.length < wanted) {
     const n = cortege.length;
     const kind = KINDS[n % KINDS.length];

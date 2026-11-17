@@ -94,7 +94,8 @@ button.discret { background: transparent; color: var(--papier); border-color: va
 .carton .drapeaux.haut { top: calc(var(--vh, 1vh) * 2); }
 .carton .drapeaux.bas { bottom: calc(var(--vh, 1vh) * 2); }
 .carton .drapeaux canvas {
-  width: clamp(40px, calc(var(--vw, 1vw) * 8), 110px) !important;
+  /* Tous les drapeaux tiennent sur leur rangée, quel que soit leur nombre (--n, posé par herocard.js). */
+  width: clamp(20px, min(calc(var(--vw, 1vw) * 8), calc(var(--vw, 1vw) * 96 / var(--n, 7) - var(--vw, 1vw) * 2)), 110px) !important;
   height: auto !important;
   aspect-ratio: 3 / 2;
   border: 2px solid var(--nuit);

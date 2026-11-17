@@ -1,0 +1,25 @@
+nom: Drapeau rohingya
+description: Pour une mission de l'ONU (2018), les chefs de l'armée birmane doivent répondre d'accusations de génocide ; la CIJ, saisie par la Gambie, rend son arrêt le 19 novembre 2026.
+auteur: UltraGauche Force
+ressource.1.titre: Myanmar : les dirigeants de l'armée doivent répondre du chef d'accusation de génocide — ONU Info
+ressource.1.url: https://news.un.org/fr/story/2018/08/1022072
+ressource.1.nature: officielle
+ressource.2.titre: La CIJ rendra prochainement son arrêt dans l'affaire de génocide visant le Myanmar — Human Rights Watch
+ressource.2.url: https://www.hrw.org/fr/news/2026/11/03/la-cij-rendra-prochainement-son-arret-dans-laffaire-de-genocide-visant-le-myanmar
+ressource.2.nature: associative
+ressource.3.titre: La crise des Rohingyas expliquée — Amnesty International France (vidéo, 4 min)
+ressource.3.url: https://www.youtube.com/watch?v=1O7XUgMwEfU
+ressource.3.nature: associative
+--- image
+VVVVVVVVVVVVVVVVVV
+VVVVVVVVVVVVVVVVVV
+VVVVVVVjjjjVVVVVVV
+VVVVVVjYYYYjVVVVVV
+VVVVVjYYYYYYjVVVVV
+VVVVVjYYwwYYjVVVVV
+VVVVVjYYwwYYjVVVVV
+VVVVVjYYYYYYjVVVVV
+VVVVVVjYYYYjVVVVVV
+VVVVVVVjjjjVVVVVVV
+VVVVVVVVVVVVVVVVVV
+VVVVVVVVVVVVVVVVVV
