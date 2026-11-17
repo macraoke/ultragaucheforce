@@ -1,5 +1,5 @@
 titre: Le siège de la chaîne d'info
-auteur: UltraGauche Force
+auteur: xsbfh
 accroche: Une chaîne d'info en continu : ses plateaux, sa régie, son antenne.
 citation: bollore-aucun-projet-ideologique
 fiche: c8-conseil-etat-fin

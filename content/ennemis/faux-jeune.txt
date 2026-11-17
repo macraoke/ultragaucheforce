@@ -11,7 +11,7 @@ largeur: 10
 hauteur: 16
 fiche: bismillah-meme
 replique: BISMILLAH, C'EST LES TÉNÈBRES.
-auteur: UltraGauche Force
+auteur: xsbfh
 --- repos
 ..RRRRRR....
 RRRRRRRRR...

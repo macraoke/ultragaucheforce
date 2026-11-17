@@ -20,7 +20,7 @@ charge.distance: 150
 charge.vitesse: 210
 charge.pause: 2.4
 charge.disperse: 6
-auteur: UltraGauche Force
+auteur: xsbfh
 --- repos
 ...kkkkkk.....
 ..kYYYYYYk....

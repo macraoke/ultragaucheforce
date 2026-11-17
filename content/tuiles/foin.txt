@@ -1,7 +1,7 @@
 nom: Botte de foin
 symbole: F
 pv: 1
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 jYyYyYyYYyYyYyYj
 YyYyYjYyyYyYjYyY

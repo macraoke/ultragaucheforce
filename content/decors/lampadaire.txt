@@ -1,5 +1,5 @@
 nom: Lampadaire
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 ....KKKK....
 ....KKKK....

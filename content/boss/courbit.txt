@@ -17,7 +17,7 @@ replique: NOUS PARTICIPONS À L'EFFORT COLLECTIF.
 replique: JE SUIS ASSEZ INCOMPÉTENT SUR CES QUESTIONS.
 replique: NOUS N'AVONS PAS ENVIE DE BOUGER.
 replique: NOUS N'ALLONS PAS DÉBATTRE AU SUJET DES CHIFFRES.
-auteur: UltraGauche Force
+auteur: xsbfh
 
 # La fortune, en milliards d'euros, et la fiche sourcée qui la documente.
 fortune.montant: 2.7

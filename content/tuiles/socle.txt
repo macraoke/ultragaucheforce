@@ -3,7 +3,7 @@
 nom: Socle rocheux
 symbole: O
 pv: 0
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 KKKKkKKKKKKKkKKK
 KgKKKKKKKgKKKKKK

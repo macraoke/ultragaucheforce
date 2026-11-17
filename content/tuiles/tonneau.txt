@@ -3,7 +3,7 @@ nom: Tonneau de lisier
 symbole: X
 pv: 1
 explose: 40
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 ................
 ..VVVVVVVVVVVV..

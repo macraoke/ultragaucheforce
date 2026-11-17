@@ -8,7 +8,7 @@ largeur: 12
 hauteur: 16
 citation: ciotti-tyranno-gauchistes
 fiche: impots-milliardaires
-auteur: UltraGauche Force
+auteur: xsbfh
 
 # Arme : une rafale de tracts.
 arme.type: tir

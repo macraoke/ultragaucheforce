@@ -1,6 +1,6 @@
 # La fanfare du cortège : on ne manifeste pas sans cuivres.
 nom: Trompettiste de la fanfare
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 ...kkkk.....
 ..kkkkkk....

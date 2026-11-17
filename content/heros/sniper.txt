@@ -7,7 +7,7 @@ citation: puremedias-le-sniper
 pv: 2
 vitesse: 135
 saut: 3.2
-auteur: UltraGauche Force
+auteur: xsbfh
 
 # Arme : un tir rare, très rapide, de très loin, qui traverse les rangs et passe les boucliers.
 arme.type: tir

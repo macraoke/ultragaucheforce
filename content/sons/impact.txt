@@ -1,4 +1,4 @@
 nom: Impact
 zzfx: .6,.1,210,,.01,.05,4,1,-9
-auteur: UltraGauche Force
+auteur: xsbfh
 licence: CC0-1.0

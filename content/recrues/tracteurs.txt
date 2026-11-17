@@ -2,7 +2,7 @@ nom: Tracteurs
 apport: 60
 slogan: SI Y'A PLUS DE TERRE, Y'A PLUS DE BIÈRE
 fiche: programme-services-publics-ruraux
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 ............................................
 ............................................

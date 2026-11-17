@@ -3,7 +3,7 @@ nom: Street medic
 apport: 5
 soin: 1
 fiche: street-medics
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 ...wwww...
 ..wwRRww..

@@ -12,7 +12,7 @@ ligne.poussee: 10
 citation: macron-la-foule
 fiche: rio-conseil-etat
 fiche: nasse-conseil-etat
-auteur: UltraGauche Force
+auteur: xsbfh
 --- repos
 ....................................
 ...kkkkkk.....kkkkkk.....kkkkkk.....

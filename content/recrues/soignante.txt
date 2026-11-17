@@ -2,7 +2,7 @@ nom: Soignante
 apport: 20
 slogan: DE L'ARGENT POUR L'HÔPITAL, PAS POUR LE CAPITAL
 fiche: programme-hopital
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 ...TTTT...
 ..TTTTTT..

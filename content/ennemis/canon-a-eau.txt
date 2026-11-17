@@ -16,7 +16,7 @@ arme.pause: 2.6
 arme.portee: 150
 arme.poussee: 230
 arme.son: jet
-auteur: UltraGauche Force
+auteur: xsbfh
 --- repos
 ......................GGGG..........GG..
 .....................GGGGGGGGGGGGGGGGG..

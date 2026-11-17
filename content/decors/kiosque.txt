@@ -1,5 +1,5 @@
 nom: Kiosque à journaux
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 ...............YY...............
 ...............YY...............

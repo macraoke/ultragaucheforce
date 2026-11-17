@@ -15,7 +15,7 @@ leve: 0.4
 replique: J'AI TOUJOURS EU PEUR DES SOCIALISTES.
 replique: FINANCIÈREMENT ET ÉCONOMIQUEMENT, LA FRANCE DEVIENT DANGEREUSE.
 replique: LORSQU'ON VOUS PREND PLUS DE 50% DE VOS REVENUS, VOUS NE POUVEZ PAS L'ACCEPTER.
-auteur: UltraGauche Force
+auteur: xsbfh
 
 # La fortune, en milliards d'euros, et la fiche sourcée qui la documente.
 # Pas de « fortune.rente » : le groupe n'est pas coté.

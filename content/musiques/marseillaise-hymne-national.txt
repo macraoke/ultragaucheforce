@@ -3,4 +3,4 @@ artiste: République française
 url: https://soundcloud.com/republiquefrancaise/la-marseillaise-hymne-national
 ou: menu
 licence: tous droits réservés
-auteur: UltraGauche Force
+auteur: xsbfh

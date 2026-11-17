@@ -1,6 +1,6 @@
 # Le camion-sono : la sortie de chaque niveau.
 nom: Camion-sono
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 ..........KKKKKKKKKK..KKKKKKKKKK................
 ..........KkkkkkkkkK..KkkkkkkkkK................

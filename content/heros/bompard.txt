@@ -8,7 +8,7 @@ vitesse: 140
 saut: 3.2
 fiche: bompard-supercalculateur
 fiche: comptage-31-janvier-2023
-auteur: UltraGauche Force
+auteur: xsbfh
 
 # Arme : une rafale de chiffres, fine, rapide et sans écart, qui porte loin et traverse les rangs.
 arme.type: tir

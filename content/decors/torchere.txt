@@ -1,6 +1,6 @@
 # La torchère : le gaz brûlé en haut de la raffinerie, sans fin.
 nom: Torchère
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 ..............
 ..............

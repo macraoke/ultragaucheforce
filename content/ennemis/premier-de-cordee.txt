@@ -20,7 +20,7 @@ arme.taille: 10
 arme.mots: PREMIERS DE CORDÉE ! | COSTARD ! | ARGENT MAGIQUE ! | GAULOIS RÉFRACTAIRE ! | FACTIEUX ! | LA FOULE ! | FOUTRE LE BORDEL !
 arme.visee: 0.4
 arme.son: mot
-auteur: UltraGauche Force
+auteur: xsbfh
 --- repos
 .....TTTTTT.....
 ....TTTTTTTT....

@@ -16,7 +16,7 @@ leve: 0.6
 replique: IL VAUT MIEUX FAIRE LE TROU PARCE QUE SINON ON NE REMPLACE JAMAIS.
 replique: SOIT ON LES FORME ET ILS SE LAISSENT FORMER, SOIT ON NE SAIT PAS LES FORMER ET ILS N'ONT PLUS QU'À ALLER TRAVAILLER AILLEURS.
 replique: MON REFUS DE NOUS ALLIER AVEC CARREFOUR, C'EST MON DERNIER COMBAT.
-auteur: UltraGauche Force
+auteur: xsbfh
 
 # La fortune, en milliards d'euros, et la fiche sourcée qui la documente.
 # Pas de « fortune.rente » : le groupe n'est pas coté, aucun dividende lu de première main.

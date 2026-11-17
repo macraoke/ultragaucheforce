@@ -1,7 +1,7 @@
 nom: Vitrine de luxe
 symbole: V
 pv: 1
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 YYYYYYYYYYYYYYYY
 YccccccccccccccY

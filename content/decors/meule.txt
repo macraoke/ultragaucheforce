@@ -1,5 +1,5 @@
 nom: Meule de fromage
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 ...yyyyyy...
 .yyYYYYYYyy.

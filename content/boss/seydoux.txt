@@ -17,7 +17,7 @@ replique: ON PEUT FAIRE DU CINÉMA LOW COST, MAIS JE N'Y CROIS PAS.
 replique: SI NOS PRIX SONT TROP CHERS, IL NE VIENDRA PAS.
 replique: CE QUI FONCTIONNE LE MIEUX CHEZ PATHÉ AUJOURD'HUI, CE SONT LES SALLES PREMIUM.
 replique: LES GENS QUI PAYENT LE PRIX FORT REPRÉSENTENT 20 % DES CLIENTS.
-auteur: UltraGauche Force
+auteur: xsbfh
 
 # La fortune, en milliards d'euros, et la fiche sourcée qui la documente.
 fortune.montant: 1.15

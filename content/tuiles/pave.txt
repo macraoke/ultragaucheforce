@@ -1,7 +1,7 @@
 nom: Pavé parisien
 symbole: G
 pv: 3
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 ggggggggGggggggg
 gKKKKKKgKgKKKKKK

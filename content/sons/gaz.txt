@@ -1,4 +1,4 @@
 nom: Gaz lacrymogène
 zzfx: .5,.1,1000,.05,.2,.4,4,1,-2,,,,,2
-auteur: UltraGauche Force
+auteur: xsbfh
 licence: CC0-1.0

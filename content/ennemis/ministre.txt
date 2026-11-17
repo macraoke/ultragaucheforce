@@ -20,7 +20,7 @@ arme.taille: 10
 arme.mots: COMPLICES ! | ÉCOTERRORISME ! | TERRORISME INTELLECTUEL ! | BORDÉLISER ! | GAUCHISÉ !
 arme.visee: 0.4
 arme.son: mot
-auteur: UltraGauche Force
+auteur: xsbfh
 --- repos
 .....TTTTTT.....
 ....TTTTTTTT....

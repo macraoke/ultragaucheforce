@@ -18,7 +18,7 @@ replique: NOUS ESPÉRONS QUE LE PRODUIT PARLE DE LUI-MÊME.
 replique: LES GENS CONSOMMENT BEAUCOUP PLUS EN FONCTION DE L'ÉVOLUTION DE LEUR PATRIMOINE QU'EN FONCTION DE L'ÉVOLUTION DU REVENU NATIONAL.
 replique: NOUS NE SOMMES PAS RESPONSABLES DES TAUX DE CHANGE NI DE LA GÉOPOLITIQUE.
 replique: JE NE PEUX PAS FAIRE DE PROJECTION SUR 2026.
-auteur: UltraGauche Force
+auteur: xsbfh
 
 # La fortune, en milliards d'euros, et la fiche sourcée qui la documente.
 fortune.montant: 114

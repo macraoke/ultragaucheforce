@@ -1,5 +1,5 @@
 nom: Tente
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 .................r................
 ................r.r...............

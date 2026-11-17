@@ -1,6 +1,6 @@
 # Panneau : son texte s'affiche quand le héros passe devant (chiffres 1 à 9 dans une carte).
 nom: Panneau
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 ................
 .TTTTTTTTTTTTTT.

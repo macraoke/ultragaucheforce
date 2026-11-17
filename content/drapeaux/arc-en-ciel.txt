@@ -1,7 +1,7 @@
 nom: Drapeau arc-en-ciel
 description: Les fiertés LGBT+.
 proximite: 3
-auteur: UltraGauche Force
+auteur: xsbfh
 ressource.1.titre: 4 août 1982 : la loi Forni dépénalise l'homosexualité — INA
 ressource.1.url: https://www.ina.fr/ina-eclaire-actu/loi-forni-discrimination-delit-d-homosexualite
 ressource.1.nature: officielle

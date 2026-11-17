@@ -7,7 +7,7 @@ citation: carlier-deconstruction-woman
 pv: 2
 vitesse: 145
 saut: 3.3
-auteur: UltraGauche Force
+auteur: xsbfh
 
 # Arme : un mot géant qui traverse les adversaires et ronge le décor. Il part plus vite qu'elle ne court.
 arme.type: tir

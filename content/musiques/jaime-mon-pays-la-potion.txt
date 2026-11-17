@@ -3,4 +3,4 @@ artiste: La Souye
 url: https://soundcloud.com/lasouye/01-jaime-mon-pays-x-la-potion
 ou: jeu
 licence: tous droits réservés
-auteur: UltraGauche Force
+auteur: xsbfh

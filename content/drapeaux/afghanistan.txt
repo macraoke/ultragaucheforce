@@ -1,7 +1,7 @@
 nom: Drapeau de l'Afghanistan (république)
 description: Les Afghanes « bannies des écoles… exclues du travail » : la CPI a délivré des mandats d'arrêt pour persécution fondée sur le genre.
 proximite: 1
-auteur: UltraGauche Force
+auteur: xsbfh
 ressource.1.titre: Situation en Afghanistan : La Chambre préliminaire II de la CPI délivrent des mandats d'arrêt — Cour pénale internationale
 ressource.1.url: https://www.icc-cpi.int/fr/news/situation-en-afghanistan-la-chambre-preliminaire-ii-de-la-cpi-delivrent-des-mandats-darret
 ressource.1.nature: officielle

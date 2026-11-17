@@ -1,5 +1,5 @@
 nom: Arbre
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 ..............................
 ...............V..............

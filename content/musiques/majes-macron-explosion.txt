@@ -3,4 +3,4 @@ artiste: Majes
 url: https://soundcloud.com/majesmusic/majes-macron-explosion-techno-mix
 ou: boss
 licence: tous droits réservés
-auteur: UltraGauche Force
+auteur: xsbfh

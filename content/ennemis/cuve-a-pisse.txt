@@ -22,7 +22,7 @@ arme.taille: 10
 arme.mots: INQUALIFIABLES ! | PROPOS INQUALIFIABLES !
 arme.visee: 0.4
 arme.son: mot
-auteur: UltraGauche Force
+auteur: xsbfh
 --- repos
 ......GGGG......
 .....GGGGGG.....

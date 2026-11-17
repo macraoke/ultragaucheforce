@@ -1,5 +1,5 @@
 nom: Clôture
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 ..t.....t.....t.
 .tt....tt....tt.

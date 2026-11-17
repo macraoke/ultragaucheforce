@@ -3,4 +3,4 @@ artiste: Fhin
 url: https://soundcloud.com/fhin/fhin-quand-on-arrive-en-ville
 ou: menu
 licence: tous droits réservés
-auteur: UltraGauche Force
+auteur: xsbfh

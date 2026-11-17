@@ -25,7 +25,7 @@ arme.gaz: 4
 arme.taille: 5
 arme.image: projectile
 arme.son: gaz
-auteur: UltraGauche Force
+auteur: xsbfh
 --- repos
 ...nnnnnn.....
 ..nBBBBBBn....

@@ -3,4 +3,4 @@ artiste: SHASHA
 url: https://soundcloud.com/user-73635151/la-jeunesse-emmerde-le-front-national-hc-gabber-edit
 ou: boss
 licence: tous droits réservés
-auteur: UltraGauche Force
+auteur: xsbfh

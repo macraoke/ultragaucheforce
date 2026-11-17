@@ -20,7 +20,7 @@ replique: NOUS SERIONS DE BIEN MAUVAIS OPTIMISATEURS FISCAUX.
 replique: NOUS SOMMES TRÈS CONTENTS DE PAYER BEAUCOUP D'IMPÔTS.
 replique: NOTRE INDUSTRIE RÉALISE DE FAIBLES MARGES.
 replique: CERTAINS VEULENT TRANSFORMER CETTE DISCRÉTION EN OPACITÉ.
-auteur: UltraGauche Force
+auteur: xsbfh
 
 # La fortune, en milliards d'euros, et la fiche sourcée qui la documente.
 # Pas de « fortune.rente » : aucun montant de dividende n'a été trouvé de première main (Lactalis n'est pas cotée).

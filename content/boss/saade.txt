@@ -23,7 +23,7 @@ replique: CE N'EST PAS UNE FAVEUR ACCORDÉE À CMA-CGM.
 replique: NE PENSEZ-VOUS PAS QU'IL EST TEMPS DE PASSER À AUTRE CHOSE ?
 replique: J'AURAIS PU AUGMENTER MES TARIFS DE FRET, JE NE L'AI PAS FAIT.
 replique: POUVAIS-JE LUI DIRE NON ?
-auteur: UltraGauche Force
+auteur: xsbfh
 
 # La fortune, en milliards d'euros, et la fiche sourcée qui la documente.
 fortune.montant: 31.5

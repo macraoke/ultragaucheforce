@@ -8,7 +8,7 @@ pv: 2
 vitesse: 145
 saut: 3.4
 fiche: programme-6e-republique
-auteur: UltraGauche Force
+auteur: xsbfh
 
 # Arme : les pages du programme, en éventail levé, qui traversent les rangs.
 arme.type: tir

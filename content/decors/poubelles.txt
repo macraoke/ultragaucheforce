@@ -2,7 +2,7 @@
 nom: Poubelles entassées
 # Quand la panique monte, elles prennent feu, et la télé vient filmer ça.
 brule: oui
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 .......................K..............
 ....................KKKKKKK...........

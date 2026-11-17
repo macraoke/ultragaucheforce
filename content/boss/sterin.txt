@@ -18,7 +18,7 @@ replique: POUR MA PART, JE N'AIME PAS LES SOCIALO-COMMUNISTES !
 replique: MON PRINCIPAL TALENT, À SAVOIR FAIRE DE L'ARGENT.
 replique: JE NE SUIS DONC PAS NÉ MILLIARDAIRE : JE LE SUIS DEVENU.
 replique: PÉRICLÈS EST UN PROJET MÉTAPOLITIQUE, ET NON POLITIQUE.
-auteur: UltraGauche Force
+auteur: xsbfh
 
 # La fortune, en milliards d'euros, et la fiche sourcée qui la documente.
 fortune.montant: 1.5

@@ -2,7 +2,7 @@ nom: Cheminot
 apport: 30
 slogan: GRÈVE, BLOCAGE, MANIF SAUVAGE
 fiche: programme-train
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 ..nnnnnn..
 .nnnnnnnn.

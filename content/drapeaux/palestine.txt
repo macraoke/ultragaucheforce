@@ -1,7 +1,7 @@
 nom: Drapeau de la Palestine
 description: Solidarité avec le peuple palestinien.
 proximite: 3
-auteur: UltraGauche Force
+auteur: xsbfh
 ressource.1.titre: Histoire de la question de Palestine — Nations unies
 ressource.1.url: https://www.un.org/unispal/fr/histoire-de-la-question-de-palestine/
 ressource.1.nature: officielle

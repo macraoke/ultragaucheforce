@@ -8,7 +8,7 @@ fiche: plainte-nunez-classee-sans-suite
 pv: 2
 vitesse: 150
 saut: 3.6
-auteur: UltraGauche Force
+auteur: xsbfh
 
 # Arme : des pétards lancés en cloche, qui éclatent à l'arrivée.
 arme.type: tir

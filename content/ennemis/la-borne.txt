@@ -33,7 +33,7 @@ arme.taille: 14
 arme.mots: 49.3 !
 arme.visee: 0.4
 arme.son: mot
-auteur: UltraGauche Force
+auteur: xsbfh
 --- repos
 ......TTTT......
 .....TTTTTT.....

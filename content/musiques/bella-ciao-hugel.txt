@@ -3,4 +3,4 @@ artiste: HUGEL
 url: https://soundcloud.com/hugelmusic/hugel-bella-ciao
 ou: jeu
 licence: tous droits réservés
-auteur: UltraGauche Force
+auteur: xsbfh

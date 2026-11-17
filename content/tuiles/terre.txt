@@ -1,7 +1,7 @@
 nom: Terre
 symbole: T
 pv: 3
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 tttTtttttTtttttt
 ttttttEttttttTtt

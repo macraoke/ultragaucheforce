@@ -6,7 +6,7 @@ fiche: programme-smic
 fiche: smic
 fiche: penn-sardin-1924
 fiche: ibis-batignolles
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 ....TTTT....kkkk....rrrr....GGGG....TTTT....
 ....TTTT....kkkk....rrrr....GGGG....TTTT....

@@ -2,7 +2,7 @@ nom: Presse indépendante
 apport: 10
 slogan: TOUT LE MONDE VEUT FILMER LA POLICE
 fiche: filmer-la-police
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 ...kkkk...
 ..kwwwwk..

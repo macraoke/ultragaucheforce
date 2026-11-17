@@ -1,7 +1,7 @@
 nom: Drapeau rouge
 description: Le drapeau du mouvement ouvrier.
 proximite: 3
-auteur: UltraGauche Force
+auteur: xsbfh
 ressource.1.titre: Le drapeau rouge — Karambolage, ARTE (vidéo, 4 min)
 ressource.1.url: https://www.youtube.com/watch?v=K8QjpbDViRI
 ressource.1.nature: presse

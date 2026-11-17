@@ -1,6 +1,6 @@
 # Piquet de grève : le brasero. « image » = éteint, « image2 » = allumé (point de reprise).
 nom: Piquet de grève
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 ................
 ................

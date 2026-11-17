@@ -11,7 +11,7 @@ hauteur: 32
 ligne.vie: 450
 ligne.poussee: 10
 citation: macron-viennent-me-chercher
-auteur: UltraGauche Force
+auteur: xsbfh
 --- repos
 jyyjjjyyjjjyyjjjyyjjjyyjjjyyjjjy
 yYyjjyYyjjyYyjjyYyjjyYyjjyYyjjyY

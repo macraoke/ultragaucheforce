@@ -3,4 +3,4 @@ artiste: Eric Skiff
 url: https://soundcloud.com/ericskiff/arpanauts
 ou: jeu
 licence: CC-BY
-auteur: UltraGauche Force
+auteur: xsbfh

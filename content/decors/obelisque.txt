@@ -1,5 +1,5 @@
 nom: Obélisque de la Concorde
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 ...............yy...............
 ...............yy...............

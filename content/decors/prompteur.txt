@@ -1,6 +1,6 @@
 nom: Prompteur
 # La vitre où défile ce qu'il faut dire.
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 ..kkkkkkkkkkkkkkkkkkkkkkkk..
 ..kkkkkkkkkkkkkkkkkkkkkkkk..

@@ -10,7 +10,7 @@ fin: greve
 largeur: 10
 hauteur: 16
 fiche: raid-emeutes-2023
-auteur: UltraGauche Force
+auteur: xsbfh
 --- repos
 .....k......
 .....k......

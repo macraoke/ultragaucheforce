@@ -1,5 +1,5 @@
 nom: Cabane de rond-point
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 ..............................................
 ......................BB......................

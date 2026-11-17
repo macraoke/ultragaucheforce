@@ -1,6 +1,6 @@
 # Une limousine. Menace de niveau cinq selon PANIQUE TV.
 nom: Vache limousine
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 ..................t..t..
 .................tttttt.

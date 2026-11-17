@@ -1,5 +1,5 @@
 nom: Feu tricolore
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 .kkkkkk.
 .kKKKKk.

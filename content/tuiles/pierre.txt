@@ -1,7 +1,7 @@
 nom: Pierre sèche
 symbole: R
 pv: 3
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 GGGGGGgKGGGGGGGK
 GGGGGggKGGGGGGgK

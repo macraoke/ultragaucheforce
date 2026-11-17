@@ -17,7 +17,7 @@ replique: AU FOND, POUR QUE PRESQUE RIEN NE CHANGE.
 replique: JE NE QUITTE PAS L'ORÉAL, MAIS SON CONSEIL D'ADMINISTRATION.
 replique: UN ÉLAN POSITIF ET COLLECTIF.
 replique: DES CHEMINS FAITS D'HUMANITÉ.
-auteur: UltraGauche Force
+auteur: xsbfh
 
 # La fortune, en milliards d'euros, et la fiche sourcée qui la documente.
 fortune.montant: 69.7

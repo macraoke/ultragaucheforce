@@ -21,7 +21,7 @@ replique: ALORS LES RICHES C'EST BIEN, IL FAUT LES GARDER.
 replique: TOUT EST PRÉCAIRE DANS LA VIE.
 replique: LE CDI N'EST PAS LA PANACÉE UNIVERSELLE.
 replique: LA SEULE RÉFORME FISCALE QUI VAILLE, C'EST LA BAISSE DES IMPÔTS POUR TOUS.
-auteur: UltraGauche Force
+auteur: xsbfh
 
 # La fortune, en milliards d'euros, et la fiche sourcée qui la documente.
 fortune.montant: 27.7

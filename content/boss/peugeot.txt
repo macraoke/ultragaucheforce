@@ -17,7 +17,7 @@ replique: NOUS AVONS DES VALEURS D'HUMANISME ET DE RESPECT.
 replique: NOUS SOMMES PRÊTS À ACCEPTER LA CRITIQUE, MAIS IL Y A DES LIMITES.
 replique: NOUS SOMMES AUSSI DES GENS RESPONSABLES.
 replique: NOUS NE POUVONS PAS RESTER SANS RIEN FAIRE.
-auteur: UltraGauche Force
+auteur: xsbfh
 
 # La fortune, en milliards d'euros, et la fiche sourcée qui la documente.
 fortune.montant: 2.7

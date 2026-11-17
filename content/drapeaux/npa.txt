@@ -1,7 +1,7 @@
 nom: Drapeau du NPA (stylisé)
 description: Le mégaphone anticapitaliste.
 proximite: 2
-auteur: UltraGauche Force
+auteur: xsbfh
 ressource.1.titre: Qui sommes-nous ? — NPA-L'Anticapitaliste
 ressource.1.url: https://npa-lanticapitaliste.org/node/58925
 ressource.1.nature: militante

@@ -1,4 +1,4 @@
 nom: Héros à terre
 zzfx: 1,0,400,.01,.15,.4,1,1,-12,,-100,.15
-auteur: UltraGauche Force
+auteur: xsbfh
 licence: CC0-1.0

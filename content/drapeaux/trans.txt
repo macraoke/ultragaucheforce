@@ -1,7 +1,7 @@
 nom: Drapeau trans
 description: Les fiertés et les droits des personnes trans.
 proximite: 3
-auteur: UltraGauche Force
+auteur: xsbfh
 ressource.1.titre: Que sont les transidentités ? — OUTrans
 ressource.1.url: https://www.outrans.org/ressources/quest-ce-que-la-transidentite/
 ressource.1.nature: associative
