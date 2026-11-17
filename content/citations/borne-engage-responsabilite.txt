@@ -1,0 +1,11 @@
+texte: j'engage la responsabilité de mon Gouvernement
+auteur: Élisabeth Borne
+fonction: Première ministre
+date: 2023-03-16
+contexte: À la tribune de l'Assemblée nationale, sous les huées, sur la réforme des retraites : l'article 49.3, et le texte est adopté sans vote.
+categorie: puissants
+note: Compte rendu officiel : « Sur le fondement de l'article 49, alinéa 3, de la Constitution » (huées prolongées, les députés du groupe RN frappent en cadence sur leur pupitre) « …j'engage la responsabilité de mon Gouvernement… ». Juste avant : « Cette réforme est nécessaire. » L'unité La Borne le répète.
+source.titre: Assemblée nationale — Compte rendu de la deuxième séance du jeudi 16 mars 2023
+source.url: https://www.assemblee-nationale.fr/dyn/16/comptes-rendus/seance/session-ordinaire-de-2022-2023/deuxieme-seance-du-jeudi-16-mars-2023
+source.nature: officielle
+verifie: 2026-11-17

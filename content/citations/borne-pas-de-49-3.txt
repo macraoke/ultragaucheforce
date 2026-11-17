@@ -1,0 +1,12 @@
+texte: L'objectif que je fixe pour l'avenir, c'est : pas de 49.3 en dehors des textes financiers
+auteur: Élisabeth Borne
+fonction: Première ministre
+date: 2023-03-26
+contexte: Entretien à l'Agence France-Presse, dix jours après le 49.3 sur la réforme des retraites, pendant les manifestations.
+categorie: puissants
+mot: 49.3
+note: Rapporté par Public Sénat le 27 mars 2023. Elle quitte Matignon en janvier 2024 avec 23 recours au 49.3 (Public Sénat). L'unité La Borne lance ses « 49.3 ».
+source.titre: Public Sénat — Élisabeth Borne s'engage à limiter le recours au 49.3 : une annonce qui laisse les sénateurs sceptiques
+source.url: https://www.publicsenat.fr/actualites/politique/elisabeth-borne-s-engage-a-limiter-le-recours-au-493-une-annonce-qui-laisse
+source.nature: presse
+verifie: 2026-11-17
