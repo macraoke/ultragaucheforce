@@ -21,6 +21,9 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icone-192.png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <!-- La configuration publique de PostHog est injectée par le serveur de développement ou le build. -->
+  <script>window.__POSTHOG_CONFIG__ = null;</script>
+  <script type="importmap">{"imports":{"posthog-js":"./node_modules/posthog-js/dist/module.full.no-external.js"}}</script>
   <!-- Le contenu part dès la lecture de la page, sans attendre la feuille de style ni les modules ; main.js reprend cette requête. -->
   <script>window.contentRequest = fetch('content.json');</script>
   <link rel="stylesheet" href="style.css">
