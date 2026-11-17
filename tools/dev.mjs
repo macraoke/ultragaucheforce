@@ -13,7 +13,6 @@ const PORT = Number(process.env.PORT) || 8080;
 // Par défaut, seule cette machine peut se connecter. Pour tester sur un téléphone du même
 // réseau : HOST=0.0.0.0 npm start
 const HOST = process.env.HOST || '127.0.0.1';
-const posthogConfig = JSON.stringify({ host: process.env.POSTHOG_HOST, token: process.env.POSTHOG_PROJECT_TOKEN });
 const TYPES = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8',
   '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.txt': 'text/plain; charset=utf-8',
@@ -44,8 +43,7 @@ createServer(async (req, res) => {
     let path = normalize(decodeURIComponent(url.pathname));
     if (path.endsWith('/')) path += 'index.html';
     if (path.includes('..')) return send(403, 'text/plain', 'Interdit');
-    let body = await readFile(join(ROOT, path));
-    if (path === 'index.html') body = Buffer.from(body.toString().replace('window.__POSTHOG_CONFIG__ = null;', `window.__POSTHOG_CONFIG__ = ${posthogConfig};`));
+    const body = await readFile(join(ROOT, path));
     send(200, TYPES[extname(path)] || 'application/octet-stream', body);
   } catch {
     send(404, 'text/plain; charset=utf-8', 'Introuvable');

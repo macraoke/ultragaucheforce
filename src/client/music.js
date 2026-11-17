@@ -431,6 +431,7 @@ export class Radio {
     }
     this.status = 'unreachable';
     this.render();
+    this.onUnreachable?.();
   }
 
   /** Un geste du joueur (toucher, clic, touche) : relance une lecture que le navigateur avait refusée. */

@@ -3,7 +3,8 @@
 
 import { h, link, quoted, signature } from './dom.js';
 import { spriteElement } from './sprites.js';
-import { REPO, REFERENCES, ANALYTICS } from './config.js';
+import { REPO, REFERENCES } from './config.js';
+import { measuring } from './mesure.js';
 import { storeSave, eraseProgress, isFound, isReadOnly, asksMusic } from './save.js';
 import { SHELVES, VOTE_FICHES, allCards, collectionCount, isFresh, levelOrder, markSeen, openCard, progress, rarityCounts, shelfGrid, wonCards } from './collection.js';
 import { livesStack } from './lives.js';
@@ -376,8 +377,8 @@ export class Screens {
       h('p', {}, MENTION),
       h('p', {}, link(REPO, 'Le dépôt'), ' · ', link(`${REPO}/blob/main/CONTRIBUTING.md`, 'Contribuer'), ' · ',
         link(`${REPO}/blob/main/CHARTE.md`, 'La charte'), ' · ', h('a', { href: 'galerie.html' }, 'La Galerie')),
-      ANALYTICS.token && fold('Ce que le jeu compte',
-        h('p', {}, 'Par niveau : les parties lancées, terminées ou perdues, la taille de la manif, la durée, les personnages perdus, le boss, et les images partagées. Un numéro tiré au hasard relie les compteurs d’une même visite ; il est oublié à la fermeture de la page. Aucun cookie : rien n’est écrit sur ton appareil pour cela. La progression, elle, ne le quitte pas.')),
+      measuring() && fold('Mesure d’audience anonyme (PostHog) : ni cookie, ni profil.',
+        h('p', {}, 'Le jeu compte les visites, les parties par niveau (gagnée, perdue ou abandonnée, et leur durée), et ce qui empêche de jouer : contenu ou musique injoignables, erreurs. Un numéro tiré au hasard relie les compteurs d’une même visite ; il est oublié à la fermeture de la page. Rien n’est écrit sur ton appareil pour cela, et rien de ce que tu écris dans l’Atelier ne part.')),
       fold('Références', h('ul', {}, REFERENCES.map((r) => h('li', {}, link(r.url, r.titre), ` — ${r.note}`)))),
       fold('Crédits et licences',
         h('p', {}, 'Code : MIT. Contenus : CC BY-SA 4.0. Bruitages synthétisés avec ZzFX de Frank Force (MIT).'),

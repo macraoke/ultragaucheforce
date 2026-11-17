@@ -12,17 +12,16 @@ import { showHeroCard } from './herocard.js';
 import { showTaxScene, draw } from './tax.js';
 import { CRS_OCTOBRE_2026 } from './blesses.js';
 import { shareImage, openShare } from './share.js';
-import { GAME_LOGGER } from './config.js';
-import { captureException, measure } from './mesure.js';
+import { measure } from './mesure.js';
 import { loadSave, storeSave, discover, isFound } from './save.js';
 import { cardName, citationOfWord, levelOrder, signNote, taxShocks } from './collection.js';
 import { registerServiceWorker } from './sw-register.js';
 
-// Un seul filet global pour les erreurs qui échappent au jeu ; les erreurs de console ne sont pas collectées.
-window.addEventListener('error', (event) => captureException(event.error));
-window.addEventListener('unhandledrejection', (event) => captureException(event.reason));
-
-const bundle = await (await (window.contentRequest ?? fetch('content.json'))).json(); // partie dès index.html
+// Le contenu, parti dès index.html. S'il n'arrive pas, la mesure le compte (l'erreur, elle, suit son cours).
+const bundle = await (async () => (await (window.contentRequest ?? fetch('content.json'))).json())().catch((error) => {
+  measure('content_failed', { online: navigator.onLine !== false });
+  throw error;
+});
 const save = loadSave();
 const screenRoot = document.getElementById('ecran');
 const audio = new Audio(bundle);
@@ -46,6 +45,7 @@ let begin = null; // le carton d'ouverture attend : fonction qui lance vraiment 
 let bot = {};
 let won = []; // clés de ce qui a été débloqué depuis le début du niveau : la rangée de l'écran de fin
 let visited = null; // le niveau lancé, tant qu'il n'est ni gagné ni quitté : « Recommencer » y garde sa musique
+let run = null; // la partie de la campagne en cours, pour la mesure : { level } (pas les essais de l'Atelier)
 // Le temps d'écran pas encore joué. Il repart d'un quart de pas, jamais de zéro : à 60 Hz, une image dure un pas,
 // et un reste nul laisserait le moindre écart d'horloge jouer tantôt zéro pas, tantôt deux (le décor saute).
 const PHASE = DT / 4;
@@ -62,6 +62,13 @@ function frameTime(dt) {
   const k = Math.round(dt / (DT / 2));
   return k >= 1 && k <= 4 && Math.abs(dt - (k * DT) / 2) < 0.001 ? (k * DT) / 2 : dt;
 }
+
+// Radio Manif injoignable (réseau coupé, SoundCloud bloqué) : compté une fois par visite.
+radio.onUnreachable = () => {
+  if (radio.reported) return;
+  radio.reported = true;
+  measure('music_unreachable', { online: navigator.onLine !== false });
+};
 
 radio.onAsk = () => {
   save.options.musique = true;
@@ -136,7 +143,15 @@ function attract() {
   renderer.snap(game);
 }
 
+/** Une partie mesurée se termine : gagnée, perdue, ou abandonnée (menu, « Recommencer », page fermée). */
+function endRun(outcome, options) {
+  if (!run) return;
+  measure('game_ended', { level: run.level, outcome, seconds: Math.round(game?.time ?? 0) }, options);
+  run = null;
+}
+
 function toMenu() {
+  endRun('abandoned');
   begin = null;
   custom = null;
   current = null;
@@ -181,6 +196,7 @@ function startingHero() {
 }
 
 function start(id, level = null) {
+  endRun('abandoned');
   custom = level;
   const again = current?.id === (id ?? 'atelier'); // « Recommencer » : ce qui a déjà été débloqué dans ce niveau reste
   current = { id: id ?? 'atelier', level: level ?? bundle.niveaux[id] };
@@ -198,9 +214,9 @@ function start(id, level = null) {
   fitRight();
   begin = () => {
     begin = null;
-    if (id) {
-      measure('level_started', { niveau: id }); // chaque vraie partie, rejouée ou non ; pas un changement de héros sur le carton
-      GAME_LOGGER.info('gameplay level started', { level_id: id, game_mode: 'campaign' });
+    if (id) { // chaque vraie partie, rejouée ou non ; pas un changement de héros sur le carton
+      run = { level: id };
+      measure('game_started', { level: id, input: input.device });
     }
     setMode('playing');
     // « Recommencer » (pause, « Game over ») : la même visite, sa piste continue ou revient après le boss.
@@ -265,6 +281,7 @@ function back() {
 }
 
 async function win() {
+  endRun('won'); // tout de suite : la scène de taxe qui suit fait partie de la victoire
   begin = null;
   visited = null; // « Rejouer » après une victoire : une nouvelle entrée dans le niveau
   setMode('over');
@@ -295,12 +312,7 @@ async function win() {
   const sign = game.signs.map((t) => bundle.pancartes.find((p) => p.texte === t)).filter(Boolean)
     .reduce((top, p) => (!top || p.rarete >= top.rarete ? p : top), null);
   const crowd = game.crowd;
-  if (!custom) {
-    measure('level_completed', { niveau: id, manif: crowd, secondes: Math.round(game.time), personnages_perdus: game.stats.deaths, boss: boss?.id });
-    GAME_LOGGER.info('gameplay level completed', { level_id: id, duration_seconds: Math.round(game.time), crowd_count: crowd, characters_lost: game.stats.deaths });
-  }
   const share = () => {
-    measure('level_image_shared', { niveau: id });
     openShare(shareImage({
       frames: [document.getElementById('monde'), document.getElementById('textes')],
       level: level.titre, crowd, tax: said, sign: sign?.texte, where: (location.host + location.pathname).replace(/(index\.html)?\/?$/, ''),
@@ -357,10 +369,7 @@ function handle(events) {
       });
     } else if (e.type === 'won') win();
     else if (e.type === 'lost') {
-      if (!custom) {
-        measure('level_lost', { niveau: current.id, manif: game.crowd, secondes: Math.round(game.time) });
-        GAME_LOGGER.info('gameplay level lost', { level_id: current.id, duration_seconds: Math.round(game.time), crowd_count: game.crowd });
-      }
+      endRun('lost');
       begin = null;
       setMode('over');
       screens.lost();
@@ -550,5 +559,9 @@ registerServiceWorker((apply) => {
   screens.update = apply; // une nouvelle version attend : le menu la propose, jamais en pleine partie
   if (mode === 'menu' && screens.open) screens.menu();
 });
+// Fermer la page en pleine partie, c'est l'abandonner ; l'envoi part avec la page.
+addEventListener('pagehide', () => endRun('abandoned', { transport: 'sendBeacon' }));
 toMenu();
+// Le menu est là : la page a chargé. Une page vue sans cet événement est un jeu qui n'a pas démarré.
+measure('game_ready', { touch: document.body.classList.contains('tactile') });
 requestAnimationFrame(frame);
