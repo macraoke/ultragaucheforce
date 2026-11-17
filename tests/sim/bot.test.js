@@ -72,7 +72,7 @@ for (const [name, rows] of Object.entries(PITS)) {
   for (const hero of ['beta', 'alpha']) {
     test(`sous la sortie (${name}), le robot remonte et sort (${hero})`, () => {
       const game = play(level(rows), { hero, lives: 1, invincible: true, seed: 7 });
-      if (hero === 'beta') assert.ok(upReach(game.hero.def) < 2 * 16, 'Bêta tire en cloche : vers le haut, son tir porte à moins de deux tuiles');
+      if (hero === 'beta') assert.ok(upReach(game.hero.def) > 8 * 16, 'Bêta tire en cloche, mais vers le haut son tir file tout droit');
       const memory = {};
       let held = 0;
       let longest = 0;
