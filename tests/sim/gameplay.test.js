@@ -9,6 +9,7 @@ import { fixtureBundle, flat, play, run, settle } from './helpers.js';
 import { Game } from '../../src/sim/game.js';
 import { TILE } from '../../src/sim/world.js';
 import { botActions } from '../../src/sim/bot.js';
+import { loadContent } from '../../tools/content.mjs';
 
 const SRC = fileURLToPath(new URL('../../src', import.meta.url));
 const sources = (dir) => readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
@@ -133,6 +134,29 @@ test('creuser : sans avancer, bas + tir perce sous les pieds, haut + tir perce l
   const roof = settle(play(flat({ draw: (put, row) => put(row - 3, 0, 'TTTTTT') })));
   run(roof, 60, { up: true, fire: true });
   assert.equal(roof.world.at(2, ground - 3), null, 'le plafond est percé au-dessus de sa tête');
+});
+
+// Owner : « les attaques de Poutou et de Sansdents sont impossibles à utiliser vers le haut ».
+test('chaque héros de la campagne tire vers le haut, même avec une arme en cloche', () => {
+  const real = loadContent();
+  assert.deepEqual(real.errors, []);
+  const heroes = Object.keys(real.bundle.heros);
+  assert.ok(heroes.length > 0);
+  for (const id of heroes) {
+    const game = settle(play(flat({ height: 30, heros: id }), { bundle: real.bundle, hero: id, invincible: true }));
+    const head = game.hero.y;
+    game.step({ up: true, fire: true });
+    const shot = game.projectiles.find((p) => p.team === 'luttes');
+    assert.ok(shot, `${id} : un projectile part`);
+    assert.ok(shot.vy < 0, `${id} : il part vers le haut (vy = ${shot.vy})`);
+    let top = shot.y;
+    for (let i = 0; i < 240 && !shot.dead; i++) {
+      game.step({});
+      top = Math.min(top, shot.y);
+    }
+    const reach = Math.min(real.bundle.heros[id].arme.portee * 0.8, 6 * TILE);
+    assert.ok(head - top >= reach, `${id} : il monte de ${Math.round(head - top)} px au-dessus de la tête (au moins ${reach})`);
+  }
 });
 
 test('spéciale « onde » : repousse, étourdit et casse les planches autour', () => {

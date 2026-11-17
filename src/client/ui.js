@@ -9,7 +9,7 @@ import { storeSave, eraseProgress, isFound, isReadOnly } from './save.js';
 import { SHELVES, VOTE_FICHES, allCards, collectionCount, isFresh, levelOrder, markSeen, openCard, progress, rarityCounts, shelfGrid, wonCards } from './collection.js';
 import { livesStack } from './lives.js';
 import { KEY_NAMES, CONTROLS, brief, mentions } from './input.js';
-import { CRS_OCTOBRE_2026, injuryReport } from './blesses.js';
+import { injuryReport } from './blesses.js';
 import { PANIC_STEPS } from '../sim/game.js';
 import { makeRng } from '../sim/rng.js';
 import { SIGN_LINGER } from './render.js';
@@ -490,7 +490,6 @@ export class Screens {
     const minutes = `${Math.floor(time / 60)} min ${String(Math.floor(time % 60)).padStart(2, '0')} s`;
     const n = (x) => x.toLocaleString('fr-FR');
     const { parts, file } = injuryReport(hurt, makeRng(seed));
-    const crs = CRS_OCTOBRE_2026;
     this.show('fin',
       h('h2', {}, 'Niveau terminé ', h('small', {}, `${level.titre} · ${minutes}`)),
       h('div', { className: 'bilans' },
@@ -502,7 +501,7 @@ export class Screens {
           h('p', { className: 'chiffre' }, n(hurt)),
           h('p', {}, hurt > 1 ? 'blessés annoncés côté forces de l’ordre' : 'blessé annoncé côté forces de l’ordre'),
           parts.length ? h('p', { className: 'dont' },
-            `${hurt > 1 ? 'Répartis' : 'Réparti'} comme les ${n(crs.blesses)}\u00a0CRS blessés en octobre 2026 : ${parts.join(', ')}.`) : null,
+            `${hurt > 1 ? 'Répartis' : 'Réparti'} comme les CRS blessés en octobre 2026 : ${parts.join(', ')}.`) : null,
           // Espaces insécables : « ne reste pas seul en fin de ligne, » et ; ne commencent pas la suivante.
           file.length ? h('p', { className: 'fichier' }, h('span', {}, 'Dans leur fichier : '),
             `${file.join('\u00a0; ').replace(/« /g, '«\u00a0').replace(/ »/g, '\u00a0»')}.`) : null)),

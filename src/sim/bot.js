@@ -195,12 +195,11 @@ export function ceiling(world, h) {
   return { gap: Infinity, tile: null };
 }
 
-/** Jusqu'où monte un tir à la verticale : la portée, ou le sommet de la cloche si l'arme retombe. */
+/** Jusqu'où monte un tir à la verticale : sa portée (vers le haut, même une arme en cloche file tout droit). */
 export function upReach(def) {
   const w = def.arme;
   if (!w) return 0;
-  const apex = w.gravite > 0 ? (w.vitesse * w.vitesse) / (2 * w.gravite) : Infinity;
-  return Math.min(w.portee, apex) * 0.9;
+  return w.portee * 0.9;
 }
 
 /** Fait jouer le robot jusqu'à la victoire ou l'épuisement du budget de pas. */

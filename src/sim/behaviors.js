@@ -71,13 +71,14 @@ export const WEAPONS = {
         // Plusieurs projectiles : éventail régulier ; un seul : petit écart au hasard.
         const spread = w.nombre > 1 ? (i / (w.nombre - 1) - 0.5) * 2 * w.dispersion : game.rng.range(-w.dispersion, w.dispersion);
         // À la verticale : le projectile part du crâne ou des pieds, bien dans l'axe, sans élan de cloche.
+        // Vers le haut, il file tout droit jusqu'à sa portée, même si l'arme tire en cloche : sinon il retombe aussitôt.
         const from = upright
           ? { x: shooter.x + shooter.w / 2 - width / 2, y: upright > 0 ? shooter.y + shooter.h - height : shooter.y }
           : { x: ux >= 0 ? shooter.x + shooter.w : shooter.x - width, y };
         spawnProjectile(game, {
           ...from, w: width, h: height,
           vx: ux * w.vitesse + (upright ? spread : 0), vy: uy * w.vitesse + (upright ? 0 : spread - w.elan), team, word, def: shooter.def, image: w.image || 'projectile',
-          gravity: w.gravite, range: w.portee, damage: w.degats, terrain: w.terrain, bounces: w.rebonds,
+          gravity: upright < 0 ? 0 : w.gravite, range: w.portee, damage: w.degats, terrain: w.terrain, bounces: w.rebonds,
           explosion: w.explosion, pierce: w.perce > 0, armor: w.blindage > 0, friendly: w.fratricide > 0,
           gas: w.gaz, owner: shooter, touche: team === 'ordre' ? w.touche : 0,
         });

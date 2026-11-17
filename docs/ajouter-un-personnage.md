@@ -280,7 +280,7 @@ Lance un ou plusieurs projectiles devant soi.
 |---|---|---|---|
 | `arme.cadence` | tirs par seconde | 0,2 à 20 | 5 |
 | `arme.vitesse` | pixels par seconde | 30 à 420 | 240 |
-| `arme.gravite` | 0 = tout droit ; plus = en cloche | 0 à 900 | 0 |
+| `arme.gravite` | 0 = tout droit ; plus = en cloche. Tiré vers le haut, le projectile file tout droit jusqu'à sa portée | 0 à 900 | 0 |
 | `arme.elan` | impulsion vers le haut au départ | 0 à 400 | 0 |
 | `arme.dispersion` | écart vertical au hasard | 0 à 80 | 0 |
 | `arme.nombre` | projectiles par tir | 1 à 8 | 1 |
