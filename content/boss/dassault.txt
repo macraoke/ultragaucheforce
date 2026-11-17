@@ -1,5 +1,5 @@
 # Un boss = une fortune documentée aux commandes d'une machine. Le dessin « ejecte » sert à sa sortie.
-nom: Les Riches, c'est bien
+nom: La Famille Dassault
 inspiration: Serge Dassault
 traitement: un Rafale dressé sur son train d'atterrissage, nez au ciel ; le pilote s'éjecte sur son siège éjectable
 pv: 65
@@ -8,12 +8,12 @@ hauteur: 40
 vitesse: 30
 citation: dassault-riches-c-est-bien
 fiche: fortune-dassault
-# D'où vient le nom : ses propres mots, voir content/citations/dassault-riches-c-est-bien.txt (Politis, lu le 17 novembre 2026).
-origine: Ses propres mots, le 8 février 2012, au siège de l'UMP : « Alors les riches c'est bien, il faut les garder. » Mort en 2018 ; la fortune est celle de ses enfants, Laurent, Marie-Hélène et Thierry Dassault, et de leur famille.
+# Les répliques sont celles de Serge Dassault, qui a dirigé le groupe de 1986 à 2000 (Politis, lu le 17 novembre 2026).
+origine: La fortune est celle de la famille Dassault : Laurent, Marie-Hélène et Thierry Dassault et leur famille, selon Challenges. Les répliques sont les mots de leur père, Serge Dassault, fils du fondateur Marcel Dassault, à la tête du groupe de 1986 à 2000, mort en 2018.
 # Assis sur sa fortune tant que sa vie n'est pas passée sous la moitié.
 assis: oui
 leve: 0.5
-# Ses répliques sont ses propres mots (voir content/citations/dassault-*.txt).
+# Ses répliques sont les mots de Serge Dassault (voir content/citations/dassault-*.txt).
 replique: QUI VA CRÉER DES EMPLOIS ? C'EST PAS LES PAUVRES.
 replique: ALORS LES RICHES C'EST BIEN, IL FAUT LES GARDER.
 replique: TOUT EST PRÉCAIRE DANS LA VIE.

@@ -1,5 +1,5 @@
 # Un boss = une fortune documentée aux commandes d'une machine. Le dessin « ejecte » sert à sa sortie.
-nom: La Règle du trou
+nom: Gérard Mulliez
 inspiration: Gérard Mulliez
 traitement: un caddie géant débordant de promotions ; le pilote, dans le siège enfant, s'éjecte sous un parachute aux couleurs d'Auchan
 pv: 75
@@ -8,8 +8,7 @@ hauteur: 40
 vitesse: 35
 citation: mulliez-regle-du-trou
 fiche: fortune-mulliez
-# D'où vient le nom : Purepeople, 8 décembre 2025 (lu le 17 novembre 2026), voir content/citations/mulliez-regle-du-trou.txt.
-origine: Purepeople appelle « la "règle du trou" » la philosophie de management qu'il expose à son petit-fils dans la série « Le Club » (Canal+) : mieux vaut un poste vide que quelqu'un qui ne correspond pas au modèle.
+# Son vrai nom : un choix de Valentin. La fortune est celle de « Gérard Mulliez et sa famille » (Challenges).
 # Assis sur sa fortune tant que sa vie n'est pas passée sous les six dixièmes.
 assis: oui
 leve: 0.6
