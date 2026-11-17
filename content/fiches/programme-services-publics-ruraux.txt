@@ -1,9 +1,9 @@
 titre: Services publics à 30 minutes
 theme: programme
-texte: Le programme L'Avenir en commun propose de défendre et reconstruire un maillage dense et accessible de transports en commun et de services publics, notamment dans les départements ruraux, les quartiers populaires et les Outre-mer, afin de garantir une distance maximale (de 15 à 30 minutes en voiture ou en transport collectif) entre tout lieu d'habitation et les services publics essentiels (école, gare, hôpital, bureau de poste).
-portee: Édition 2027 du programme de La France insoumise, chapitre « Une France sans déserts de droits ». Le même chapitre prévoit un moratoire sur les fermetures d'écoles, de maternités, de bureaux de poste, de gares et de tous les services publics de proximité, et des services publics itinérants (santé, administrations, culture) pour desservir les communes les plus isolées. Il s'agit de propositions d'un mouvement politique, pas de mesures en vigueur.
+texte: Le programme L'Avenir en commun propose de garantir l'école, la gare, l'hôpital et le bureau de poste à 15 à 30 minutes de tout lieu d'habitation, en voiture ou en transport collectif.
+portee: Édition 2027 du programme de La France insoumise, chapitre « Une France sans déserts de droits ». La mesure clé : « Défendre et reconstruire un maillage dense et accessible de transports en commun et de services publics », notamment dans les départements ruraux, les quartiers populaires et les Outre-mer. Le même chapitre prévoit un moratoire sur les fermetures d'écoles, de maternités, de bureaux de poste, de gares et de tous les services publics de proximité, et des services publics itinérants (santé, administrations, culture) pour desservir les communes les plus isolées. Il s'agit de propositions d'un mouvement politique, pas de mesures en vigueur.
 periode: édition 2027, présentée en novembre 2026
 source.titre: Mélenchon 2027 — L'Avenir en commun, chapitre « Une France sans déserts de droits »
 source.url: https://melenchon2027.fr/programme/livre/fonder-la-6e-republique/chapitre3
 source.nature: militante
-verifie: 2026-11-15
+verifie: 2026-11-17
