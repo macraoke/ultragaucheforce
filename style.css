@@ -294,6 +294,9 @@ body.sobre #hud-charges.demande, body.sobre #tactile b.demande { animation: none
 @keyframes grossit { 0% { transform: scale(1.7); } 100% { transform: scale(1); } }
 body.sobre #hud-manif.grossit { animation: none; }
 #pause { pointer-events: auto; font-size: 1em; padding: .35em .6em; box-shadow: 2px 2px 0 var(--rouge); text-shadow: none; }
+/* Au pouce, le dessin ne change pas, mais le doigt a une zone d'au moins 48 pixels autour de lui. */
+body.tactile #pause { position: relative; }
+body.tactile #pause::after { content: ''; position: absolute; left: 50%; top: 50%; width: max(100%, 48px); height: max(100%, 48px); transform: translate(-50%, -50%); }
 /* En essai depuis l'Atelier : le retour à l'édition, à gauche de la pause. */
 #edition { pointer-events: auto; font-size: 1em; padding: .35em .6em; background: var(--nuit); color: var(--papier); border-color: var(--papier); box-shadow: 2px 2px 0 var(--rouge); text-shadow: none; }
 #edition:hover { background: var(--encre); }
