@@ -6,5 +6,5 @@ periode: dividende de l'exercice 2025
 valeur: 13
 source.titre: LVMH — 2025 Dividend (communiqué du 23 avril 2026)
 source.url: https://www.lvmh.com/en/publications/2025-dividend
-source.nature: officielle
+source.nature: militante
 verifie: 2026-11-16

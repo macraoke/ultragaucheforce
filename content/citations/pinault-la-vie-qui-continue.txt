@@ -7,5 +7,5 @@ categorie: puissants
 note: Phrase complète : « Je pense qu'avoir permis à des architectes d'aujourd'hui d'appréhender cette construction ancienne, de faire quelque chose de tout à fait nouveau, c'est la vie qui continue ! » Page datée du 10 mai 2021.
 source.titre: Bourse de Commerce — Pinault Collection — L'interview de François Pinault
 source.url: https://www.pinaultcollection.com/fr/boursedecommerce/linterview-de-francois-pinault
-source.nature: officielle
+source.nature: militante
 verifie: 2026-11-16

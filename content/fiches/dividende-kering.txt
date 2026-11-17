@@ -6,5 +6,5 @@ periode: dividende de l'exercice 2025
 valeur: 4
 source.titre: Kering — Kering en bourse : cours de l'action, dividendes, capital (mis à jour le 28/05/2026)
 source.url: https://www.kering.com/fr/finance/kering-en-bourse/
-source.nature: officielle
+source.nature: militante
 verifie: 2026-11-16

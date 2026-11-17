@@ -6,5 +6,5 @@ periode: dividende de l'exercice 2025
 valeur: 7.2
 source.titre: L'Oréal Finance — Résultats annuels 2025 (communiqué du 12 février 2026)
 source.url: https://www.loreal-finance.com/fr/communique-de-presse/resultats-annuels-2025
-source.nature: officielle
+source.nature: militante
 verifie: 2026-11-16

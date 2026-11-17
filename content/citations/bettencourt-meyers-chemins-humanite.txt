@@ -8,5 +8,5 @@ mot: HUMANITÉ
 note: Phrase d'avant : « Des chemins faits d'attention aux autres, d'accompagnement, de travail et de constance. » Le fichier PDF a été créé le 28 mars 2024 d'après ses métadonnées ; l'éditorial n'est pas daté.
 source.titre: Fondation Bettencourt Schueller — Rapport d'activité 2023
 source.url: https://www.fondationbs.org/sites/default/files/2024-04/rapport_dactivite_2023.pdf
-source.nature: officielle
+source.nature: militante
 verifie: 2026-11-16

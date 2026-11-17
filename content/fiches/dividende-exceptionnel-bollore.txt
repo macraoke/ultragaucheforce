@@ -5,5 +5,5 @@ portee: Il est pris sur les plus-values des cessions de Bolloré Africa Logistic
 periode: exercice 2025, paiement prévu le 25 juin 2026
 source.titre: Bolloré — Résultats de l'exercice 2025 (communiqué du 17 mars 2026)
 source.url: https://ml-eu.globenewswire.com/Resource/Download/0bcda417-1642-4cd0-aedb-a55490e88c36
-source.nature: officielle
+source.nature: militante
 verifie: 2026-11-16

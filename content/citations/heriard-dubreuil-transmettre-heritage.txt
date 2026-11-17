@@ -7,5 +7,5 @@ categorie: puissants
 note: Le rapport ne donne pas de date de publication précise, seulement l'exercice 2025-2026 ; la date retenue est l'année.
 source.titre: Rémy Cointreau — Message de la présidente, rapport annuel 2025-2026
 source.url: https://rapport-annuel.remy-cointreau.com/2026/le-groupe/message-de-la-presidente/
-source.nature: officielle
+source.nature: militante
 verifie: 2026-11-17

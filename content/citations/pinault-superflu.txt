@@ -7,5 +7,5 @@ categorie: puissants
 note: Les mots portent sur l'architecture de Tadao Ando, pas sur l'argent. Page datée du 10 mai 2021.
 source.titre: Bourse de Commerce — Pinault Collection — L'interview de François Pinault
 source.url: https://www.pinaultcollection.com/fr/boursedecommerce/linterview-de-francois-pinault
-source.nature: officielle
+source.nature: militante
 verifie: 2026-11-16

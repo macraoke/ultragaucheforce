@@ -6,5 +6,5 @@ periode: 31 décembre 2025
 valeur: 52251576
 source.titre: Kering — Document d'enregistrement universel 2025, chapitre 7 « Capital social et actionnariat », p. 478-479
 source.url: https://www.kering.com/api/download-file/?path=01_Document_d_Enregistrement_Universel_2025_FR_5a41111e66.pdf
-source.nature: officielle
+source.nature: militante
 verifie: 2026-11-16
