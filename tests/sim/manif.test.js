@@ -561,7 +561,9 @@ test('drapeaux : le tricolore ouvre la manif, LFI suit, puis le hasard ; chacun 
     const game = settle(play(flat({ cortege: true }), { bundle, seed }));
     game.crowd = 1000;
     syncCortege(game);
-    game.cortege.filter((m) => m.kind === 'drapeau').forEach((m) => marched.add(m.label));
+    const flags = game.cortege.filter((m) => m.kind === 'drapeau');
+    assert.equal(flags.length, 8, 'huit drapeaux au plus dans un cortège plein : le tricolore, LFI et six luttes');
+    flags.forEach((m) => marched.add(m.label));
   }
   assert.equal(marched.size, 23, 'aucun drapeau ne reste au vestiaire');
 });
@@ -585,8 +587,9 @@ test('drapeaux : une lutte proche (proximité 3) défile plus tôt qu’une lutt
   const avgNear = rank.proche / (seeds * near.length);
   const avgFar = rank.loin / (seeds * far.length);
   assert.ok(avgNear + 2 < avgFar, `les proches passent devant : rang moyen ${avgNear.toFixed(2)} contre ${avgFar.toFixed(2)}`);
-  // Un poids, pas un tri : une lutte lointaine ouvre encore la marche de temps en temps (1/(1+3) par drapeau, soit 1/4 ici).
-  assert.ok(farFirst > seeds * 0.15 && farFirst < seeds * 0.35, `une lutte lointaine passe troisième ${farFirst} fois sur ${seeds}`);
+  // Un poids, pas un tri : une lutte lointaine ouvre encore la marche de temps en temps. Poids = proximité² (9 contre 1) :
+  // 6 lointaines pèsent 6 sur 6 + 54, soit 1/10 ici.
+  assert.ok(farFirst > seeds * 0.06 && farFirst < seeds * 0.14, `une lutte lointaine passe troisième ${farFirst} fois sur ${seeds}`);
 });
 test('drapeaux : le carton du camarade libéré les range comme le cortège de la partie, tricolore et LFI en tête', () => {
   const { bundle } = loadContent();

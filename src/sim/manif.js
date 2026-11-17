@@ -15,16 +15,17 @@ const LEADING_FLAGS = ['tricolore', 'lfi'];
 
 /**
  * L'ordre des drapeaux du cortège : le tricolore, puis LFI, puis les autres tirés selon la graine de la partie
- * (un hasard à part, qui ne tire pas dans game.rng). `weightOf(id)` donne la proximité d'une lutte (1 à 3) :
- * plus elle est proche, plus elle sort tôt. Tirage pondéré sans remise (Efraimidis–Spirakis) : chaque drapeau
- * reçoit la clé u^(1/poids), on range par clé décroissante. D'une partie à l'autre, chacun finit par défiler.
+ * (un hasard à part, qui ne tire pas dans game.rng). `weightOf(id)` donne la proximité d'une lutte (1 à 3) ;
+ * son poids est la proximité au carré (1, 4, 9) : une lutte proche sort environ neuf fois plus tôt qu'une lointaine.
+ * Tirage pondéré sans remise (Efraimidis–Spirakis) : chaque drapeau reçoit la clé u^(1/poids), on range par clé
+ * décroissante. D'une partie à l'autre, chacun finit par défiler.
  */
 export function flagOrder(ids, seed, weightOf = () => 1) {
   const lead = LEADING_FLAGS.filter((id) => ids.includes(id));
   const rng = makeRng(seed);
   const rest = ids
     .filter((id) => !lead.includes(id))
-    .map((id) => ({ id, key: Math.pow(rng.next(), 1 / Math.max(1, weightOf(id) || 1)) }))
+    .map((id) => ({ id, key: Math.pow(rng.next(), 1 / Math.max(1, weightOf(id) || 1) ** 2) }))
     .sort((a, b) => b.key - a.key)
     .map((d) => d.id);
   return [...lead, ...rest];
@@ -34,6 +35,7 @@ export function flagOrder(ids, seed, weightOf = () => 1) {
 export const gameFlags = (bundle, seed) => flagOrder(Object.keys(bundle.drapeaux || {}), seed, (id) => bundle.drapeaux[id].proximite);
 const SPACING = 7; // points de trace entre deux manifestants
 const KINDS = ['pancarte', 'drapeau', 'fanfare'];
+const MAX_FLAGS = 8; // porteurs de drapeau au plus : le tricolore, LFI et six luttes ; au-delà, leur place prend une pancarte
 const INSTRUMENTS = ['tambour', 'trompette', 'soubassophone'];
 const GRAVITY = 900;
 const PUSH_REACH = 64; // un manifestant repoussé par le canon à eau ne s'éloigne pas plus de sa place
@@ -131,8 +133,9 @@ export function syncCortege(game) {
   const flags = cortege.length < wanted ? gameFlags(bundle, game.seed) : [];
   while (cortege.length < wanted) {
     const n = cortege.length;
-    const kind = KINDS[n % KINDS.length];
     const turn = Math.floor(n / KINDS.length);
+    let kind = KINDS[n % KINDS.length];
+    if (kind === 'drapeau' && turn >= MAX_FLAGS) kind = 'pancarte';
     let label = INSTRUMENTS[turn % INSTRUMENTS.length];
     // Un nouveau porteur prend une pancarte déjà arrivée dans la manif, s'il en reste une que personne ne montre.
     if (kind === 'pancarte') label = game.signs.findLast((t) => !cortege.some((m) => m.label === t)) ?? '';
