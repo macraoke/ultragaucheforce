@@ -7,8 +7,12 @@
 // Ajouter une mécanique = ajouter une entrée ici (déclaration + fonction). Rien d'autre.
 
 import { TILE } from './world.js';
-import { hitsSolid, holds } from './physics.js';
+import { hitsSolid, holds, overlap } from './physics.js';
 import { spawnProjectile } from './projectile.js';
+
+/** Largeur d'un mot dessiné, en pixels du monde : 3,3 par lettre, mesuré sur la police du jeu (voir render.js). */
+export const WORD_CHAR = 3.3;
+export const wordWidth = (word) => Math.ceil(word.length * WORD_CHAR);
 
 /**
  * Armes principales (héros et ennemis).
@@ -38,7 +42,7 @@ export const WEAPONS = {
       taille: [2, 24, 4], // côté de la boîte de collision, pixels
       recul: [0, 200, 0], // pousse le tireur en arrière
       vise: [0, 1, 0], // 1 = tiré vers le héros plutôt qu'à l'horizontale (ennemis seulement)
-      visee: [0, 2, 0], // secondes de visée avant un tir visé : le joueur voit venir le coup
+      visee: [0, 2, 0], // ennemis seulement : secondes de préavis avant le tir (visée, ou bouche qui s'ouvre) : le joueur voit venir le coup
       touche: [0, 20, 0], // ennemis seulement : manifestants touchés (ils quittent la manif) quand le tir atteint le cortège
     },
     texts: ['image', 'son'], // image = nom d'une section de sprite ; son = identifiant de bruitage
@@ -66,7 +70,10 @@ export const WEAPONS = {
         if (word) game.discover('mot', word); // un mot crié, par eux ou par nous, vient d'une vraie citation
         // À la verticale, le projectile ne dépasse pas de son tireur : il passe par un puits d'une tuile,
         // même collé à une paroi.
-        const width = upright ? Math.min(w.taille, shooter.w) : word ? Math.max(w.taille, word.length * 5) : w.taille;
+        // Un mot d'en face ne blesse que par sa tête (`taille`, les premières lettres) ; le reste du mot suit, dessiné
+        // derrière elle, et se laisse abattre (voir projectile.js). Un mot du héros touche sur toute sa longueur.
+        const foeWord = word && team === 'ordre';
+        const width = upright ? Math.min(w.taille, shooter.w) : word && !foeWord ? Math.max(w.taille, word.length * 5) : w.taille;
         const height = upright ? Math.min(w.taille, shooter.h) : w.taille;
         // Plusieurs projectiles : éventail régulier ; un seul : petit écart au hasard.
         const spread = w.nombre > 1 ? (i / (w.nombre - 1) - 0.5) * 2 * w.dispersion : game.rng.range(-w.dispersion, w.dispersion);
@@ -75,13 +82,16 @@ export const WEAPONS = {
         const from = upright
           ? { x: shooter.x + shooter.w / 2 - width / 2, y: upright > 0 ? shooter.y + shooter.h - height : shooter.y }
           : { x: ux >= 0 ? shooter.x + shooter.w : shooter.x - width, y };
-        spawnProjectile(game, {
+        const proj = spawnProjectile(game, {
           ...from, w: width, h: height,
           vx: ux * w.vitesse + (upright ? spread : 0), vy: uy * w.vitesse + (upright ? 0 : spread - w.elan), team, word, def: shooter.def, image: w.image || 'projectile',
           gravity: upright < 0 ? 0 : w.gravite, range: w.portee, damage: w.degats, terrain: w.terrain, bounces: w.rebonds,
           explosion: w.explosion, pierce: w.perce > 0, armor: w.blindage > 0, friendly: w.fratricide > 0,
           gas: w.gaz, owner: shooter, touche: team === 'ordre' ? w.touche : 0,
+          text: foeWord ? wordWidth(word) : 0,
         });
+        // Un mot qui naît sur le héros (collé à la bouche) le traverse sans le blesser : il ne démarre jamais sur lui.
+        if (foeWord && overlap(proj, game.hero)) proj.spare = true;
       }
       if (!upright) shooter.vx -= dir * w.recul;
       game.sfx(w.son || 'tir', shooter.x);

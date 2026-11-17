@@ -20,6 +20,7 @@ arme.degats: 1
 arme.terrain: 0
 arme.taille: 10
 arme.mots: INQUALIFIABLES ! | PROPOS INQUALIFIABLES !
+arme.visee: 0.4
 arme.son: mot
 auteur: UltraGauche Force
 --- repos

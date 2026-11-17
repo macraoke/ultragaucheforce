@@ -458,7 +458,7 @@ function charge(game, e, dt, dx, alert) {
   return 0;
 }
 
-/** Tir : immédiat, ou précédé d'une visée que le joueur voit venir (LBD). */
+/** Tir : immédiat, ou précédé d'un préavis que le joueur voit venir : la visée du LBD, la bouche d'un éditorialiste. */
 function shoot(game, e, dt) {
   const { hero } = game;
   const w = e.def.arme;
@@ -474,8 +474,8 @@ function shoot(game, e, dt) {
   }
   e.cooldown -= dt;
   if (e.cooldown > 0) return;
-  if (w.vise > 0 && w.visee > 0) {
-    e.aim = { ...target(), t: w.visee };
+  if (w.visee > 0) {
+    e.aim = { ...target(), t: w.visee, straight: !(w.vise > 0) }; // `straight` : un tir droit devant, rien ne vise
     game.sfx('visee', e.x);
     return;
   }

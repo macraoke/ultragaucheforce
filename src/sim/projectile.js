@@ -15,6 +15,8 @@ const DEFAULTS = {
   life: 0, // secondes avant de disparaître ; 0 : seule la portée compte
   slip: 0, // secondes où l'adversaire qui marche dessus glisse, sonné (les billes)
   slide: 0, // vitesse de sa glissade, pixels par seconde
+  text: 0, // un mot d'en face : la longueur du mot dessiné derrière sa tête, pixels ; 0 sinon
+  spare: false, // un mot né sur le héros : il le traverse sans le blesser
 };
 const MAX_PROJECTILES = 240;
 
@@ -113,9 +115,27 @@ function slipOn(game, e, p) {
   game.sfx('impact', e.x);
 }
 
+/** Le mot entier, tête comprise : la tête file devant, les lettres suivent derrière elle. */
+export function wordBox(p) {
+  const w = Math.max(p.w, p.text);
+  return { x: p.vx < 0 ? p.x : p.x + p.w - w, y: p.y, w, h: p.h };
+}
+
 function touchActors(game, p) {
   if (p.team === 'luttes') {
     const damage = p.damage * game.power(); // le nombre fait la force
+    // Un tract qui atteint un mot d'en face l'abat : n'importe quelle lettre suffit.
+    if (p.slip <= 0) {
+      for (const q of game.projectiles) {
+        if (q.dead || q.team !== 'ordre' || !q.text || !overlap(p, wordBox(q))) continue;
+        q.dead = true;
+        const box = wordBox(q);
+        game.emit('debris', { x: box.x + box.w / 2, y: box.y + box.h / 2, color: 'R', n: 10 }); // le mot vole en éclats
+        game.emit('wordDown', { x: box.x + box.w / 2, y: box.y, word: q.word });
+        game.sfx('touche', box.x);
+        if (!p.pierce) return burst(game, p, true);
+      }
+    }
     for (const e of game.enemies) {
       if (e.state === 'done' || p.hits.has(e) || !overlap(p, e)) continue;
       p.hits.add(e);
@@ -169,7 +189,7 @@ function touchActors(game, p) {
   // Le boss vaincu, ce qui vole encore ne blesse plus ni le héros ni le cortège : il file jusqu'au décor.
   if (game.truce) return;
   // Puis il vise le héros… et, pour les grenades « fratricides », touche aussi les collègues.
-  if (!game.hero.dead && overlap(p, game.hero)) {
+  if (!game.hero.dead && !p.spare && overlap(p, game.hero)) {
     game.hurtHero(p.damage, { dir: Math.sign(p.vx), x: p.x + p.w / 2, kind: p.explosion > 0 ? 'explosion' : 'tir' });
     return burst(game, p);
   }

@@ -297,13 +297,15 @@ Lance un ou plusieurs projectiles devant soi.
 | `arme.taille` | côté du projectile, en pixels | 2 à 24 | 4 |
 | `arme.recul` | pousse le tireur en arrière | 0 à 200 | 0 |
 | `arme.vise` | unités seulement : 1 = tiré vers le héros plutôt qu'à l'horizontale | 0 ou 1 | 0 |
-| `arme.visee` | unités seulement : secondes de visée avant un tir visé ; le joueur voit venir le coup | 0 à 2 | 0 |
+| `arme.visee` | unités seulement : secondes de préavis avant le tir, le joueur voit venir le coup : une visée sur le héros avec `arme.vise`, sinon un « ! » rouge qui clignote à la bouche | 0 à 2 | 0 |
 | `arme.touche` | unités seulement : manifestants touchés quand le tir atteint le cortège ; ils quittent la manif | 0 à 20 | 0 |
 | `arme.image` | le dessin du projectile (une section de la fiche) | | `projectile` |
 | `arme.mots` | des mots lancés à la place d'un dessin, séparés par une barre verticale : `BING ! \| BANG !` | | |
 | `arme.son` | un bruitage de `content/sons/` | | `tir` |
 
 Un mot lancé par une unité qui reprend le `mot` d'une citation fait entrer cette citation dans la Collection.
+
+Un mot d'en face part de la bouche et ne blesse que par sa tête, un carré de `arme.taille` pixels ; ses lettres suivent derrière, à la longueur du mot dessiné (3,3 pixels par lettre). Un tract du héros qui touche n'importe quelle lettre abat le mot entier. Un mot qui naît sur le héros, collé à la bouche, le traverse sans le blesser. Les mots du héros, eux, touchent sur toute leur longueur. Les unités à mots ont `arme.visee: 0.4` : on les voit venir.
 
 Un mot part de la vitesse de l'arme, pas de celle du tireur : plus lent que la marche du héros, il lui reste collé dessus. Les héros à mots tirent à 250 pour une marche autour de 145.
 
