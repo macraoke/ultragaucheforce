@@ -1,0 +1,70 @@
+nom: Cuve à pisse
+origine: Le 9 novembre 2025, dans « La Dernière » sur Radio Nova, Pierre-Emmanuel Barré dit avoir de « fortes suspicions » que Laurent Nuñez, ministre de l'Intérieur, « soit une grosse cuve à pisse ». Le ministère porte plainte ; le parquet de Paris la classe sans suite. Ce qu'elle dit, ce sont les mots du ministre.
+pv: 6
+vitesse: 0
+deplacement: fixe
+reaction: tire
+vue: 230
+fin: panne
+camp: pouvoir
+largeur: 14
+hauteur: 22
+citation: nunez-propos-inqualifiables
+fiche: plainte-nunez-classee-sans-suite
+replique: CES PROPOS INQUALIFIABLES.
+arme.type: tir
+arme.cadence: 0.6
+arme.vitesse: 90
+arme.portee: 280
+arme.degats: 1
+arme.terrain: 0
+arme.taille: 10
+arme.mots: INQUALIFIABLES ! | PROPOS INQUALIFIABLES !
+arme.son: mot
+auteur: UltraGauche Force
+--- repos
+......GGGG......
+.....GGGGGG.....
+.....Gssssss....
+.....skkskks....
+.....ssssss.....
+......srrs......
+....kkkwBkkk....
+...hhhhhhhhhhh..
+...hWWhWWhWWhh..
+...hWWhWWhWWhh..
+...hyyhyyhyyhh..
+...hYYhYYhYYhh..
+...hhhhhhhhhhh..
+...hYYhYYhYYhh..
+...hYYhYYhYYhh..
+...hYYhYYhYYhh..
+...hhhhhhhhhhh..
+...hYYhYYhYYhh..
+...hYYhYYhYYhh..
+...hhhhhhhhhhh..
+...kk.kk.kk.kk..
+...kk.kk.kk.kk..
+--- fin
+......GGGG......
+.....GGGGGG.....
+.....Gssssss....
+.....skkskks....
+.....ssssss.....
+......ssss......
+....kkkwBkkk....
+...hhhhhhhhhhh..
+...hWWhWWhWWhh..
+...hWWhWWhWWhh..
+...hWWhWWhWWhh..
+...hWWhWWhWWhh..
+...hhhhhhhhhhh..
+...hWWhWWhWWhh..
+...hWWhWWhWWhh..
+...hWWhWWhWWhh..
+...hhhhhhhhhhh..
+...hWWhWWhWWhh..
+...hyyhyyhyyhh..
+...hhhhhhhhhhh..
+...kk.kk.kk.kk..
+...kk.kk.kk.kk..

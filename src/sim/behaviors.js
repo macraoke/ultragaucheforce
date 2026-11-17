@@ -178,6 +178,30 @@ export const SPECIALS = {
       return true;
     },
   },
+  billes: {
+    doc: 'Des billes roulent devant soi et restent au sol : qui marche dessus glisse, sonné, et file sur sa lancée.',
+    params: {
+      nombre: [1, 8, 5], // billes répandues
+      vitesse: [20, 240, 120], // élan de la plus rapide, pixels par seconde ; les autres partent moins vite
+      duree: [1, 12, 5], // secondes où elles restent au sol
+      glisse: [0.5, 6, 2], // secondes où l'adversaire qui glisse reste sonné
+      recul: [0, 400, 160], // vitesse de sa glissade, pixels par seconde
+      degats: [0, 10, 0],
+    },
+    texts: ['son'],
+    use(game, hero, s) {
+      for (let i = 0; i < s.nombre; i++) {
+        // Un éventail au sol : de la plus lente, aux pieds du héros, à la plus rapide, qui roule le plus loin.
+        const speed = s.vitesse * (0.25 + (0.75 * (i + 1)) / s.nombre);
+        spawnProjectile(game, {
+          x: hero.x + hero.w / 2 - 2 + hero.facing * 4, y: hero.y + hero.h - 4, w: 4, h: 4, vx: hero.facing * speed,
+          def: hero.def, image: 'bille', gravity: 700, range: 9999, damage: s.degats, terrain: 0, bounces: 3,
+          pierce: true, armor: true, hug: true, owner: hero, drag: 1.6, life: s.duree, slip: s.glisse, slide: s.recul,
+        });
+      }
+      return true;
+    },
+  },
   mur: {
     doc: 'Fait pousser une colonne de tuiles devant soi.',
     params: { hauteur: [1, 5, 3], distance: [1, 3, 1] },

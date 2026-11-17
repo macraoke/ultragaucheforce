@@ -1,0 +1,130 @@
+nom: Sale gosse
+origine: Un nom de l'équipe du jeu. Le 9 novembre 2025, sa chronique sur Radio Nova vaut au ministre de l'Intérieur le surnom de « cuve à pisse ».
+inspiration: Pierre-Emmanuel Barré
+traitement: l'humoriste de « La Dernière » sur Radio Nova, en gamin casquette à l'envers, pétards et billes plein les poches
+cri: VIVEMENT 2027 !
+citation: barre-vivement-2027
+fiche: plainte-nunez-classee-sans-suite
+pv: 2
+vitesse: 150
+saut: 3.6
+auteur: UltraGauche Force
+
+# Arme : des pétards lancés en cloche, qui éclatent à l'arrivée.
+arme.type: tir
+arme.cadence: 2.2
+arme.vitesse: 170
+arme.gravite: 520
+arme.elan: 150
+arme.portee: 220
+arme.degats: 1
+arme.terrain: 2
+arme.explosion: 14
+arme.taille: 5
+arme.image: projectile
+arme.son: tir
+
+# Spéciale : il vide ses poches, les billes roulent au sol ; qui marche dessus glisse.
+speciale.type: billes
+speciale.nom: BILLES !
+speciale.charges: 3
+speciale.nombre: 6
+speciale.vitesse: 150
+speciale.duree: 6
+speciale.glisse: 2
+speciale.recul: 170
+speciale.son: speciale
+
+--- repos
+............
+....RRRRRR..
+..RRRRRRRR..
+...TTssssss.
+...Tsksskss.
+...sssssss..
+....srRRss..
+.....ssss...
+...mmmmmmmm.
+..mmmmmmmmms
+..mmmwwmmmms
+..mmmmmmmm..
+...mmmmmmm..
+...BBBBBBB..
+...BBB.BBB..
+...sss.sss..
+...ww...ww..
+..RRR...RRR.
+--- marche1
+............
+....RRRRRR..
+..RRRRRRRR..
+...TTssssss.
+...Tsksskss.
+...sssssss..
+....srRRss..
+.....ssss...
+...mmmmmmmm.
+..mmmmmmmmms
+..mmmwwmmmms
+..mmmmmmmm..
+...mmmmmmm..
+...BBBBBBB..
+..BBB..BBB..
+..ss....sss.
+.ww......ww.
+RRR......RRR
+--- marche2
+............
+....RRRRRR..
+..RRRRRRRR..
+...TTssssss.
+...Tsksskss.
+...sssssss..
+....srRRss..
+.....ssss...
+...mmmmmmmm.
+..mmmmmmmmms
+..mmmwwmmmms
+..mmmmmmmm..
+...mmmmmmm..
+...BBBBBBB..
+....BBBBB...
+.....sss....
+.....ww.w...
+....RRRRRR..
+--- portrait
+........................
+.........RRRRRRRR.......
+.......RRRRRRRRRRRR.....
+....RRRRRRRRRRRRRRRR....
+...RRRRRRRRRRRRRRRRR....
+.......TTssssssssssT....
+......TTssssssssssssT...
+......TsssssssssssssT...
+......ssskksssssskkss...
+......ssskwssssssskws...
+......ssssssssssssssss..
+......sssssssSSsssssss..
+......sssssssSSsssssss..
+......ssssssssssssssss..
+.......ssRwwwwwwwwRss...
+.......sssRRRRRRRRsss...
+........ssssssssssss....
+..........ssssssss......
+....mmmmmmmmmmmmmmmmm...
+...mmmmmmmmmmmmmmmmmmm..
+..mmmmmmmwwwwwwmmmmmmmm.
+..mmmmmmmwwwwwwmmmmmmmm.
+..mmmmmmmmmmmmmmmmmmmmm.
+..mmmmmmmmmmmmmmmmmmmmm.
+--- projectile
+...y.
+...k.
+.RRR.
+.RwR.
+.RRR.
+--- bille
+.bb.
+bcbb
+bbbB
+.BB.

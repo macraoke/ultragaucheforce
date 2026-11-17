@@ -202,6 +202,62 @@ test('spéciale « sol » : deux ondes rasent le plancher et passent sous les bo
   assert.equal(game.hero.charges, 0);
 });
 
+test('spéciale « billes » : elles roulent, restent au sol, et qui marche dessus glisse, sonné', () => {
+  const bundle = structuredClone(fixtureBundle());
+  bundle.heros.alpha.speciale = {
+    type: 'billes', nombre: 5, vitesse: 120, duree: 4, glisse: 2, recul: 160, degats: 0, son: '', nom: 'BILLES', charges: 1,
+  };
+  const game = settle(play(flat({
+    legende: { f: enemy('fonceur'), v: enemy('blinde') },
+    draw: (put, ground) => {
+      put(ground, 2, '.');
+      put(ground, 6, 'D');
+      put(ground, 16, 'f');
+      put(ground, 34, 'v');
+    },
+  }), { bundle, invincible: true }));
+  const [walker, tank] = game.enemies;
+  game.step({ special: true });
+  assert.equal(game.projectiles.length, 5, 'speciale.nombre: 5');
+  assert.equal(game.hero.charges, 0);
+  run(game, 90);
+  const rest = game.projectiles.filter((p) => p.slip > 0);
+  assert.equal(rest.length, 5, 'les billes restent au sol');
+  assert.ok(rest.every((p) => Math.abs(p.vx) < 30), 'et elles ont presque fini de rouler');
+  assert.ok(walker.state === 'stunned' && walker.daze === 'glisse', 'le fonceur a glissé dessus');
+  assert.notEqual(walker.state, 'done', 'degats: 0 : il glisse, il ne tombe pas en panne');
+  assert.notEqual(tank.daze, 'glisse', 'un véhicule ne glisse pas');
+  run(game, 4 * 60);
+  assert.equal(game.projectiles.filter((p) => p.slip > 0).length, 0, 'speciale.duree : elles disparaissent');
+});
+
+test('spéciale « billes » : ni ce qui vole, ni le boss, ni le héros ne glissent', () => {
+  const bundle = structuredClone(fixtureBundle());
+  bundle.heros.alpha.speciale = {
+    type: 'billes', nombre: 5, vitesse: 120, duree: 4, glisse: 2, recul: 160, degats: 2, son: '', nom: 'BILLES', charges: 1,
+  };
+  const game = settle(play(flat({
+    width: 40, boss: 'gros', legende: { d: enemy('drone') },
+    draw: (put, ground) => {
+      put(ground, 2, '.');
+      put(ground, 6, 'D');
+      put(ground, 8, 'd');
+      put(ground, 10, 'Y');
+    },
+  }), { bundle, invincible: true }));
+  const [drone] = game.enemies;
+  const { boss, hero } = game;
+  const hp = boss.hp;
+  game.step({ special: true });
+  run(game, 40);
+  assert.ok(game.projectiles.some((p) => p.slip > 0), 'les billes sont au sol');
+  assert.notEqual(drone.daze, 'glisse', 'un drone ne glisse pas');
+  assert.equal(boss.hp, hp, 'les billes ne touchent pas le boss, même avec des dégâts');
+  assert.notEqual(boss.state, 'stunned');
+  assert.equal(hero.stun ?? 0, 0, 'le héros ne glisse pas sur ses billes');
+  assert.ok(!hero.daze);
+});
+
 test('spéciale « mur » : fait pousser des tuiles, jamais sur un personnage', () => {
   const game = settle(play(flat({ heros: 'beta' })));
   const ground = game.world.h - 2;
