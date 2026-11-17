@@ -718,8 +718,6 @@ html.bas .atelier .liens a.bouton { padding: .42em .6em; }
 .atelier .etat .sauve.rate { opacity: 1; padding: .3em .5em; background: var(--rouge-sombre); color: var(--blanc); font-weight: 700; }
 body.tactile .atelier input[type='text'], body.tactile .atelier select, body.tactile .atelier textarea { font-size: 16px; }
 
-/* Premier lancement : « Radio Manif ? », à la place du panneau de la radio, tant que le joueur n'a pas répondu. */
-
 /* Radio Manif */
 #radio { position: fixed; right: max(10px, env(safe-area-inset-right)); bottom: max(10px, env(safe-area-inset-bottom)); z-index: 30; width: min(320px, calc(100vw - 20px)); background: var(--nuit); border: 3px solid var(--blanc); box-shadow: 4px 4px 0 var(--rouge); padding: 6px 8px; font-size: .72rem; }
 #radio[hidden] { display: none; }
@@ -738,7 +736,8 @@ body.tactile #radio .radio-bouton { min-width: 36px; min-height: 26px; }
 /* Au doigt, ⏭ se touche sur 44×44 px au moins sans grandir à l'écran : une zone transparente qui part juste sous
    le lecteur (3 px au-dessus du bouton) et descend vers le bord de l'écran ; en pause, vers la ligne des touches. */
 body.tactile .radio-bouton { position: relative; }
-body.tactile .radio-bouton::after { content: ''; position: absolute; top: -5px; left: 50%; width: max(100% + 6px, 44px); height: max(100% + 10px, 44px); transform: translateX(-50%); }
+/* Elle part du bord gauche du bouton et s'étend à droite : à gauche de ⏸, il y a le lien du titre de la piste. */
+body.tactile .radio-bouton::after { content: ''; position: absolute; top: -5px; left: -2px; width: max(100% + 4px, 44px); height: max(100% + 10px, 44px); }
 .pause > .entete { display: flex; align-items: center; gap: 12px; min-width: 0; }
 .pause > .entete h2 { flex: none; margin: 0; }
 .radio-pause { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: flex-end; gap: 8px; font-size: .8rem; }

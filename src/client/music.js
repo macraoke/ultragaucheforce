@@ -153,6 +153,9 @@ export class Radio {
     this.hidden = false;
     this.wanted = false; // la musique jouait quand l'onglet a été caché
     this.held = false; // le joueur a mis Radio Manif en pause (⏸) : rien ne la relance avant qu'il la remette
+    this.silenced = false; // en pause, le lecteur s'est bien tu : une lecture qui repart ensuite vient du joueur
+    this.gesture = false; // un geste reçu pendant un chargement : la lecture part dès que le lecteur est prêt
+    this.lazy = false; // ce navigateur refuse une piste chargée hors d'un geste, même après le premier (Safari)
     this.onAsk = () => {}; // le joueur demande la musique : à main.js d'enregistrer ce choix
   }
 
@@ -327,6 +330,12 @@ export class Radio {
     if (this.attempt?.track !== track || this.attempt.loaded) return;
     this.attempt.loaded = true;
     this.arm(START_TIMEOUT);
+    if (this.gesture && this.widget) {
+      // Un toucher arrivé avant que le lecteur soit prêt : on lui en fait part maintenant. Chrome l'accepte ;
+      // Safari peut refuser hors du geste, et le toucher suivant la lancera.
+      this.gesture = false;
+      this.widget.play();
+    }
   }
 
   /** Reprend la piste chargée. */
@@ -442,8 +451,12 @@ export class Radio {
   /** Un geste du joueur (toucher, clic, touche) : relance une lecture que le navigateur avait refusée. */
   unblock() {
     if (!this.enabled || this.held) return;
-    // Chargée, pas encore partie : le geste passe au lecteur (Safari ne lance une piste que pendant un geste).
-    if (this.status === 'loading' && this.attempt?.loaded && this.widget) return this.widget.play();
+    if (this.status === 'loading') {
+      // Chargée, pas encore partie : le geste passe au lecteur (Safari ne lance une piste que pendant un geste).
+      if (this.attempt?.loaded && this.widget) return this.widget.play();
+      this.gesture = true; // pas encore prête : on s'en souvient
+      return;
+    }
     if (this.status !== 'blocked') return;
     const track = this.current && !this.failed.has(this.current.id) ? this.current : this.choose();
     if (!track) return;
@@ -494,6 +507,18 @@ export class Radio {
     // Une erreur après une demande de piste : elle est morte, une autre tout de suite.
     // (Le lecteur l'annonce avant même d'avoir fini de charger.)
     if (name === 'ERROR') return this.attempt && this.fail(this.attempt.track);
+    if (this.held) {
+      // En pause : notre propre pause, confirmée ; puis une lecture qui repart, c'est le joueur, au bouton du
+      // lecteur SoundCloud : la pause est levée. (Avant la confirmation, un reste de la piste qui se chargeait.)
+      // Seul PLAY compte : le lecteur envoie encore un « ça avance » juste après sa pause.
+      if (name === 'PAUSE') this.silenced = true;
+      if (name !== 'PLAY' || !this.silenced) return;
+      this.held = false;
+      this.ownPause = false;
+      this.watch(this.current, { retried: true });
+      this.status = 'loading';
+      this.render();
+    }
     if (this.attempt && !this.attempt.loaded) return; // encore la piste d'avant
     if (name === 'FINISH') {
       const next = this.following(this.current) ?? this.choose(this.current);
@@ -519,6 +544,7 @@ export class Radio {
         return this.render();
       }
       this.attempt.refused = true; // le navigateur a refusé de jouer
+      if (this.env.activated()) this.lazy = true; // refusée après un premier geste : il en faut un à chaque piste
       if (!this.attempt.retried && this.env.activated()) {
         this.attempt.retried = true;
         this.widget?.play();
@@ -586,8 +612,11 @@ export class Radio {
   togglePause() {
     if (!this.enabled || !this.current) return;
     if (this.held || this.status === 'paused') return this.release();
+    if (this.status === 'blocked') return this.unblock(); // ▶ : refusée, ce toucher la lance
     if (this.status === 'unreachable') return;
+    this.silenced = false;
     this.held = true;
+    this.gesture = false;
     this.halt();
     this.status = 'paused';
     this.render();
@@ -602,7 +631,10 @@ export class Radio {
     const key = `${this.slot}|${this.named}`;
     const level = !NOT_A_LEVEL.has(this.slot);
     const same = this.chosenFor === key && (!level || this.visit?.track === this.current);
-    if (same && !this.failed.has(this.current.id)) return this.resume();
+    const usable = this.widget && !this.failed.has(this.current.id);
+    // Le son, dans ce geste-ci : la piste chargée reprend. Safari refuse une piste chargée hors d'un geste ; là, elle
+    // continue, et la musique du moment vient à sa fin. Ailleurs, la musique du moment se charge aussitôt.
+    if (usable && (same || this.lazy)) return this.resume();
     this.tune();
   }
 
@@ -614,9 +646,8 @@ export class Radio {
   render(possible = this.tracks.length > 0 && this.env.online()) {
     this.view.show({
       possible, enabled: this.enabled, status: this.status, track: this.current, skip: this.canSkip(),
-      pause: this.canPause(), held: this.held || this.status === 'paused',
-      // Refusée faute de geste : le premier toucher, n'importe où, la lancera ; pas de bouton « Relancer » à toucher.
-      waiting: this.status === 'blocked' && !this.env.activated(),
+      // ▶ quand rien ne joue : en pause, ou refusée par le navigateur (un toucher, sur ▶ ou ailleurs, la lance).
+      pause: this.canPause(), held: this.held || this.status === 'paused' || this.status === 'blocked',
     });
   }
 }
@@ -689,7 +720,7 @@ class RadioPanel {
     this.mini.hidden = true;
   }
 
-  show({ possible, enabled, status, track, skip = false, pause = false, held = false, waiting = false }) {
+  show({ possible, enabled, status, track, skip = false, pause = false, held = false }) {
     this.enabled = enabled;
     this.box.hidden = !possible;
     this.mini.hidden = !(possible && this.frame && pause);
@@ -698,8 +729,9 @@ class RadioPanel {
     if (this.miniTitle.textContent !== (track?.titre ?? '')) this.miniTitle.textContent = track?.titre ?? '';
     this.mini.title = track ? `Radio Manif : ${track.titre} — ${track.artiste}` : '';
     if (!possible) return;
-    // Avant le premier geste, pas de « Relancer » : le premier toucher, n'importe où, lance la musique.
-    const stuck = enabled && ((status === 'blocked' && !waiting) || status === 'unreachable');
+    // Refusée par le navigateur : pas de « Relancer », n'importe quel toucher (▶ compris) la lance. Seul un lecteur
+    // injoignable garde son bouton : un geste ne le recharge pas.
+    const stuck = enabled && status === 'unreachable';
     this.box.classList.toggle('bloquee', Boolean(this.frame) && stuck);
     if (!this.frame) {
       // Tant que le joueur n'a rien demandé, aucun lecteur n'est chargé : juste un bouton.

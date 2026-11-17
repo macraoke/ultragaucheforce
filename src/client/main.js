@@ -450,9 +450,11 @@ addEventListener('pointerdown', () => audio.unlock(), true);
 // Une musique que le navigateur a refusé de lancer sans geste repart au prochain toucher, clic ou touche.
 // Juste après le geste, pas pendant : si ce geste lance un niveau, la piste du niveau passe d'abord.
 // (Un dixième de seconde : le geste compte encore pour le navigateur.)
-const unblockRadio = () => setTimeout(() => radio.unblock(), 100);
+// Un geste sur ⏸/▶ ou ⏭ est le leur : ils décident eux-mêmes (▶ lance, ⏸ coupe).
+const onRadio = (e) => Boolean(e.target?.closest?.('.radio-bouton'));
+const unblockRadio = (e) => onRadio(e) || setTimeout(() => radio.unblock(), 100);
 addEventListener('pointerup', unblockRadio, true);
-addEventListener('touchend', () => radio.unblock(), true); // Safari sur iPhone : la fin du toucher, aussitôt
+addEventListener('touchend', (e) => onRadio(e) || radio.unblock(), true); // Safari sur iPhone : la fin du toucher, aussitôt
 addEventListener('keydown', unblockRadio, true);
 // N, dans le menu de pause : la piste suivante de Radio Manif, comme son bouton ⏭.
 addEventListener('keydown', (e) => {

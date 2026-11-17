@@ -1084,8 +1084,9 @@ test('lecture automatique : refusée faute de geste, pas de « Relancer » à to
   await s.flush();
   s.advance(START_TIMEOUT); // le navigateur n'a rien lancé
   assert.equal(s.radio.status, 'blocked');
-  assert.equal(s.shown.waiting, true, 'en attente du premier geste : pas de bouton « Relancer »');
-  assert.equal(s.shown.pause, true, '⏸ est déjà là, pour l’empêcher de partir');
+  assert.equal(s.shown.status, 'blocked');
+  assert.equal(s.shown.pause, true, 'le bouton de lecture est là…');
+  assert.equal(s.shown.held, true, '… et montre ▶ : rien ne joue encore');
   s.activated = true; // un toucher, un clic ou une touche, ailleurs que sur la radio
   s.radio.unblock();
   assert.equal(s.widget.plays, 1);
@@ -1097,7 +1098,6 @@ test('lecture automatique : refusée faute de geste, pas de « Relancer » à to
   s.emit('PAUSE');
   s.emit('PAUSE');
   assert.equal(s.radio.status, 'blocked');
-  assert.equal(s.shown.waiting, false);
   s.radio.unblock();
   assert.equal(s.widget.plays, 3);
 });
@@ -1157,7 +1157,7 @@ test('⏸ tient : ni un niveau, ni le boss, ni « Recommencer », ni le menu ne 
   assert.equal(s.radio.current.id, 'propre-a');
 });
 
-test('⏸ pendant un chargement : la piste chargée ne part pas ; avant le premier geste, ⏸ l’empêche de partir', async () => {
+test('⏸ pendant un chargement : la piste chargée ne part pas ; refusée, le bouton montre ▶ et un toucher la lance', async () => {
   const s = setup();
   await s.on();
   s.radio.play('rond-point');
@@ -1171,11 +1171,12 @@ test('⏸ pendant un chargement : la piste chargée ne part pas ; avant le premi
   await b.flush();
   b.advance(START_TIMEOUT);
   assert.equal(b.radio.status, 'blocked');
-  b.radio.togglePause(); // le premier geste : ⏸
+  assert.equal(b.shown.held, true, '▶, pas ⏸');
   b.activated = true;
-  b.radio.unblock(); // le même geste, vu par main.js
-  assert.equal(b.widget.plays, 0);
-  assert.equal(b.radio.status, 'paused');
+  b.radio.togglePause(); // le premier geste : ▶ (main.js laisse ce toucher au bouton)
+  assert.equal(b.widget.plays, 1);
+  assert.equal(b.radio.status, 'loading');
+  assert.equal(b.radio.held, false);
 });
 
 test('⏭ en pause : la suivante joue ; couper puis remettre la musique dans les options lève la pause', async () => {
@@ -1192,6 +1193,81 @@ test('⏭ en pause : la suivante joue ; couper puis remettre la musique dans les
   s.radio.setEnabled(true);
   assert.equal(s.radio.held, false);
   assert.notEqual(s.radio.status, 'paused');
+});
+
+test('un toucher arrivé avant que le lecteur soit prêt n’est pas perdu ; refusé hors du geste, le suivant la lance', async () => {
+  // Relecture : un toucher à 50 ms, avant READY, ne faisait rien ; puis « Relancer » réapparaissait.
+  let resolve;
+  const s = setup({ activated: false, connect: 'plus-tard' });
+  s.radio.env.connect = (track, onEvent) => { s.connects.push(track.id); s.radio.__emit = onEvent; return new Promise((r) => { resolve = r; }); };
+  s.emit = (n, d) => s.radio.__emit(n, d);
+  s.radio.setEnabled(true);
+  s.activated = true;
+  s.radio.unblock(); // le premier toucher, à 50 ms
+  assert.equal(s.widget.plays, 0);
+  resolve(s.widget);
+  await s.flush();
+  assert.equal(s.widget.plays, 1, 'le lecteur prêt, le toucher lui est transmis');
+  // Safari refuse cette lecture hors du geste : on attend, sans « Relancer ».
+  s.emit('PAUSE');
+  s.emit('PAUSE');
+  assert.equal(s.radio.status, 'blocked');
+  assert.equal(s.shown.held, true, '▶');
+  s.radio.unblock(); // le toucher suivant
+  assert.equal(s.widget.plays, 3);
+  s.emit('PLAY_PROGRESS', { currentPosition: 300 });
+  assert.equal(s.radio.status, 'playing');
+});
+
+test('▶ après un niveau : le son dans le même geste ; sur Safari, la piste chargée continue, ailleurs la musique du moment', async () => {
+  const list = [...tracks, T('propre-a', 'rond-point')];
+  // Chrome : la piste du moment se charge aussitôt (ce navigateur lance une piste chargée après un premier geste).
+  const c = setup({ list });
+  await c.on();
+  c.radio.togglePause();
+  c.radio.play('rond-point');
+  c.radio.togglePause();
+  assert.equal(c.radio.current.id, 'propre-a');
+  // Safari : une piste chargée hors d'un geste a déjà été refusée ; ▶ reprend la piste chargée, dans le geste.
+  const s = setup({ list });
+  await s.on();
+  s.radio.play('raffinerie');
+  s.ready();
+  s.emit('PAUSE'); // refusée après un premier geste
+  assert.equal(s.radio.lazy, true);
+  s.radio.unblock();
+  s.playing();
+  const playing = s.radio.current;
+  s.radio.togglePause();
+  s.radio.play('boss');
+  s.radio.play('rond-point');
+  const loads = s.widget.loads.length;
+  const plays = s.widget.plays;
+  s.radio.togglePause(); // ▶
+  assert.equal(s.widget.plays, plays + 1, 'widget.play() dans le geste');
+  assert.equal(s.widget.loads.length, loads, 'rien à charger');
+  assert.equal(s.radio.current, playing);
+  s.playing();
+  assert.equal(s.radio.status, 'playing');
+  s.emit('FINISH'); // à sa fin, la musique du moment
+  assert.equal(s.radio.current.ou === 'jeu' || s.radio.current.ou === 'rond-point', true, s.radio.current.id);
+});
+
+test('⏸ puis le bouton lecture du lecteur SoundCloud : la pause est levée ; un reste de chargement ne la lève pas', async () => {
+  const s = setup();
+  await s.on();
+  s.radio.togglePause();
+  s.emit('PLAY'); // la piste qui se chargeait part, avant que notre pause soit confirmée
+  assert.equal(s.radio.held, true);
+  s.emit('PAUSE'); // notre pause, confirmée
+  s.playing(); // le dernier « ça avance », parti avant la pause
+  assert.equal(s.radio.held, true);
+  s.emit('PLAY'); // le joueur, au bouton du lecteur
+  assert.equal(s.radio.held, false);
+  s.playing();
+  assert.equal(s.radio.status, 'playing');
+  s.radio.play('rond-point'); // la pause levée, un niveau change la musique comme d'habitude
+  assert.equal(s.radio.current.ou, 'jeu');
 });
 
 test('« Gabber au boss, Internationale en niveau »', () => {
