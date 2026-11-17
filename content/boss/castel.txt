@@ -6,17 +6,15 @@ pv: 70
 largeur: 30
 hauteur: 40
 vitesse: 25
-citation: castel-grace-a-l-afrique
+citation: castel-peur-des-socialistes
 fiche: fortune-castel
 # Assis sur sa fortune tant que sa vie n'est pas passée sous les quatre dixièmes.
 assis: oui
 leve: 0.4
-# Ses répliques sont ses propres mots (voir content/citations/castel-*.txt).
-replique: CE QUE J'AI ACHETÉ EN FRANCE, JE L'AI EU GRÂCE À L'AFRIQUE.
+# Ses répliques sont ses propres mots (voir content/citations/castel-*.txt), dans un entretien à Challenges en 2014 cité par franceinfo.
 replique: J'AI TOUJOURS EU PEUR DES SOCIALISTES.
+replique: FINANCIÈREMENT ET ÉCONOMIQUEMENT, LA FRANCE DEVIENT DANGEREUSE.
 replique: LORSQU'ON VOUS PREND PLUS DE 50% DE VOS REVENUS, VOUS NE POUVEZ PAS L'ACCEPTER.
-replique: JE LES CONNAIS TOUS, ÇA AIDE.
-replique: JE M'EN SUIS BIEN SORTI.
 auteur: UltraGauche Force
 
 # La fortune, en milliards d'euros, et la fiche sourcée qui la documente.

@@ -2,11 +2,11 @@ texte: Lorsqu'on vous prend plus de 50% de vos revenus, vous ne pouvez pas l'acc
 auteur: Pierre Castel
 fonction: fondateur du groupe Castel (vins, bières)
 date: 2014
-contexte: Entretien à Challenges, sur son départ de France pour la Suisse en 1981.
+contexte: Dans un « rare entretien accordé à Challenges en 2014 », selon franceinfo, sur son départ de France pour la Suisse après l'élection de François Mitterrand en 1981.
 categorie: puissants
 mot: 50% DE VOS REVENUS
-note: Suite : « D'ailleurs, le bouclier fiscal était une bonne mesure. Mais je suis Français et j'investis beaucoup en France avec l'argent gagné en Afrique. » L'entretien original de Challenges n'a pas pu être ouvert : le texte est celui de sa reprise, signée « Thierry Fabre | Challenges ». Il y a 87 ans, donc l'entretien date de fin 2013 ou de 2014 ; L'Essentiel de l'éco date de 2014 la phrase sur l'Afrique.
-source.titre: Cameroun24 — Comment Pierre Castel a fait fortune en Afrique (entretien de Thierry Fabre pour Challenges, repris)
-source.url: https://cameroun24.net/article/16151-Comment_Pierre_Castel_a_fait_fortune_en_Afrique.html
+note: franceinfo cite d'un seul tenant : « J'ai toujours eu peur des socialistes [...]. Financièrement et économiquement, la France devient dangereuse. Lorsqu'on vous prend plus de 50% de vos revenus, vous ne pouvez pas l'accepter. » L'entretien original de Challenges n'a pas pu être ouvert : le texte est celui de franceinfo.
+source.titre: franceinfo (cellule investigation de Radio France) — Paradis fiscaux : la face cachée de l'empire Castel, rattrapé par le fisc suisse (26 mai 2023)
+source.url: https://www.franceinfo.fr/monde/afrique/centrafrique/enquete-paradis-fiscaux-la-face-cachee-de-l-empire-castel-rattrape-par-le-fisc-suisse_5848793.html
 source.nature: presse
 verifie: 2026-11-17
