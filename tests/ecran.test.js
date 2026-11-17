@@ -558,6 +558,33 @@ test('le gain d’une recrue passe sous ses pieds plutôt que sur le panneau lu,
   assert.ok(back && back.y0 >= ceiling, 'revenue assez bas : son gain revient, jamais sous la bande du HUD');
 });
 
+test('un gain garé sous les pieds ne sort pas par le bas : la caméra monte, il revient au-dessus de la tête, entier', () => {
+  const r = renderer();
+  const nurse = waiting('soignante', 190, 120);
+  const gains = [];
+  r.label = (text, x, y, opts) => { if (GAIN.test(text)) gains.push(r.textBox(text, x, y, opts.size, 0)); };
+  const frame = (board = null) => {
+    gains.length = 0;
+    r.boxes = board ? [board] : [];
+    r.recruit(nurse);
+    return gains[0];
+  };
+  const home = frame();
+  const parked = frame({ x0: 100, x1: 290, y0: home.y0 - 4, y1: home.y1 + 2 }); // le panneau lu le pousse sous ses pieds
+  assert.ok(parked.y0 >= nurse.y + nurse.h, 'garé sous ses pieds');
+  // La caméra monte : la recrue descend dans l'image, ses pieds juste au-dessus du bas ; sa place garée sortirait.
+  r.cy = nurse.y + nurse.h - r.viewH + 4;
+  const back = frame();
+  assert.ok(back.y1 <= r.viewH, 'entier dans l’image');
+  assert.ok(back.y1 <= nurse.y - r.cy, 'au-dessus de sa tête');
+  // Sur ordinateur, le bandeau en bas cache le bas de l'image : il compte comme le bord.
+  r.cy = 0;
+  frame({ x0: 100, x1: 290, y0: home.y0 - 4, y1: home.y1 + 2 });
+  r.floorBand = (r.viewH - (nurse.y + nurse.h) - 4) * r.ratio;
+  const above = frame();
+  assert.ok(above.y1 <= r.floor() && above.y1 <= nurse.y, 'au-dessus de sa tête, pas sous le bandeau');
+});
+
 test('deux recrues côte à côte : leurs gains ne se recouvrent pas', () => {
   const r = renderer();
   // À la raffinerie, un cheminot et une prof attendent à une tuile l'un de l'autre : « + 30 » et « + 20 » se chevauchaient.

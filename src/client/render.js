@@ -89,6 +89,7 @@ export class Renderer {
     this.scale = 2;
     this.ratio = 3; // pixels CSS par pixel du monde (3 sur ordinateur, 5/3 sur téléphone)
     this.hudBottom = 0; // où descend le HUD, en pixels CSS depuis le haut (main.js le mesure)
+    this.floorBand = 0; // la hauteur du bandeau quand il est en bas de l'image, en pixels CSS (main.js le mesure)
     this.groups = new Map(); // à chaque image, où chaque genre de texte a déjà été écrit pour un groupe d'unités (`first`)
     this.lastSlogan = -Infinity;
     this.propSay = new WeakMap(); // accessoire en entier dans l'image → son étiquette est-elle écrite (muette → écrite, jamais l'inverse)
@@ -1079,14 +1080,16 @@ export class Renderer {
     }
     const base = this.textBox(text, x, y, 8, 0);
     const at = (s) => ({ x0: base.x0 + s.dx, x1: base.x1 + s.dx, y0: base.y0 + s.dy, y1: base.y1 + s.dy });
+    const floor = this.floor();
     const free = (s) => {
       const box = at(s);
-      return box.y0 >= ceiling && !covers(box, body)
+      return box.y0 >= ceiling && box.y1 <= floor && !covers(box, body)
         && !this.boxes.some((b) => box.x0 < b.x1 && box.x1 > b.x0 && box.y0 < b.y1 && box.y1 > b.y0);
     };
     const home = { dx: 0, dy: 0 };
     const moved = this.gainMoved.get(r);
     let spot = (moved && free(moved) ? moved : null) ?? (free(home) ? home : null);
+    if (spot === home) this.gainMoved.delete(r); // sa place écartée n'est plus bonne (hors de la vue) : il revient chez lui
     if (!spot) {
       spot = [{ dx: 0, dy: -step }, { dx: 0, dy: under }, { dx: 0, dy: under + step }, { dx: 0, dy: under + 2 * step }]
         .find(free);
@@ -1279,14 +1282,16 @@ export class Renderer {
       if (this.propHidden.has(t.p)) continue;
       const base = this.textBox(t.text, t.x, t.y, t.opts.size, 0);
       const at = (s) => ({ x0: base.x0 + s.dx, x1: base.x1 + s.dx, y0: base.y0 + s.dy, y1: base.y1 + s.dy });
+      const floor = this.floor();
       const free = (s) => {
         const box = at(s);
-        return box.y0 >= ceiling && !arts.some((a) => covers(box, a))
+        return box.y0 >= ceiling && box.y1 <= floor && !arts.some((a) => covers(box, a))
           && !this.boxes.some((b) => box.x0 < b.x1 && box.x1 > b.x0 && box.y0 < b.y1 && box.y1 > b.y0);
       };
       const home = layout.get(t.p) ?? { dx: 0, dy: 0 };
       const moved = this.propSpot.get(t.p);
       let spot = (moved && free(moved) ? moved : null) ?? (free(home) ? home : null);
+      if (spot === home) this.propSpot.delete(t.p); // sa place écartée n'est plus bonne (hors de la vue) : elle revient chez elle
       if (!spot) {
         // Sous ses propres pieds, à une tuile au plus ; sinon un peu sur le côté, toujours au-dessus ou au-dessous de lui.
         const step = base.y1 - base.y0 + 1;
@@ -1294,7 +1299,8 @@ export class Renderer {
         const reach = (base.x1 - base.x0) / 2 + (art.x1 - art.x0) / 2 - 4; // de quoi garder 4 pixels au-dessus de son dessin
         const sides = [reach / 2, -reach / 2, reach, -reach].map(Math.round);
         spot = [{ dx: 0, dy: under }, { dx: 0, dy: under + step }, ...sides.map((dx) => ({ dx, dy: home.dy })),
-          ...sides.map((dx) => ({ dx, dy: under }))].find(free) ?? moved ?? home; // nulle part : écrite quand même, là où elle était
+          ...sides.map((dx) => ({ dx, dy: under }))].find(free)
+          ?? (moved && at(moved).y1 <= floor ? moved : home); // nulle part : écrite quand même, là où elle était, ou chez elle si c'était hors de la vue
         this.propSpot.set(t.p, spot);
       }
       const box = at(spot);
@@ -1524,6 +1530,11 @@ export class Renderer {
   /** Le haut de l'image qui reste au HUD, en pixels du jeu : SAFE_TOP au moins, et tout le HUD mesuré (`hudBottom`). */
   ceiling() {
     return Math.max(SAFE_TOP, this.hudBottom + 4) / this.ratio;
+  }
+
+  /** Le bas visible de l'image, en pixels du jeu : `viewH`, ou le haut du bandeau quand il est en bas (`floorBand`). */
+  floor() {
+    return this.viewH - this.floorBand / this.ratio;
   }
 
   /** La taille d'un texte du monde, relevée pour qu'il fasse au moins MIN_TEXT pixels à l'écran (téléphone). */

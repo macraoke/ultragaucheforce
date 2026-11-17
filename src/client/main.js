@@ -25,6 +25,7 @@ const radio = new Radio(bundle, document.getElementById('radio'));
 const renderer = new Renderer(document.getElementById('monde'), document.getElementById('textes'), bundle);
 const input = new Input(document.getElementById('tactile'));
 const hud = new Hud(bundle);
+let floorMarks = undefined; // les mesures du HUD avec lesquelles le bandeau du bas a été mesuré
 const editButton = document.getElementById('edition'); // en essai depuis l'Atelier : retour à l'édition, à côté de la pause
 
 /** @type {Game | null} */
@@ -391,6 +392,13 @@ function frame(now) {
 function placeOverHud(demo) {
   const { row, bar, band } = demo ? { row: 0, bar: 0, band: 0 } : hud.measures();
   renderer.hudBottom = band;
+  // Le bandeau en bas de l'image (hors du pouce) : rien ne s'écrit dessous. Remesuré seulement avec le HUD.
+  const marks = demo ? null : hud.marks;
+  if (marks !== floorMarks) {
+    floorMarks = marks;
+    const ticker = document.getElementById('bandeau');
+    renderer.floorBand = !demo && !document.body.classList.contains('tactile') && !ticker.hidden ? ticker.offsetHeight : 0;
+  }
   if (!demo && document.body.classList.contains('tactile')) renderer.signTop = Math.max(30, Math.ceil((Math.max(row, bar) + 6) / renderer.ratio));
 }
 
