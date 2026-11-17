@@ -17,12 +17,12 @@ import { SIGN_LINGER } from './render.js';
 const MENTION = 'Satire citoyenne, libre et collaborative.';
 
 /**
- * Les mentions légales (LCEN, art. 6-III) : un éditeur particulier, identifié auprès de l'hébergeur, sans nom ici.
+ * Les mentions légales (LCEN) : un éditeur particulier, identifié auprès de l'hébergeur, sans nom ici.
  * Valentin, 17 novembre 2026 : « anonyme + hébergeur, pas de pseudonyme visible à cet endroit ».
  * Le même texte, sans JavaScript : `mentions-legales.html`.
  */
 const legalNotice = () => [
-  h('p', {}, h('b', {}, 'Éditeur : '), 'un particulier, à titre non professionnel. Son identité a été communiquée à l’hébergeur (loi pour la confiance dans l’économie numérique, article 6-III-2).'),
+  h('p', {}, h('b', {}, 'Éditeur : '), 'un particulier, à titre non professionnel. Son identité a été communiquée à l’hébergeur (loi pour la confiance dans l’économie numérique).'),
   h('p', {}, h('b', {}, 'Hébergeur : '), 'GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis.'),
   h('p', {}, h('b', {}, 'Contact : '), link(`${REPO}/issues`, 'les issues du dépôt'), ' (il faut un compte GitHub).'),
 ];

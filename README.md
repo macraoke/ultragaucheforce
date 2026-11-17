@@ -114,7 +114,7 @@ Le pourquoi : [docs/DECISIONS.md](docs/DECISIONS.md).
 
 ## Licence
 
-Code [MIT](LICENSE), contenus [CC BY-SA 4.0](content/LICENCE.md) sauf mention contraire (certains sons et musiques ont leur propre licence, dite dans le jeu, À propos → Crédits et licences). Mentions légales : [mentions-legales.html](mentions-legales.html).
+Code [MIT](LICENSE), contenus [CC BY-SA 4.0](content/LICENCE.md) sauf mention contraire (certains sons et musiques ont leur propre licence, dite dans le jeu, À propos → Crédits et licences). Mentions légales : [en ligne](https://macraoke.github.io/ultragaucheforce/mentions-legales.html).
 
 ## Clins d'œil
 
