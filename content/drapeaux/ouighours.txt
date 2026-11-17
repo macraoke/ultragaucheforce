@@ -1,0 +1,25 @@
+nom: Drapeau ouïghour (Kök Bayraq)
+description: Les Ouïghours du Xinjiang : génocide pour l'Assemblée nationale (2022), crimes contre l'humanité pour Amnesty International.
+auteur: UltraGauche Force
+ressource.1.titre: Chine : l'Assemblée nationale reconnaît et condamne le « génocide » des Ouïghours — LCP
+ressource.1.url: https://lcp.fr/actualites/chine-l-assemblee-nationale-reconnait-et-condamne-le-genocide-des-ouighours-99130
+ressource.1.nature: presse
+ressource.2.titre: La résolution des parlementaires en soutien au peuple ouïghour est une étape majeure — Amnesty International France
+ressource.2.url: https://www.amnesty.fr/actualites/reconnaissance-deputes-du-caractere-genocidaire-de-la-situation-au-xinjiang-est-une-etape-majeure/
+ressource.2.nature: associative
+ressource.3.titre: Comment la Chine veut effacer les Ouïghours ? — C quoi l'info ?, franceinfo (vidéo, 10 min)
+ressource.3.url: https://www.youtube.com/watch?v=jJyb4OZiA8w
+ressource.3.nature: presse
+--- image
+bbbbbbbbbbbbbbbbbb
+bbbbbbbbbbbbbbbbbb
+bbbbwwwbbbbbbbbbbb
+bbbwwbbbbbbbbbbbbb
+bbwwbbbbbbwbbbbbbb
+bbwwbbbbbwwwbbbbbb
+bbwwbbbbbbwbbbbbbb
+bbwwbbbbbbbbbbbbbb
+bbbwwbbbbbbbbbbbbb
+bbbbwwwbbbbbbbbbbb
+bbbbbbbbbbbbbbbbbb
+bbbbbbbbbbbbbbbbbb
