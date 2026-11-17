@@ -107,7 +107,7 @@ tools/         serveur local, vérification, build — zéro dépendance
 | `npm run build` | la version à héberger, dans `dist/` |
 | `npm run robot` | quarante parties par niveau jouées par le robot : un repère de difficulté |
 
-Mesure d'audience anonyme (PostHog), en ligne seulement : ni cookie, ni profil. Le build ajoute le script de PostHog quand `POSTHOG_PROJECT_TOKEN` est donné (et `POSTHOG_HOST`, l'hôte européen par défaut) ; sans clé, et toujours en local, rien n'est chargé. Ce qui est compté : `src/client/mesure.js` et `tools/mesure-template.js`.
+Mesure d'audience anonyme (PostHog), en ligne seulement : ni cookie, ni profil. Le build ajoute le script de PostHog quand `POSTHOG_PROJECT_TOKEN` est donné (et `POSTHOG_HOST`, l'hôte européen par défaut) ; sans clé, et toujours en local, rien n'est chargé. Mode sans cookie de PostHog : les visiteurs uniques sont comptés par jour, d'après un hachage calculé sur ses serveurs avec un sel renouvelé chaque jour. Ce qui est compté : `src/client/mesure.js` et `tools/mesure-template.js`.
 
 Le pourquoi : [docs/DECISIONS.md](docs/DECISIONS.md).
 
