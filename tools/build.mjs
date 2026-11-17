@@ -13,7 +13,7 @@ import { loadContent, readContentFiles, ROOT } from './content.mjs';
 import { formatError } from '../src/content/rules.js';
 import { makeIcons } from './png.mjs';
 
-const STATIC = ['index.html', 'galerie.html', 'style.css', 'manifest.webmanifest', 'apercu.jpg'];
+const STATIC = ['index.html', 'galerie.html', 'mentions-legales.html', 'style.css', 'manifest.webmanifest', 'apercu.jpg'];
 const ONLINE_ONLY = ['apercu.jpg']; // l'image d'un lien partagé : en ligne pour les aperçus, inutile dans le jeu
 const MEASURE_MARK = '<!-- mesure d’audience : ajoutée par le build -->';
 

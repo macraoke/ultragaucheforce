@@ -124,6 +124,20 @@ export function storeSave(save, { erase = false } = {}) {
   }
 }
 
+/**
+ * « Effets réduits » suit le réglage du système (`prefers-reduced-motion`) tant que le joueur n'a pas choisi lui-même.
+ * `sobreChoisi` absent (une sauvegarde d'avant) : des effets réduits déjà cochés l'avaient été à la main.
+ * @returns {boolean} vrai si la valeur a changé
+ */
+export function followSystemMotion(options, reduce) {
+  const chosen = options.sobreChoisi ?? options.sobre === true;
+  if (chosen) return false;
+  const before = options.sobre;
+  options.sobre = Boolean(reduce);
+  options.sobreChoisi = false;
+  return before !== options.sobre;
+}
+
 /** Le joueur efface sa progression ; ses options et son brouillon restent. */
 export function eraseProgress(save) {
   Object.assign(save, { termines: {}, records: {}, decouvertes: [], vues: {}, heros: '' });

@@ -166,7 +166,8 @@ export function whereToFind(bundle, kind, item) {
       if (holders.length) return holders;
       if (Object.values(bundle.boss).some((b) => taxFiches(bundle, b).includes(item.id))) return ['en taxant une fortune'];
       if (item.theme === 'droits') return ['en libérant un camarade'];
-      if (item.theme === 'programme' || VOTE_FICHES.includes(item.id)) return ['à la fin de la campagne'];
+      if (item.theme === 'programme') return ['dans À propos, « Le programme de L’Avenir en commun »'];
+      if (VOTE_FICHES.includes(item.id)) return ['à la fin de la campagne'];
       return [];
     }
     default: return [];

@@ -2,7 +2,9 @@
 
 > **Taxez les riches. Abattez la Citadelle.**
 
-Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les plateaux télé la racontent : surarmée de tracts et de tomates. On part à dix place de la République, on arrive à des centaines devant la Citadelle, et on taxe la fortune qui s'y est assise. Ça se joue dans le navigateur, au clavier ou au pouce.
+**[Jouer en ligne](https://macraoke.github.io/ultragaucheforce/)**, dans le navigateur, sans rien installer.
+
+Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les plateaux télé la racontent : surarmée de tracts et de tomates. On part à trois sur le plateau de Millevaches ; d'étape en étape, la manif grossit, et au bout de chacune on taxe la fortune qui s'y est assise. Ça se joue dans le navigateur, au clavier ou au pouce.
 
 | | |
 |---|---|
@@ -12,11 +14,11 @@ Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les platea
 
 - **Faire grossir la manif.** Une soignante, un cheminot, une intersyndicale : chaque recrue compte, une assemblée générale double tout.
 - **Pousser.** Un barrage a une vie : les tracts l'entament, la manif le pousse, d'autant plus fort qu'elle est nombreuse.
-- **Six étapes.** Le camp d'entraînement de Millevaches, le rond-point, la raffinerie bloquée, le siège de la chaîne d'info, le soir du 49.3 devant l'Assemblée, puis la Citadelle.
-- **Creuser, grimper.** Tout le décor se détruit. Sous la rue, le métro, les catacombes, la salle des coffres ; au-dessus, six étages et les toits.
+- **Six étapes.** Le camp d'entraînement de Millevaches, le rond-point, la raffinerie bloquée, le soir du 49.3 devant l'Assemblée, le siège de la chaîne d'info, puis « Bismillah, c'est les ténèbres », du lycée bloqué à la plus grande manif.
+- **Creuser, grimper.** Tout le décor se détruit. Sous la rue, le métro ; au-dessus, les étages et les toits.
 - **Libérer.** On part avec un seul personnage, tiré au hasard la première fois. Chaque camarade sorti de garde à vue rejoint l'équipe et se joue tout de suite ; quand il tombe, on repart avec le précédent.
-- **Débloquer.** Les gens qui rejoignent la manif portent parfois une pancarte : commune, rare, épique ou légendaire. Il y en a 345, toutes relevées en manif.
-- **Taxer.** Au bout de chaque niveau, un ultra-riche est assis sur sa fortune : lequel, le hasard le dit. On en prend 2 % : de quoi payer, par exemple, 64 000 enseignants. Les comparaisons et les faits changent à chaque partie.
+- **Débloquer.** Les gens qui rejoignent la manif portent parfois une pancarte : commune, rare, épique ou légendaire. Il y en a 389, toutes relevées en manif.
+- **Taxer.** Au bout de chaque niveau, un ultra-riche est assis sur sa fortune : lequel, le hasard le dit, sauf à la chaîne d'info (Bolloré) et à Bismillah (Arnault). On en prend 2 % : de quoi payer, par exemple, 64 000 enseignants. Les comparaisons et les faits changent à chaque partie.
 - **PANIQUE TV.** Un bandeau de chaîne d'info fait défiler de vraies déclarations. Quand la panique monte, une équipe télé vient filmer la poubelle qui brûle, pas la manif.
 - **Partager.** En fin de niveau, une image à envoyer : la manif, ce que 2 % paieraient, une pancarte.
 
@@ -25,24 +27,21 @@ Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les platea
 
 | | |
 |---|---|
-| ![Place de la République](docs/captures/manif-republique.jpg) | ![Le lycée bloqué](docs/captures/lycee-bloque.jpg) |
-| ![Les toits](docs/captures/toits.jpg) | ![Les catacombes](docs/captures/catacombes.jpg) |
-| ![Le canon à eau](docs/captures/canon-a-eau.jpg) | ![Le parking, sous le quartier du luxe](docs/captures/parking.jpg) |
-| ![La grille de la Citadelle](docs/captures/grille.jpg) | ![La salle des coffres](docs/captures/salle-des-coffres.jpg) |
-| ![Millevaches : la base sous le rond-point](docs/captures/millevaches-base.jpg) | ![Millevaches : la grange et sa cave](docs/captures/millevaches-grange.jpg) |
-| ![Millevaches : la mine](docs/captures/millevaches-mine.jpg) | ![Millevaches : le château d'eau](docs/captures/millevaches-chateau-d-eau.jpg) |
-| ![Millevaches : la méga-bassine](docs/captures/millevaches-bassine.jpg) | ![Millevaches : l'hélicoptère](docs/captures/millevaches-helicoptere.jpg) |
-| ![Le rond-point : le péage levé](docs/captures/rond-point-peage.jpg) | ![La raffinerie bloquée : la cuve du dépôt de carburant](docs/captures/raffinerie-cuves.jpg) |
-| ![Le siège de la chaîne d'info : la régie](docs/captures/chaine-info-regie.jpg) | ![Le soir du 49.3 : devant l'Assemblée](docs/captures/soir-du-49-3-assemblee.jpg) |
-| ![Une équipe télé filme la poubelle qui brûle](docs/captures/feu-de-poubelle.jpg) | ![PANIQUE TV en pleine hystérie](docs/captures/panique-bandeau.jpg) |
-| ![Le duplex de BFM-TV](docs/captures/duplex-bfm.jpg) | ![La fortune, à l'échelle](docs/captures/taxe-fortune.jpg) |
-| ![Le menu](docs/captures/menu.jpg) | ![L'ouverture d'un niveau](docs/captures/ouverture.jpg) |
-| ![Un camarade libéré](docs/captures/carton-heros.jpg) | ![Fin de niveau](docs/captures/fin-de-niveau.jpg) |
-| ![Taxée à 2 % : ce que ça paierait, et ce que chacun paie déjà](docs/captures/taxe-ce-que-ca-paie.jpg) | ![Le plan de campagne](docs/captures/plan-de-campagne.jpg) |
-| ![La Collection : les pancartes débloquées et leur rareté](docs/captures/collection-grille.jpg) | ![L'image à partager en fin de niveau](docs/captures/partage.jpg) |
-| ![Une pancarte débloquée](docs/captures/collection-carte.jpg) | ![L'appel au vote](docs/captures/appel-au-vote.jpg) |
-| ![L'Atelier : on dessine son niveau](docs/captures/atelier.jpg) | ![Sur téléphone](docs/captures/mobile-paysage.jpg) |
-| ![Fin de niveau sur téléphone](docs/captures/mobile-fin-de-niveau.jpg) | |
+| ![Le lycée bloqué](docs/captures/lycee-bloque.jpg) | ![Les toits](docs/captures/toits.jpg) |
+| ![Le canon à eau](docs/captures/canon-a-eau.jpg) | ![Millevaches : la base sous le rond-point](docs/captures/millevaches-base.jpg) |
+| ![Millevaches : la grange et sa cave](docs/captures/millevaches-grange.jpg) | ![Millevaches : la mine](docs/captures/millevaches-mine.jpg) |
+| ![Millevaches : le château d'eau](docs/captures/millevaches-chateau-d-eau.jpg) | ![Millevaches : la méga-bassine](docs/captures/millevaches-bassine.jpg) |
+| ![Millevaches : l'hélicoptère](docs/captures/millevaches-helicoptere.jpg) | ![Le rond-point : le péage levé](docs/captures/rond-point-peage.jpg) |
+| ![La raffinerie bloquée : la cuve du dépôt de carburant](docs/captures/raffinerie-cuves.jpg) | ![Le siège de la chaîne d'info : la régie](docs/captures/chaine-info-regie.jpg) |
+| ![Le soir du 49.3 : devant l'Assemblée](docs/captures/soir-du-49-3-assemblee.jpg) | ![Une équipe télé filme la poubelle qui brûle](docs/captures/feu-de-poubelle.jpg) |
+| ![PANIQUE TV en pleine hystérie](docs/captures/panique-bandeau.jpg) | ![Le duplex de BFM-TV](docs/captures/duplex-bfm.jpg) |
+| ![La fortune, à l'échelle](docs/captures/taxe-fortune.jpg) | ![Le menu](docs/captures/menu.jpg) |
+| ![L'ouverture d'un niveau](docs/captures/ouverture.jpg) | ![Un camarade libéré](docs/captures/carton-heros.jpg) |
+| ![Fin de niveau](docs/captures/fin-de-niveau.jpg) | ![Taxée à 2 % : ce que ça paierait, et ce que chacun paie déjà](docs/captures/taxe-ce-que-ca-paie.jpg) |
+| ![Le plan de campagne](docs/captures/plan-de-campagne.jpg) | ![La Collection : les pancartes débloquées et leur rareté](docs/captures/collection-grille.jpg) |
+| ![L'image à partager en fin de niveau](docs/captures/partage.jpg) | ![Une pancarte débloquée](docs/captures/collection-carte.jpg) |
+| ![L'appel au vote](docs/captures/appel-au-vote.jpg) | ![L'Atelier : on dessine son niveau](docs/captures/atelier.jpg) |
+| ![Sur téléphone](docs/captures/mobile-paysage.jpg) | ![Fin de niveau sur téléphone](docs/captures/mobile-fin-de-niveau.jpg) |
 
 ![Téléphone tenu debout : le jeu pivote](docs/captures/mobile-tenu-debout.jpg)
 
@@ -50,7 +49,9 @@ Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les platea
 
 ## Jouer
 
-Pas encore en ligne. En local, il faut [Node.js](https://nodejs.org/fr) 22 et rien d'autre :
+Le jeu est en ligne sur https://macraoke.github.io/ultragaucheforce/ pour l'instant ; il passera bientôt sur ultragaucheforce.fr.
+
+En local, il faut [Node.js](https://nodejs.org/fr) 22 et rien d'autre :
 
 ```bash
 git clone https://github.com/macraoke/ultragaucheforce.git
@@ -113,7 +114,7 @@ Le pourquoi : [docs/DECISIONS.md](docs/DECISIONS.md).
 
 ## Licence
 
-Code [MIT](LICENSE), contenus [CC BY-SA 4.0](content/LICENCE.md).
+Code [MIT](LICENSE), contenus [CC BY-SA 4.0](content/LICENCE.md) sauf mention contraire (certains sons et musiques ont leur propre licence, dite dans le jeu, À propos → Crédits et licences). Mentions légales : [en ligne](https://macraoke.github.io/ultragaucheforce/mentions-legales.html).
 
 ## Clins d'œil
 

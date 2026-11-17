@@ -15,6 +15,17 @@ import { makeRng } from '../sim/rng.js';
 import { SIGN_LINGER } from './render.js';
 
 const MENTION = 'Satire citoyenne, libre et collaborative.';
+
+/**
+ * Les mentions légales (LCEN) : un éditeur particulier, identifié auprès de l'hébergeur, sans nom ici.
+ * Valentin, 17 novembre 2026 : « anonyme + hébergeur, pas de pseudonyme visible à cet endroit ».
+ * Le même texte, sans JavaScript : `mentions-legales.html`.
+ */
+const legalNotice = () => [
+  h('p', {}, h('b', {}, 'Éditeur : '), 'un particulier, à titre non professionnel. Son identité a été communiquée à l’hébergeur (loi pour la confiance dans l’économie numérique).'),
+  h('p', {}, h('b', {}, 'Hébergeur : '), 'GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis.'),
+  h('p', {}, h('b', {}, 'Contact : '), link(`${REPO}/issues`, 'les issues du dépôt'), ' (il faut un compte GitHub).'),
+];
 const PANIC_NAMES = ['calme', 'alerte', 'hystérie']; // les trois crans de la chaîne
 const AIRTIME = 15; // secondes d'antenne d'une citation qui tient sur le fil
 const SCROLL = 3; // vitesse de défilement d'une ligne trop longue, en hauteurs de lettre par seconde
@@ -324,6 +335,7 @@ export class Screens {
       box.onchange = () => {
         this.save.options[key] = box.checked;
         if (key === 'musique') this.save.options.musiqueChoisie = true;
+        if (key === 'sobre') this.save.options.sobreChoisi = true; // le réglage du système ne décide plus
         storeSave(this.save);
         this.go.options();
       };
@@ -356,19 +368,29 @@ export class Screens {
 
   about() {
     const fold = (title, ...body) => h('details', {}, h('summary', {}, title), ...body);
+    const programme = Object.values(this.bundle.fiches).filter((x) => x.theme === 'programme');
     this.show('liste apropos',
       h('h2', {}, 'À propos'),
       h('p', {}, MENTION),
       h('p', {}, link(REPO, 'Le dépôt'), ' · ', link(`${REPO}/blob/main/CONTRIBUTING.md`, 'Contribuer'), ' · ',
         link(`${REPO}/blob/main/CHARTE.md`, 'La charte'), ' · ', h('a', { href: 'galerie.html' }, 'La Galerie')),
+      programme.length ? this.button('Le programme de L’Avenir en commun', () => {
+        this.go.learn(programme.map((x) => x.id)); // le lire, c'est le débloquer dans la Collection
+        this.collection('propositions', { back: () => this.about() });
+      }, 'discret') : null,
       measuring() && fold('Mesure d’audience anonyme (PostHog) : ni cookie, ni profil.',
         h('p', {}, 'Le jeu compte les visites, les parties par niveau et par héros (gagnée, perdue ou abandonnée, leur durée, la taille de la manif), les pistes de Radio Manif écoutées, passées ou mises en pause, et ce qui empêche de jouer : contenu ou musique injoignables, erreurs. Les visiteurs sont comptés par jour, sur les serveurs de PostHog, d’après une empreinte qui change chaque jour. Rien n’est écrit sur ton appareil pour cela, et rien de ce que tu écris dans l’Atelier ne part.')),
+      fold('Radio Manif : le lecteur et les cookies de SoundCloud',
+        h('p', {}, 'La musique passe par le lecteur de SoundCloud, chargé dès l’ouverture du jeu. SoundCloud y dépose ses propres cookies et traceurs, par exemple le cookie ', h('code', {}, 'sc_anonymous_id'), ' et le script de mesure de ', h('code', {}, 'dwt.soundcloud.com'), '. Le jeu ne les lit pas et n’en reçoit rien.'),
+        h('p', {}, 'Couper Radio Manif dans les Options arrête la musique, pas le lecteur : il reste chargé, muet, pour repartir d’un toucher. Pour que SoundCloud ne se charge pas du tout, bloque ', h('code', {}, 'w.soundcloud.com'), ' dans ton navigateur (un bloqueur de contenu suffit) : le jeu marche sans musique.')),
+      fold('Mentions légales', ...legalNotice()),
       fold('Références', h('ul', {}, REFERENCES.map((r) => h('li', {}, link(r.url, r.titre), ` — ${r.note}`)))),
       fold('Crédits et licences',
-        h('p', {}, 'Code : MIT. Contenus : CC BY-SA 4.0. Bruitages synthétisés avec ZzFX de Frank Force (MIT).'),
+        h('p', {}, 'Code : MIT. Contenus : CC BY-SA 4.0, sauf mention contraire. Bruitages synthétisés avec ZzFX de Frank Force (MIT).'),
         h('ul', {}, Object.values(this.bundle.sons).filter((x) => x.fichier).map((x) =>
           h('li', {}, link(x.source, x.nom), ` — ${x.auteur}, ${licenceName(x.licence)}`))),
-        h('p', {}, h('b', {}, 'Radio Manif : '), Object.values(this.bundle.musiques).map((m, i) => [i ? ' · ' : '', link(m.url, m.titre), ` — ${m.artiste}`]))),
+        h('p', {}, h('b', {}, 'Radio Manif : '), Object.values(this.bundle.musiques).map((m, i) => [i ? ' · ' : '', link(m.url, m.titre), ` — ${m.artiste}`,
+          /^CC-/.test(m.licence || '') ? `, ${licenceName(m.licence)}` : '']))),
       h('div', { className: 'pied' }, this.back()));
     this.escape = () => this.menu();
   }
@@ -551,18 +573,19 @@ export class Screens {
         this.button('Menu', () => this.go.quit(), 'discret')));
   }
 
-  /** Dernier écran : un appel au vote citoyen. Les dates, deux démarches, le programme ; pas de consigne. */
+  /**
+   * Dernier écran : un appel au vote citoyen, les dates et deux démarches, rien d'autre. Le programme est ailleurs
+   * (À propos, Collection) : Valentin, 17 novembre 2026, « Séparer les deux ».
+   */
   final() {
     const f = this.bundle.fiches;
     const [dates, ...steps] = VOTE_FICHES.map((id) => f[id]).filter(Boolean);
-    const programme = Object.values(f).filter((x) => x.theme === 'programme');
-    this.go.learn([dates, ...steps, ...programme].filter(Boolean).map((x) => x.id)); // ce qu'on lit ici entre dans la Collection
+    this.go.learn([dates, ...steps].filter(Boolean).map((x) => x.id)); // ce qu'on lit ici entre dans la Collection
     this.show('vote',
       h('h2', { className: 'appel' }, 'Allez voter.'),
       h('p', { className: 'dates' }, dates ? link(dates.source.url, 'Dimanche 18 avril et dimanche 2 mai 2027') : 'Dimanche 18 avril et dimanche 2 mai 2027'),
       h('nav', {},
-        steps.map((x) => h('a', { className: 'bouton', href: x.source.url, target: '_blank', rel: 'noopener' }, x.titre)),
-        programme.length ? this.button('Le programme', () => this.collection('propositions', { back: () => this.final() })) : null),
+        steps.map((x) => h('a', { className: 'bouton', href: x.source.url, target: '_blank', rel: 'noopener' }, x.titre))),
       h('div', { className: 'pied' },
         this.button('Menu', () => this.go.quit(), 'gros'),
         h('a', { className: 'bouton discret', href: REPO, target: '_blank', rel: 'noopener' }, 'Contribuer au jeu')));

@@ -13,7 +13,7 @@ import { showTaxScene, draw } from './tax.js';
 import { CRS_OCTOBRE_2026 } from './blesses.js';
 import { shareImage, openShare } from './share.js';
 import { measure, runStarted, runEnded, heroRescued } from './mesure.js';
-import { loadSave, storeSave, discover, isFound } from './save.js';
+import { loadSave, storeSave, discover, isFound, followSystemMotion } from './save.js';
 import { cardName, citationOfWord, levelOrder, signNote, taxShocks } from './collection.js';
 import { registerServiceWorker } from './sw-register.js';
 
@@ -23,6 +23,9 @@ const bundle = await (async () => (await (window.contentRequest ?? fetch('conten
   throw error;
 });
 const save = loadSave();
+// Le système demande moins de mouvement : « Effets réduits » est coché d'office, tant que le joueur n'a rien choisi.
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+followSystemMotion(save.options, reducedMotion.matches);
 const screenRoot = document.getElementById('ecran');
 const audio = new Audio(bundle);
 const radio = new Radio(bundle, document.getElementById('radio'));
@@ -558,6 +561,7 @@ if (new URLSearchParams(location.search).has('debug')) {
 
 layout();
 applyOptions();
+reducedMotion.addEventListener?.('change', (e) => followSystemMotion(save.options, e.matches) && applyOptions());
 registerServiceWorker((apply) => {
   screens.update = apply; // une nouvelle version attend : le menu la propose, jamais en pleine partie
   if (mode === 'menu' && screens.open) screens.menu();
