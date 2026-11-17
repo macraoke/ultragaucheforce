@@ -1369,3 +1369,15 @@ test('refusée hors d’un geste (lecture automatique bloquée) : la Radio atten
   assert.equal(s.radio.status, 'blocked');
   assert.equal(s.radio.failed.size, 0);
 });
+
+test('lecteur préchargé pas encore prêt : le clic puis le geste vu par main.js donnent un seul play()', async () => {
+  const s = setup();
+  s.radio.setEnabled(false);
+  s.radio.play('menu');
+  s.radio.setEnabled(true); // le clic sur « ▶ Radio Manif », avant que le lecteur soit prêt
+  s.radio.unblock(); // le même geste, un dixième de seconde plus tard
+  await s.flush();
+  assert.equal(s.widget.plays, 1); // un second play() pendant le démarrage, le lecteur répondrait PAUSE
+  s.playing();
+  assert.equal(s.radio.status, 'playing');
+});

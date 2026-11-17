@@ -316,12 +316,12 @@ export class Radio {
     pending.then((widget) => {
       if (this.connecting !== pending) return;
       this.widget = widget;
-      this.loaded(track);
+      const played = this.loaded(track); // un geste reçu entre-temps : déjà lancée
       if (!this.enabled || this.held) {
         this.ownPause = true;
         widget.pause();
       } else if (this.current !== track) this.start(this.current); // une autre piste a été demandée entre-temps
-      else if (!autoPlay) widget.play(); // préchargé, puis demandé avant d'être prêt
+      else if (!autoPlay && !played) widget.play(); // préchargé, puis demandé avant d'être prêt : un seul play()
     }, () => {
       if (this.connecting === pending) this.unreachable();
     });
@@ -358,9 +358,10 @@ export class Radio {
   }
 
   /** Le lecteur a chargé la piste demandée : à partir de maintenant, on attend qu'elle parte. */
+  /** @returns {boolean} la lecture vient d'être demandée au lecteur (un geste arrivé pendant le chargement) */
   loaded(track) {
     this.widget?.setVolume(VOLUME);
-    if (this.attempt?.track !== track || this.attempt.loaded) return;
+    if (this.attempt?.track !== track || this.attempt.loaded) return false;
     this.attempt.loaded = true;
     this.arm(START_TIMEOUT);
     if (this.gesture && this.widget) {
@@ -368,7 +369,9 @@ export class Radio {
       // Safari peut refuser hors du geste, et le toucher suivant la lancera.
       this.gesture = false;
       this.widget.play();
+      return true;
     }
+    return false;
   }
 
   /** Reprend la piste chargée. */
