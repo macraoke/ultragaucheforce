@@ -2,7 +2,7 @@
 nom: Tag
 ecrit: tag
 ecrit.y: 0
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 ................
 .R..........R...

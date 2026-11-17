@@ -3,7 +3,7 @@ apport: 15
 slogan: ON VEUT JUSTE LE BAC, ILS NOUS ENVOIENT LA BAC !
 slogan: LA CONTINUITÉ PÉDAGOGIQUE SE FAIT DANS LA RUE
 fiche: programme-autonomie-des-jeunes
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 ..kkkkkk..
 .kkkkkkkk.

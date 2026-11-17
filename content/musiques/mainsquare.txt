@@ -3,4 +3,4 @@ artiste: Jahzzar
 url: https://soundcloud.com/jahzzar/mainsquare
 ou: menu
 licence: CC-BY-SA
-auteur: UltraGauche Force
+auteur: xsbfh

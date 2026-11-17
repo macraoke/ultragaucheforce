@@ -2,7 +2,7 @@
 nom: Liasses de billets
 symbole: L
 pv: 2
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 VvvvvvvVVvvvvvvV
 VvvYYvvVVvvYYvvV

@@ -5,8 +5,8 @@ date: 2025-11-10
 contexte: Le lendemain de la chronique de Pierre-Emmanuel Barré dans « La Dernière » sur Radio Nova, le ministre annonce une « lettre-plainte » au parquet de Paris.
 categorie: puissants
 mot: INQUALIFIABLES
-note: Le ministère de l'Intérieur porte plainte pour « injure publique » envers le ministre et « envers une administration » (Le Parisien, repris par Puremédias). Près d'un an plus tard, le parquet de Paris classe la plainte sans suite. L'unité Cuve à pisse lance ses mots.
-source.titre: Le HuffPost (Yahoo Actualités) — Pierre-Emmanuel Barré est ravi de sa victoire judiciaire contre Laurent Nuñez, après sa blague comparant la police à Daech
-source.url: https://fr.news.yahoo.com/pierre-emmanuel-barr%C3%A9-ravi-victoire-133903811.html
+note: Le ministère de l'Intérieur porte plainte pour « injure publique » envers le ministre et « envers une administration » (selon Le Parisien, cité par Puremédias). Près d'un an plus tard, le parquet de Paris classe la plainte sans suite. L'unité Cuve à pisse lance ses mots.
+source.titre: Puremédias — « Une bonne nouvelle pour la liberté d'expression » : La plainte initiée par Laurent Nuñez contre Pierre-Emmanuel Barré classée sans suite
+source.url: https://www.ozap.com/actu/une-bonne-nouvelle-pour-la-liberte-dexpression-la-plainte-initiee-par-laurent-nunez-contre-pierre-emmanuel-barre-classee-sans-suite/657187
 source.nature: presse
 verifie: 2026-11-17

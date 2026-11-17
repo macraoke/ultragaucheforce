@@ -1,6 +1,6 @@
 # Une pompe à essence. Écran éteint : la station est à sec.
 nom: Pompe à essence
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 ..kkkkkkkkkkkkkkkk..
 .kWWWWWWWWWWWWWWWWk.

@@ -3,7 +3,7 @@ apport: 20
 slogan: MACRON, RENDS-NOUS LE POGNON !
 slogan: LA RETRAITE AVANT L'ARTHRITE
 fiche: programme-retraites
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 ...GGGG...
 ..GWWWWG..

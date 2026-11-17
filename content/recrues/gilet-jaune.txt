@@ -3,7 +3,7 @@ apport: 25
 slogan: ON EST LÀ, MÊME SI MACRON LE VEUT PAS
 slogan: J'AI FAILLI NE PAS VENIR FAIRE LA RÉVOLUTION, JE N'AVAIS PLUS D'ESSENCE
 fiche: programme-blocage-des-prix
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 ..rrrrrr..
 .rrrrrrrr.

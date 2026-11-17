@@ -1,4 +1,5 @@
 nom: Faux jeune
+origine: Le policier en civil que des lycéens disent avoir vu se glisser dans leurs conversations. Une infiltration présumée : rien ne l'a confirmée.
 pv: 2
 vitesse: 80
 deplacement: marche
@@ -11,7 +12,7 @@ largeur: 10
 hauteur: 16
 fiche: bismillah-meme
 replique: BISMILLAH, C'EST LES TÉNÈBRES.
-auteur: UltraGauche Force
+auteur: xsbfh
 --- repos
 ..RRRRRR....
 RRRRRRRRR...

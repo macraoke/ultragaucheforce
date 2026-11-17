@@ -8,5 +8,5 @@ mot: LAISSER FILER
 note: Phrase complète : « C'est la passion qui vous marque et vous êtes un peu piégé, en vous disant cette œuvre-là, je ne peux pas la laisser filer. » Page datée du 10 mai 2021.
 source.titre: Bourse de Commerce — Pinault Collection — L'interview de François Pinault
 source.url: https://www.pinaultcollection.com/fr/boursedecommerce/linterview-de-francois-pinault
-source.nature: officielle
+source.nature: militante
 verifie: 2026-11-16

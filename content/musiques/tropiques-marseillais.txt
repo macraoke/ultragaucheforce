@@ -3,4 +3,4 @@ artiste: John Alenca
 url: https://soundcloud.com/johnalenca/single-rmix-101-by-john-alenca-les-tropiques-marseillais
 ou: jeu
 licence: tous droits réservés
-auteur: UltraGauche Force
+auteur: xsbfh

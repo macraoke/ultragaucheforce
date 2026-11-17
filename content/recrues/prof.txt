@@ -3,7 +3,7 @@ apport: 20
 slogan: NOS CLASSES DÉBORDENT, NOTRE PATIENCE AUSSI
 slogan: SANS ÉDUCATION, PAS DE NATION
 fiche: programme-ecole
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 ...tttt...
 ..tttttt..

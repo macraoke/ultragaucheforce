@@ -3,4 +3,4 @@ artiste: Sketogan
 url: https://soundcloud.com/sketogan/caca-sur-bardella
 ou: jeu
 licence: tous droits réservés
-auteur: UltraGauche Force
+auteur: xsbfh

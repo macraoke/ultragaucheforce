@@ -4,4 +4,4 @@ url: https://soundcloud.com/ericskiff/were-the-resistors
 ou: menu
 ouverture: oui
 licence: CC-BY
-auteur: UltraGauche Force
+auteur: xsbfh

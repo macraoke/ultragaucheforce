@@ -24,7 +24,7 @@ arme.touche: 2
 arme.taille: 4
 arme.image: projectile
 arme.son: impact
-auteur: UltraGauche Force
+auteur: xsbfh
 --- repos
 ...TTTTT....
 ..TTTTTTT...

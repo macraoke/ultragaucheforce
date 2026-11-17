@@ -3,4 +3,4 @@ artiste: fau$t1_bg
 url: https://soundcloud.com/user-352571647-490860733/abattez-la-citadelle-coupe
 ou: boss
 licence: CC-BY-NC-SA
-auteur: UltraGauche Force
+auteur: xsbfh

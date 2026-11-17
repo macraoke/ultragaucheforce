@@ -1,6 +1,6 @@
 # Une cuve de stockage : on la voit de loin, on la grimpe (et son toit se perce) dans le niveau.
 nom: Cuve de la raffinerie
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 ........................................................
 ...............gGGWWWWWWWWWWWWWWWWWWWhhHH...............

@@ -1,7 +1,7 @@
 nom: Haie de ZAD
 symbole: H
 pv: 2
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 .vvlvv..vlvv.vv.
 vvlvvvvvvvlvvvvv

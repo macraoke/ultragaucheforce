@@ -1,5 +1,5 @@
 # Un boss = une fortune documentée aux commandes d'une machine. Le dessin « ejecte » sert à sa sortie.
-nom: La Famille Peugeot
+nom: La famille Peugeot
 inspiration: Thierry Peugeot
 traitement: une berline au lion, montée sur crics, l'enseigne du lion sur le toit ; le pilote s'éjecte sous un parachute bleu
 pv: 60
@@ -17,7 +17,7 @@ replique: NOUS AVONS DES VALEURS D'HUMANISME ET DE RESPECT.
 replique: NOUS SOMMES PRÊTS À ACCEPTER LA CRITIQUE, MAIS IL Y A DES LIMITES.
 replique: NOUS SOMMES AUSSI DES GENS RESPONSABLES.
 replique: NOUS NE POUVONS PAS RESTER SANS RIEN FAIRE.
-auteur: UltraGauche Force
+auteur: xsbfh
 
 # La fortune, en milliards d'euros, et la fiche sourcée qui la documente.
 fortune.montant: 2.7

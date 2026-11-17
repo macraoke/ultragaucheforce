@@ -1,5 +1,5 @@
 nom: Palettes empilées
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 ..tttttttttttttttttt..
 .TttttTttttttTttttttT.

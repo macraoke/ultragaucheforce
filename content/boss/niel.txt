@@ -18,7 +18,7 @@ replique: JE NE SAIS PAS FAIRE DES JOURNAUX MAIS JE SAIS GÉRER UNE ENTREPRISE.
 replique: JE NE SUIS PAS CHOQUÉ PAR CNEWS.
 replique: NOUS SOMMES QUATRE DANS LES TÉLÉCOMS. NOUS N'ARRIVONS PAS À PASSER À TROIS.
 replique: JE VIENS D'UNE FAMILLE MOYENNE FRANÇAISE.
-auteur: UltraGauche Force
+auteur: xsbfh
 
 # La fortune, en milliards d'euros, et la fiche sourcée qui la documente.
 fortune.montant: 30.1

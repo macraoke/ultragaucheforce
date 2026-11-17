@@ -3,4 +3,4 @@ artiste: KOWZ
 url: https://soundcloud.com/kowzmusic/romeo-juliette-les-rois-du-monde-kowz-remix
 ou: jeu
 licence: tous droits réservés
-auteur: UltraGauche Force
+auteur: xsbfh

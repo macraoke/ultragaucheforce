@@ -23,7 +23,7 @@ replique: « LE MONDE », IL EST PLUTÔT LFI.
 replique: EN GÉNÉRAL, ÇA MÈNE À LA CATASTROPHE.
 replique: JE N'AI PAS GAGNÉ AU LOTO...
 replique: SI QUELQU'UN QUITTE L'ENTREPRISE, C'EST QU'IL A TROUVÉ UN EMPLOI.
-auteur: UltraGauche Force
+auteur: xsbfh
 
 # La fortune, en milliards d'euros, et la fiche sourcée qui la documente.
 fortune.montant: 121.2

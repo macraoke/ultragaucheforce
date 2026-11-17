@@ -1,6 +1,6 @@
 nom: Antenne de la chaîne
 # Un pylône et sa parabole ; le feu rouge du sommet clignote.
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 .............RR.............
 .............RR.............

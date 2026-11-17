@@ -1,5 +1,7 @@
-nom: Zuc-Man
+nom: Super-Zucman
+origine: Le 12 juin 2025, Politis titre « Super-Zucman, l'économiste qui veut rétablir la justice fiscale » (Hugo Boursier). Le jeu en fait son nom.
 inspiration: Gabriel Zucman
+# Source du nom : https://www.politis.fr/articles/2025/06/super-zucman-leconomiste-qui-veut-retablir-la-justice-fiscale/ (ouverte le 17 novembre 2026).
 traitement: l'économiste en super-héros
 cri: JUSTICE FISCALE !
 citation: arnault-zucman
@@ -8,7 +10,7 @@ vitesse: 135
 saut: 3.4
 fiche: impot-plancher
 fiche: impot-plancher-parcours
-auteur: UltraGauche Force
+auteur: xsbfh
 
 # Arme : le tampon « 2 % », lent et lourd, casse murs et boucliers.
 arme.type: tir

@@ -1,4 +1,4 @@
-nom: Casserolade à Belfort, 24 avril 2023 (extrait)
+nom: Casserolade à Belfort, 24 avril 2023 (extrait modifié)
 fichier: casseroles.mp3
 auteur: Thomas Bresson
 licence: CC-BY-4.0

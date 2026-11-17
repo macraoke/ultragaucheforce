@@ -1,6 +1,6 @@
 titre: 4,8 milliards estimés
 theme: richesses
-texte: Selon le classement Challenges 2026, repris par Lyon Capitale le 9 juillet 2026, Jean-Guillaume Despature et sa famille, avec Somfy, sont la 26e fortune professionnelle de France, avec un patrimoine estimé à 4,8 milliards d'euros.
+texte: Selon le classement Challenges 2026, repris par Lyon Capitale le 9 juillet 2026, Jean Guillaume Despature et sa famille, avec Somfy, sont la 26e fortune professionnelle de France, avec un patrimoine estimé à 4,8 milliards d'euros.
 portee: Estimation des actifs professionnels de la famille, ici surtout Somfy, leader mondial des volets électriques, basé à Cluses. Ce n'est pas de l'argent disponible. Chiffre de Challenges repris par Lyon Capitale : la page de Challenges elle-même n'a pas pu être ouverte.
 periode: classement Challenges 2026, repris le 9 juillet 2026
 source.titre: Lyon Capitale — Les plus grosses fortunes professionnelles de Haute-Savoie en 2026

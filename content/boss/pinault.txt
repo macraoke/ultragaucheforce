@@ -20,7 +20,7 @@ replique: UNE PETITE PHRASE LARGEMENT TRONQUÉE.
 replique: TOUT CE QUI EST SUPERFLU N'EST PLUS LÀ.
 replique: C'EST UN REMÈDE, C'EST LE MEILLEUR, JE CROIS.
 replique: C'EST LA VIE QUI CONTINUE !
-auteur: UltraGauche Force
+auteur: xsbfh
 
 # La fortune, en milliards d'euros, et la fiche sourcée qui la documente.
 fortune.montant: 19.2

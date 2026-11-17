@@ -11,7 +11,7 @@ largeur: 22
 hauteur: 14
 citation: lallement-meme-camp
 fiche: brav-m-petition
-auteur: UltraGauche Force
+auteur: xsbfh
 --- repos
 ........wwww....wwww....
 .......wkkkw...wkkkw....

@@ -7,7 +7,7 @@ citation: poutou-immunite-ouvriere
 pv: 3
 vitesse: 125
 saut: 3
-auteur: UltraGauche Force
+auteur: xsbfh
 
 # Arme : des boulons qui rebondissent au ras du sol et traversent tout, pour nettoyer le terrain devant soi.
 arme.type: tir

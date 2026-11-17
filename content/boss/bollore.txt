@@ -20,7 +20,7 @@ replique: NOUS AURONS CONNU TROIS ROIS, UN EMPEREUR, 26 PRÉSIDENTS DE LA RÉPUB
 replique: NOTRE GROUPE EST PLUTÔT PARATONNERRE.
 replique: JE SUIS NÉ AVEC UNE CUILLÈRE EN ARGENT DANS LA BOUCHE.
 replique: J'AI DONNÉ MES ACTIONS MAIS CONSERVÉ MES DROITS DE VOTE, ON NE SAIT JAMAIS…
-auteur: UltraGauche Force
+auteur: xsbfh
 
 # La fortune, en milliards d'euros, et la fiche sourcée qui la documente.
 # Pas de rente : le nombre d'actions détenues n'est lu nulle part tel quel (seulement un pourcentage).

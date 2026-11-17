@@ -1,9 +1,9 @@
 titre: D'où vient « Bismillah »
 theme: ordre
-texte: Début octobre 2026, une capture d'écran Snapchat circule : un message au jargon « jeune » approximatif, attribué à des policiers infiltrés dans un groupe de blocus lycéen. Les lycéens en font un mème, puis des pancartes.
-portee: Presse-citron rapporte l'infiltration comme un fait ; Brut la dit « présumée ». Aucune confirmation officielle n'a été trouvée.
+texte: Début octobre 2026, une capture d'écran Snapchat circule : un message au jargon « jeune » approximatif, qui demande à quand le blocus. Des élèves disent qu'il vient de policiers en civil qui cherchaient à infiltrer leurs conversations. Le message devient un mème, puis un slogan de manif.
+portee: L'infiltration est présumée : Al Jazeera écrit que l'affirmation n'a pas été vérifiée et que les autorités françaises ne se sont pas exprimées.
 periode: octobre 2026
-source.titre: Presse-citron — Que signifie l'expression « Bismillah c'est les ténèbres » qu'on voit partout sur les réseaux sociaux ?
-source.url: https://www.presse-citron.net/que-signifie-lexpression-bismillah-cest-les-tenebres-quon-voit-partout-sur-les-reseaux-sociaux/
+source.titre: Al Jazeera — Why are French protesters chanting 'Bismillah, c'est les ténèbres'?
+source.url: https://www.aljazeera.com/news/2026/10/21/why-are-french-protesters-chanting-bismillah-cest-les
 source.nature: presse
-verifie: 2026-11-15
+verifie: 2026-11-17

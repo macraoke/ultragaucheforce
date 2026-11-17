@@ -1,5 +1,5 @@
 # Un boss = une fortune documentée aux commandes d'une machine. Le dessin « ejecte » sert à sa sortie.
-nom: La Famille Hermès
+nom: La famille Hermès
 inspiration: la famille Hermès, avec Axel Dumas, son gérant
 traitement: un sac de cuir orange sur quatre jambes de cheval, un carré de soie au vent ; le pilote s'éjecte sous un carré de soie
 pv: 80
@@ -18,7 +18,7 @@ replique: NOUS ESPÉRONS QUE LE PRODUIT PARLE DE LUI-MÊME.
 replique: LES GENS CONSOMMENT BEAUCOUP PLUS EN FONCTION DE L'ÉVOLUTION DE LEUR PATRIMOINE QU'EN FONCTION DE L'ÉVOLUTION DU REVENU NATIONAL.
 replique: NOUS NE SOMMES PAS RESPONSABLES DES TAUX DE CHANGE NI DE LA GÉOPOLITIQUE.
 replique: JE NE PEUX PAS FAIRE DE PROJECTION SUR 2026.
-auteur: UltraGauche Force
+auteur: xsbfh
 
 # La fortune, en milliards d'euros, et la fiche sourcée qui la documente.
 fortune.montant: 114

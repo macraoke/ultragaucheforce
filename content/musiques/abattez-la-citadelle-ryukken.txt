@@ -3,4 +3,4 @@ artiste: Ryukken
 url: https://soundcloud.com/ryukkenfr/abattez-la-citadelle-v21
 ou: boss
 licence: tous droits réservés
-auteur: UltraGauche Force
+auteur: xsbfh

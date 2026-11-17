@@ -3,4 +3,4 @@ artiste: Yann Muller
 url: https://soundcloud.com/yannmuller/yann-muller-un-autre-monde-radio-mix
 ou: jeu
 licence: tous droits réservés
-auteur: UltraGauche Force
+auteur: xsbfh

@@ -17,7 +17,7 @@ replique: TOUT LE MONDE VEUT TOUT, TRÈS VITE ET TOUT LE TEMPS.
 replique: C'EST RISQUÉ QUAND ON LE FAIT MAL.
 replique: LES MARQUES, VOUS SAVEZ, ÇA VIT, ÇA MEURT, ÇA GRANDIT.
 replique: LES GENS VEULENT CONSOMMER INTELLIGEMMENT.
-auteur: UltraGauche Force
+auteur: xsbfh
 
 # La fortune, en milliards d'euros, et la fiche sourcée qui la documente.
 fortune.montant: 1.3

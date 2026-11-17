@@ -1,5 +1,5 @@
 nom: Unité touchée
 zzfx: 1,.08,260,,.01,.07,2,1.6,-18,,,,,1.2,,.1,,.6,.02
 volume: 0.8
-auteur: UltraGauche Force
+auteur: xsbfh
 licence: CC0-1.0

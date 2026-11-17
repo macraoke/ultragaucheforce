@@ -1,4 +1,4 @@
-nom: Niveau terminé : L’Internationale par la fanfare de Bevagna, 1er mai 2007 (extrait)
+nom: Niveau terminé : L’Internationale par la fanfare de Bevagna, 1er mai 2007 (extrait modifié, converti de ogg en mp3)
 fichier: internationale.mp3
 auteur: Fanfare de Bevagna, enregistrée par Zyance
 licence: CC-BY-SA-3.0

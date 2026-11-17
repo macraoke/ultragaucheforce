@@ -19,7 +19,7 @@ replique: ON NE M'A JAMAIS FAIT CE PROCÈS.
 replique: QUAND ON RETIRE TOUT, EFFECTIVEMENT, IL RESTE DES MONOPOLES.
 replique: J'ENTENDS BEAUCOUP PARLER D'INFLUENCE, OUI, MAIS LAQUELLE ?
 replique: TF1 APPARTIENT, D'UNE CERTAINE FAÇON, AU PATRIMOINE DE CE PAYS.
-auteur: UltraGauche Force
+auteur: xsbfh
 
 # La fortune, en milliards d'euros, et la fiche sourcée qui la documente.
 # Pas de « fortune.rente » : la part détenue n'est lue que comme un pourcentage. Le montant compte Olivier et la famille.

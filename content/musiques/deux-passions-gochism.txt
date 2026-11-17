@@ -3,4 +3,4 @@ artiste: le_gochism
 url: https://soundcloud.com/le_gochism/jai-2-passions-3
 ou: jeu
 licence: tous droits réservés
-auteur: UltraGauche Force
+auteur: xsbfh

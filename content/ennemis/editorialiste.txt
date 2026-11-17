@@ -30,7 +30,7 @@ arme.taille: 10
 arme.mots: ISLAMO-GAUCHISME ! | GUERRE CIVILE ! | MILICES ! | BORDÉLISATION ! | CAMPS D'ENTRAÎNEMENT ! | VOYOUS ! | INGÉNIEURS DU CHAOS ! | POPULACE ! | BRAILLARDS !
 arme.visee: 0.4
 arme.son: mot
-auteur: UltraGauche Force
+auteur: xsbfh
 --- repos
 ..k......k..
 ...k....k...

@@ -1,4 +1,4 @@
 nom: Aïe
 zzfx: 1,.05,420,,.05,.16,2,1,-28,,,,,.3,,,,.7,.03
-auteur: UltraGauche Force
+auteur: xsbfh
 licence: CC0-1.0

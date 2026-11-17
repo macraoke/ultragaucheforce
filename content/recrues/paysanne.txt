@@ -5,7 +5,7 @@ slogan: - DE RICHES, + DE RUCHES
 slogan: GARDAREM LO LARZAC
 fiche: programme-planification-ecologique
 fiche: larzac-brebis
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 .h.........
 hhh..yyyy..

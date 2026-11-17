@@ -6,7 +6,7 @@ fiche: video-ultragauche
 pv: 2
 vitesse: 155
 saut: 3.6
-auteur: UltraGauche Force
+auteur: xsbfh
 
 # Arme : des électrons, deux par tir, qui ricochent partout.
 arme.type: tir

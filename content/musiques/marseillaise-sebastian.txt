@@ -3,4 +3,4 @@ artiste: Ed Rec
 url: https://soundcloud.com/ed-rec/la-marseillaise-sebastian
 ou: jeu
 licence: tous droits réservés
-auteur: UltraGauche Force
+auteur: xsbfh

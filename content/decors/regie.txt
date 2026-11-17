@@ -1,6 +1,6 @@
 nom: Régie
 # Le mur d'écrans et le pupitre de la régie.
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
 kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk

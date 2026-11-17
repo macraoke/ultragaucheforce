@@ -1,7 +1,7 @@
 nom: Planche
 symbole: P
 pv: 1
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 SSSSSSSSSSSSSSSS
 StSSSSSSSStSSSSS

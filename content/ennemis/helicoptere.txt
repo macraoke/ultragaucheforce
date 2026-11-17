@@ -16,7 +16,7 @@ faisceau.balayage: 80
 renfort.ennemi: gendarme-mobile
 renfort.nombre: 2
 renfort.max: 2
-auteur: UltraGauche Force
+auteur: xsbfh
 --- repos
 ....GGGGGGGGGGGGGGGGGGGGGGGGGGGG....
 ..................kk................

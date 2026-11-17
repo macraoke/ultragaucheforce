@@ -1,5 +1,5 @@
 nom: Échafaudage
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 ..Hh........................................Hh..
 ..Hh........................................Hh..

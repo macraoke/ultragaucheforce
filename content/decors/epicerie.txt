@@ -1,5 +1,5 @@
 nom: Épicerie du village
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 ...............................rrr..............................
 ............................roooooorr...........................

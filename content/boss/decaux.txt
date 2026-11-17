@@ -1,5 +1,5 @@
 # Un boss = une fortune documentée aux commandes d'une machine. Le dessin « ejecte » sert à sa sortie.
-nom: La Famille Decaux
+nom: La famille Decaux
 inspiration: Jean-Charles Decaux
 traitement: un abribus à écran publicitaire monté sur deux roues de vélo en libre-service ; le pilote s'éjecte sous une affiche
 pv: 80
@@ -18,7 +18,7 @@ replique: NOUS SOMMES TRÈS LARGEMENT PLÉBISCITÉS PAR LES CITOYENS.
 replique: NOUS SOMMES LÉGITIMES DANS L'ESPACE PUBLIC.
 replique: LA CRÉATIVITÉ EST LE CŒUR DE LA BATAILLE.
 replique: C'EST UN MÉDIA D'UNE FORMIDABLE MODERNITÉ.
-auteur: UltraGauche Force
+auteur: xsbfh
 
 # La fortune, en milliards d'euros, et la fiche sourcée qui la documente.
 fortune.montant: 3.8

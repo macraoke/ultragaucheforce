@@ -7,5 +7,5 @@ categorie: puissants
 note: Première phrase de sa déclaration dans le communiqué de presse de Somfy, publié par l'AMF.
 source.titre: Somfy — Communiqué de presse du 15 novembre 2022 : dépôt d'un projet d'offre publique d'achat simplifiée visant les actions Somfy (AMF)
 source.url: https://echanges.dila.gouv.fr/OPENDATA/AMF/ECO/2022/11/FCECO069252_20221115.pdf
-source.nature: officielle
+source.nature: militante
 verifie: 2026-11-17

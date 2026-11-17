@@ -8,7 +8,7 @@ pv: 2
 vitesse: 150
 saut: 3.6
 fiche: fortune-arnault
-auteur: UltraGauche Force
+auteur: xsbfh
 
 # Arme : des rafales de vent qui traversent les rangs.
 arme.type: tir

@@ -2,7 +2,7 @@
 nom: Acier
 symbole: A
 pv: 0
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 KKKKKKKKKKKKKKKK
 KGhhhhhhhhhhhhGK

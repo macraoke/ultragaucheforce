@@ -7,5 +7,5 @@ categorie: puissants
 note: Phrase complète : « De temps en temps, il y a l'exception, il y a le chef d'œuvre, qui vous tétanise, qui vous interpelle et là, c'est plutôt bon signe. » Page datée du 10 mai 2021.
 source.titre: Bourse de Commerce — Pinault Collection — L'interview de François Pinault
 source.url: https://www.pinaultcollection.com/fr/boursedecommerce/linterview-de-francois-pinault
-source.nature: officielle
+source.nature: militante
 verifie: 2026-11-16

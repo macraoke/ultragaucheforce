@@ -3,4 +3,4 @@ artiste: Kevin MacLeod
 url: https://soundcloud.com/trackistador/kevin-macleod-thatched-villagers
 ou: millevaches
 licence: CC-BY-4.0
-auteur: UltraGauche Force
+auteur: xsbfh

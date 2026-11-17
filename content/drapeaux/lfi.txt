@@ -1,7 +1,7 @@
 nom: Drapeau de La France insoumise (stylisé)
 description: Le mouvement, tel qu'on le croise dans les cortèges.
 proximite: 3
-auteur: UltraGauche Force
+auteur: xsbfh
 ressource.1.titre: L'Avenir en commun, édition 2027 : le programme en ligne
 ressource.1.url: https://melenchon2027.fr/programme/livre/
 ressource.1.nature: militante

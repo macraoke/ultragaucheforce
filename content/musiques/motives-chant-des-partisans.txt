@@ -3,4 +3,4 @@ artiste: Motives
 url: https://soundcloud.com/motives-official/motives-le-chant-des-partisans
 ou: jeu
 licence: tous droits réservés
-auteur: UltraGauche Force
+auteur: xsbfh

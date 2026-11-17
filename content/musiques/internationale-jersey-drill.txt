@@ -3,4 +3,4 @@ artiste: lest
 url: https://soundcloud.com/user-96718396/linternationale-xtrm-jersey-drill-remix
 ou: jeu
 licence: tous droits réservés
-auteur: UltraGauche Force
+auteur: xsbfh

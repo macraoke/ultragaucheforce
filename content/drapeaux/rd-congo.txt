@@ -1,7 +1,7 @@
 nom: Drapeau de la RD Congo
 description: Dans l'est du pays, de graves violences, possibles crimes de guerre et crimes contre l'humanité, « commises par toutes les parties », selon l'ONU (2025).
 proximite: 2
-auteur: UltraGauche Force
+auteur: xsbfh
 ressource.1.titre: Des crimes de guerre auraient été commis par tous les belligérants dans l'est de la RDC — ONU Info
 ressource.1.url: https://news.un.org/fr/story/2025/09/1157412
 ressource.1.nature: officielle

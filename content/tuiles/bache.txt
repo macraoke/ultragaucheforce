@@ -1,7 +1,7 @@
 nom: Bâche de bassine
 symbole: C
 pv: 1
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 gggggggggggggggg
 KKKKkKKKKKkKKKKK

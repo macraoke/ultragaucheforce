@@ -1,4 +1,4 @@
 nom: Attaque spéciale
 zzfx: 1.2,.05,150,.02,.15,.4,2,1.5,14,,,,,.4,10,,.05,.7,.05
-auteur: UltraGauche Force
+auteur: xsbfh
 licence: CC0-1.0

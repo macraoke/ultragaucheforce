@@ -24,7 +24,7 @@ replique: VOUS SAVEZ DÉJÀ QUE DE TOUTE FAÇON, À LA FIN, VOUS PERDEZ.
 replique: CE QUI S'EST PASSÉ, C'EST TOUT À FAIT NORMAL
 replique: QUI SONT LES JEUNES QUI MANIFESTENT, QUI BLOQUENT, QUI FONT LA GRÈVE ?
 replique: QUI GALÈRE LE PLUS ? QUI ?!
-auteur: UltraGauche Force
+auteur: xsbfh
 --- repos
 ....TTTT......kkkk..
 ...TTTTTT....kkkkkk.

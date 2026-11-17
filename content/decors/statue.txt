@@ -1,5 +1,5 @@
 nom: Statue de la République
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 ........................................
 ........................................

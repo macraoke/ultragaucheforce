@@ -8,7 +8,7 @@ vitesse: 130
 saut: 2.6
 largeur: 14
 hauteur: 12
-auteur: UltraGauche Force
+auteur: xsbfh
 
 # Arme : un coup de cornes, très court, qui traverse les rangs.
 arme.type: tir

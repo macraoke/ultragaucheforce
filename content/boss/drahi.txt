@@ -18,7 +18,7 @@ replique: J'ÉTAIS EN TRAIN DE FAIRE UN CHÈQUE DE 14 MILLIARDS.
 replique: JE N'INTERVIENS PAS DANS LE CONTENU.
 replique: JE PENSE QUE PERSONNE NE GAGNE DE L'ARGENT DANS LA PRESSE AUJOURD'HUI.
 replique: EN TANT QU'EXPERT DES TÉLÉCOMS, JE NUMÉRISE SOTHEBY'S ET CELA VA NOUS FAIRE GAGNER TROIS FOIS PLUS D'ARGENT.
-auteur: UltraGauche Force
+auteur: xsbfh
 
 # La fortune, en milliards d'euros, et la fiche sourcée qui la documente.
 fortune.montant: 7.2

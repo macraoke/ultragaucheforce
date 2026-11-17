@@ -16,7 +16,7 @@ replique: LE FUTUR SE CONSTRUIT AVEC CE QUI DURE, NOUS EN SOMMES CONVAINCUS.
 replique: NOS SAVOIR-FAIRE SONT LE FRUIT D'UNE TRANSMISSION GÉNÉRATIONNELLE.
 replique: CET HÉRITAGE NOUS OBLIGE ET NOUS INSPIRE.
 replique: PRÉSERVER ET TRANSMETTRE NOTRE HÉRITAGE.
-auteur: UltraGauche Force
+auteur: xsbfh
 
 # La fortune, en milliards d'euros, et la fiche sourcée qui la documente.
 fortune.montant: 1.55

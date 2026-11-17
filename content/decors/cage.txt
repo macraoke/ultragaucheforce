@@ -1,6 +1,6 @@
 # Cellule de garde à vue. « image » = fermée, « image2 » = ouverte.
 nom: Garde à vue
-auteur: UltraGauche Force
+auteur: xsbfh
 --- image
 HHHHHHHHHHHHHHHH
 HhhhhhhhhhhhhhhH

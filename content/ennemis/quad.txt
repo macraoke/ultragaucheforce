@@ -10,7 +10,7 @@ fin: panne
 largeur: 22
 hauteur: 14
 fiche: sainte-soline-dispositif
-auteur: UltraGauche Force
+auteur: xsbfh
 --- repos
 .......bbbb....bbbb.......
 ......bkkkb...bkkkb.......

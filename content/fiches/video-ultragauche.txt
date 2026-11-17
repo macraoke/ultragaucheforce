@@ -1,7 +1,7 @@
 titre: La dernière transformation
 theme: democratie
-texte: Une vidéo parodique s'ouvre sur : « Vous le connaissiez de gauche, puis d'extrême gauche, découvrez en exclusivité la dernière transformation de Jean-Luc Mélenchon : l'ultra gauche ». Parmi ses formes : Magma gauche, les Dinos gauchistes, Gauche atomique.
-portee: Une vidéo publiée sur Instagram, dont l'auteur n'a pas été retrouvé. La page ne se lit pas sans compte : sans connexion, elle n'affiche que « Instagram ». Les mots viennent de la description qu'en a faite un mainteneur du jeu, qui en répond.
+texte: Une vidéo parodique s'ouvre sur : « Vous le connaissiez de gauche, puis d'extrême gauche, découvrez en exclusivité la dernière transformation de Jean-Luc Mélenchon : l'ultra gauche ». Parmi ses formes : le Sans dent, Magma gauche, les Dinos gauchistes, Gauche atomique.
+portee: Une vidéo Instagram, dont l'auteur n'a pas été retrouvé. Ses mots ont été transmis par l'auteur du jeu, qui l'a vue ; la page n'a pas pu être relue (Instagram exige un compte).
 periode: date de publication non retrouvée
 source.titre: Instagram — vidéo De_fLVwlEm-
 source.url: https://www.instagram.com/reels/De_fLVwlEm-/
