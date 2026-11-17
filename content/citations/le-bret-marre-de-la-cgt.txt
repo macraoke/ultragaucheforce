@@ -1,0 +1,11 @@
+texte: y en a marre des grèves, y en a marre de la CGT.
+auteur: Gauthier Le Bret
+fonction: chroniqueur, CNews
+date: 2023-01-14
+contexte: Avant la première journée contre la réforme des retraites : si les grèves privent les Français de transport et d’essence, « l’opinion française pourrait s’inverser […] ou du moins dire : y en a marre des grèves, y en a marre de la CGT. »
+categorie: diabolisation
+note: Il prête ces mots à « l’opinion », au conditionnel. Médiacritiques n° 46, pages « Petit lexique ».
+source.titre: Acrimed — Médiacritiques n° 46 (avril-juin 2023)
+source.url: https://www.acrimed.org/IMG/pdf/mediacritiques46.pdf
+source.nature: associative
+verifie: 2026-11-17

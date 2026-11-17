@@ -1,0 +1,10 @@
+texte: Paris est une ville en état de siège
+auteur: Laurence Ferrari
+fonction: présentatrice de « Punchline », CNews
+date: 2018-12-07
+contexte: La veille de l’acte IV des gilets jaunes, en présentant le dispositif policier avec blindés.
+categorie: diabolisation
+source.titre: Acrimed — Gilets jaunes : BFM-TV et CNews préparent le « siège » de Paris
+source.url: https://www.acrimed.org/Gilets-jaunes-BFM-TV-et-CNews-preparent-le-siege
+source.nature: associative
+verifie: 2026-11-17

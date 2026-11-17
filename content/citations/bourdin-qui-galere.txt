@@ -1,0 +1,11 @@
+texte: Qui galère le plus ? Qui ?!
+auteur: Jean-Jacques Bourdin
+fonction: intervieweur, BFM-TV
+date: 2019-12-10
+contexte: À Olivier Besancenot, pendant la grève contre la réforme des retraites : « Le salarié de la RATP galère ? le salarié de la SNCF galère ? Ou celui ou celle qui fait 20 km à pied pour aller bosser ? »
+categorie: diabolisation
+note: Le tract d’Acrimed date l’entretien du « 10/12 » sans l’année ; c’est 2019, l’année de la mobilisation du 17 décembre contre la réforme d’Édouard Philippe que le tract appelle à rejoindre.
+source.titre: Acrimed — tract « Les chiens de garde montrent les dents… on ne lâche rien ! »
+source.url: https://www.acrimed.org/IMG/pdf/tract_17_decembre.pdf
+source.nature: associative
+verifie: 2026-11-17

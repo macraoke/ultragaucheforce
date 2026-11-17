@@ -1,0 +1,10 @@
+texte: sous emprise de La France insoumise
+auteur: Éric Naulleau
+fonction: chroniqueur, CNews
+date: 2023-09-27
+contexte: Selon lui, les médias seraient « sous emprise de La France insoumise ».
+categorie: diabolisation
+source.titre: Acrimed — Médiacritiques n° 55 (été 2025)
+source.url: https://www.acrimed.org/IMG/pdf/mediacritiques55.pdf
+source.nature: associative
+verifie: 2026-11-17

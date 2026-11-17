@@ -1,0 +1,10 @@
+texte: Est-ce que vous condamnez ces violences, déjà ?
+auteur: Myriam Encaoua
+fonction: journaliste, Franceinfo
+date: 2026-10-01
+contexte: À Marius Mesnil, de l’Union syndicale lycéenne, qui venait de lui dire : « vous n’avez presque pas parlé des revendications justement ».
+categorie: diabolisation
+source.titre: Acrimed — Mouvement lycéen : les médias refusent la critique
+source.url: https://www.acrimed.org/Mouvement-lyceen-les-medias-refusent-la-critique
+source.nature: associative
+verifie: 2026-11-17

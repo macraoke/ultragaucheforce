@@ -1,0 +1,10 @@
+texte: Il me semble que depuis trois semaines on les a beaucoup entendus.
+auteur: Bruno Dive
+fonction: journaliste, sur le plateau de « Punchline », CNews
+date: 2018-12-07
+contexte: Après l’interview d’une gilet jaune qui disait : « on veut se faire entendre ».
+categorie: diabolisation
+source.titre: Acrimed — Gilets jaunes : BFM-TV et CNews préparent le « siège » de Paris
+source.url: https://www.acrimed.org/Gilets-jaunes-BFM-TV-et-CNews-preparent-le-siege
+source.nature: associative
+verifie: 2026-11-17

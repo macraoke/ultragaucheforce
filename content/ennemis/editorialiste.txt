@@ -1,4 +1,5 @@
-# Ses mots viennent de `content/citations/` ; ses répliques sont de vrais bandeaux de chaînes d'info.
+# Ses mots viennent de `content/citations/` ; ses répliques sont de vrais bandeaux de chaînes d'info
+# et les mots d'éditorialistes et d'intervieweurs à l'antenne, chacun avec sa fiche dans `content/citations/`.
 nom: Éditorialiste
 pv: 2
 vitesse: 14
@@ -11,6 +12,14 @@ largeur: 12
 hauteur: 16
 replique: RETRAITES : RÉVOLTÉS OU RÉSIGNÉS ?
 replique: 10 SEPTEMBRE : BLOQUER TOUT POUR GAGNER RIEN ?
+replique: EST-CE QUE VOUS CONDAMNEZ CES VIOLENCES, DÉJÀ ?
+replique: CONCRÈTEMENT COMMENT ON EN SORT EN FAIT ?
+replique: METTRE LES PANCARTES ENTRE NOTRE REPORTER ET LA CAMÉRA, C'EST NON.
+replique: RENVOYER LA MANIFESTATION AUX PROFESSIONNELS DE LA MANIFESTATION
+replique: CE N'EST PAS LE PEUPLE QUI A DÉFILÉ MAIS LA POPULACE
+replique: PLUS C'EST BÊTE, PLUS ÇA PEUT MARCHER !
+replique: POURQUOI ON FAIT GRÈVE TOUT LE TEMPS ?
+replique: ILS SONT TRÈS PEU NOMBREUX, MAIS ILS SONT TRÈS ORGANISÉS.
 arme.type: tir
 arme.cadence: 0.7
 arme.vitesse: 85
@@ -18,7 +27,7 @@ arme.portee: 250
 arme.degats: 1
 arme.terrain: 0
 arme.taille: 10
-arme.mots: ISLAMO-GAUCHISME ! | GUERRE CIVILE ! | MILICES ! | BORDÉLISATION ! | CAMPS D'ENTRAÎNEMENT ! | VOYOUS ! | INGÉNIEURS DU CHAOS !
+arme.mots: ISLAMO-GAUCHISME ! | GUERRE CIVILE ! | MILICES ! | BORDÉLISATION ! | CAMPS D'ENTRAÎNEMENT ! | VOYOUS ! | INGÉNIEURS DU CHAOS ! | POPULACE ! | BRAILLARDS !
 arme.son: mot
 auteur: UltraGauche Force
 --- repos

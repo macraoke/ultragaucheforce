@@ -1,0 +1,12 @@
+texte: braillards, conchieurs, coquefredouilles, marchands de balivernes
+auteur: Franz-Olivier Giesbert
+fonction: éditorialiste au Point
+date: 2019-12-13
+contexte: Dans son éditorial du Point, pendant la grève contre la réforme des retraites, à propos de ceux qui se sont « mis en rang derrière la CGT ».
+categorie: diabolisation
+mot: BRAILLARDS
+note: Lu dans Médiacritiques n° 34 et dans le tract d’Acrimed du 17 décembre 2019 ; l’éditorial du Point n’a pas été relu.
+source.titre: Acrimed — Médiacritiques n° 34 (janvier-mars 2020)
+source.url: https://www.acrimed.org/IMG/pdf/mediacritiques34.pdf
+source.nature: associative
+verifie: 2026-11-17

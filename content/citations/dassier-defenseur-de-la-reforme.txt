@@ -1,0 +1,10 @@
+texte: Moi, je suis défenseur de la réforme
+auteur: Jean-Claude Dassier
+fonction: éditorialiste, CNews
+date: 2019-12-16
+contexte: Pendant la grève contre la réforme des retraites de 2019, la veille de la manifestation du 17 décembre.
+categorie: diabolisation
+source.titre: Acrimed — Médiacritiques n° 34 (janvier-mars 2020)
+source.url: https://www.acrimed.org/IMG/pdf/mediacritiques34.pdf
+source.nature: associative
+verifie: 2026-11-17

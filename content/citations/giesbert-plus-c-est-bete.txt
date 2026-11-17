@@ -1,0 +1,10 @@
+texte: Plus c'est bête, plus ça peut marcher !
+auteur: Franz-Olivier Giesbert
+fonction: éditorialiste, sur le plateau de Ruth Elkrief, BFM-TV
+date: 2018-04-06
+contexte: À propos des mobilisations étudiantes contre Parcoursup, après Philippe Val : « Quand il s’agit des facs, le discours n’a pratiquement pas d’importance. »
+categorie: diabolisation
+source.titre: Acrimed — Mobilisations étudiantes : les éditocrates face au péril jeune
+source.url: https://www.acrimed.org/Mobilisations-etudiantes-les-editocrates-face-au
+source.nature: associative
+verifie: 2026-11-17

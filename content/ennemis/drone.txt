@@ -1,5 +1,6 @@
 # Il ne blesse personne : il cadre le héros, et la panique monte.
 # Clin d'œil à « We Become What We Behold » de Nicky Case.
+# La chaîne est inventée, ses répliques non : de vrais titres et bandeaux, relevés dans `content/manchettes/`.
 nom: Drone de PANIQUE TV
 pv: 1
 vitesse: 60
@@ -12,6 +13,14 @@ camp: medias
 largeur: 14
 hauteur: 9
 fiche: drones-manifestations
+replique: LYCÉENS, GILETS JAUNES, CASSEURS… LE DÉBUT D'UN EMBRASEMENT ?
+replique: LA FRANCE SOUS LE CHOC
+replique: AU CŒUR DES VIOLENCES
+replique: RETRAITES : BORNE LÂCHE DU LEST
+replique: RETRAITES : BORNE MET DE L'EAU DANS SON VIN
+replique: GRÈVE À MARSEILLE : LA GALÈRE DES PARENTS D'ÉLÈVES
+replique: RETRAITES : LE RN PEINE À SE FAIRE ENTENDRE ?
+replique: MARINE LE PEN, LA GRANDE GAGNANTE DE LA COLÈRE SOCIALE ?
 auteur: UltraGauche Force
 --- repos
 GGGG......GGGG

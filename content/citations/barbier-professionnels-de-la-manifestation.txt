@@ -1,0 +1,10 @@
+texte: renvoyer la manifestation aux professionnels de la manifestation
+auteur: Christophe Barbier
+fonction: éditorialiste, « C dans l’air », France 5
+date: 2026-10-22
+contexte: Débat sur les interdictions de manifester. Il ajoute : « C’est un métier », après avoir expliqué que limiter les manifestations, « c’est pour rendre service aux manifestants et aux organisateurs ».
+categorie: diabolisation
+source.titre: Acrimed — « C dans l’air » et la mobilisation lycéenne : priorités et cécités éditoriales
+source.url: https://www.acrimed.org/C-dans-l-air-et-la-mobilisation-lyceenne
+source.nature: associative
+verifie: 2026-11-17

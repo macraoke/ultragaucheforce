@@ -1,4 +1,5 @@
-# Un plateau : il ne bouge pas, il cadre, et la panique monte. Sa réplique est un vrai bandeau de la chaîne.
+# Un plateau : il ne bouge pas, il cadre, et la panique monte. Ses répliques sont de vrais bandeaux de la chaîne
+# et les mots de son plateau, chacun avec sa fiche dans `content/citations/`.
 nom: Plateau de CNews
 pv: 6
 vitesse: 0
@@ -11,6 +12,16 @@ camp: medias
 largeur: 32
 hauteur: 22
 replique: LFI : LE NAZISME EST-IL PASSÉ À L'EXTRÊME GAUCHE ?
+replique: PARIS EST UNE VILLE EN ÉTAT DE SIÈGE
+replique: IL ME SEMBLE QUE DEPUIS TROIS SEMAINES ON LES A BEAUCOUP ENTENDUS.
+replique: ON EST DANS UN MOUVEMENT TOTALEMENT IRRATIONNEL
+replique: MOI, JE SUIS DÉFENSEUR DE LA RÉFORME
+replique: Y EN A MARRE DES GRÈVES, Y EN A MARRE DE LA CGT.
+replique: LA FRANCE INDIGNE
+replique: JEAN-LUC MÉLENCHON BÉNÉFICIE D'UNE IMMUNITÉ MÉDIATIQUE SIDÉRANTE
+replique: SOUS EMPRISE DE LA FRANCE INSOUMISE
+replique: VAUTOURS DU CHAOS
+replique: LA RESPONSABILITÉ DE LFI
 fiche: cnews-amendes-juillet-2024
 fiche: cnews-amendes-novembre-2024
 auteur: UltraGauche Force

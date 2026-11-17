@@ -1,0 +1,10 @@
+texte: Jean-Luc Mélenchon bénéficie d'une immunité médiatique sidérante
+auteur: Pascal Praud
+fonction: présentateur, CNews
+date: 2025-05-02
+contexte: À l’antenne de CNews. Acrimed rappelle qu’il dénonçait déjà en 2022 la « douceur de l’espace médiatique » à l’égard de Jean-Luc Mélenchon.
+categorie: diabolisation
+source.titre: Acrimed — Médiacritiques n° 55 (été 2025)
+source.url: https://www.acrimed.org/IMG/pdf/mediacritiques55.pdf
+source.nature: associative
+verifie: 2026-11-17
