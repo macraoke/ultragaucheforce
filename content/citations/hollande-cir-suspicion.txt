@@ -1,0 +1,12 @@
+texte: Il faut en finir avec le principe de suspicion qui existe partout et qui doit être transformé en principe de confiance.
+auteur: François Hollande
+fonction: président de la République
+date: 2014-04-28
+contexte: Devant les préfets et les directeurs des services de l'État, à Paris, à propos des contrôles qui suivent chaque versement du crédit d'impôt recherche.
+categorie: puissants
+mot:
+note: Juste avant, il rapporte la question d'un chef d'entreprise d'Aquitaine contrôlé à chacune de ses dix demandes : « Est-ce que je peux espérer que la 11ème fois, j'aurai le versement sans le contrôle ? » Juste après : « Ça ne veut pas dire qu'il n'y ait pas de contrôle. »
+source.titre: Élysée — Déclaration de M. François Hollande, Président de la République, sur la politique en faveur de l'emploi, à Paris le 28 avril 2014
+source.url: https://www.elysee.fr/francois-hollande/2014/04/28/declaration-de-m-francois-hollande-president-de-la-republique-sur-la-politique-en-faveur-de-lemploi-a-paris-le-28-avril-2014
+source.nature: officielle
+verifie: 2026-11-17
