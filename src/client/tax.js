@@ -246,6 +246,15 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pi
       mark.style.top = `${y}px`;
     };
     addEventListener('resize', placeMark);
+    const flying = new Set(); // les liasses d'or en vol, hors du panneau
+    /** L'écran quitté, au clic final ou autrement : plus d'écouteur, plus de liasses en vol. */
+    const leave = () => {
+      removeEventListener('resize', placeMark);
+      flying.forEach((bill) => bill.remove());
+      flying.clear();
+      watch.disconnect();
+    };
+    const watch = new MutationObserver(() => { if (!panel.isConnected) leave(); });
 
     // Avant la taxe : sa fortune.
     const first = step('fortune', `La fortune ${de(owner)}`, h('p', { className: 'montant' }, `${billions(boss.fortune.montant)} d’euros`),
@@ -298,6 +307,7 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pi
         bill.style.left = `${start.x}px`;
         bill.style.top = `${start.y}px`;
         document.body.append(bill);
+        flying.add(bill);
         const dx = end.x - start.x;
         const dy = end.y - start.y;
         const flight = bill.animate([
@@ -307,6 +317,7 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pi
         ], { duration: 700, delay: i * 90, easing: 'ease-in', fill: 'both' });
         flight.onfinish = () => {
           bill.remove();
+          flying.delete(bill);
           if (i === STREAM - 1) receive();
         };
       }
@@ -316,7 +327,7 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pi
       ready = performance.now() + GUARD;
       audio?.play('clic');
       if (taxed) {
-        removeEventListener('resize', placeMark);
+        leave();
         root.replaceChildren();
         root.hidden = true;
         return resolve({ learned: taxFiches(bundle, boss, [scale, use].filter(Boolean)), said });
@@ -361,6 +372,7 @@ export function showTaxScene(root, bundle, boss, { audio = null, hero = null, pi
     };
 
     root.replaceChildren(panel);
+    watch.observe(root, { childList: true });
     document.body.dataset.ecran = 'taxe';
     root.hidden = false;
     paint();

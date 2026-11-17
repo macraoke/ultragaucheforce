@@ -270,7 +270,7 @@ html.pivote body {
 }
 #scene { position: relative; flex: 1; min-height: 0; overflow: hidden; }
 #scene canvas { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
-#textes { pointer-events: none; box-shadow: 2px 2px 0 var(--nuit); }
+#textes { pointer-events: none; }
 
 /* HUD : lisible, discret, jamais au milieu de l'action */
 #hud { position: absolute; inset: 0; pointer-events: none; font: 900 clamp(.75rem, 2.2vmin, 1.1rem)/1 var(--titre); letter-spacing: .03em; text-transform: uppercase; color: var(--blanc); text-shadow: 0 2px 0 var(--nuit), 2px 0 0 var(--nuit), -2px 0 0 var(--nuit), 0 -2px 0 var(--nuit); z-index: 6; }
@@ -343,7 +343,7 @@ body.sobre #bandeau *, body.sobre #bandeau.entre * { animation: none; }
 @media (prefers-reduced-motion: reduce) { #bandeau *, #bandeau.entre * { animation: none; } }
 
 /* Les notes : une à la fois, sous le HUD, à la même échelle que lui ; jamais sur la barre de vie du boss. */
-#toasts { position: absolute; left: 10px; top: 4.6em; z-index: 6; display: grid; justify-items: start; gap: 6px; max-width: min(34%, 360px); font-size: clamp(.75rem, 2.2vmin, 1.1rem); pointer-events: none; box-shadow: 2px 2px 0 var(--nuit); }
+#toasts { position: absolute; left: 10px; top: 4.6em; z-index: 6; display: grid; justify-items: start; gap: 6px; max-width: min(34%, 360px); font-size: clamp(.75rem, 2.2vmin, 1.1rem); pointer-events: none; }
 body:not(.tactile) #hud:has(> #hud-boss:not([hidden])) ~ #toasts { top: 6.6em; }
 /*
  * La note d'une pancarte dit son texte en entier, sur deux ou trois lignes : elle est plus large, et se pose sous tout le
@@ -360,7 +360,7 @@ body[data-ecran] #toasts { display: none; } /* un écran est ouvert : les notes 
 /* Commandes tactiles : l'image remplit l'écran, tout l'écran répond. Le manche et les trois cibles ne sont que des repères. */
 #tactile { display: none; }
 body.tactile.en-jeu #tactile { display: block; position: absolute; inset: 0; z-index: 5; }
-#tactile b, #tactile .manche { position: absolute; transform: translate(-50%, -50%); border-radius: 50%; pointer-events: none; box-shadow: 2px 2px 0 var(--nuit); }
+#tactile b, #tactile .manche { position: absolute; transform: translate(-50%, -50%); border-radius: 50%; pointer-events: none; }
 #tactile b { width: 21vmin; height: 21vmin; display: grid; place-items: center; font: 900 clamp(.7rem, 3.6vmin, 1rem)/1 var(--titre); letter-spacing: .04em; color: rgb(244 244 244 / .75); background: rgb(26 28 44 / .22); border: 2px solid rgb(244 244 244 / .4); }
 #tactile b[data-action='special'] { width: 15vmin; height: 15vmin; color: rgb(246 194 28 / .9); border-color: rgb(246 194 28 / .55); }
 #tactile b.appuye { background: rgb(246 194 28 / .6); color: var(--nuit); border-color: var(--nuit); }
