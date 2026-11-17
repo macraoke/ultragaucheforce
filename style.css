@@ -484,6 +484,9 @@ html.bas .fin .debloquees { margin-top: 6px; padding-bottom: 4px; }
 html.bas .fin .debloquees { padding-top: 2px; }
 html.bas .fin .debloquees .carte-mini { flex-basis: 58px; height: 64px; grid-template-rows: auto 34px; gap: 3px; padding: 3px; }
 html.bas .fin .debloquees .carte-mini .nom { display: none; }
+/* Une pancarte, un bandeau, un mot : une carte plus large, et deux lignes, celles que tient la vignette de 30 pixels. */
+html.bas .fin .debloquees .carte-mini:is(.pancartes, .manchettes, .citations) { flex-basis: 96px; }
+html.bas .fin .debloquees .carte-mini :is(.mot, .ecrit) { -webkit-line-clamp: 2; }
 html.bas .fin .pied { margin-top: 6px; }
 html.bas .fin .pied button { padding: .45em .8em; }
 html.bas .fin .pied button.gros { font-size: 1.15rem; }
@@ -884,7 +887,12 @@ article.carte .genre.rarete-3 { background: var(--or); color: var(--nuit); }
 .carte-mini.pancartes .vignette { background: var(--blanc); border: 2px solid var(--nuit); transform: rotate(-2deg); }
 .carte-mini.manchettes .vignette { background: var(--rouge); color: var(--blanc); }
 .carte-mini.fiches .vignette { background: #257953; color: var(--blanc); }
-.carte-mini .mot, .carte-mini .ecrit { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; padding: 2px 4px; font: 900 .62rem/1.05 var(--titre); text-transform: uppercase; overflow-wrap: anywhere; }
+/*
+ * Le texte d'une pancarte, d'un bandeau ou d'un mot : des mots entiers, autant de lignes que la vignette en tient (cinq
+ * lignes de 1,05 em dans ses 56 pixels), puis « … ». Sans marge haute ni basse : la ligne suivante ne dépasse pas.
+ * Le texte entier est sur la carte ouverte.
+ */
+.carte-mini .mot, .carte-mini .ecrit { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 5; overflow: hidden; padding: 0 4px; font: 900 .62rem/1.05 var(--titre); text-transform: uppercase; overflow-wrap: break-word; }
 .carte-mini .signe { font: 900 2rem/1 var(--titre); }
 .carte-mini .nom { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; align-self: center; overflow-wrap: anywhere; }
 .carte-mini .nouveau { position: absolute; top: 6px; right: -24px; transform: rotate(35deg); padding: 3px 26px; background: var(--rouge); color: var(--blanc); font: 900 .5rem/1 var(--titre); letter-spacing: .08em; text-transform: uppercase; }
@@ -956,7 +964,14 @@ body.tactile .biblio .onglets button, body.tactile .biblio .barre button { min-h
 .choix-heros .inconnu canvas { filter: brightness(0) opacity(.55); }
 html.bas .choix-heros { margin: 6px 0 8px; }
 html.bas .choix-heros > * { width: 76px; padding: 4px 2px; }
+/*
+ * Écran bas : seul le héros choisi garde son nom sous son portrait, sur une ligne (sa case s'élargit au besoin) ; les
+ * autres, et les « ??? », se taisent. Le carton n'y perd qu'une ligne de hauteur.
+ */
+html.bas .choix-heros { align-items: flex-start; }
 html.bas .choix-heros > * span { display: none; }
+html.bas .choix-heros > .choisi { width: auto; min-width: 76px; gap: 1px; padding: 2px 6px; }
+html.bas .choix-heros > .choisi span { display: block; white-space: nowrap; }
 
 .carton .portrait { position: relative; }
 .carton .plus-un { position: absolute; top: -.35em; right: -.3em; font: 900 clamp(2.6rem, 13vmin, 6.5rem)/1 var(--titre); color: var(--or); -webkit-text-stroke: clamp(3px, .8vmin, 6px) var(--nuit); paint-order: stroke fill; text-shadow: 5px 5px 0 var(--rouge); transform: rotate(9deg); animation: plus-un .5s cubic-bezier(.2, 1.9, .4, 1) .7s both; }

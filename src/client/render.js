@@ -89,12 +89,15 @@ export class Renderer {
     this.scale = 2;
     this.ratio = 3; // pixels CSS par pixel du monde (3 sur ordinateur, 5/3 sur téléphone)
     this.hudBottom = 0; // où descend le HUD, en pixels CSS depuis le haut (main.js le mesure)
+    this.floorBand = 0; // la hauteur du bandeau quand il est en bas de l'image, en pixels CSS (main.js le mesure)
     this.groups = new Map(); // à chaque image, où chaque genre de texte a déjà été écrit pour un groupe d'unités (`first`)
     this.lastSlogan = -Infinity;
     this.propSay = new WeakMap(); // accessoire en entier dans l'image → son étiquette est-elle écrite (muette → écrite, jamais l'inverse)
     this.propSpot = new WeakMap(); // accessoire → { dx, dy } : son étiquette, écartée d'une gêne, tant qu'il est à l'écran (`placeTags`)
     this.layout = null; // où s'écrit l'étiquette de chaque accessoire du niveau (`tagLayout`)
     this.propHidden = new WeakSet(); // accessoires cachés sous la bande du HUD : sans étiquette tant qu'ils n'en sont pas sortis
+    this.gainMoved = new WeakMap(); // recrue → { dx, dy } : son gain, écarté d'une gêne, tant qu'elle est à l'écran (`gainSpot`)
+    this.gainHidden = new WeakSet(); // recrues cachées sous la bande du HUD : sans gain tant qu'elles n'en sont pas sorties
     this.held = new WeakMap(); // porteur de pancarte du cortège → { up, since, label } : levée ou baissée, depuis quand
     this.raised = new Set(); // les porteurs dont la pancarte est levée à cette image
     this.particles = [];
@@ -1041,8 +1044,60 @@ export class Renderer {
     const rows = s.image2 && Math.floor(r.animTime * 3) % 2 ? s.image2 : s.image;
     this.actor(r, rows, { flip: false, dy: Math.round(Math.sin(this.clock * 5 + r.x) * 1) });
     const gain = r.def.multiplie > 0 ? `× ${String(r.def.multiplie).replace('.', ',')}` : `+ ${r.def.apport}`;
-    this.reserve(gain, r.x + r.w / 2 - this.cx, r.y - 12 - this.cy, 8, 0);
-    this.label(gain, r.x + r.w / 2 - this.cx, r.y - 12 - this.cy, { size: 8, color: '#1a1c2c', bg: '#f6c21c' });
+    const spot = this.gainSpot(r, gain);
+    if (spot) this.label(gain, spot.x, spot.y, { size: 8, color: '#1a1c2c', bg: '#f6c21c' });
+  }
+
+  /**
+   * Où s'écrit le gain d'une recrue, à l'écran : au-dessus de sa tête, sur rien de ce qui est déjà posé (le panneau lu,
+   * l'étiquette d'un accessoire, l'écriture d'un décor, le gain d'une voisine), jamais sous la bande du HUD, jamais sur
+   * elle. Gêné là, il monte d'un cran, sinon il passe sous ses pieds ; il y reste tant qu'elle est à l'écran, comme une
+   * étiquette (`placeTags`) : pas de retour d'un saut quand la gêne s'en va. Sa place est réservée : les textes
+   * flottants et les pancartes du cortège passent autour. Une recrue si haut que même sous ses pieds son gain serait
+   * sous la bande du HUD n'en a pas, comme un accessoire caché ; sans aucune place libre, il attend qu'il y en ait une
+   * (null : rien à écrire à cette image).
+   */
+  gainSpot(r, text) {
+    const x = r.x + r.w / 2 - this.cx;
+    const y = r.y - 12 - this.cy;
+    const body = { x0: r.x - this.cx, x1: r.x + r.w - this.cx, y0: r.y - this.cy, y1: r.y + r.h - this.cy };
+    if (body.x1 < -TAG_OUT || body.x0 > this.viewW + TAG_OUT || body.y1 < -TAG_OUT || body.y0 > this.viewH + TAG_OUT) {
+      this.gainMoved.delete(r); // loin de l'image : sa place s'oublie
+      return { x, y };
+    }
+    // Sa place la plus basse (un cran sous ses pieds) passe sous la bande du HUD : pas de gain. Il revient quand elle
+    // en sort avec deux pixels d'air : une caméra qui sautille ne le fait pas clignoter.
+    const ceiling = this.ceiling();
+    const step = this.fit(8) * 1.1 + 7; // la hauteur de sa boîte (`textBox`), plus un pixel
+    const lowest = body.y1 + 1 + step;
+    if (lowest < ceiling) this.gainHidden.add(r);
+    else if (lowest >= ceiling + 2) this.gainHidden.delete(r);
+    if (this.gainHidden.has(r)) return null;
+    const under = r.h + 16; // le haut de sa boîte juste sous ses pieds
+    if (this.outside(text, x, y, 8, 0) && this.outside(text, x, y + under, 8, 0)) {
+      const kept = this.gainMoved.get(r) ?? { dx: 0, dy: 0 }; // hors de la vue : ni mesuré, ni déplacé
+      return { x: x + kept.dx, y: y + kept.dy };
+    }
+    const base = this.textBox(text, x, y, 8, 0);
+    const at = (s) => ({ x0: base.x0 + s.dx, x1: base.x1 + s.dx, y0: base.y0 + s.dy, y1: base.y1 + s.dy });
+    const floor = this.floor();
+    const free = (s) => {
+      const box = at(s);
+      return box.y0 >= ceiling && box.y1 <= floor && !covers(box, body)
+        && !this.boxes.some((b) => box.x0 < b.x1 && box.x1 > b.x0 && box.y0 < b.y1 && box.y1 > b.y0);
+    };
+    const home = { dx: 0, dy: 0 };
+    const moved = this.gainMoved.get(r);
+    let spot = (moved && free(moved) ? moved : null) ?? (free(home) ? home : null);
+    if (spot === home) this.gainMoved.delete(r); // sa place écartée n'est plus bonne (hors de la vue) : il revient chez lui
+    if (!spot) {
+      spot = [{ dx: 0, dy: -step }, { dx: 0, dy: under }, { dx: 0, dy: under + step }, { dx: 0, dy: under + 2 * step }]
+        .find(free);
+      if (!spot) return null; // aucune place libre : pas de gain à cette image, plutôt que sur un autre texte
+      this.gainMoved.set(r, spot);
+    }
+    this.boxes.push(at(spot));
+    return { x: x + spot.dx, y: y + spot.dy };
   }
 
   /**
@@ -1227,14 +1282,16 @@ export class Renderer {
       if (this.propHidden.has(t.p)) continue;
       const base = this.textBox(t.text, t.x, t.y, t.opts.size, 0);
       const at = (s) => ({ x0: base.x0 + s.dx, x1: base.x1 + s.dx, y0: base.y0 + s.dy, y1: base.y1 + s.dy });
+      const floor = this.floor();
       const free = (s) => {
         const box = at(s);
-        return box.y0 >= ceiling && !arts.some((a) => covers(box, a))
+        return box.y0 >= ceiling && box.y1 <= floor && !arts.some((a) => covers(box, a))
           && !this.boxes.some((b) => box.x0 < b.x1 && box.x1 > b.x0 && box.y0 < b.y1 && box.y1 > b.y0);
       };
       const home = layout.get(t.p) ?? { dx: 0, dy: 0 };
       const moved = this.propSpot.get(t.p);
       let spot = (moved && free(moved) ? moved : null) ?? (free(home) ? home : null);
+      if (spot === home) this.propSpot.delete(t.p); // sa place écartée n'est plus bonne (hors de la vue) : elle revient chez elle
       if (!spot) {
         // Sous ses propres pieds, à une tuile au plus ; sinon un peu sur le côté, toujours au-dessus ou au-dessous de lui.
         const step = base.y1 - base.y0 + 1;
@@ -1242,7 +1299,8 @@ export class Renderer {
         const reach = (base.x1 - base.x0) / 2 + (art.x1 - art.x0) / 2 - 4; // de quoi garder 4 pixels au-dessus de son dessin
         const sides = [reach / 2, -reach / 2, reach, -reach].map(Math.round);
         spot = [{ dx: 0, dy: under }, { dx: 0, dy: under + step }, ...sides.map((dx) => ({ dx, dy: home.dy })),
-          ...sides.map((dx) => ({ dx, dy: under }))].find(free) ?? moved ?? home; // nulle part : écrite quand même, là où elle était
+          ...sides.map((dx) => ({ dx, dy: under }))].find(free)
+          ?? (moved && at(moved).y1 <= floor ? moved : home); // nulle part : écrite quand même, là où elle était, ou chez elle si c'était hors de la vue
         this.propSpot.set(t.p, spot);
       }
       const box = at(spot);
@@ -1331,7 +1389,8 @@ export class Renderer {
 
   /**
    * Quelles pancartes du cortège sont levées à cette image. Aucune n'en recouvre une autre ni ce qui est déjà
-   * réservé (le héros, la voix, les coups, les gains des recrues), et aucune ne clignote :
+   * réservé (le héros, la voix, les coups, les gains des recrues), aucune ne passe sous la bande du HUD (barre de vie
+   * comprise), et aucune ne clignote :
    * levée, elle le reste SIGN_UP secondes, sauf devant un de ces textes prioritaires ; baissée, elle attend SIGN_DOWN.
    * `drifting` : les textes flottants qui dérivent à l'écran. Ils ne font pas baisser une pancarte levée (ils passent
    * au-dessus d'elle, voir `placeLoose`), mais une pancarte baissée ne se relève pas sous l'un d'eux.
@@ -1366,6 +1425,10 @@ export class Renderer {
     // Et de l'air sur les côtés des pancartes déjà levées (SIGN_GAP) : quand le cortège piétine, elles ne se touchent pas.
     const roomy = (box) => clear({ x0: box.x0 - 12, x1: box.x1 + 12, y0: box.y0 - 6, y1: box.y1 + 18 }, priority)
       && !this.boxes.slice(priority).some((b) => box.x0 - SIGN_GAP < b.x1 && box.x1 + SIGN_GAP > b.x0 && box.y0 < b.y1 && box.y1 > b.y0) && free(box);
+    // Jamais sous la bande du HUD (barre de vie du boss ou d'une ligne comprise) : une pancarte qui la toucherait se
+    // baisse ; pour se relever, elle veut deux pixels d'air sous elle : la caméra qui sautille ne la fait pas clignoter.
+    const ceiling = this.ceiling();
+    const below = (box, air = 0) => box.y0 - air >= ceiling;
     const up = [];
     const keep = (sign, ok) => {
       if (ok) {
@@ -1380,8 +1443,8 @@ export class Renderer {
     // Puis les baissées depuis assez longtemps se relèvent là où il reste de la place.
     const raised = signs.filter((s) => s.held.up).sort((a, b) => a.held.since - b.held.since);
     const down = signs.filter((s) => !s.held.up && now - s.held.since >= SIGN_DOWN);
-    for (const s of raised) keep(s, (s.turn || now - s.held.since < SIGN_UP) && clear(s.box));
-    for (const s of down) keep(s, s.turn && roomy(s.box));
+    for (const s of raised) keep(s, (s.turn || now - s.held.since < SIGN_UP) && clear(s.box) && below(s.box));
+    for (const s of down) keep(s, s.turn && roomy(s.box) && below(s.box, 2));
     this.raised = new Set(signs.filter((s) => s.held.up).map((s) => s.m));
     return up;
   }
@@ -1467,6 +1530,11 @@ export class Renderer {
   /** Le haut de l'image qui reste au HUD, en pixels du jeu : SAFE_TOP au moins, et tout le HUD mesuré (`hudBottom`). */
   ceiling() {
     return Math.max(SAFE_TOP, this.hudBottom + 4) / this.ratio;
+  }
+
+  /** Le bas visible de l'image, en pixels du jeu : `viewH`, ou le haut du bandeau quand il est en bas (`floorBand`). */
+  floor() {
+    return this.viewH - this.floorBand / this.ratio;
   }
 
   /** La taille d'un texte du monde, relevée pour qu'il fasse au moins MIN_TEXT pixels à l'écran (téléphone). */
