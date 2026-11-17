@@ -36,6 +36,11 @@ jobs:
         run: npm test
       - name: Construire le jeu
         run: node tools/build.mjs
+        env:
+          # Mesure d'audience : la clé de projet PostHog (publique, « phc_… »), en variable ou en secret
+          # du dépôt. Sans elle, le jeu est construit sans mesure.
+          POSTHOG_PROJECT_TOKEN: ${{ vars.POSTHOG_PROJECT_TOKEN || secrets.POSTHOG_PROJECT_TOKEN }}
+          POSTHOG_HOST: ${{ vars.POSTHOG_HOST || secrets.POSTHOG_HOST }}
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
