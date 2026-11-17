@@ -745,6 +745,8 @@ body.tactile .radio-bouton::after { content: ''; position: absolute; top: -5px; 
 .pause > .entete h2 { flex: none; margin: 0; }
 .radio-pause { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: flex-end; gap: 8px; font-size: .8rem; }
 .radio-pause[hidden] { display: none; }
+.radio-pause.injoignable kbd { display: none; }
+.radio-pause.injoignable .titre { white-space: normal; text-align: right; opacity: 1; }
 .radio-pause .note { color: var(--or); }
 .radio-pause .titre { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; opacity: .85; }
 .radio-pause .radio-bouton { font-size: 1rem; }

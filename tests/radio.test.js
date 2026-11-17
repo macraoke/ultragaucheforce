@@ -4,7 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadContent } from '../tools/content.mjs';
-import { Radio, chooseTrack, nextLevelTrack, openingTrack, poolsFor, frameAttributes, START_TIMEOUT, LOAD_TIMEOUT } from '../src/client/music.js';
+import { Radio, chooseTrack, nextLevelTrack, openingTrack, poolsFor, frameAttributes, START_TIMEOUT, LOAD_TIMEOUT, BLOCKED_MESSAGE } from '../src/client/music.js';
 
 const { bundle } = loadContent();
 const real = Object.values(bundle.musiques);
@@ -1327,9 +1327,20 @@ test('préchargement impossible (SoundCloud bloqué) : rien ne joue, le bouton l
   await s.flush();
   assert.equal(s.radio.status, 'off');
   assert.equal(s.shown.lost, true);
+  assert.equal(s.shown.message, BLOCKED_MESSAGE); // le message est là d'emblée, sans un clic
+  assert.match(s.shown.message, /bloqueur.*SoundCloud.*w\.soundcloud\.com/);
   assert.equal(s.unmounted, true);
   s.radio.setEnabled(true);
   assert.deepEqual(s.connects, ['menu-a', 'menu-a']);
+});
+
+test('le lecteur se charge : aucun message de blocage', async () => {
+  const s = setup();
+  s.radio.setEnabled(false);
+  s.radio.play('menu');
+  await s.flush();
+  assert.equal(s.shown.lost, false);
+  assert.equal(s.shown.message, null);
 });
 
 test('le menu commence par sa piste d’ouverture ; ⏭ tire ensuite parmi toutes celles du menu', async () => {

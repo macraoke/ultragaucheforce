@@ -24,6 +24,8 @@ export const START_TIMEOUT = 10000;
 const RETRY_DELAY = 4000;
 const PROBE_DELAY = 3000;
 const MAX_WAITS = 6; // le lecteur dit « je joue » mais rien n'avance : six délais, une minute
+/** Ce que disent le panneau et le menu de pause quand le script de SoundCloud n'a pas pu se charger (bloqueur, réseau). */
+export const BLOCKED_MESSAGE = 'Un bloqueur empêche SoundCloud de jouer. Autorise w.soundcloud.com pour écouter la Radio Manif.';
 const EVENTS = ['READY', 'PLAY', 'PLAY_PROGRESS', 'PAUSE', 'FINISH', 'ERROR'];
 
 /**
@@ -697,7 +699,7 @@ export class Radio {
 
   render(possible = this.tracks.length > 0 && this.env.online()) {
     this.view.show({
-      possible, enabled: this.enabled, status: this.status, track: this.current, skip: this.canSkip(), lost: this.lost,
+      possible, enabled: this.enabled, status: this.status, track: this.current, skip: this.canSkip(), lost: this.lost, message: this.lost ? BLOCKED_MESSAGE : null,
       // ▶ quand rien ne joue : en pause, ou refusée par le navigateur (un toucher, sur ▶ ou ailleurs, la lance).
       pause: this.canPause(), held: this.held || this.status === 'paused' || this.status === 'blocked',
     });
@@ -787,21 +789,26 @@ class RadioPanel {
     this.mini.hidden = true;
   }
 
-  show({ possible, enabled, status, track, skip = false, pause = false, held = false, lost = false }) {
+  show({ possible, enabled, status, track, skip = false, pause = false, held = false, lost = false, message = null }) {
     this.enabled = enabled;
     this.box.hidden = !possible;
-    this.mini.hidden = !(possible && this.frame && pause);
-    this.miniSkip.hidden = !skip;
+    // Lecteur bloqué : la ligne du menu de pause le dit aussi, sans bouton (rien à lancer).
+    const blocked = Boolean(possible && lost && message);
+    this.mini.hidden = !(blocked || (possible && this.frame && pause));
+    this.mini.classList.toggle('injoignable', blocked);
+    this.miniSkip.hidden = !skip || blocked;
+    this.miniPause.hidden = blocked;
     for (const button of this.pauses) this.paint(button, held);
-    if (this.miniTitle.textContent !== (track?.titre ?? '')) this.miniTitle.textContent = track?.titre ?? '';
-    this.mini.title = track ? `Radio Manif : ${track.titre} — ${track.artiste}` : '';
+    const title = blocked ? message : (track?.titre ?? '');
+    if (this.miniTitle.textContent !== title) this.miniTitle.textContent = title;
+    this.mini.title = blocked ? message : track ? `Radio Manif : ${track.titre} — ${track.artiste}` : '';
     if (!possible) return;
     // Refusée par le navigateur : pas de « Relancer », n'importe quel toucher (▶ compris) la lance. Seul un lecteur
     // injoignable garde son bouton : un geste ne le recharge pas.
     const stuck = enabled && status === 'unreachable';
     this.box.classList.toggle('bloquee', Boolean(this.frame) && stuck);
     // Un lecteur qui n'a pas pu se charger le dit, au lieu d'apparaître et de disparaître sans un son.
-    const note = lost ? 'SoundCloud ne répond pas (réseau ou bloqueur)' : 'Musique par SoundCloud';
+    const note = lost && message ? message : 'Musique par SoundCloud';
     const ask = this.askGroup();
     if (this.askNote.textContent !== note) this.askNote.textContent = note;
     this.askNote.classList.toggle('injoignable', lost);
