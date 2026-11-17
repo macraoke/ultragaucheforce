@@ -88,7 +88,9 @@ Chaque fiche de `content/` devient une carte, trouvée en la croisant dans le je
 
 Chaque niveau finit devant un ultra-riche, assis sur sa fortune : un tas de liasses qui remplit son cadre, avec sa légende juste dessous (ce que vaut une liasse). Lequel ? Le hasard le dit à chaque partie.
 
-**Un même ultra-riche, plusieurs noms** (Valentin, 17 novembre 2026 : « Noms sourcés: On peut créer des Alias des mêmes Boss. ») : Arnault est aussi The Terminator, Bolloré le Petit Prince du cash-flow, Besnier l'Empereur du fromage. Chaque nom est un fichier de `content/boss/`, et le tirage se fait par fichier : ces trois-là sortent deux fois plus souvent que les autres. Puis on le taxe, sur un seul écran en deux temps, une idée chacun :
+**Un même ultra-riche, plusieurs noms** (Valentin, 17 novembre 2026 : « Noms sourcés: On peut créer des Alias des mêmes Boss. ») : Arnault est aussi The Terminator, Bolloré le Petit Prince du cash-flow, Besnier l'Empereur du fromage. Chaque nom est un fichier de `content/boss/`, et le tirage se fait par fichier : ces trois-là sortent deux fois plus souvent que les autres. Ce sont des copies : une réplique ou une fortune mise à jour l'est dans chaque fichier.
+
+Puis on le taxe, sur un seul écran en deux temps, une idée chacun :
 
 1. **Avant : sa fortune, à l'échelle de quelqu'un** (« 670 000 ans de revenus d'un chirurgien ») et ce qu'elle rapporte en un an, pour répondre d'avance à « flux et stocks ».
 2. **Après « Taxer les riches » : ce que ça paierait** (« 64 000 enseignants »), en aussi gros que l'était la fortune, qui s'efface du récit : on l'a déjà vue, le tas et sa légende la gardent. La part des 2 % quitte le tas. Dessous, en petit, d'où vient l'argent : **2 % par an**, au plus, puisque l'impôt est différentiel. Puis **ce que chacun paie déjà** : autour de 52 % pour presque tout le monde, 27 % pour les milliardaires. Les deux nombres toujours ensemble.

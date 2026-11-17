@@ -8,11 +8,11 @@ Leurs discours, la panique morale, les éléments de langage. Les fortunes, les 
 
 ## Ce qui n'entre pas
 
-- La haine : rien contre l'origine, la religion, le genre, l'orientation ou le handicap.
+- La haine : rien contre l'origine, la religion, le genre, l'orientation, l'identité de genre ou le handicap.
 - Les personnes privées, et la vie privée.
-- Les faits graves inventés. Personne n'est désigné dans une affaire en cours : on laisse juger les juges.
+- Les faits graves inventés sur une personne réelle. Personne n'est désigné dans une affaire en cours : on laisse juger les juges.
 - Les appels à la violence, et la violence réaliste : personne n'est blessé à l'écran. On disperse, on se met en grève, le pilote s'éjecte indemne.
-- Les copies : ce qu'on apporte est à soi, ou déjà libre.
+- Les copies : une image, un son, un niveau ou du code qui n'est pas libre.
 
 ## Le réel est exact, la parodie se voit
 
