@@ -5,6 +5,7 @@
 
 import { crown, hand, seated, sprite } from './sprites.js';
 import { withKeys } from './input.js';
+import { KETTLE_FLOOR } from '../sim/enemy.js';
 
 const TILE = 16;
 export const SIGN_LINGER = 1.6; // secondes pendant lesquelles un panneau dépassé reste lisible, en s'effaçant
@@ -33,7 +34,7 @@ const SIGN_GAP = 18; // pixels du jeu libres de chaque côté, au moins, entre u
 const NEAR_HERO = 14; // un manifestant plus près que cela du héros passe en transparence
 const REC = '● REC'; // le cadre de la caméra l'affiche déjà : pas de bulle en double
 const SIGN_TURN = 6; // secondes d'un tour : les porteurs lèvent leur pancarte à tour de rôle…
-const SIGN_FRESH = 3; // secondes pendant lesquelles une pancarte qui vient d'arriver reste levée, hors de son tour
+export const SIGN_FRESH = 4.5; // secondes pendant lesquelles une pancarte qui vient d'arriver reste levée, hors de son tour
 const SIGN_SHARE = 2; // … un tour sur deux chacun : la moitié des pancartes levées à la fois, toutes à leur tour
 const SLOGAN_GAP = 3; // secondes entre deux slogans de recrues : les autres recrues rejoignent sans crier
 const PROP_FLOOR = 7 * TILE; // « GARDE À VUE », « PIQUET DE GRÈVE » : écrits pour un accessoire à l'étage du héros (à 7 tuiles près)
@@ -53,6 +54,20 @@ const covers = (box, art) => Math.min(box.x1 - 1, art.x1) - Math.max(box.x0 + 1,
 const GROUP = { x: 40, y: 24 }; // des unités identiques aussi proches font un groupe : un seul « ! », un seul « KOF ! »
 const SAFE_TOP = 100; // pixels CSS en haut de l'écran laissés au HUD, au moins (bandeau au pouce, barre de vie du boss) ; plus s'il descend plus bas
 const FOLLOW = { x: 9 / 60, y: 7 / 60 }; // part du chemin vers le héros que la caméra fait à chaque pas de simulation
+const KETTLE_SIZE = 10; // le décompte de la nasse, en pixels du jeu : il se lit de loin
+const KETTLE_LAST = 5; // les dernières secondes du décompte passent à l'or
+const overlaps = (a, b) => a.x0 < b.x1 && a.x1 > b.x0 && a.y0 < b.y1 && a.y1 > b.y0;
+// Le boss vaincu, un policier près de qui passe le héros émet de petits cœurs, rouges et violets (voir `love`).
+const LOVE_NEAR = { x: 36, y: 24 }; // à cette distance du héros, au plus (de centre à centre, de pieds à pieds)
+const LOVE_EVERY = 0.25; // secondes entre deux cœurs d'un même policier : trois quand le héros passe devant lui
+const LOVE_LIFE = 1.3; // secondes : le cœur monte, puis s'efface
+const MAX_HEARTS = 48;
+const HEARTS = [
+  ['.kk.kk.', 'kwRkRRk', 'kRRRRRk', '.kRRRk.', '..kRk..', '...k...'],
+  ['.kk.kk.', 'kwmkmmk', 'kmmmmmk', '.kmmmk.', '..kmk..', '...k...'],
+];
+/** Un policier : une unité de l'ordre, à pied. */
+const isPolice = (def) => def.camp === 'ordre' && def.deplacement === 'marche';
 // Valentin, 16 novembre 2026 : « Le gain d'abord : les gains, « +1 », « ON REPART D'ICI » et les noms de spéciale passent
 // toujours : la pancarte qu'ils touchent se baisse un instant. Les slogans, eux, laissent la pancarte levée. »
 const leads = (f) => Boolean(f.gain || f.lead);
@@ -87,6 +102,8 @@ export class Renderer {
     this.runners = []; // manifestants qui quittent la manif en courant (dispersés, interpellés)
     this.rings = []; // le « pop » d'une unité qui passe hors service
     this.flowers = []; // [x, y, poussée] : la fleur de chaque unité hors service à cette image
+    this.hearts = []; // { x, y, t, color, sway } : les cœurs des policiers, le boss vaincu (voir `love`)
+    this.loved = new WeakMap(); // policier → { at, n } : quand il a émis son dernier cœur (`clock`), et combien
     this.hurt = null; // { t, hp, max } : le héros vient d'être touché (ce qu'il lui reste s'affiche au-dessus de lui)
     this.edge = 0; // liseré rouge autour de l'image quand le héros est touché
     this.crowded = 0; // le repère au-dessus du héros, au milieu de la manif : de 0 (absent) à 1
@@ -129,6 +146,7 @@ export class Renderer {
     this.floaters = [];
     this.runners = [];
     this.rings = [];
+    this.hearts = [];
     this.hurt = null;
     this.edge = 0;
     this.shake = 0;
@@ -302,6 +320,11 @@ export class Renderer {
     this.runners = this.runners.filter((r) => r.t > 0);
     for (const r of this.rings) r.t -= dt;
     this.rings = this.rings.filter((r) => r.t > 0);
+    for (const h of this.hearts) {
+      h.t -= dt;
+      h.y -= 22 * dt;
+    }
+    this.hearts = this.hearts.filter((h) => h.t > 0);
     if (this.hurt && (this.hurt.t -= dt) <= 0) this.hurt = null;
     this.edge = Math.max(0, this.edge - dt);
   }
@@ -361,15 +384,17 @@ export class Renderer {
     // La bulle du boss a sa place avant les textes flottants et les pancartes : ils passent autour d'elle.
     this.bossSay = this.bossBubble(game.boss);
     if (this.bossSay) this.boxes.push(this.bossSay.box);
+    // Le décompte de la nasse aussi : textes flottants et pancartes passent autour de lui.
+    const countdown = this.kettleClock(game);
+    if (countdown) this.boxes.push(countdown.box);
     const fixed = this.boxes.slice(gains); // gains des recrues, voix, coups : les textes flottants passent autour
     if (board) fixed.push(board.box); // et autour du panneau lu
     // Le héros se lit au premier coup d'œil : aucune pancarte ne se lève devant lui ni juste au-dessus de sa tête.
     const { hero } = game;
     // Sa place se compte comme il est dessiné : par rapport à la caméra qui le suit (`camX`, `camY`).
-    if (!hero.dead) {
-      const { camX, camY } = this;
-      this.boxes.push({ x0: hero.x - 3 - camX, x1: hero.x + hero.w + 3 - camX, y0: hero.y - 8 - camY, y1: hero.y + hero.h - camY });
-    }
+    const heroBox = hero.dead ? null
+      : { x0: hero.x - 3 - this.camX, x1: hero.x + hero.w + 3 - this.camX, y0: hero.y - 8 - this.camY, y1: hero.y + hero.h - this.camY };
+    if (heroBox) this.boxes.push(heroBox);
     this.placeTexts(fixed, game.cortege);
     game.cortege.forEach((m, i) => this.marcher(m, i));
     // La manif autour de lui : le repère au-dessus du héros apparaît, puis s'efface quand il en sort.
@@ -385,6 +410,7 @@ export class Renderer {
       ctx.fillStyle = p.color;
       ctx.fillRect(Math.round(p.x - cx), Math.round(p.y - cy), p.s, p.s);
     }
+    this.love(game);
     this.combatAfter(); // larmes par-dessus le gaz, fleurs et « pop » des unités hors service, liseré du coup reçu
     for (const d of game.decors) if (this.bundle.decors[d.id]?.devant) this.decor(d);
 
@@ -393,6 +419,80 @@ export class Renderer {
       f.seen = true; // déjà montré : s'il perd sa place, il s'effacera en fondu
     }
     if (board) this.board(board.text, this.viewW / 2, board.y, { alpha: Math.min(1, this.sign.t * 2) });
+    if (countdown) this.label(countdown.text, countdown.x, countdown.y, { size: KETTLE_SIZE, color: countdown.last ? '#f6c21c' : '#f4f4f4' });
+  }
+
+  /**
+   * Le décompte de la nasse : les secondes qui restent avant qu'elle soit levée, quoi qu'il arrive. Il se pose
+   * au-dessus d'une de ses lignes, la plus proche du héros, sur le haut de sa zone (un étage au-dessus du sol) :
+   * le héros ne passe jamais au-dessus d'une ligne, même au sommet de son plus haut saut. Jamais sur les lignes, ni
+   * sous la bande du HUD, ni sur un texte déjà posé ou le cadre d'une caméra : il monte au-dessus de ce qui le gêne,
+   * ou passe à l'autre ligne ; sans place au-dessus d'elles, il se pose sous leurs pieds. Rend { text, x, y, box, last }
+   * à l'écran, ou null.
+   */
+  kettleClock(game) {
+    const k = game.kettle;
+    if (!k || this.demo) return null;
+    const left = Math.max(0, k.limit - k.t);
+    const text = String(Math.max(1, Math.ceil(left)));
+    const base = this.textBox(text, 0, 0, KETTLE_SIZE, 0);
+    const half = (base.x1 - base.x0) / 2;
+    const { hero } = game;
+    const { cx, cy } = this;
+    // Ce qu'il ne recouvre pas : les textes posés, les cadres des caméras, le héros jusqu'au sommet de son plus haut saut.
+    const avoid = [...this.boxes];
+    for (const e of game.enemies) {
+      const f = this.frameOf(e, hero);
+      if (f) avoid.push({ x0: f.x - 2, x1: f.x + 47, y0: f.y - 2, y1: f.y + 33 });
+    }
+    if (!hero.dead) {
+      const apex = k.y - (hero.def?.saut ?? 0) * TILE - hero.h - 4;
+      avoid.push({ x0: hero.x - 3 - cx, x1: hero.x + hero.w + 3 - cx, y0: Math.min(apex, hero.y - 8) - cy, y1: hero.y + hero.h - cy });
+    }
+    // Au-dessus de chaque ligne, sans déborder sur l'intérieur de la nasse, où le héros se tient.
+    const lines = [-1, 1].map((side) => {
+      const units = k.units.filter((e) => e.kettle === side && e.state !== 'done');
+      if (!units.length) return null;
+      const mid = (Math.min(...units.map((e) => e.x)) + Math.max(...units.map((e) => e.x + e.w))) / 2;
+      const top = Math.min(...units.map((e) => e.y + e.h - (e.def.sprites.repos?.length ?? e.h)));
+      const feet = Math.max(...units.map((e) => e.y + e.h));
+      const x = side < 0 ? Math.min(mid, k.x0 - half - 4) : Math.max(mid, k.x1 + half + 4);
+      return { side, x: x - cx, top: top - cy, feet: feet - cy, inner: (side < 0 ? k.x0 : k.x1) - cx };
+    }).filter(Boolean);
+    if (!lines.length) lines.push({ side: 0, x: (k.x0 + k.x1) / 2 - cx, top: k.y - cy, feet: k.y - cy, inner: null });
+    // La plus proche du héros d'abord ; il ne change de ligne que si l'autre est nettement plus proche.
+    const hx = hero.x + hero.w / 2 - cx;
+    const near = (l) => (l.inner === null ? 0 : Math.abs(l.inner - hx));
+    lines.sort((a, b) => near(a) - near(b));
+    const kept = this.kettleSide?.kettle === k && lines.find((l) => l.side === this.kettleSide.side);
+    if (kept && kept !== lines[0] && near(kept) - near(lines[0]) < 32) lines.reverse();
+    const ceiling = this.ceiling() - base.y0;
+    const spot = (l) => {
+      const x = Math.min(this.viewW - half, Math.max(half, l.x));
+      const floor = l.top - 2 - base.y1; // le plus bas possible : juste au-dessus des têtes de la ligne
+      let y = Math.min(k.y - KETTLE_FLOOR - cy - base.y1, floor); // le bas de sa boîte sur le haut de la zone
+      const box = () => ({ x0: x + base.x0, x1: x + base.x1, y0: y + base.y0, y1: y + base.y1 });
+      const hit = () => avoid.find((b) => overlaps(box(), b));
+      for (let n = 0, b; n < 8 && (b = hit()); n++) y = b.y0 - 1 - base.y1;
+      if (y < ceiling) {
+        y = ceiling;
+        for (let n = 0, b; n < 8 && (b = hit()); n++) y = b.y1 + 1 - base.y0;
+      }
+      const ok = !hit() && y <= floor && Math.abs(x - l.x) < half; // libre, au-dessus de la ligne, et la ligne à l'écran
+      return { x, y, box: box(), ok, side: l.side };
+    };
+    // Sans place au-dessus (la vue baissée, la ligne sous la bande du HUD) : sous ses pieds, sur la chaussée.
+    const under = (l) => {
+      const x = Math.min(this.viewW - half, Math.max(half, l.x));
+      const y = l.feet + 2 - base.y0;
+      const box = { x0: x + base.x0, x1: x + base.x1, y0: y + base.y0, y1: y + base.y1 };
+      const ok = !avoid.some((b) => overlaps(box, b)) && box.y1 <= this.viewH && Math.abs(x - l.x) < half;
+      return { x, y, box, ok, side: l.side };
+    };
+    const spots = [...lines.map(spot), ...lines.map(under)];
+    const best = spots.find((p) => p.ok) ?? spots[0];
+    this.kettleSide = { kettle: k, side: best.side };
+    return { text, x: best.x, y: best.y, box: best.box, last: left <= KETTLE_LAST };
   }
 
   /**
@@ -431,6 +531,39 @@ export class Renderer {
     }
     for (const f of this.floaters) if (f.keep) this.reserve(f.text, f.x - cx, f.y - cy, f.size || 7, 150);
     if (this.hurt && !hero.dead) this.reserve('■ ■ ■', hero.x + hero.w / 2 - cx, hero.y - 14 - cy, 7, 0);
+  }
+
+  /**
+   * Le boss vaincu, l'ordre cesse le feu : un policier (une unité de l'ordre, à pied) près de qui passe le héros
+   * émet de petits cœurs, rouges et violets, qui montent au-dessus de sa tête et s'effacent. Rien d'écrit.
+   */
+  love(game) {
+    const { hero } = game;
+    if (game.truce && !hero.dead) {
+      const hx = hero.x + hero.w / 2;
+      const feet = hero.y + hero.h;
+      for (const e of game.enemies) {
+        if (!isPolice(e.def) || this.hearts.length >= MAX_HEARTS) continue;
+        if (Math.abs(e.x + e.w / 2 - hx) > LOVE_NEAR.x || Math.abs(e.y + e.h - feet) > LOVE_NEAR.y) continue;
+        const last = this.loved.get(e) ?? { at: -Infinity, n: 0 };
+        if (this.clock - last.at < LOVE_EVERY) continue;
+        this.loved.set(e, { at: this.clock, n: last.n + 1 }); // chacun les siens : rouge, violet, rouge…
+        const tall = (e.def.sprites.fin || e.def.sprites.repos)?.length ?? e.h;
+        this.hearts.push({
+          x: e.x + e.w / 2 + (Math.random() - 0.5) * 8, y: e.y + e.h - tall - 3, t: LOVE_LIFE,
+          rows: HEARTS[last.n % HEARTS.length], sway: Math.random() * Math.PI * 2,
+        });
+      }
+    }
+    const { ctx } = this;
+    for (const h of this.hearts) {
+      const img = sprite(h.rows, this.palette);
+      const age = LOVE_LIFE - h.t;
+      const sway = this.reduced ? 0 : Math.sin(h.sway + age * 6) * 1.5;
+      ctx.globalAlpha = Math.min(1, h.t / 0.5); // il s'efface sur sa dernière demi-seconde
+      ctx.drawImage(img, Math.round(h.x + sway - img.width / 2 - this.cx), Math.round(h.y - img.height - this.cy));
+    }
+    ctx.globalAlpha = 1;
   }
 
   /** Après les unités : les manifestants qui s'en vont ou accourent. */
@@ -660,7 +793,7 @@ export class Renderer {
     if (stunned && e.daze === 'gaz') this.weepers.push([e, cx, top]); // dessinés par-dessus le nuage qui les a gazés
     else if (stunned) this.stars(e, cx, top);
     else this.warn(e, cx, top);
-    if (e.def.reaction === 'cadre' && e.state === 'alert' && (!e.film || e.framing)) this.viewfinder(e);
+    if (this.frameOf(e)) this.viewfinder(e);
     if (speaks) this.label(e.bubble.text, cx, e.y - 10 - this.cy, { size: 5.5, color: '#1a1c2c', bg: '#f4f4f4', width: 80 });
   }
 
@@ -912,15 +1045,23 @@ export class Renderer {
     this.label(gain, r.x + r.w / 2 - this.cx, r.y - 12 - this.cy, { size: 8, color: '#1a1c2c', bg: '#f6c21c' });
   }
 
+  /**
+   * Le cadre d'une caméra qui tourne (drone, équipe télé), à l'écran : son coin en haut à gauche, 44 × 30 pixels.
+   * Null si elle ne tourne pas. Un drone cadre ce qu'il survole ; une équipe au sol cadre le héros lui-même ; venue
+   * pour un feu, elle cadre le feu.
+   */
+  frameOf(e, hero = this.heroBox) {
+    if (e.def.reaction !== 'cadre' || e.state !== 'alert' || (e.film && !e.framing)) return null;
+    const aloft = e.def.deplacement === 'vol';
+    const at = e.film ? { x: e.film.x, y: e.film.y - 34 }
+      : aloft ? { x: e.x + e.w / 2, y: e.y + e.h + 4 } : { x: hero.x + hero.w / 2, y: hero.y - 10 };
+    return { x: Math.round(at.x - 22 - this.cx), y: Math.round(at.y - this.cy) };
+  }
+
   /** Le cadre du drone : ce que PANIQUE TV choisit de montrer. */
   viewfinder(e) {
     const { ctx } = this;
-    // Un drone cadre ce qu'il survole ; une équipe au sol cadre le héros lui-même ; venue pour un feu, elle cadre le feu.
-    const aloft = e.def.deplacement === 'vol';
-    const at = e.film ? { x: e.film.x, y: e.film.y - 34 }
-      : aloft ? { x: e.x + e.w / 2, y: e.y + e.h + 4 } : { x: this.heroBox.x + this.heroBox.w / 2, y: this.heroBox.y - 10 };
-    const x = Math.round(at.x - 22 - this.cx);
-    const y = Math.round(at.y - this.cy);
+    const { x, y } = this.frameOf(e);
     ctx.strokeStyle = Math.floor(this.clock * 4) % 2 ? '#e43b44' : '#f4f4f4';
     ctx.lineWidth = 1;
     ctx.strokeRect(x + 0.5, y + 0.5, 44, 30);

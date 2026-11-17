@@ -34,7 +34,7 @@ import { makeRng } from './rng.js';
 import { TILE } from './world.js';
 import { hitsSolid, overlap, holds } from './physics.js';
 import { updateHero, setHeroDef, FEEL } from './hero.js';
-import { createEnemy, updateEnemy, sturdy, isLine, wearLine, LINE_REACH } from './enemy.js';
+import { createEnemy, updateEnemy, sturdy, isLine, wearLine, barrierTop } from './enemy.js';
 import { updateProjectiles } from './projectile.js';
 import { updateBoss, hurtBoss } from './boss.js';
 import { loadLevel, toList, playable } from './level.js';
@@ -604,14 +604,15 @@ export class Game {
 
   /**
    * Les lignes qui tiennent et les véhicules sont pleins pour le héros : on l'écarte du côté où il se trouve.
-   * Une ligne barre aussi le passage au-dessus d'elle (LINE_REACH) : on ne la saute pas, on la casse.
+   * Une ligne barre aussi le passage au-dessus d'elle (`barrierTop`) : on ne la saute pas, on la casse. Une ligne de
+   * nasse ne barre que son étage : à l'étage au-dessus, on passe.
    */
   blockHero() {
     const { hero, world } = this;
     if (hero.dead) return;
     for (const e of this.enemies) {
       if (e.state === 'done' || !sturdy(e)) continue;
-      const top = e.blocking ? e.y - LINE_REACH : e.y;
+      const top = e.blocking ? barrierTop(e) : e.y;
       if (hero.x >= e.x + e.w || hero.x + hero.w <= e.x || hero.y >= e.y + e.h || hero.y + hero.h <= top) continue;
       // On l'écarte du côté où il se trouve ; si un mur l'en empêche, de l'autre ; coincé des deux côtés, on ne l'écrase pas.
       const sides = hero.x + hero.w / 2 < e.x + e.w / 2 ? [e.x - hero.w, e.x + e.w] : [e.x + e.w, e.x - hero.w];

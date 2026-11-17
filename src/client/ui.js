@@ -16,7 +16,9 @@ import { SIGN_LINGER } from './render.js';
 const MENTION = 'Satire citoyenne, libre et collaborative.';
 const PANIC_NAMES = ['calme', 'alerte', 'hystérie']; // les trois crans de la chaîne
 const AIRTIME = 15; // secondes d'antenne d'une citation qui tient sur le fil
-const SCROLL = 4.5; // vitesse de défilement d'une ligne trop longue, en hauteurs de lettre par seconde
+const SCROLL = 3; // vitesse de défilement d'une ligne trop longue, en hauteurs de lettre par seconde
+const SCROLL_BEFORE = 1.2; // secondes de pause avant qu'une ligne trop longue défile (le délai de `defile`, style.css)
+const SCROLL_AFTER = 2.4; // secondes de pause sur son dernier mot, avant la ligne suivante
 const HYSTERIA = 2; // le cran où la chaîne ne lâche plus sa citation : plus de rotation
 // Une rafale de notes du même genre se replie en une seule : « 3 pancartes débloquées ».
 const FOLDS = { pancartes: 'pancartes débloquées', cartes: 'cartes débloquées' };
@@ -54,8 +56,22 @@ export function lineBar(game, memo) {
   return null;
 }
 
-/** Secondes de jeu à l'écran pour une note : le temps de la lire. */
-export const readTime = (text) => Math.min(4, Math.max(2.5, 1.5 + text.length * 0.035));
+/**
+ * Une ligne trop longue pour le fil de PANIQUE TV, de `over` pixels de trop, en lettres de `em` pixels : jusqu'où elle
+ * défile (son dernier mot, avec un peu d'air), en combien de secondes, et son temps d'antenne : une pause avant, le
+ * défilement, une pause sur son dernier mot ; `seconds` au moins.
+ */
+export function scrollTiming(over, em, seconds = AIRTIME) {
+  const travel = over + em;
+  const time = travel / (em * SCROLL);
+  return { travel, time, airtime: Math.max(seconds, SCROLL_BEFORE + time + SCROLL_AFTER) };
+}
+
+/**
+ * Secondes de jeu à l'écran pour une note : le temps de la lire, et un peu plus, d'autant plus long que le texte :
+ * de 3,75 à 6 secondes.
+ */
+export const readTime = (text) => Math.min(6, Math.max(3.75, 2.25 + text.length * 0.0525));
 
 /**
  * Range une note dans la file d'attente. Si une note du même genre (`group`) attend déjà, elles se replient
@@ -746,14 +762,12 @@ export class Hud {
       this.airtime += 2;
       return;
     }
-    const em = parseFloat(style.fontSize);
-    const travel = over + em; // jusqu'au dernier mot, avec un peu d'air
-    const time = travel / (em * SCROLL);
+    const { travel, time, airtime } = scrollTiming(over, parseFloat(style.fontSize), this.airtime);
     inner.style.setProperty('--decalage', `${-travel}px`);
     void inner.offsetWidth; // relance le défilement depuis le début
     inner.style.animation = '';
     inner.style.animationDuration = `${time.toFixed(2)}s`;
-    this.airtime = Math.max(this.airtime, 1.2 + time + 1.6); // une pause avant, le défilement, une pause après
+    this.airtime = airtime;
   }
 
   /**

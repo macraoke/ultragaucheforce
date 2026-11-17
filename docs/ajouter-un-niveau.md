@@ -131,9 +131,9 @@ Personne ne reste coincé : même seul, on finit par la casser à coups de tract
 
 ## La nasse
 
-Un `N` sur la carte, `nasse.ennemi` dans l'en-tête. Quand le héros passe sur le `N`, deux lignes apparaissent à neuf cases de chaque côté et se referment. La nasse est levée si le héros en sort (par les toits, par un tunnel), si l'une des deux lignes est hors service, ou au bout de vingt secondes. Ses lignes sont des unités, pas des obstacles : on les met hors service comme les autres, à coups de tracts (un bouclier les pare de face) ; la manif, prise dedans, ne les pousse pas.
+Un `N` sur la carte, `nasse.ennemi` dans l'en-tête. Quand le héros passe sur le `N`, à son étage, deux lignes apparaissent à neuf cases de chaque côté et se referment. La nasse ne tient que leur étage : de leur sol jusqu'à quatre cases au-dessus. Elle est levée si le héros en sort : sur le côté, en se posant à l'étage au-dessus, ou en descendant d'un étage entier, quatre cases ou plus (une galerie, le métro) ; un trou d'une case ne suffit pas. Elle est aussi levée si l'une des deux lignes est hors service, ou au bout de vingt secondes : un décompte, au-dessus d'elle, dit combien il en reste. Ses lignes sont des unités, pas des obstacles : on les met hors service comme les autres, à coups de tracts (un bouclier les pare de face) ; la manif, prise dedans, ne les pousse pas.
 
-Il faut du sol plat de chaque côté du `N`, et une issue en hauteur ou en sous-sol.
+Il faut du sol plat de chaque côté du `N`, et une issue en hauteur (un étage à quatre cases au-dessus de la rue) ou en sous-sol.
 
 ## Un décor
 

@@ -6,7 +6,7 @@
 
 import { TILE } from './world.js';
 import { moveBox, overlap } from './physics.js';
-import { standDown } from './enemy.js';
+import { standDown, KETTLE_FLOOR } from './enemy.js';
 
 const MAX_CORTEGE = 40;
 const SPACING = 7; // points de trace entre deux manifestants
@@ -18,7 +18,6 @@ const PUSH_REACH = 64; // un manifestant repoussé par le canon à eau ne s'élo
 const NASSE_DISTANCE = 140; // les lignes apparaissent à cette distance du repère, de chaque côté…
 const NASSE_GAP = 40; // …et s'arrêtent à celle-ci : on n'écrase personne
 const NASSE_TIME = 20; // secondes avant que la nasse soit levée, quoi qu'il arrive
-const NASSE_HEIGHT = 6 * TILE; // le repère se déclenche jusqu'à cette hauteur au-dessus de lui
 
 // ---------------------------------------------------------------- recrues
 
@@ -180,11 +179,27 @@ export function standingAt(world, cx, nearY) {
 }
 
 /**
- * La nasse : quand le héros passe un repère « N », des lignes apparaissent des deux côtés et se referment.
+ * Les pieds sont-ils à l'étage dont `ground` est le sol : posés dessus, ou en l'air moins d'un étage (KETTLE_FLOOR)
+ * au-dessus ? C'est là que le repère « N » se déclenche.
+ */
+export const onFloor = (feet, ground) => feet > ground - KETTLE_FLOOR && feet <= ground + TILE / 2;
+
+/**
+ * Le héros est-il sorti de l'étage de la nasse, dont `ground` est le sol ? Posé un étage au-dessus, ou descendu d'un
+ * étage entier (métro, galerie). Un saut n'en sort pas, un trou d'une case non plus (creusé, ou laissé par une grenade).
+ */
+export const offFloor = (hero, ground) => {
+  const feet = hero.y + hero.h;
+  return feet >= ground + KETTLE_FLOOR || (hero.onGround && feet <= ground - KETTLE_FLOOR);
+};
+
+/**
+ * La nasse : quand le héros passe un repère « N », à son étage, des lignes apparaissent des deux côtés et se referment.
  * Avec `nasse.rythme` dans l'en-tête du niveau, elle revient aussi d'elle-même, toutes les tant de secondes,
  * là où le héros se trouve (au sol, hors combat de boss).
- * Jamais une impasse : elle prend fin si le héros en sort par le haut, si une ligne cède, ou au bout de NASSE_TIME.
- * `game.kettle` = null | { x, t, limit, x0, x1 } (x0 et x1 : bords intérieurs des deux lignes).
+ * Elle ne tient que l'étage de ses lignes. Jamais une impasse : elle prend fin si le héros en sort (sur le côté,
+ * à l'étage au-dessus, ou un étage plus bas : métro, galerie), si une ligne cède, ou au bout de NASSE_TIME.
+ * `game.kettle` = null | { x, y, t, limit, x0, x1 } (y : le sol de ses lignes ; x0 et x1 : leurs bords intérieurs).
  */
 export function updateKettle(game, dt) {
   const { hero } = game;
@@ -193,7 +208,7 @@ export function updateKettle(game, dt) {
   if (!k) {
     if (hero.dead || game.truce) return; // le boss vaincu, plus de nasse
     const feet = hero.y + hero.h;
-    const mark = game.nasses.find((n) => !n.on && Math.abs(n.x - cx) <= TILE / 2 && feet <= n.y + TILE && feet >= n.y - NASSE_HEIGHT);
+    const mark = game.nasses.find((n) => !n.on && Math.abs(n.x - cx) <= TILE / 2 && onFloor(feet, n.y));
     const pace = game.level.nasse?.rythme || 0;
     game.kettleClock += dt;
     if (mark) startKettle(game, mark);
@@ -213,7 +228,7 @@ export function updateKettle(game, dt) {
   let reason = null;
   if (k.t >= k.limit) reason = 'time';
   else if ((k.closed.left && !left.length) || (k.closed.right && !right.length)) reason = 'broken';
-  else if (!hero.dead && (cx < outerLeft || cx > outerRight)) reason = 'out';
+  else if (!hero.dead && (cx < outerLeft || cx > outerRight || offFloor(hero, k.y))) reason = 'out';
   if (!reason) return;
   for (const e of k.units) {
     if (e.state === 'done') continue;
@@ -242,7 +257,7 @@ function startKettle(game, mark) {
   }
   if (!units.length) return;
   game.kettle = {
-    x: mark.x, t: 0, limit: NASSE_TIME, gap: NASSE_GAP, speed: level.nasse.vitesse, units,
+    x: mark.x, y: mark.y, t: 0, limit: NASSE_TIME, gap: NASSE_GAP, speed: level.nasse.vitesse, units,
     x0: mark.x - NASSE_DISTANCE, x1: mark.x + NASSE_DISTANCE,
     closed: { left: units.some((e) => e.kettle < 0), right: units.some((e) => e.kettle > 0) },
   };

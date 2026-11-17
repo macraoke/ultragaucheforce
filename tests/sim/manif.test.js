@@ -5,7 +5,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { fixtureBundle, flat, level, play, run, settle } from './helpers.js';
 import { TILE } from '../../src/sim/world.js';
-import { LINE_REACH } from '../../src/sim/enemy.js';
+import { LINE_REACH, KETTLE_FLOOR } from '../../src/sim/enemy.js';
 import { spawnProjectile } from '../../src/sim/projectile.js';
 
 const enemy = (id) => ({ type: 'ennemi', id });
@@ -331,6 +331,93 @@ test('nasse : elle prend fin si une ligne cède ou si le héros en sort par le h
   const calm = settle(play(nasse('statue', { nasse: { ennemi: '', nombre: 2, vitesse: 20 } })));
   events = run(calm, 400, { right: true });
   assert.equal(of(events, 'kettle').length, 0, 'sans unité désignée, le repère ne fait rien');
+});
+
+/**
+ * Une rue à trois étages : une passerelle un étage au-dessus (rangée 7), la rue (rangée 11, une case de terre sur
+ * l'acier), le métro dessous (sol en rangée 16), et une trémie dans la chaussée, juste après le repère, pour y descendre.
+ */
+function storeys() {
+  const W = 70;
+  const grid = Array.from({ length: 17 }, () => Array(W).fill('.'));
+  const put = (row, col, text) => [...text].forEach((c, i) => { grid[row][col + i] = c; });
+  put(16, 0, 'A'.repeat(W));
+  put(11, 0, 'T'.repeat(W));
+  put(12, 0, 'A'.repeat(W));
+  put(11, 33, '..'); // la trémie vers le métro
+  put(12, 33, '..');
+  put(7, 18, 'A'.repeat(36)); // la passerelle, un étage au-dessus de la rue
+  put(10, 2, 'D');
+  put(10, 30, 'N');
+  put(10, 66, 'S');
+  return level(grid.map((r) => r.join('')), { nasse: { ennemi: 'statue', nombre: 2, vitesse: 20 } });
+}
+
+/** Le héros pris dans la nasse de la rue, immobile au milieu. */
+function kettled() {
+  const game = settle(play(storeys(), { invincible: true }));
+  run(game, 400, (i, g) => ({ right: !g.kettle }));
+  assert.ok(game.kettle, 'la nasse s’est formée dans la rue');
+  return game;
+}
+
+test('nasse : elle ne tient que l’étage de ses lignes ; monter d’un étage ou descendre au métro suffit pour en sortir', () => {
+  // Dedans : sauter sur place ne fait pas sortir de la nasse.
+  const inside = kettled();
+  assert.ok(inside.kettle.units.every((e) => e.y + e.h === 11 * TILE), 'ses lignes sont dans la rue');
+  let events = run(inside, 120, (i) => ({ jump: i % 30 < 15 }));
+  assert.equal(of(events, 'kettle').length, 0, 'un saut n’en sort pas');
+  assert.ok(inside.kettle);
+
+  // À l'étage au-dessus, sur la passerelle : libre.
+  const above = kettled();
+  above.hero.y = 7 * TILE - above.hero.h;
+  above.hero.vy = 0;
+  events = run(above, 10);
+  assert.deepEqual(of(events, 'kettle'), [{ type: 'kettle', state: 'end', reason: 'out' }], 'à l’étage au-dessus, la nasse est levée');
+  events = run(above, 240, { right: true });
+  assert.ok(above.hero.x > 45 * TILE, 'il passe au-dessus des lignes, sans barrage');
+
+  // En dessous : il tombe par le trou dans le métro, libre.
+  const below = kettled();
+  below.hero.x = 33 * TILE + 2;
+  events = run(below, 60);
+  assert.deepEqual(of(events, 'kettle'), [{ type: 'kettle', state: 'end', reason: 'out' }], 'descendu au métro, la nasse est levée');
+  assert.ok(below.hero.y + below.hero.h > 13 * TILE, 'il est bien sous la rue');
+
+  // Un trou d'une case sous ses pieds ne le fait pas sortir : ni creusé par lui, ni laissé par une grenade.
+  const dug = kettled();
+  events = run(dug, 60 * 3, { down: true, fire: true });
+  assert.ok(dug.hero.y + dug.hero.h > dug.kettle?.y, 'il est dans son trou');
+  assert.equal(of(events, 'kettle').length, 0, 'creuser une case n’en sort pas');
+  const blown = kettled();
+  const feet = blown.hero.y + blown.hero.h;
+  blown.explode(blown.hero.x + blown.hero.w / 2, feet + TILE / 2, 10, { team: 'ordre', terrain: 9 });
+  events = run(blown, 60);
+  assert.ok(blown.hero.y + blown.hero.h > feet, 'la grenade a creusé la chaussée sous lui');
+  assert.equal(of(events, 'kettle').length, 0, 'un trou de grenade n’en sort pas');
+
+  // Le barrage d'une ligne de nasse s'arrête à son étage : au-dessus, rien ne retient ; dedans, on ne passe pas.
+  const wall = kettled();
+  const unit = wall.kettle.units.find((e) => e.kettle > 0);
+  const ground = unit.y + unit.h;
+  const at = (feet) => {
+    Object.assign(wall.hero, { x: unit.x, y: feet - wall.hero.h });
+    wall.blockHero();
+    return wall.hero.x !== unit.x;
+  };
+  assert.equal(at(ground - KETTLE_FLOOR), false, 'à l’étage au-dessus, il passe');
+  assert.equal(at(ground - 2 * TILE), true, 'à son étage, même en l’air, la ligne le retient');
+  assert.ok(KETTLE_FLOOR < LINE_REACH, 'moins haut que le barrage d’une ligne ordinaire');
+});
+
+test('nasse : le repère ne se déclenche qu’à son étage', () => {
+  const game = settle(play(storeys(), { invincible: true }));
+  game.hero.x = 20 * TILE;
+  game.hero.y = 7 * TILE - game.hero.h; // sur la passerelle, au-dessus du repère
+  const events = run(game, 200, { right: true });
+  assert.ok(game.hero.x > 32 * TILE, 'il est passé au-dessus du repère');
+  assert.equal(of(events, 'kettle').length, 0, 'à l’étage au-dessus, pas de nasse');
 });
 
 test('nasse : ses lignes ne craignent pas les grenades de leur propre camp', () => {

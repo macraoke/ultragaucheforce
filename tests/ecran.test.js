@@ -5,7 +5,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { loadContent } from '../tools/content.mjs';
-import { queueNote, readTime } from '../src/client/ui.js';
+import { queueNote, readTime, scrollTiming } from '../src/client/ui.js';
 import { Game, DT } from '../src/sim/game.js';
 
 // ---------------------------------------------------------------- un faux canevas
@@ -71,10 +71,13 @@ test('les notes attendent leur tour ; une rafale du même genre se replie en une
   assert.deepEqual(notes.map((n) => n.text), ['3 pancartes débloquées', '2 cartes débloquées']);
 });
 
-test('une note reste le temps d’être lue', () => {
-  assert.equal(readTime('2 pancartes débloquées'), 2.5);
-  assert.ok(readTime('Pancarte commune débloquée : « LA RETRAITE AVANT L’ARTHRITE, ET PLUS VITE QUE ÇA »') > 3.5);
-  assert.equal(readTime('x'.repeat(400)), 4, 'jamais plus de quatre secondes');
+test('une note reste le temps d’être lue, et un peu plus : d’autant plus longtemps que son texte est long', () => {
+  assert.equal(readTime('2 pancartes débloquées'), 3.75, 'une note courte : trois secondes trois quarts');
+  assert.equal(readTime('Débloqué : La BAC'), 3.75);
+  const sign = 'Pancarte commune débloquée : « LA RETRAITE AVANT L’ARTHRITE, ET PLUS VITE QUE ÇA »';
+  assert.ok(readTime(sign) > 5.25, 'une pancarte longue : plus de cinq secondes');
+  assert.ok(readTime('Débloqué : La compagnie de CRS') > readTime('Débloqué : La BAC'), 'plus long à lire, plus longtemps');
+  assert.equal(readTime('x'.repeat(400)), 6, 'jamais plus de six secondes');
 });
 
 // ---------------------------------------------------------------- textes flottants
@@ -264,6 +267,33 @@ test('une pancarte qui vient d’arriver se lève tout de suite, puis rejoint la
   r.boxes = [];
   r.raiseSigns(cortege);
   assert.ok(r.raised.has(resting), 'levée tout de suite');
+});
+
+test('une pancarte qui vient d’être débloquée reste levée quatre secondes et demie, même hors de son tour', () => {
+  const r = renderer();
+  const carrier = { x: 100, y: 170, facing: 1, kind: 'pancarte', label: '', gassed: 0, animTime: 0 };
+  const at = (t) => {
+    r.clock = t;
+    r.boxes = [];
+    r.raiseSigns([carrier]);
+    return r.raised.has(carrier);
+  };
+  // Seul porteur, son tour revient toutes les douze secondes, pour six : de 6 à 12 s, ce n'est pas son tour.
+  carrier.label = 'ELLE VIENT D’ARRIVER';
+  const raised = [];
+  for (let t = 6; t <= 11; t += 1 / 60) raised.push([t, at(t)]);
+  assert.ok(raised.filter(([t]) => t < 6 + 4.45).every(([, up]) => up), 'levée quatre secondes et demie');
+  assert.ok(raised.filter(([t]) => t > 6 + 4.55).every(([, up]) => !up), 'puis elle rejoint la rotation : ce n’est pas son tour');
+});
+
+test('le fil de PANIQUE TV : une ligne trop longue défile un tiers moins vite, et reste 2,4 s sur son dernier mot', () => {
+  const short = scrollTiming(300, 10);
+  assert.equal(short.travel, 310, 'jusqu’au dernier mot, avec un peu d’air');
+  assert.ok(Math.abs(short.time - 310 / 30) < 1e-9, 'trois hauteurs de lettre par seconde');
+  assert.equal(short.airtime, 15, 'quinze secondes d’antenne au moins');
+  const long = scrollTiming(900, 10);
+  assert.ok(Math.abs(long.airtime - (1.2 + long.time + 2.4)) < 1e-9, 'une pause avant, le défilement, 2,4 s sur le dernier mot');
+  assert.equal(scrollTiming(900, 10, 40).airtime, 40, 'une ligne qui demande plus d’antenne la garde');
 });
 
 test('une recrue sur plusieurs, à quelques secondes d’écart, crie son slogan ; le gain s’affiche toujours', () => {
@@ -600,6 +630,214 @@ test('un gain (« + 20 », « +1 », « SOIGNÉ ») n’est jamais évincé avan
   const gain = r.floaters.find((f) => f.text === '+ 20');
   assert.ok(gain.t > 0.25, 'le gain reste');
   assert.ok(r.floaters.filter((f) => f.t > 0.25).length <= 4);
+});
+
+// ---------------------------------------------------------------- décompte de la nasse
+
+/**
+ * Une nasse de CRS telle que le rendu la lit : deux lignes de deux, posées sur le sol `ground`, à `gap` pixels
+ * du milieu (x = 200). Rend la partie et la boîte du dessin de chaque unité, dans le monde.
+ */
+function kettleScene(t, { ground = 150, gap = 40 } = {}) {
+  const def = bundle.ennemis.crs;
+  const rows = def.sprites.repos;
+  const unit = (x, side) => ({ def, x, y: ground - def.hauteur, w: def.largeur, h: def.hauteur, kettle: side, state: 'alert' });
+  const units = [
+    unit(200 - gap - def.largeur, -1), unit(200 - gap - 2 * def.largeur - 2, -1),
+    unit(200 + gap, 1), unit(200 + gap + def.largeur + 2, 1),
+  ];
+  const art = units.map((e) => {
+    const x0 = e.x + e.w / 2 - rows[0].length / 2;
+    return { x0, x1: x0 + rows[0].length, y0: e.y + e.h - rows.length, y1: e.y + e.h };
+  });
+  const game = { kettle: { x: 200, y: ground, t, limit: 20, x0: 200 - gap, x1: 200 + gap, units }, hero: { x: 194, y: ground - 16, w: 12, h: 16, def: { saut: 3 } }, enemies: [] };
+  return { game, art };
+}
+
+test('le décompte de la nasse dit les secondes qui restent avant qu’elle soit levée, les dernières en or', () => {
+  const r = renderer();
+  const at = (t) => r.kettleClock(kettleScene(t).game);
+  assert.equal(at(0).text, '20');
+  assert.equal(at(4.2).text, '16');
+  assert.equal(at(19.5).text, '1', 'jamais « 0 » : à zéro, la nasse est déjà levée');
+  assert.equal(at(14).last, false);
+  assert.equal(at(15.5).last, true);
+  assert.equal(r.kettleClock({ kettle: null }), null, 'sans nasse, pas de décompte');
+});
+
+test('le décompte se pose au-dessus d’une ligne : jamais sur le héros au sommet de son plus haut saut, ni sur le cadre REC, ni sur les lignes, ni sous le HUD', () => {
+  const highest = Object.values(bundle.heros).reduce((a, h) => (h.saut > a.saut ? h : a));
+  const drone = bundle.ennemis.drone;
+  // Ordinateur (1280 × 720), téléphone couché (812 × 375), téléphone tenu debout, pivoté (390 × 780).
+  for (const [where, ratio, viewW] of [['ordinateur', 3, 427], ['téléphone', 5 / 3, 488], ['pivoté', 5 / 3, 468]]) {
+    for (const ground of [190, 150, 130, 90]) {
+      for (const gap of [40, 140]) {
+        for (const at of ['contre la ligne de gauche', 'au milieu', 'contre la ligne de droite']) {
+          const r = renderer(ratio);
+          r.viewW = viewW;
+          r.hudBottom = 96;
+          const { game, art } = kettleScene(3, { ground, gap });
+          const { hero, kettle } = game;
+          hero.def = { saut: highest.saut };
+          hero.h = highest.hauteur;
+          hero.x = at === 'au milieu' ? 194 : at.endsWith('gauche') ? kettle.x0 : kettle.x1 - hero.w;
+          hero.y = ground - highest.saut * 16 - hero.h; // au sommet du saut
+          // Le drone de PANIQUE TV le survole et le cadre.
+          game.enemies = [{ def: drone, x: hero.x, y: hero.y - 30, w: drone.largeur, h: drone.hauteur, state: 'alert' }];
+          r.heroBox = hero;
+          const clock = r.kettleClock(game);
+          const what = `${where}, sol à ${ground}, nasse de ${2 * gap} px, héros ${at}`;
+          const { x, y } = r.frameOf(game.enemies[0]);
+          const frame = { x0: x, x1: x + 45, y0: y, y1: y + 31 };
+          assert.ok(clock.box.y0 >= r.ceiling() - 1e-9, `${what} : sous la bande du HUD`);
+          assert.ok(!overlap(clock.box, { x0: hero.x - 3, x1: hero.x + hero.w + 3, y0: hero.y - 8, y1: hero.y + hero.h }), `${what} : pas sur le héros`);
+          assert.ok(!overlap(clock.box, frame), `${what} : pas sur le cadre REC`);
+          for (const a of art) assert.ok(!overlap(clock.box, a), `${what} : sur aucune unité de ses lignes`);
+          assert.ok(clock.box.x1 <= kettle.x0 || clock.box.x0 >= kettle.x1, `${what} : au-dessus d’une ligne, pas au-dessus du héros`);
+        }
+      }
+    }
+  }
+});
+
+test('le décompte de la nasse passe au-dessus de la voix d’en face ; textes flottants et pancartes passent autour de lui', () => {
+  const r = renderer();
+  const { game } = kettleScene(3);
+  game.enemies = [];
+  const free = r.kettleClock(game);
+  r.boxes = [{ ...free.box }]; // une sommation à cette place
+  const clock = r.kettleClock(game);
+  assert.ok(!overlap(clock.box, free.box), 'il lui laisse la place');
+  r.boxes = [clock.box];
+  r.float({ x: clock.x, y: clock.y + 2, text: 'ON EST LÀ', t: 1.6 });
+  place(r, [clock.box]);
+  const [f] = r.floaters;
+  assert.ok(!overlap(r.textBox(f.text, f.x, f.y, f.size, 150), clock.box), 'le slogan passe autour');
+});
+
+test('dans le vrai jeu, une nasse de CRS affiche son décompte, opaque et jamais sur le héros qui saute, jusqu’à ce qu’elle soit levée', () => {
+  const width = 120;
+  const rows = Array.from({ length: 14 }, (_, y) => {
+    if (y >= 12) return 'T'.repeat(width);
+    if (y === 11) return `..D${'.'.repeat(27)}N${'.'.repeat(width - 31)}`;
+    return '.'.repeat(width);
+  });
+  const level = { titre: 'nasse', manchette: [], panneaux: {}, legende: {}, boss: '', heros: 'zucman', cortege: true, manif: 10, fond: 'ville', carte: rows, nasse: { ennemi: 'crs', nombre: 3, vitesse: 20, rythme: 0 } };
+  const game = new Game(bundle, 'nasse', { level, seed: 3, invincible: true });
+  const r = renderer();
+  r.snap(game);
+  const written = [];
+  const label = r.label.bind(r);
+  r.label = (text, x, y, opts) => {
+    // Le décompte (le « ! » d'alerte a la même taille) : son texte, sa boîte, son opacité.
+    if (opts?.size === 10 && /^\d+$/.test(text)) written.push({ text, box: r.textBox(text, x, y, 10, 0), alpha: opts.alpha ?? 1 });
+    return label(text, x, y, opts);
+  };
+  for (let i = 0; i < 400 && !game.kettle; i++) game.step({ right: !game.kettle });
+  assert.ok(game.kettle, 'la nasse s’est formée');
+  const seen = new Set();
+  let jumps = 0;
+  for (let i = 0; i < 60 * 25 && game.kettle; i++) {
+    game.step({ jump: i % 50 < 25, left: i % 400 < 200, right: i % 400 >= 200 }); // il saute sans cesse, d'un bord à l'autre
+    game.events.length = 0;
+    r.follow(game);
+    written.length = 0;
+    r.tick(DT);
+    r.draw(game, DT);
+    if (game.kettle) {
+      const { hero } = game;
+      if (!hero.onGround) jumps++;
+      assert.deepEqual(written.map((w) => w.text), [String(Math.ceil(game.kettle.limit - game.kettle.t))], 'un décompte, le bon');
+      assert.equal(written[0].alpha, 1, 'opaque');
+      const body = { x0: hero.x - r.camX, x1: hero.x + hero.w - r.camX, y0: hero.y - r.camY, y1: hero.y + hero.h - r.camY };
+      assert.ok(!overlap(written[0].box, body), `pas sur le héros (pas ${i})`);
+      seen.add(written[0].text);
+    }
+  }
+  assert.ok(jumps > 300, 'il a sauté');
+  assert.equal(game.kettle, null, 'la nasse est levée');
+  assert.ok(seen.has('20') && seen.has('1') && seen.size === 20, `il a compté de 20 à 1 : ${[...seen].join(' ')}`);
+  written.length = 0;
+  r.draw(game, DT);
+  assert.deepEqual(written, [], 'levée, plus de décompte');
+});
+
+// ---------------------------------------------------------------- les cœurs, le boss vaincu
+
+test('le boss vaincu, un policier à pied près de qui passe le héros émet des cœurs rouges et violets, qui montent et s’effacent', () => {
+  const r = renderer();
+  const said = [];
+  r.label = (text) => said.push(text);
+  const unit = (id, x, extra = {}) => {
+    const def = bundle.ennemis[id];
+    return { def, x, y: 150 - def.hauteur, w: def.largeur, h: def.hauteur, facing: -1, state: 'patrol', ...extra };
+  };
+  const crs = unit('crs', 110);
+  const enemies = [
+    crs, unit('bac', 300), // un policier loin du héros
+    unit('bfm', 96), unit('canon-a-eau', 120), unit('faux-jeune', 104), // près de lui, mais ni de l'ordre, ni à pied
+  ];
+  const game = { truce: false, hero: { x: 100, y: 134, w: 12, h: 16, dead: false }, enemies };
+  const frames = (n, g = game) => {
+    for (let i = 0; i < n; i++) {
+      r.tick(1 / 60);
+      r.love(g);
+    }
+  };
+  frames(60);
+  assert.equal(r.hearts.length, 0, 'tant que le boss tient, pas de cœur');
+  game.truce = true;
+  frames(1);
+  assert.equal(r.hearts.length, 1, 'le boss vaincu, un cœur tout de suite, au-dessus du CRS');
+  const [first] = r.hearts;
+  assert.ok(Math.abs(first.x - (crs.x + crs.w / 2)) <= 4 && first.y < crs.y, 'au-dessus de sa tête');
+  frames(59);
+  assert.ok(r.hearts.length >= 4 && r.hearts.length <= 5, `un cœur toutes les 0,25 s : ${r.hearts.length}`);
+  assert.deepEqual(r.hearts.slice(0, 4).map((h) => h.rows[1][2]), ['R', 'm', 'R', 'm'], 'rouge, violet, rouge, violet');
+  assert.ok(first.y < crs.y - 14, 'il monte');
+  game.hero.x = 200; // le héros s'éloigne
+  frames(90);
+  assert.equal(r.hearts.length, 0, 'ils se sont effacés, et aucun autre n’est venu');
+  assert.deepEqual(said, [], 'rien d’écrit');
+  // Le même policier, assis en grève : il en émet aussi. Le héros mort : non.
+  crs.state = 'done';
+  game.hero.x = 100;
+  frames(1);
+  assert.equal(r.hearts.length, 1);
+  game.hero.dead = true;
+  frames(90);
+  assert.equal(r.hearts.length, 0, 'le héros tombé, plus de cœur');
+});
+
+test('dans le vrai jeu, après la chute du boss, le héros qui passe devant une compagnie de CRS les fait émettre des cœurs', () => {
+  const width = 90;
+  const rows = Array.from({ length: 14 }, (_, y) => {
+    if (y >= 12) return 'T'.repeat(width);
+    if (y === 11) return `..D${'.'.repeat(17)}c${'.'.repeat(50)}Y${'.'.repeat(width - 72)}`;
+    return '.'.repeat(width);
+  });
+  const level = { titre: 'trêve', manchette: [], panneaux: {}, legende: { c: { type: 'ennemi', id: 'crs' } }, boss: '', heros: 'zucman', cortege: false, fond: 'ville', carte: rows };
+  const lovers = (truce) => {
+    const game = new Game(bundle, 'treve', { level, seed: 3, invincible: true });
+    const r = renderer();
+    r.snap(game);
+    if (truce) game.hurtBoss(game.boss.hp);
+    let most = 0;
+    for (let i = 0; i < 240; i++) {
+      game.step({ right: true });
+      game.events.length = 0;
+      r.follow(game);
+      r.tick(DT);
+      r.draw(game, DT);
+      most = Math.max(most, r.hearts.length);
+    }
+    return { most, game };
+  };
+  const calm = lovers(false);
+  assert.equal(calm.most, 0, 'le boss debout, pas de cœur');
+  const won = lovers(true);
+  assert.equal(won.game.truce, true);
+  assert.ok(won.most >= 3, `le boss vaincu, des cœurs : ${won.most}`);
 });
 
 // ---------------------------------------------------------------- lisibilité et travail inutile
