@@ -54,6 +54,8 @@ Le prix : pas de musique hors-ligne, et un lecteur tiers avec ses traceurs. Il s
 
 **Une autre piste ouvre le menu** (Valentin, 17 novembre 2026 : « La remplacer au menu ») : La Marseillaise de la République française est une piste chiffrée ; sans module de lecture (Chromium sans Widevine, Firefox de test), elle reste muette. Le menu commence par « We're the Resistors » d'Eric Skiff (`ouverture: oui`) : un flux MP3 en clair, en Creative Commons BY, de la musique 8 bits pour un menu de jeu. La Marseillaise reste au menu, au hasard de ⏭.
 
+**Les premières pistes fixées par niveau** (Valentin, 17 novembre 2026 : « Citadelle chez Arnault , propose moi pour les autres . Et fixe aussi les 1eres musiques de niveaux », puis « Valider tout ») : chaque niveau nomme la piste qui ouvre sa visite (`musique`) et celle qui ouvre l'arrivée à son boss (`musique-boss`), toutes différentes. Chez Arnault, « Abattez la citadelle » de Monarch, puis la version de Ryukken. Ensuite, le sac en niveau et le hasard au boss, comme avant.
+
 Le lecteur ne dit pas toujours qu'une piste se tait. Radio Manif vérifie que la lecture avance : une piste morte cède la place à une autre, un réseau lent est attendu. Quand le navigateur refuse de jouer sans geste du joueur, un bouton le montre et le prochain toucher relance la musique. SoundCloud injoignable : on joue sans musique, et seul le bouton de Radio Manif, ou le retour du réseau, réessaie.
 
 ## Le but : une manif qui grossit

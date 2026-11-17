@@ -8,6 +8,8 @@ fond: campagne
 cortege: oui
 manif: 5
 heros: ecoterroriste
+musique: internationale
+musique-boss: tout-le-monde-deteste-la-police-tekos-redon
 
 panneau.1: Tracts et manif : le barrage cède
 panneau.2: [bas] + [tirer] : creuser
