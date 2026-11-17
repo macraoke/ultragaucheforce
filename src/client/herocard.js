@@ -4,6 +4,7 @@
 
 import { spriteElement } from './sprites.js';
 import { frenchDate, quoted } from './dom.js';
+import { gameFlags } from '../sim/manif.js';
 
 const el = (tag, className, text) => {
   const node = document.createElement(tag);
@@ -34,11 +35,12 @@ function fit(card, scene, words) {
 /**
  * @param {object} bundle  le contenu du jeu
  * @param {object} hero    une fiche de `bundle.heros`
- * @param {{audio?: object, reduced?: boolean, rescued?: boolean, onClose?: () => void}} options
+ * @param {{audio?: object, reduced?: boolean, rescued?: boolean, seed?: number, onClose?: () => void}} options
+ *        `seed` : la graine de la partie ; les drapeaux s'y rangent comme dans son cortège, le tricolore en tête
  *        `onClose` : appelé quand le carton commence à s'effacer, juste avant de laisser revoir le jeu
  * @returns {Promise<void>} résolue quand le carton est fermé
  */
-export function showHeroCard(bundle, hero, { audio = null, reduced = false, rescued = true, onClose = null } = {}) {
+export function showHeroCard(bundle, hero, { audio = null, reduced = false, rescued = true, seed = Math.floor(Math.random() * 1e9), onClose = null } = {}) {
   return new Promise((resolve) => {
     const card = el('div', `carton${reduced ? ' sobre' : ''}`);
     card.setAttribute('role', 'dialog');
@@ -48,7 +50,7 @@ export function showHeroCard(bundle, hero, { audio = null, reduced = false, resc
     bands.append(el('i'), el('i'), el('i'));
     card.append(bands, el('div', 'rayons'));
 
-    const flags = Object.values(bundle.drapeaux);
+    const flags = gameFlags(bundle, seed).map((id) => bundle.drapeaux[id]);
     const half = Math.ceil(flags.length / 2);
     [['haut', flags.slice(0, half)], ['bas', flags.slice(half)]].forEach(([side, list]) => {
       const row = el('div', `drapeaux ${side}`);

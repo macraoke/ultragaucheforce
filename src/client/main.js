@@ -349,7 +349,7 @@ function handle(events) {
         Object.assign(renderer.cam, renderer.target(game)); // la caméra arrivée
         renderer.draw(game, (performance.now() - opened) / 1000);
       };
-      showHeroCard(bundle, hero, { audio, reduced: save.options.sobre, onClose }).then(() => {
+      showHeroCard(bundle, hero, { audio, reduced: save.options.sobre, seed: game.seed, onClose }).then(() => {
         if (mode !== 'card') return;
         setMode('playing');
         if (game.level.cortege) audio.play('slogan'); // le cortège salue le camarade libéré

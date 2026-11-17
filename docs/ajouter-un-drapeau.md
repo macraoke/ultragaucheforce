@@ -39,7 +39,7 @@ YYYYYYYYYYYYYYYYYY
 
 ## La proximité
 
-Le cortège s'ouvre toujours sur le tricolore, puis LFI. Les autres drapeaux sont tirés au hasard, mais une lutte proche sort plus tôt et plus souvent qu'une lutte lointaine.
+Le cortège s'ouvre toujours sur le tricolore, puis LFI. Les autres drapeaux sont tirés au hasard à chaque partie, mais une lutte proche sort plus tôt et plus souvent qu'une lutte lointaine. Le carton du camarade libéré les range dans le même ordre que le cortège de la partie.
 
 - `3` : une lutte d'ici, au cœur du programme insoumis (le social, l'écologie, le féminisme, l'antiracisme, les fiertés, la Palestine, Kanaky…).
 - `2` : une lutte que la gauche porte à l'Assemblée ou dans la rue, sans qu'elle soit au cœur du cortège.

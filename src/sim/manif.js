@@ -29,6 +29,9 @@ export function flagOrder(ids, seed, weightOf = () => 1) {
     .map((d) => d.id);
   return [...lead, ...rest];
 }
+
+/** Les drapeaux du contenu dans l'ordre de cette partie, pondérés par leur proximité : le cortège et le carton du camarade libéré. */
+export const gameFlags = (bundle, seed) => flagOrder(Object.keys(bundle.drapeaux || {}), seed, (id) => bundle.drapeaux[id].proximite);
 const SPACING = 7; // points de trace entre deux manifestants
 const KINDS = ['pancarte', 'drapeau', 'fanfare'];
 const INSTRUMENTS = ['tambour', 'trompette', 'soubassophone'];
@@ -125,7 +128,7 @@ export function syncCortege(game) {
   const { hero, bundle, cortege } = game;
   const wanted = visibleCortege(game.crowd);
   if (cortege.length > wanted) cortege.length = wanted;
-  const flags = cortege.length < wanted ? flagOrder(Object.keys(bundle.drapeaux || {}), game.seed, (id) => bundle.drapeaux[id].proximite) : [];
+  const flags = cortege.length < wanted ? gameFlags(bundle, game.seed) : [];
   while (cortege.length < wanted) {
     const n = cortege.length;
     const kind = KINDS[n % KINDS.length];
