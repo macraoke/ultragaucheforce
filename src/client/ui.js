@@ -15,6 +15,17 @@ import { makeRng } from '../sim/rng.js';
 import { SIGN_LINGER } from './render.js';
 
 const MENTION = 'Satire citoyenne, libre et collaborative.';
+
+/**
+ * Les mentions légales (LCEN, art. 6-III) : un éditeur particulier, identifié auprès de l'hébergeur, sans nom ici.
+ * Valentin, 17 novembre 2026 : « anonyme + hébergeur, pas de pseudonyme visible à cet endroit ».
+ * Le même texte, sans JavaScript : `mentions-legales.html`.
+ */
+const legalNotice = () => [
+  h('p', {}, h('b', {}, 'Éditeur : '), 'un particulier, à titre non professionnel. Son identité a été communiquée à l’hébergeur (loi pour la confiance dans l’économie numérique, article 6-III-2).'),
+  h('p', {}, h('b', {}, 'Hébergeur : '), 'GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis.'),
+  h('p', {}, h('b', {}, 'Contact : '), link(`${REPO}/issues`, 'les issues du dépôt'), ' (il faut un compte GitHub).'),
+];
 const PANIC_NAMES = ['calme', 'alerte', 'hystérie']; // les trois crans de la chaîne
 const AIRTIME = 15; // secondes d'antenne d'une citation qui tient sur le fil
 const SCROLL = 3; // vitesse de défilement d'une ligne trop longue, en hauteurs de lettre par seconde
@@ -363,6 +374,7 @@ export class Screens {
         link(`${REPO}/blob/main/CHARTE.md`, 'La charte'), ' · ', h('a', { href: 'galerie.html' }, 'La Galerie')),
       measuring() && fold('Mesure d’audience anonyme (PostHog) : ni cookie, ni profil.',
         h('p', {}, 'Le jeu compte les visites, les parties par niveau et par héros (gagnée, perdue ou abandonnée, leur durée, la taille de la manif), les pistes de Radio Manif écoutées, passées ou mises en pause, et ce qui empêche de jouer : contenu ou musique injoignables, erreurs. Les visiteurs sont comptés par jour, sur les serveurs de PostHog, d’après une empreinte qui change chaque jour. Rien n’est écrit sur ton appareil pour cela, et rien de ce que tu écris dans l’Atelier ne part.')),
+      fold('Mentions légales', ...legalNotice()),
       fold('Références', h('ul', {}, REFERENCES.map((r) => h('li', {}, link(r.url, r.titre), ` — ${r.note}`)))),
       fold('Crédits et licences',
         h('p', {}, 'Code : MIT. Contenus : CC BY-SA 4.0. Bruitages synthétisés avec ZzFX de Frank Force (MIT).'),

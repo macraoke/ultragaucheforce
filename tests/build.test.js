@@ -17,7 +17,7 @@ test('le build produit un site complet, installable et jouable hors-ligne', (t) 
   const { version, files, bytes } = build(out);
   const read = (path) => readFileSync(join(out, path));
 
-  for (const path of ['index.html', 'galerie.html', 'style.css', 'manifest.webmanifest', 'content.json', 'sw.js',
+  for (const path of ['index.html', 'galerie.html', 'mentions-legales.html', 'style.css', 'manifest.webmanifest', 'content.json', 'sw.js',
     'src/client/main.js', 'src/sim/game.js', 'src/content/rules.js']) {
     assert.ok(existsSync(join(out, path)), `${path} est dans le build`);
   }
