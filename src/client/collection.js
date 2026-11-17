@@ -357,7 +357,8 @@ export function openCard(bundle, card, { found = true, actions = [] } = {}) {
     return inside[(at + (e.shiftKey ? -1 : 1) + inside.length) % inside.length].focus(); // une carte haute défile jusqu'au lien
   };
   const article = collectionCard(bundle, card, found);
-  const overlay = h('div', { className: 'carte-ouverte', onclick: (e) => e.target === overlay && close() },
+  // Pas de `&&` qui rendrait faux : un `onclick` qui rend faux annule le clic, et les liens des sources avec.
+  const overlay = h('div', { className: 'carte-ouverte', onclick: (e) => { if (e.target === overlay) close(); } },
     h('div', { className: 'cadre' },
       article,
       h('div', { className: 'pied' }, actions, h('button', { type: 'button', className: 'discret fermer', onclick: close }, 'Fermer'))));

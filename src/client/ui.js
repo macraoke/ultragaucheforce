@@ -27,11 +27,10 @@ const legalNotice = () => [
   h('p', {}, h('b', {}, 'Contact : '), link(`${REPO}/issues`, 'les issues du dépôt'), ' (il faut un compte GitHub).'),
 ];
 const PANIC_NAMES = ['calme', 'alerte', 'hystérie']; // les trois crans de la chaîne
-const AIRTIME = 15; // secondes d'antenne d'une citation qui tient sur le fil
-const SCROLL = 3; // vitesse de défilement d'une ligne trop longue, en hauteurs de lettre par seconde
-const SCROLL_SLOW = 1.5; // en effets réduits : elle défile quand même, deux fois moins vite (elle ne passe jamais à la ligne)
-const SCROLL_BEFORE = 1.2; // secondes de pause avant qu'une ligne trop longue défile (le délai de `defile`, style.css)
-const SCROLL_AFTER = 2.4; // secondes de pause sur son dernier mot, avant la ligne suivante
+const SCROLL = 3; // vitesse du fil, en hauteurs de lettre par seconde : il défile en continu, comme à la télé
+const SCROLL_SLOW = 1.5; // en effets réduits : il défile quand même, deux fois moins vite (il ne passe jamais à la ligne)
+const SCROLL_AFTER = 2.4; // secondes, au moins, pendant lesquelles le dernier mot d'une alerte reste à l'écran
+const REDUCED = globalThis.matchMedia?.('(prefers-reduced-motion: reduce)') ?? { matches: false };
 const HYSTERIA = 2; // le cran où la chaîne ne lâche plus sa citation : plus de rotation
 // Une rafale de notes du même genre se replie en une seule : « 3 pancartes débloquées ».
 const FOLDS = { pancartes: 'pancartes débloquées', cartes: 'cartes débloquées' };
@@ -70,16 +69,73 @@ export function lineBar(game, memo) {
 }
 
 /**
- * Une ligne trop longue pour le fil de PANIQUE TV, de `over` pixels de trop, en lettres de `em` pixels : jusqu'où elle
- * défile (son dernier mot, avec un peu d'air), en combien de secondes, et son temps d'antenne : une pause avant, le
- * défilement, une pause sur son dernier mot ; `seconds` au moins. `slow` : effets réduits, deux fois moins vite.
- * Une ligne qui tient (`over` ≤ 0) ne défile pas.
+ * Combien de secondes une alerte tient l'antenne : `seconds` au moins, et assez pour que son dernier mot ait défilé à
+ * l'écran, puis y reste SCROLL_AFTER secondes. `over` : ses pixels de trop pour le fil, en lettres de `em` pixels ;
+ * `slow` : effets réduits, le fil va deux fois moins vite. Une alerte qui tient (`over` ≤ 0) garde ses `seconds`.
  */
-export function scrollTiming(over, em, seconds = AIRTIME, slow = false) {
-  if (!(over > 0)) return { travel: 0, time: 0, airtime: seconds };
-  const travel = over + em;
-  const time = travel / (em * (slow ? SCROLL_SLOW : SCROLL));
-  return { travel, time, airtime: Math.max(seconds, SCROLL_BEFORE + time + SCROLL_AFTER) };
+export function alertTime(over, em, seconds, slow = false) {
+  if (!(over > 0)) return seconds;
+  return Math.max(seconds, over / (em * (slow ? SCROLL_SLOW : SCROLL)) + SCROLL_AFTER);
+}
+
+/**
+ * Le fil de PANIQUE TV, sans le DOM : des morceaux de texte posés bout à bout sur une piste qui avance à vitesse
+ * constante, de droite à gauche. Chaque morceau garde sa place (`x`, en pixels sur la piste) : rien ne saute quand un
+ * morceau sort à gauche ou qu'un autre arrive à droite. `offset` : de combien la piste a avancé.
+ */
+export class Crawl {
+  constructor() {
+    this.items = [];
+    this.offset = 0;
+  }
+
+  reset() {
+    this.items = [];
+    this.offset = 0;
+  }
+
+  /** Où finit la piste : le prochain morceau se pose là. */
+  end() {
+    const last = this.items.at(-1);
+    return last ? last.x + last.w : 0;
+  }
+
+  /** Pose un morceau de `w` pixels au bout de la piste. */
+  push(w, data = {}) {
+    const item = { x: this.end(), w, ...data };
+    this.items.push(item);
+    return item;
+  }
+
+  /** La piste avance de `px` pixels. */
+  advance(px) {
+    this.offset += px;
+  }
+
+  /** Il manque du texte : le bout de la piste entre dans les `room` pixels visibles. */
+  hungry(room) {
+    return this.end() - this.offset < room;
+  }
+
+  /**
+   * Retire les morceaux sortis à gauche (au-delà de `margin` pixels), et ramène la piste à zéro d'autant :
+   * les morceaux restants ne bougent pas à l'écran. Rend les morceaux retirés.
+   */
+  drop(margin = 0) {
+    const gone = [];
+    while (this.items.length > 1 && this.items[0].x + this.items[0].w < this.offset - margin) gone.push(this.items.shift());
+    const shift = this.items[0]?.x ?? 0;
+    if (shift) {
+      for (const item of this.items) item.x -= shift;
+      this.offset -= shift;
+    }
+    return gone;
+  }
+
+  /** Le morceau qui passe au bord gauche du fil : c'est lui que l'étiquette annonce. */
+  lead() {
+    return this.items.find((item) => item.x + item.w > this.offset) ?? this.items.at(-1) ?? null;
+  }
 }
 
 /**
@@ -618,8 +674,13 @@ export class Hud {
     this.q = (id) => document.getElementById(id);
     this.last = '';
     this.bannerTimer = 0;
-    this.rotation = 0; // minuterie de la prochaine citation
-    this.airtime = AIRTIME; // secondes d'antenne de la ligne affichée
+    this.crawl = new Crawl(); // le fil, qui défile en continu (voir `tick`)
+    this.frame = 0; // l'image demandée du fil, tant qu'il est à l'écran
+    this.em = 16; // la hauteur de lettre du fil, en pixels, et sa marge à gauche (mesurées par `relayout`)
+    this.pad = 0;
+    this.room = 0; // la largeur du fil, en pixels : suivie sans la relire à chaque image (voir `relayout`)
+    this.alerting = null; // l'alerte en cours : elle repasse en boucle jusqu'à la fin de son temps d'antenne
+    this.quote = null; // la dernière citation passée : en hystérie, la chaîne ne lâche plus qu'elle
     this.turn = 0;
     this.level = 0; // le cran de panique de la chaîne
     this.dark = false; // la régie cassée : écran noir, la chaîne se tait (voir `offAir`)
@@ -643,61 +704,131 @@ export class Hud {
     this.level = 0;
     this.dark = false;
     clearTimeout(this.bannerTimer);
-    delete this.q('bandeau').dataset.alerte; // une alerte interrompue ne fige pas le fil de la partie suivante
+    this.alerting = null; // une alerte interrompue ne fige pas le fil de la partie suivante
+    this.quote = null;
+    delete this.q('bandeau').dataset.alerte;
     delete this.q('bandeau').dataset.ecran;
     this.notes = [];
     this.note = null;
     this.now = undefined;
     this.signUntil = -1;
     this.q('toasts').replaceChildren();
-    this.nextQuote();
+    this.restart();
   }
 
-  /** Le bandeau reste à l'antenne pendant toute la partie ; le fil tourne tant qu'aucune alerte ne l'interrompt. */
+  /** Le bandeau reste à l'antenne pendant toute la partie ; le fil défile tant qu'il est à l'écran. */
   setVisible(on) {
     const el = this.q('bandeau');
-    const shown = !el.hidden;
     this.marks = null; // affiché ou masqué : à remesurer
     this.el.hidden = !on;
     el.hidden = !on;
-    clearTimeout(this.rotation);
-    if (!on) return;
-    if (!shown) this.fit(); // on ne mesure une ligne que lorsqu'elle est à l'écran
-    if (!el.dataset.alerte) this.schedule();
+    if (!on) {
+      cancelAnimationFrame(this.frame);
+      this.frame = 0;
+      this.then = undefined;
+      return;
+    }
+    if (this.frame) return;
+    this.relayout(); // on ne mesure le fil que lorsqu'il est à l'écran
+    this.frame = requestAnimationFrame((now) => this.tick(now));
   }
 
-  /** La prochaine citation, dans `airtime` secondes ; en hystérie, la chaîne garde celle qu'elle a. */
-  schedule() {
-    clearTimeout(this.rotation);
-    if (!this.q('bandeau').hidden && this.level < HYSTERIA && !this.dark) this.rotation = setTimeout(() => this.nextQuote(), this.airtime * 1000);
-  }
-
-  nextQuote() {
-    const quote = this.quotes[this.turn++ % Math.max(1, this.quotes.length)];
-    if (!quote) return;
-    this.show(`« ${quote.texte} » — ${quote.auteur}, ${quote.date.slice(0, 4)}`, 'Ils l’ont dit', AIRTIME);
-    this.onQuote(quote.id);
-    this.schedule();
+  /** Le fil repart de zéro : le prochain morceau s'affiche tout de suite, au bord gauche. */
+  restart() {
+    this.crawl.reset();
+    this.leader = null;
+    this.q('bandeau').querySelector('.fil').replaceChildren(h('span', { className: 'piste' }));
+    this.feed();
   }
 
   /**
-   * La régie cassée : le bandeau passe au noir, « ÉCRAN NOIR », tant que dure la coupure (temps de jeu : la pause
-   * l'arrête aussi). Quand l'antenne revient, le fil reprend.
+   * Le prochain morceau du fil : l'écran noir quand la régie est cassée, l'alerte tant qu'elle dure, la même
+   * citation en hystérie, sinon la citation suivante.
+   */
+  piece() {
+    if (this.dark) return { text: 'ÉCRAN NOIR', label: 'Antenne coupée' };
+    if (this.alerting) return this.alerting;
+    if (this.level >= HYSTERIA && this.quote) return this.quote;
+    const quote = this.quotes[this.turn++ % Math.max(1, this.quotes.length)];
+    if (!quote) return null;
+    this.onQuote(quote.id);
+    return (this.quote = { text: `« ${quote.texte} » — ${quote.auteur}, ${quote.date.slice(0, 4)}`, label: 'Ils l’ont dit' });
+  }
+
+  /** Pose des morceaux au bout de la piste tant qu'il manque du texte à droite : le fil n'a jamais de trou. */
+  feed() {
+    const track = this.q('bandeau').querySelector('.piste');
+    const { room } = this; // 0 tant que le bandeau est masqué : un seul morceau, mesuré à l'affichage
+    for (let n = 0; n < 50; n++) {
+      if (this.crawl.items.length && (this.dark || room <= 0 || !this.crawl.hungry(room))) return;
+      const piece = this.piece();
+      if (!piece) return;
+      const el = h('i', {}, piece.text);
+      track.append(el);
+      const item = this.crawl.push(el.offsetWidth, { ...piece, el });
+      el.style.left = `${item.x}px`;
+    }
+  }
+
+  /** Remesure le fil (à l'affichage, à chaque changement de taille) : sa hauteur de lettre, et chaque morceau. */
+  relayout() {
+    const line = this.q('bandeau').querySelector('.fil');
+    const style = getComputedStyle(line);
+    this.em = parseFloat(style.fontSize) || this.em;
+    this.pad = parseFloat(style.paddingLeft) || 0;
+    this.room = line.clientWidth;
+    // L'étiquette ou les crans de panique changent de largeur : le fil aussi.
+    this.watch ??= globalThis.ResizeObserver && new ResizeObserver(() => (this.room = line.clientWidth));
+    this.watch?.observe(line);
+    let x = this.crawl.items[0]?.x ?? 0;
+    for (const item of this.crawl.items) {
+      Object.assign(item, { x, w: item.el.offsetWidth });
+      item.el.style.left = `${x}px`;
+      x += item.w;
+    }
+    this.feed();
+  }
+
+  /**
+   * Une image du fil : il avance à vitesse constante, de droite à gauche, deux fois moins vite en effets réduits,
+   * et pas du tout sur l'écran noir. L'étiquette annonce le morceau qui passe au bord gauche.
+   */
+  tick(now) {
+    this.frame = requestAnimationFrame((t) => this.tick(t));
+    const dt = Math.min(0.1, Math.max(0, (now - (this.then ?? now)) / 1000)); // un onglet en arrière-plan ne fait pas sauter le fil
+    this.then = now;
+    const slow = document.body.classList.contains('sobre') || REDUCED.matches;
+    if (!this.dark) this.crawl.advance(dt * this.em * (slow ? SCROLL_SLOW : SCROLL));
+    const gone = this.crawl.drop(this.pad);
+    if (gone.length) {
+      for (const item of gone) item.el.remove();
+      for (const item of this.crawl.items) item.el.style.left = `${item.x}px`;
+    }
+    this.feed();
+    const el = this.q('bandeau');
+    el.querySelector('.piste').style.transform = `translateX(${-this.crawl.offset.toFixed(2)}px)`;
+    const lead = this.crawl.lead();
+    if (lead && lead !== this.leader) {
+      this.leader = lead;
+      el.querySelector('em').textContent = lead.label;
+      if (lead.alert) el.dataset.alerte = 'oui';
+      else delete el.dataset.alerte;
+    }
+  }
+
+  /**
+   * La régie cassée : le bandeau passe au noir, « ÉCRAN NOIR », immobile, tant que dure la coupure (temps de jeu :
+   * la pause l'arrête aussi). Quand l'antenne revient, le fil reprend.
    */
   offAir(dark) {
     if (dark === this.dark) return;
     this.dark = dark;
     const el = this.q('bandeau');
-    clearTimeout(this.rotation);
     clearTimeout(this.bannerTimer);
-    delete el.dataset.alerte;
-    if (dark) {
-      el.dataset.ecran = 'noir';
-      this.show('ÉCRAN NOIR', 'Antenne coupée', AIRTIME);
-    } else {
-      delete el.dataset.ecran;
-      this.nextQuote();
-    }
+    this.alerting = null;
+    if (dark) el.dataset.ecran = 'noir';
+    else delete el.dataset.ecran;
+    this.restart();
   }
 
   update(game) {
@@ -752,10 +883,7 @@ export class Hud {
     // La panique est celle de la chaîne : trois crans dans le bandeau, celui en cours se remplit,
     // et tout le bandeau change de couleur avec lui.
     const level = game.panicLevel;
-    if (level !== this.level) {
-      this.level = level;
-      if (level >= HYSTERIA) clearTimeout(this.rotation); // en hystérie, la citation reste à l'antenne
-    }
+    this.level = level; // en hystérie, la citation en cours repasse en boucle (`piece`)
     const gauge = this.q('hud-panique');
     const [from, to] = [[0, ...PANIC_STEPS][level], [...PANIC_STEPS, 100][level]];
     this.q('bandeau').dataset.niveau = level;
@@ -781,55 +909,23 @@ export class Hud {
     }
   }
 
-  /** Alerte info : un bandeau interrompt le fil quelques secondes. `credit` : la chaîne et la date d'un vrai bandeau. */
+  /**
+   * Alerte info : elle interrompt le fil, s'affiche tout de suite et défile en boucle `seconds` secondes au moins,
+   * le temps de la lire jusqu'au bout ; puis les citations reprennent à sa suite. `credit` : la chaîne et la date
+   * d'un vrai bandeau.
+   */
   banner(text, credit = '', seconds = 7) {
     const el = this.q('bandeau');
-    el.dataset.alerte = 'oui';
     const origin = credit.split(' — ')[0];
-    this.show(origin ? `« ${text} » — ${origin}` : text, origin ? 'Vu à la télé' : 'Alerte info', seconds);
+    this.alerting = { text: origin ? `« ${text} » — ${origin}` : text, label: origin ? 'Vu à la télé' : 'Alerte info', alert: true };
+    clearTimeout(this.bannerTimer);
+    this.restart();
     el.classList.remove('entre');
     void el.offsetWidth; // relance l'animation
     el.classList.add('entre');
-    clearTimeout(this.rotation); // l'alerte interrompt le fil…
-    clearTimeout(this.bannerTimer);
-    this.bannerTimer = setTimeout(() => {
-      delete el.dataset.alerte;
-      this.nextQuote(); // … qui reprend après elle
-    }, this.airtime * 1000);
-  }
-
-  /**
-   * Affiche une ligne dans le bandeau, pour `seconds` secondes au moins.
-   * Trop longue pour le fil, elle défile jusqu'à son dernier mot, et reste à l'antenne le temps qu'il faut.
-   */
-  show(text, label, seconds) {
-    const el = this.q('bandeau');
-    el.querySelector('em').textContent = label;
-    el.querySelector('.fil').replaceChildren(h('i', {}, text));
-    this.seconds = seconds;
-    this.fit();
-  }
-
-  /** Ajuste la ligne affichée à la largeur du fil, et fixe son temps d'antenne (`this.airtime`). */
-  fit() {
-    const line = this.q('bandeau').querySelector('.fil');
-    const inner = line.firstElementChild;
-    this.airtime = this.seconds ?? AIRTIME;
-    if (!inner) return;
-    inner.style.animation = 'none'; // sans défilement tant qu'on ne sait pas s'il en faut un
-    const style = getComputedStyle(line);
-    const room = line.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
-    const over = inner.scrollWidth - room;
-    if (room <= 0 || over <= 0) return; // bandeau masqué, ou la ligne tient
-    // Jamais sur deux lignes : la ligne défile, sur une seule ligne, dans un bandeau de hauteur fixe. En effets réduits,
-    // elle défile deux fois moins vite, sans les autres animations du bandeau (style.css).
-    const still = document.body.classList.contains('sobre') || matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const { travel, time, airtime } = scrollTiming(over, parseFloat(style.fontSize), this.airtime, still);
-    inner.style.setProperty('--decalage', `${-travel}px`);
-    void inner.offsetWidth; // relance le défilement depuis le début
-    // Écrit ici en entier : il passe aussi quand les effets réduits arrêtent les autres animations du bandeau.
-    inner.style.animation = `defile ${time.toFixed(2)}s linear ${SCROLL_BEFORE}s both`;
-    this.airtime = airtime;
+    const over = (this.crawl.items[0]?.w ?? 0) - (this.room - 2 * this.pad);
+    const slow = document.body.classList.contains('sobre') || REDUCED.matches;
+    this.bannerTimer = setTimeout(() => (this.alerting = null), alertTime(over, this.em, seconds, slow) * 1000);
   }
 
   /**

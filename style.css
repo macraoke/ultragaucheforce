@@ -324,11 +324,13 @@ body.tactile #pause::after { content: ''; position: absolute; left: 50%; top: 50
 /* L'étiquette : d'où vient ce qui passe à l'antenne. */
 #bandeau em { flex: none; display: flex; align-items: center; background: var(--encre); color: var(--or); padding: 0 .65em; font-style: normal; white-space: nowrap; }
 #bandeau[data-alerte] em { background: var(--or); color: var(--nuit); }
-/* Le fil : une ligne ; trop longue, elle défile jusqu'à son dernier mot. */
-#bandeau .fil { flex: 1; min-width: 0; display: flex; align-items: center; background: var(--fond); color: var(--encre-fil); padding: 0 .8em; white-space: nowrap; overflow: hidden; transition: background .3s, color .3s; }
-/* Une seule ligne, toujours : trop longue, elle défile (Hud.fit pose l'animation, et sa durée). */
-#bandeau .fil i { display: inline-block; font-style: normal; white-space: nowrap; will-change: transform; }
-@keyframes defile { to { transform: translateX(var(--decalage, 0)); } }
+/* Le fil : une seule ligne, qui défile en continu de droite à gauche, comme à la télé (Hud.tick avance la piste). */
+#bandeau .fil { position: relative; flex: 1; min-width: 0; background: var(--fond); color: var(--encre-fil); padding: 0 .8em; white-space: nowrap; overflow: hidden; transition: background .3s, color .3s; }
+#bandeau .piste { position: absolute; top: 0; bottom: 0; left: .8em; will-change: transform; }
+/* Chaque morceau garde sa place sur la piste ; un point les sépare. */
+#bandeau .piste i { position: absolute; top: 0; bottom: 0; display: flex; align-items: center; font-style: normal; white-space: nowrap; }
+#bandeau .piste i::after { content: '●'; margin: 0 1.1em; font-size: .6em; opacity: .55; }
+#bandeau[data-ecran] .piste i::after { content: none; }
 /* La couleur du bandeau suit le niveau de la chaîne : blanc, jaune, rouge. */
 #bandeau[data-niveau='1'] { --fond: #ffe08a; --filet: var(--or); }
 #bandeau[data-niveau='2'] { --fond: var(--rouge); --encre-fil: var(--blanc); --filet: var(--blanc); }
@@ -953,6 +955,9 @@ html.bas .carte-ouverte.partage .cadre { grid-template-columns: auto auto; align
 html.bas .carte-ouverte.partage img { max-height: calc(var(--vh, 1vh) * 100 - 40px); }
 html.bas .carte-ouverte.partage .pied { flex-direction: column; margin-top: 0; }
 .carte-ouverte .pied { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 12px; }
+/* « Lien copié » : sous les boutons, le temps de le lire. */
+.carte-ouverte.partage .copie { flex: 1 0 100%; margin: 0; text-align: center; color: var(--or); font-weight: 700; overflow-wrap: anywhere; }
+.carte-ouverte.partage .copie:empty { display: none; }
 @keyframes retourne { from { transform: rotateY(90deg) scale(.8); } to { transform: none; } }
 
 /* les cartes débloquées pendant un niveau : une rangée, retournées une à une */

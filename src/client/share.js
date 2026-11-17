@@ -131,8 +131,53 @@ const toFile = (canvas) => new Promise((resolve) =>
   canvas.toBlob((blob) => resolve(blob && new File([blob], 'ultragauche-force.png', { type: 'image/png' })), 'image/png'));
 
 /**
- * Montre l'image, puis l'envoie par le partage de l'appareil ; là où il n'existe pas, on l'enregistre.
- * Un seul calque à la fois ; il prend le clavier, et Échap le ferme.
+ * Comment « Enregistrer l'image » s'y prend : sur un téléphone ou une tablette qui sait partager une image, par la
+ * feuille de partage (« Enregistrer l'image » y est) ; partout ailleurs, l'ordinateur compris, un vrai téléchargement.
+ * @param {{coarse: boolean, files: boolean}} o  `coarse` : on joue au doigt ; `files` : le partage accepte une image
+ * @returns {'partage' | 'telechargement'}
+ */
+export const saveMode = ({ coarse, files }) => (coarse && files ? 'partage' : 'telechargement');
+
+/** Télécharge `file` : une adresse « blob: », un lien posé dans la page le temps du clic, libérée une minute après. */
+function download(file) {
+  const href = URL.createObjectURL(file);
+  const a = h('a', { href, download: file.name, hidden: true });
+  document.body.append(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(href), 60_000); // Firefox lit le fichier après le clic : on ne la libère pas tout de suite
+}
+
+/**
+ * Copie `text` dans le presse-papiers. Sans l'API du presse-papiers (page non sécurisée, navigateur ancien, refus),
+ * par un champ sélectionné et `execCommand('copy')`. Rend vrai si le texte est copié.
+ */
+export async function copyText(text, { clipboard = globalThis.navigator?.clipboard, doc = globalThis.document } = {}) {
+  try {
+    await clipboard.writeText(text);
+    return true;
+  } catch {
+    // pas d'API, ou refusée : on essaie à l'ancienne
+  }
+  const field = doc.createElement('textarea');
+  field.value = text;
+  field.setAttribute('readonly', '');
+  field.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+  doc.body.append(field);
+  field.select();
+  let done = false;
+  try {
+    done = doc.execCommand('copy');
+  } catch {
+    done = false;
+  }
+  field.remove();
+  return Boolean(done);
+}
+
+/**
+ * Montre l'image, avec de quoi l'enregistrer, l'envoyer par le partage de l'appareil quand il existe, et copier le
+ * lien du jeu. Un seul calque à la fois ; il prend le clavier, et Échap le ferme.
  * @param {HTMLCanvasElement} canvas
  * @param {{text: string, url: string, button: (label: string, action: () => void, className?: string) => HTMLElement}} o
  */
@@ -165,14 +210,30 @@ export async function openShare(canvas, { text, url, button }) {
     }
   };
   const picture = canvas.toDataURL('image/png'); // une adresse « data: » : rien à libérer quand l'écran change
-  const native = Boolean(navigator.canShare?.({ files: [file] }));
-  const send = () => navigator.share({ files: [file], text, url }).catch(() => {}); // partage annulé : rien à dire
-  overlay.onclick = (e) => e.target === overlay && close();
+  const files = Boolean(navigator.canShare?.({ files: [file] }));
+  const coarse = Boolean(globalThis.matchMedia?.('(pointer: coarse)').matches);
+  const shared = (data) => navigator.share(data).catch(() => {}); // partage annulé : rien à dire
+  const save = () => (saveMode({ coarse, files }) === 'partage' ? shared({ files: [file] }) : download(file));
+  const status = h('p', { className: 'copie', role: 'status' });
+  let copied = 0;
+  const copy = async () => {
+    const done = await copyText(url);
+    status.textContent = done ? 'Lien copié' : `Copiez-le : ${url}`;
+    clearTimeout(copied);
+    if (done) copied = setTimeout(() => (status.textContent = ''), 2500);
+  };
+  // Pas de `return false` ici : un gestionnaire `onclick` qui rend faux annule le clic, et les boutons du calque avec.
+  overlay.onclick = (e) => {
+    if (e.target === overlay) close();
+  };
   document.addEventListener('keydown', onKey, true);
   overlay.append(h('div', { className: 'cadre' },
     h('img', { src: picture, alt: text, width: SIZE, height: SIZE }),
     h('div', { className: 'pied' },
-      native ? button('Envoyer', send, 'gros') : h('a', { className: 'bouton gros', href: picture, download: file.name }, 'Enregistrer l’image'),
-      button('Fermer', close, 'discret'))));
+      button('Enregistrer l’image', save, 'gros'),
+      files ? button('Envoyer', () => shared({ files: [file], text, url })) : null,
+      button('Copier le lien', copy),
+      button('Fermer', close, 'discret'),
+      status)));
   overlay.querySelector('.gros').focus({ preventScroll: true });
 }
