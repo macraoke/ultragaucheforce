@@ -62,7 +62,12 @@ export function showAtelier(root, { bundle, save, test, back, resume = false }) 
   const { palette } = bundle;
   const bySymbol = Object.fromEntries(Object.values(bundle.tuiles).map((t) => [t.symbole, t]));
   const image = (def) => def?.sprites && (def.sprites.image || def.sprites.repos || Object.values(def.sprites)[0]);
-  const anyHero = Object.values(bundle.heros).find((x) => x.statut !== 'test') || Object.values(bundle.heros)[0];
+  // Le repère de départ, sans héros précis : sans clé `heros`, l'essai en tire un au hasard.
+  const START = [
+    '...gggg...', '..gGGGGg..', '..gGGGGg..', '..gGGGGg..', '...gGGg...', '....gg....',
+    '..gggggg..', '.gGGGGGGg.', '.gGGGGGGg.', '.gGGGGGGg.', '..gGGGGg..', '..gGggGg..',
+    '..gGg.gGg.', '..gGg.gGg.', '..gGg.gGg.', '.ggg..ggg.',
+  ];
   // Ce que l'en-tête reçoit de lui-même quand un boss ou une nasse arrive sur la carte.
   const defaults = { boss: Object.keys(bundle.boss)[0], nasse: has(bundle.ennemis, 'crs') ? 'crs' : Object.keys(bundle.ennemis)[0] };
 
@@ -104,7 +109,7 @@ export function showAtelier(root, { bundle, save, test, back, resume = false }) 
   const groups = [
     ['Terrain', Object.values(bundle.tuiles).map((t) => item(t.nom, t.sprites.image, { type: 'tuile', char: t.symbole }))],
     ['Repères', [
-      item('Départ', image(anyHero), { type: 'repere', char: 'D' }),
+      item('Départ', START, { type: 'repere', char: 'D' }),
       item('Sortie', image(bundle.decors.sortie), { type: 'repere', char: 'S' }),
       item('Garde à vue', image(bundle.decors.cage), { type: 'repere', char: 'K' }),
       item('Piquet de grève', image(bundle.decors.piquet), { type: 'repere', char: 'Q' }),
@@ -683,7 +688,7 @@ export function showAtelier(root, { bundle, save, test, back, resume = false }) 
         ctx.fillRect(x * TILE, y * TILE, TILE, 3);
       }
     });
-    const starter = image(own(bundle.heros, getField(model, 'heros').split('|')[0].trim()) || anyHero);
+    const starter = image(own(bundle.heros, getField(model, 'heros').split('|')[0].trim())) || START;
     const boss = image(own(bundle.boss, getField(model, 'boss')) || own(bundle.boss, defaults.boss));
     each(rows, (c, x, y) => {
       if (bySymbol[c]) return;

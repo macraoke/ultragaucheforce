@@ -62,7 +62,7 @@ Déposé dans `content/niveaux/`, il devient une étape du plan de campagne, à 
 | `manif` | combien de manifestants au départ (10 avec un cortège, sauf indication ; 5000 au plus) |
 | `panneau.1` à `panneau.9` | le texte du panneau placé par le chiffre correspondant sur la carte. Une touche s'écrit entre crochets, et chacun la lit sur son appareil : `[tirer] : lancer des tracts` devient « J : … » au clavier, « X : … » à la manette, « TIR : … » au pouce. Les touches : `[avancer]`, `[sauter]`, `[tirer]`, `[bas]`, `[haut]`, `[spéciale]`, `[pause]`. Le premier panneau d'une partie qui dit `[spéciale]` fait clignoter la puce de la spéciale et le bouton SPÉ, jusqu'au premier usage, huit secondes au plus, jamais en pause |
 | un signe de légende | `b: bac` place une unité, une recrue ou un décor à chaque `b` de la carte |
-| `heros` | le héros avec lequel on essaie le niveau dans l'Atelier. En jeu, le joueur choisit parmi ceux qu'il a débloqués ; la première fois, le hasard choisit |
+| `heros` | le héros avec lequel on essaie le niveau dans l'Atelier. En jeu, le joueur choisit parmi ceux qu'il a débloqués ; la première fois, le hasard choisit. Sans cette clé ni choix du joueur, un héros jouable est tiré au hasard, le même pour une même graine |
 | `camarades` | l'ordre des héros libérés, séparés par une barre verticale : `melenchon \| zucman` (sinon au hasard) |
 | `boss` | facultatif : impose un boss de `content/boss/`. Sans cette ligne, le boss du `Y` est tiré au hasard à chaque partie |
 | `nasse.ennemi` | l'unité qui forme la nasse ; obligatoire s'il y a un `N` sur la carte |

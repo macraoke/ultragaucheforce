@@ -1,0 +1,125 @@
+nom: Le Sans-dents
+origine: Son cri est une pancarte de Voltuan, « l'homme à la pancarte », citée par l'AFP en septembre 2015.
+traitement: archétype — ceux que le mot désigne, fiers, et qui ont les crocs
+cri: LES SANS-DENTS ONT LES CROCS !
+citation: trierweiler-sans-dents
+fiche: renoncement-aux-soins
+pv: 3
+vitesse: 135
+saut: 3.2
+auteur: UltraGauche Force
+
+# Arme : un dentier claqueur qui rebondit au sol.
+arme.type: tir
+arme.cadence: 2.5
+arme.vitesse: 200
+arme.gravite: 600
+arme.elan: 50
+arme.rebonds: 5
+arme.portee: 320
+arme.degats: 2
+arme.terrain: 1
+arme.taille: 6
+arme.image: projectile
+arme.son: impact
+
+# Spéciale : il montre les crocs.
+speciale.type: onde
+speciale.nom: LES CROCS !
+speciale.charges: 3
+speciale.rayon: 90
+speciale.degats: 3
+speciale.recul: 260
+speciale.etourdit: 2
+speciale.son: speciale
+
+--- repos
+...nnnnnn...
+..nnnnnnnnnn
+..TTssssss..
+..Tsksskss..
+..Tsssssss..
+...swwwwws..
+....sssss...
+...RRRRRR...
+..BBBRRBB.PP
+.BBBBRBBBsww
+.BBBBRBBBsPP
+.sBBBBBBB...
+..KKKKKKKK..
+..KKK..KKK..
+..KK....KK..
+..KK....KK..
+..KK....KK..
+.TTT...TTT..
+--- marche1
+...nnnnnn...
+..nnnnnnnnnn
+..TTssssss..
+..Tsksskss..
+..Tsssssss..
+...swwwwws..
+....sssss...
+...RRRRRR...
+..BBBRRBB.PP
+.BBBBRBBBsww
+.BBBBRBBBsPP
+.sBBBBBBB...
+..KKKKKKKK..
+..KKK..KKK..
+.KK.....KK..
+.KK......KK.
+KK.......KK.
+TT.......TTT
+--- marche2
+...nnnnnn...
+..nnnnnnnnnn
+..TTssssss..
+..Tsksskss..
+..Tsssssss..
+...swwwwws..
+....sssss...
+...RRRRRR...
+..BBBRRBB.PP
+.BBBBRBBBsww
+.BBBBRBBBsPP
+.sBBBBBBB...
+..KKKKKKKK..
+...KKKKKK...
+....KKKK....
+....KK.KK...
+....KK.KK...
+...TTT.TTT..
+--- portrait
+........................
+.........nnnnnn.........
+.......nnnnnnnnnn.......
+......nnnnnnnnnnnn......
+.....nnnnnnnnnnnnnn.....
+....kkkkkkkkkkkkkkkk....
+.....TssssssssssssT.....
+.....sTTTssssssTTTs.....
+.....sskkssssssskkss....
+.....sskwssssssskwss....
+.....ssssssSSssssss.....
+.....ksssssSSssssssk....
+.....skwwwwwwwwwwwks....
+.....sskwkkkkkkkwkss....
+......sskkkkkkkkkss.....
+.......ssssssssss.......
+........ssssssss........
+......RRRRRRRRRRRR......
+....BBBRRRRRRRRRRBBB....
+...BBBBBBRRRRRRBBBBBB...
+..BBBBBBBBBRRRBBBBBBBB..
+..BBBBBBBnBRRRRnBBBBBB..
+..BBBBBBBnBBRRBnBBBBBB..
+..BBBBBBBnBBBBBnBBBBBB..
+--- projectile
+.PPPPP.
+PwwwwwP
+Pwkwkwk
+Pk.....
+Pwkwkwk
+PwwwwwP
+.PPPPP.

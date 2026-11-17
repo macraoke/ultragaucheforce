@@ -1,0 +1,131 @@
+nom: Magma gauche
+traitement: une forme de l'ultragauche, comme dans un dessin animé : un corps de lave, fendu d'orange, qui fume
+cri: MAGMA GAUCHE !
+citation: melenchon-ultra-extreme-gauche
+fiche: video-ultragauche
+pv: 3
+vitesse: 120
+saut: 2.8
+largeur: 12
+auteur: UltraGauche Force
+
+# Arme : des boules de lave lancées en cloche, qui font fondre le décor.
+arme.type: tir
+arme.cadence: 2
+arme.vitesse: 200
+arme.gravite: 450
+arme.elan: 90
+arme.portee: 280
+arme.degats: 3
+arme.terrain: 5
+arme.explosion: 22
+arme.taille: 7
+arme.image: projectile
+arme.son: tir
+
+# Spéciale : une coulée qui court au ras du sol, lente mais longue.
+speciale.type: sol
+speciale.nom: COULÉE !
+speciale.charges: 2
+speciale.vitesse: 160
+speciale.portee: 420
+speciale.degats: 4
+speciale.terrain: 6
+speciale.son: speciale
+
+--- repos
+....g..g....
+...g..g..g..
+....kKKKk...
+...kKKoKKk..
+...kRRyRRy..
+...krKKKrk..
+....krooYo..
+.kKKKroKKKk.
+kKKrrorrrrKk
+kKroooYooroY
+kKrrrYyYrroo
+.YKrroyorrK.
+..kKrorrKk..
+..kKro.rKKk.
+..Kok...Kok.
+..Krk...rKk.
+..orr...rro.
+.kkro..okkk.
+--- marche1
+....g..g....
+...g..g..g..
+....kKKKk...
+...kKKoKKk..
+...kRRyRRy..
+...krKKKrk..
+....krooYo..
+.kKKKroKKKk.
+kKKrrorrrrKk
+kKroooYooroY
+kKrrrYyYrroo
+.YKrroyorrK.
+..kKrorrKk..
+..kKro.rKKk.
+.Kok.....Kok
+.Krk.....rKk
+orr......rro
+kkr......okk
+--- marche2
+....g..g....
+...g..g..g..
+....kKKKk...
+...kKKoKKk..
+...kRRyRRy..
+...krKKKrk..
+....krooYo..
+.kKKKroKKKk.
+kKKrrorrrrKk
+kKroooYooroY
+kKrrrYyYrroo
+.YKrroyorrK.
+..kKrorrKk..
+...kKrorKk..
+....kroK....
+....Kr.rK...
+....or.ro...
+...kko.okk..
+--- portrait
+.......g....g...........
+......g....g....g.......
+.......g....g...........
+........kkKKKKkk........
+......kKKKKKoKKKKk......
+.....kKKKrrrrorKKKk.....
+.....kKrrrrrrrorrKk.....
+.....kRRRRRRRRRRRRk.....
+.....RRyyYRRRRyyYRR.....
+.....kRRRRRRRRRRRRk.....
+.....krrrrrrrrrrrrk.....
+.....krrorrrrrrrorrk....
+......krrroooooorrk.....
+......krroYYyYYorrk.....
+.......krroooooork......
+.........kkrrrrk........
+...kkKKKKrrrorrrKKKKk...
+..kKKKKrrrrrorrrrrKKKk..
+..kKKrrrorrrrrrorrrKKk..
+.kKKrrrrroooYooorrrrKKk.
+.kKorrrrrroYyYorrrrrorK.
+.kKrorrrooYyyyYoorrorrK.
+.kKrrorroorYyYroorrorrK.
+.kKrrrorrrroYorrrrorrrK.
+--- projectile
+..RoR..
+.oYYYo.
+RYyyyYR
+RoYYYoR
+.rRoRr.
+..r.r..
+--- onde
+.......oo.....
+.....ooYYo....
+...ooYyyYYo...
+.oRYYyyyyYYo..
+RRoYYYYYYYYooR
+rRRoooooooRRRr

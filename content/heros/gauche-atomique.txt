@@ -1,0 +1,123 @@
+nom: Gauche atomique
+traitement: une forme de l'ultragauche, comme dans un dessin animé : un atome, noyau rouge et électrons qui tournent autour
+cri: GAUCHE ATOMIQUE !
+citation: melenchon-ultra-extreme-gauche
+fiche: video-ultragauche
+pv: 2
+vitesse: 155
+saut: 3.6
+auteur: UltraGauche Force
+
+# Arme : des électrons, deux par tir, qui ricochent partout.
+arme.type: tir
+arme.nombre: 2
+arme.dispersion: 60
+arme.cadence: 4
+arme.vitesse: 300
+arme.rebonds: 4
+arme.portee: 360
+arme.degats: 1
+arme.terrain: 1
+arme.taille: 5
+arme.image: projectile
+arme.son: tir
+
+# Spéciale : une onde large (rayon 120), deux charges.
+speciale.type: onde
+speciale.nom: RÉACTION EN CHAÎNE !
+speciale.charges: 2
+speciale.rayon: 120
+speciale.degats: 4
+speciale.terrain: 6
+speciale.recul: 400
+speciale.etourdit: 3
+speciale.son: speciale
+
+--- repos
+....rrrr....
+...rwwRRr...
+..rwRRRRRr..
+c.kkwkkwkk.c
+.cRRRRRRRRc.
+Y.ccRRRRcc..
+....cccc....
+.....rr...Y.
+..bbbbbbbb..
+.bbbbccbbbww
+.bbbcRRcbbww
+.wbbbccbbb..
+..YYYYYYYY..
+..BBBB.BBBB.
+..BBB...BBB.
+..BB.....BB.
+..BB.....BB.
+.www....www.
+--- marche1
+....rrrr...Y
+...rwwRRr...
+..rwRRRRRr..
+c.kkwkkwkk.c
+.cRRRRRRRRc.
+..ccRRRRcc..
+....cYcc....
+.....rr.....
+..bbbbbbbb..
+.bbbbccbbbww
+.bbbcRRcbbww
+.wbbbccbbb..
+..YYYYYYYY..
+..BBBB.BBBB.
+.BBB.....BBB
+.BB.......BB
+BB........BB
+ww.......www
+--- marche2
+....rrrr....
+...rwwRRr...
+..rwRRRRRr..
+Y.kkwkkwkk.c
+.cRRRRRRRRc.
+..ccRRRRYc..
+....cccc....
+.....rr.....
+..bbbbbbbb..
+.bbbbccbbbww
+.bbbcRRcbbww
+.wbbbccbbb..
+..YYYYYYYY..
+...BBBBBB...
+....BBBB....
+....BB.BB...
+....BB.BB...
+...www.www..
+--- portrait
+........................
+..........rrrr..........
+........rrRRRRrr........
+.......rwwPRRRRRr.......
+......rwRRRRRRRRRr......
+..cc.rRPRRRRRRRRRRr.cc..
+.ccccrRRRRRRRRRRRRrcccc.
+.c...kkkwwkkkkwwkkk...c.
+.cc..kkkwkkkkkwkkkk..cc.
+..cccrRRRrRRRRrRRRrccc..
+....ccRRRRrrrrRRRrcc....
+....ccccRRRRRRRRcccc....
+..ccc.rcccRRRRcccr.ccc..
+.cc....rRccccccrr....cc.
+.c......cccccccc......Yy
+.cYyccccc.rrrr.cccccccc.
+..jc....bbbbbbb.....cc..
+....BbbbbbbbbbbbbbB.....
+..BbbbbbbbbbbbbbbbbbB...
+.bBbbbbbbbbbbbbbbbbbbbB.
+.bBbbbbbbbbccbbbbbbbbbB.
+.bBbbbbbbbcRRcbbbbbbbbB.
+.bBbbbbbbbbccbbbbbbbbbB.
+.bBbbbbbbbbbbbbbbbbbbbB.
+--- projectile
+.www.
+wcYcw
+wYyYw
+wcYcw
+.www.

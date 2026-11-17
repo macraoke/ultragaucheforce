@@ -1,0 +1,114 @@
+nom: Les Dinos gauchistes
+traitement: une forme de l'ultragauche, comme dans un dessin animé : un troupeau de tricératops masqués
+cri: DINOS GAUCHISTES !
+citation: melenchon-ultra-extreme-gauche
+fiche: video-ultragauche
+pv: 4
+vitesse: 130
+saut: 2.6
+largeur: 14
+hauteur: 12
+auteur: UltraGauche Force
+
+# Arme : un coup de cornes, très court, qui traverse les rangs.
+arme.type: tir
+arme.cadence: 2
+arme.vitesse: 220
+arme.portee: 48
+arme.degats: 4
+arme.terrain: 3
+arme.perce: 1
+arme.taille: 14
+arme.image: projectile
+arme.son: tampon
+
+# Spéciale : le troupeau arrive.
+speciale.type: clones
+speciale.nom: LE TROUPEAU !
+speciale.charges: 2
+speciale.nombre: 4
+speciale.duree: 5
+speciale.son: speciale
+
+--- repos
+......o.o.o.....
+.....oYoYoYo....
+....oYYYYYYYo..E
+....oYYYYYYYo.Ee
+.....oYYYYYYoEew
+...VVVoYYYYvEew.
+..VvvvvoYYvvvve.
+.VvvvvvvooRRRvvw
+VvvvvvvvvvRkRvvk
+vVvvvvvvvvvvvvkK
+.VVvvvvvvvvvvvkk
+..Vvllllllllvv..
+..VvV.....VvV...
+..vvV.....vvV...
+.kkkV....kkkV...
+--- marche1
+......o.o.o.....
+.....oYoYoYo....
+....oYYYYYYYo..E
+....oYYYYYYYo.Ee
+.....oYYYYYYoEew
+...VVVoYYYYvEew.
+..VvvvvoYYvvvve.
+.VvvvvvvooRRRvvw
+VvvvvvvvvvRkRvvk
+vVvvvvvvvvvvvvkK
+.VVvvvvvvvvvvvkk
+..Vvllllllllvv..
+.VvV.......VvV..
+.vvV.......vvV..
+kkk.......kkk...
+--- marche2
+......o.o.o.....
+.....oYoYoYo....
+....oYYYYYYYo..E
+....oYYYYYYYo.Ee
+.....oYYYYYYoEew
+...VVVoYYYYvEew.
+..VvvvvoYYvvvve.
+.VvvvvvvooRRRvvw
+VvvvvvvvvvRkRvvk
+vVvvvvvvvvvvvvkK
+.VVvvvvvvvvvvvkk
+..Vvllllllllvv..
+...VvV...VvV....
+...vvV...vvV....
+..kkk...kkk.....
+--- portrait
+....k.k.k...............
+...kokokokk..........ew.
+..kooooooook........eew.
+.koooRooooook...E..eew..
+.koooooooRook..EE.eew...
+kooRoooooooookEE.eew....
+koooooooooRookE.eew.....
+koooooRooooovvveew......
+kooooooooovvvvvvvvv.....
+kooRooooovvvvvvvvvvvv...
+.koooooovvRRRRRRvvvvve..
+.kooooovvvRRkkRRvvvvwe..
+..kooovvvvRRkwRRvvvvvvv.
+..koovvvvvvRRRRvvvvvvvvk
+...kVvvvvvvvvvvvvvvvvvkk
+...VvvvvvvvvvvvvvvvvvkkK
+..VvvvvvvvvvvvvvvvvvkkK.
+.VvvvvvvvvVlllllllkkk...
+VvvvvvvvvVVllllllll.....
+vvvvvvvvvVVllllll.......
+vvvvvvvvvvVVlll.........
+vvvvvvvvvvvVV...........
+vvvvvvvvvvvvV...........
+vvvvvvvvvvvvvV..........
+--- projectile
+.........E..
+...W....eeEw
+.........eew
+...W......ew
+..........ew
+...W.....eew
+........eeew
+.........e..

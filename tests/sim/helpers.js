@@ -20,9 +20,12 @@ export function fixtureBundle() {
   return cached;
 }
 
-/** Fabrique un niveau à la main : `rows` = carte, le reste = en-tête. */
+/**
+ * Fabrique un niveau à la main : `rows` = carte, le reste = en-tête.
+ * Le héros est fixé (`alpha`) : sans lui, le jeu en tirerait un au hasard. `heros: ''` rend le tirage.
+ */
 export const level = (rows, extra = {}) => ({
-  titre: 'essai', manchette: [], panneaux: {}, legende: {}, boss: '', cortege: false, carte: rows, ...extra,
+  titre: 'essai', manchette: [], panneaux: {}, legende: {}, boss: '', cortege: false, heros: 'alpha', carte: rows, ...extra,
 });
 
 /** Sol d'acier sur toute la largeur, héros posé à gauche. `draw(put)` ajoute le reste. */
