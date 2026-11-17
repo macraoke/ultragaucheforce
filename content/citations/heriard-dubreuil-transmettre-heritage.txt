@@ -1,0 +1,11 @@
+texte: Préserver et transmettre notre héritage tout en réinventant nos façons de faire pour innover et grandir, dans le respect des hommes, de la terre et du temps, est un défi pleinement à notre mesure.
+auteur: Marie-Amélie de Leusse
+fonction: présidente du conseil d'administration de Rémy Cointreau
+date: 2026
+contexte: Message de la présidente dans le rapport annuel 2025-2026 de Rémy Cointreau (Rémy Martin, Louis XIII, Cointreau), groupe que contrôle sa famille.
+categorie: puissants
+note: Le rapport ne donne pas de date de publication précise, seulement l'exercice 2025-2026 ; la date retenue est l'année.
+source.titre: Rémy Cointreau — Message de la présidente, rapport annuel 2025-2026
+source.url: https://rapport-annuel.remy-cointreau.com/2026/le-groupe/message-de-la-presidente/
+source.nature: officielle
+verifie: 2026-11-17

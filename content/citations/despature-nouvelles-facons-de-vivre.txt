@@ -1,0 +1,11 @@
+texte: Alors que notre industrie traverse une période de mutations profondes et qu'elle doit notamment relever le challenge de la performance énergétique des bâtiments, l'opération que nous lançons aujourd'hui nous permettra de faire de SOMFY une entreprise qui agit pour de nouvelles façons de vivre.
+auteur: Jean Guillaume Despature
+fonction: actionnaire familial de référence de Somfy
+date: 2022-11-15
+contexte: Communiqué annonçant l'offre publique d'achat simplifiée de sa famille sur les actions Somfy, en vue de retirer l'entreprise de la Bourse.
+categorie: puissants
+note: Seconde phrase de sa déclaration dans le communiqué de presse de Somfy, publié par l'AMF.
+source.titre: Somfy — Communiqué de presse du 15 novembre 2022 : dépôt d'un projet d'offre publique d'achat simplifiée visant les actions Somfy (AMF)
+source.url: https://echanges.dila.gouv.fr/OPENDATA/AMF/ECO/2022/11/FCECO069252_20221115.pdf
+source.nature: officielle
+verifie: 2026-11-17

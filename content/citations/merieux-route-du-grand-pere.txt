@@ -1,0 +1,11 @@
+texte: A Marcy-l'Etoile où se situe notre site principal, la route est la même que du temps de mon grand-père alors que cette commune regroupe aujourd'hui plus de 4.000 emplois.
+auteur: Alain Mérieux
+fonction: président de l'Institut Mérieux, fondateur de bioMérieux
+date: 2011-10-06
+contexte: Entretien aux Échos, repris par Lyon Mag, sur les atouts et les manques de la région lyonnaise pour son groupe.
+categorie: puissants
+note: Propos tirés d'un entretien aux Échos ; l'article original n'a pas été ouvert, le texte est celui de Lyon Mag.
+source.titre: Lyon Mag — Alain Mérieux : « Lyon est une bonne base arrière »
+source.url: https://www.lyonmag.com/article/29230/alain-merieux-lyon-est-une-bonne-base-arriere
+source.nature: presse
+verifie: 2026-11-17

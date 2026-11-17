@@ -1,0 +1,9 @@
+titre: 1,55 milliard estimé
+theme: richesses
+texte: Selon le classement Challenges 2026, repris par iDealwine, Marie-Amélie de Leusse et la famille Hériard-Dubreuil, avec Rémy Cointreau, sont la 91e fortune professionnelle de France, avec un patrimoine estimé à 1,55 milliard d'euros.
+portee: Estimation des actifs professionnels de la famille, ici surtout le groupe Rémy Cointreau (Rémy Martin, Louis XIII, Cointreau). Ce n'est pas de l'argent disponible. iDealwine indique le 72e rang en 2025. La page de Challenges n'a pas pu être ouverte : le chiffre est celui de sa reprise par iDealwine.
+periode: classement Challenges 2026
+source.titre: iDealwine — Les plus grandes fortunes du vin
+source.url: https://www.idealwine.net/les-plus-grosses-fortunes-du-vin/
+source.nature: presse
+verifie: 2026-11-17
