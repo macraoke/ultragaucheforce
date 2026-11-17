@@ -1,0 +1,10 @@
+titre: 2 % d'impôt sur le revenu
+theme: richesses
+texte: Selon l'Institut des politiques publiques, l'impôt sur le revenu tombe à environ 2 % du revenu économique pour les 0,001 % de foyers les plus riches.
+portee: Note IPP n° 92 (juin 2023), sur des données fiscales de 2016. Impôt sur le revenu seul : avec l'impôt sur les sociétés payé par leurs entreprises, leur taux global est de 26 % pour les 0,0002 % les plus riches. Le revenu « économique » ajoute les bénéfices non distribués des sociétés que le foyer contrôle. Les 0,001 % représentent 378 foyers fiscaux.
+periode: revenus de 2016, note publiée en juin 2023
+choc: oui
+source.titre: Institut des politiques publiques — Note IPP n° 92, « Quels impôts les milliardaires paient-ils ? » (juin 2023)
+source.url: https://www.ipp.eu/wp-content/uploads/2023/06/Note_IPP_Billionaires-version-actualisee.pdf
+source.nature: associative
+verifie: 2026-11-17
