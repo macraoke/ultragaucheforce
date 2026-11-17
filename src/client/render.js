@@ -419,20 +419,16 @@ export class Renderer {
       f.seen = true; // déjà montré : s'il perd sa place, il s'effacera en fondu
     }
     if (board) this.board(board.text, this.viewW / 2, board.y, { alpha: Math.min(1, this.sign.t * 2) });
-    if (countdown) {
-      // Le héros qui saute dessous reste visible : le décompte pâlit le temps qu'il passe.
-      const behind = heroBox && overlaps(countdown.box, heroBox);
-      this.label(countdown.text, countdown.x, countdown.y, {
-        size: KETTLE_SIZE, color: countdown.last ? '#f6c21c' : '#f4f4f4', alpha: behind ? 0.45 : 1,
-      });
-    }
+    if (countdown) this.label(countdown.text, countdown.x, countdown.y, { size: KETTLE_SIZE, color: countdown.last ? '#f6c21c' : '#f4f4f4' });
   }
 
   /**
-   * Le décompte de la nasse : les secondes qui restent avant qu'elle soit levée, quoi qu'il arrive. Il se pose au
-   * milieu de la nasse, sur le haut de sa zone (un étage au-dessus du sol de ses lignes) : jamais sur ses lignes,
-   * jamais sous la bande du HUD. Un texte déjà là (la voix d'en face, un panneau) le fait monter au-dessus de lui ;
-   * monté jusqu'au plafond, il s'y arrête et passe dessous. Rend { text, x, y, box, last } à l'écran, ou null.
+   * Le décompte de la nasse : les secondes qui restent avant qu'elle soit levée, quoi qu'il arrive. Il se pose
+   * au-dessus d'une de ses lignes, la plus proche du héros, sur le haut de sa zone (un étage au-dessus du sol) :
+   * le héros ne passe jamais au-dessus d'une ligne, même au sommet de son plus haut saut. Jamais sur les lignes, ni
+   * sous la bande du HUD, ni sur un texte déjà posé ou le cadre d'une caméra : il monte au-dessus de ce qui le gêne,
+   * ou passe à l'autre ligne ; sans place au-dessus d'elles, il se pose sous leurs pieds. Rend { text, x, y, box, last }
+   * à l'écran, ou null.
    */
   kettleClock(game) {
     const k = game.kettle;
@@ -441,17 +437,62 @@ export class Renderer {
     const text = String(Math.max(1, Math.ceil(left)));
     const base = this.textBox(text, 0, 0, KETTLE_SIZE, 0);
     const half = (base.x1 - base.x0) / 2;
-    const x = Math.min(this.viewW - half, Math.max(half, (k.x0 + k.x1) / 2 - this.cx));
-    let y = k.y - KETTLE_FLOOR - this.cy - base.y1; // le bas de sa boîte sur le haut de la zone
-    const box = () => ({ x0: x + base.x0, x1: x + base.x1, y0: y + base.y0, y1: y + base.y1 });
-    const hit = () => this.boxes.find((b) => overlaps(box(), b));
-    for (let n = 0, b; n < 8 && (b = hit()); n++) y = b.y0 - 1 - base.y1;
-    const top = this.ceiling() - base.y0;
-    if (y < top) {
-      y = top;
-      for (let n = 0, b; n < 8 && (b = hit()); n++) y = b.y1 + 1 - base.y0;
+    const { hero } = game;
+    const { cx, cy } = this;
+    // Ce qu'il ne recouvre pas : les textes posés, les cadres des caméras, le héros jusqu'au sommet de son plus haut saut.
+    const avoid = [...this.boxes];
+    for (const e of game.enemies) {
+      const f = this.frameOf(e, hero);
+      if (f) avoid.push({ x0: f.x - 2, x1: f.x + 47, y0: f.y - 2, y1: f.y + 33 });
     }
-    return { text, x, y, box: box(), last: left <= KETTLE_LAST };
+    if (!hero.dead) {
+      const apex = k.y - (hero.def?.saut ?? 0) * TILE - hero.h - 4;
+      avoid.push({ x0: hero.x - 3 - cx, x1: hero.x + hero.w + 3 - cx, y0: Math.min(apex, hero.y - 8) - cy, y1: hero.y + hero.h - cy });
+    }
+    // Au-dessus de chaque ligne, sans déborder sur l'intérieur de la nasse, où le héros se tient.
+    const lines = [-1, 1].map((side) => {
+      const units = k.units.filter((e) => e.kettle === side && e.state !== 'done');
+      if (!units.length) return null;
+      const mid = (Math.min(...units.map((e) => e.x)) + Math.max(...units.map((e) => e.x + e.w))) / 2;
+      const top = Math.min(...units.map((e) => e.y + e.h - (e.def.sprites.repos?.length ?? e.h)));
+      const feet = Math.max(...units.map((e) => e.y + e.h));
+      const x = side < 0 ? Math.min(mid, k.x0 - half - 4) : Math.max(mid, k.x1 + half + 4);
+      return { side, x: x - cx, top: top - cy, feet: feet - cy, inner: (side < 0 ? k.x0 : k.x1) - cx };
+    }).filter(Boolean);
+    if (!lines.length) lines.push({ side: 0, x: (k.x0 + k.x1) / 2 - cx, top: k.y - cy, feet: k.y - cy, inner: null });
+    // La plus proche du héros d'abord ; il ne change de ligne que si l'autre est nettement plus proche.
+    const hx = hero.x + hero.w / 2 - cx;
+    const near = (l) => (l.inner === null ? 0 : Math.abs(l.inner - hx));
+    lines.sort((a, b) => near(a) - near(b));
+    const kept = this.kettleSide?.kettle === k && lines.find((l) => l.side === this.kettleSide.side);
+    if (kept && kept !== lines[0] && near(kept) - near(lines[0]) < 32) lines.reverse();
+    const ceiling = this.ceiling() - base.y0;
+    const spot = (l) => {
+      const x = Math.min(this.viewW - half, Math.max(half, l.x));
+      const floor = l.top - 2 - base.y1; // le plus bas possible : juste au-dessus des têtes de la ligne
+      let y = Math.min(k.y - KETTLE_FLOOR - cy - base.y1, floor); // le bas de sa boîte sur le haut de la zone
+      const box = () => ({ x0: x + base.x0, x1: x + base.x1, y0: y + base.y0, y1: y + base.y1 });
+      const hit = () => avoid.find((b) => overlaps(box(), b));
+      for (let n = 0, b; n < 8 && (b = hit()); n++) y = b.y0 - 1 - base.y1;
+      if (y < ceiling) {
+        y = ceiling;
+        for (let n = 0, b; n < 8 && (b = hit()); n++) y = b.y1 + 1 - base.y0;
+      }
+      const ok = !hit() && y <= floor && Math.abs(x - l.x) < half; // libre, au-dessus de la ligne, et la ligne à l'écran
+      return { x, y, box: box(), ok, side: l.side };
+    };
+    // Sans place au-dessus (la vue baissée, la ligne sous la bande du HUD) : sous ses pieds, sur la chaussée.
+    const under = (l) => {
+      const x = Math.min(this.viewW - half, Math.max(half, l.x));
+      const y = l.feet + 2 - base.y0;
+      const box = { x0: x + base.x0, x1: x + base.x1, y0: y + base.y0, y1: y + base.y1 };
+      const ok = !avoid.some((b) => overlaps(box, b)) && box.y1 <= this.viewH && Math.abs(x - l.x) < half;
+      return { x, y, box, ok, side: l.side };
+    };
+    const spots = [...lines.map(spot), ...lines.map(under)];
+    const best = spots.find((p) => p.ok) ?? spots[0];
+    this.kettleSide = { kettle: k, side: best.side };
+    return { text, x: best.x, y: best.y, box: best.box, last: left <= KETTLE_LAST };
   }
 
   /**
@@ -752,7 +793,7 @@ export class Renderer {
     if (stunned && e.daze === 'gaz') this.weepers.push([e, cx, top]); // dessinés par-dessus le nuage qui les a gazés
     else if (stunned) this.stars(e, cx, top);
     else this.warn(e, cx, top);
-    if (e.def.reaction === 'cadre' && e.state === 'alert' && (!e.film || e.framing)) this.viewfinder(e);
+    if (this.frameOf(e)) this.viewfinder(e);
     if (speaks) this.label(e.bubble.text, cx, e.y - 10 - this.cy, { size: 5.5, color: '#1a1c2c', bg: '#f4f4f4', width: 80 });
   }
 
@@ -1004,15 +1045,23 @@ export class Renderer {
     this.label(gain, r.x + r.w / 2 - this.cx, r.y - 12 - this.cy, { size: 8, color: '#1a1c2c', bg: '#f6c21c' });
   }
 
+  /**
+   * Le cadre d'une caméra qui tourne (drone, équipe télé), à l'écran : son coin en haut à gauche, 44 × 30 pixels.
+   * Null si elle ne tourne pas. Un drone cadre ce qu'il survole ; une équipe au sol cadre le héros lui-même ; venue
+   * pour un feu, elle cadre le feu.
+   */
+  frameOf(e, hero = this.heroBox) {
+    if (e.def.reaction !== 'cadre' || e.state !== 'alert' || (e.film && !e.framing)) return null;
+    const aloft = e.def.deplacement === 'vol';
+    const at = e.film ? { x: e.film.x, y: e.film.y - 34 }
+      : aloft ? { x: e.x + e.w / 2, y: e.y + e.h + 4 } : { x: hero.x + hero.w / 2, y: hero.y - 10 };
+    return { x: Math.round(at.x - 22 - this.cx), y: Math.round(at.y - this.cy) };
+  }
+
   /** Le cadre du drone : ce que PANIQUE TV choisit de montrer. */
   viewfinder(e) {
     const { ctx } = this;
-    // Un drone cadre ce qu'il survole ; une équipe au sol cadre le héros lui-même ; venue pour un feu, elle cadre le feu.
-    const aloft = e.def.deplacement === 'vol';
-    const at = e.film ? { x: e.film.x, y: e.film.y - 34 }
-      : aloft ? { x: e.x + e.w / 2, y: e.y + e.h + 4 } : { x: this.heroBox.x + this.heroBox.w / 2, y: this.heroBox.y - 10 };
-    const x = Math.round(at.x - 22 - this.cx);
-    const y = Math.round(at.y - this.cy);
+    const { x, y } = this.frameOf(e);
     ctx.strokeStyle = Math.floor(this.clock * 4) % 2 ? '#e43b44' : '#f4f4f4';
     ctx.lineWidth = 1;
     ctx.strokeRect(x + 0.5, y + 0.5, 44, 30);
