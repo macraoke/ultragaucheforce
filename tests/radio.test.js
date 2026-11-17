@@ -1381,3 +1381,15 @@ test('lecteur préchargé pas encore prêt : le clic puis le geste vu par main.j
   s.playing();
   assert.equal(s.radio.status, 'playing');
 });
+
+test('lecteur préchargé prêt entre le clic et le geste vu par main.js : toujours un seul play()', async () => {
+  const s = setup();
+  s.radio.setEnabled(false);
+  s.radio.play('menu');
+  s.radio.setEnabled(true); // le clic, lecteur pas encore prêt
+  await s.flush(); // le lecteur arrive et part
+  s.radio.unblock(); // le même geste, un dixième de seconde plus tard
+  assert.equal(s.widget.plays, 1);
+  s.playing();
+  assert.equal(s.radio.status, 'playing');
+});

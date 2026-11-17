@@ -321,7 +321,7 @@ export class Radio {
         this.ownPause = true;
         widget.pause();
       } else if (this.current !== track) this.start(this.current); // une autre piste a été demandée entre-temps
-      else if (!autoPlay && !played) widget.play(); // préchargé, puis demandé avant d'être prêt : un seul play()
+      else if (!autoPlay && !played) this.send(); // préchargé, puis demandé avant d'être prêt
     }, () => {
       if (this.connecting === pending) this.unreachable();
     });
@@ -368,10 +368,21 @@ export class Radio {
       // Un toucher arrivé avant que le lecteur soit prêt : on lui en fait part maintenant. Chrome l'accepte ;
       // Safari peut refuser hors du geste, et le toucher suivant la lancera.
       this.gesture = false;
-      this.widget.play();
-      return true;
+      return this.send();
     }
     return false;
+  }
+
+  /**
+   * Demande la lecture au lecteur, une seule fois par essai : un second play() pendant le démarrage fait répondre
+   * PAUSE au lecteur, et la Radio y lirait un refus. (Après un refus annoncé, `event` et `timeout` relancent eux-mêmes.)
+   * @returns {boolean} la demande est partie
+   */
+  send() {
+    if (!this.widget || this.attempt?.played) return false;
+    if (this.attempt) this.attempt.played = true;
+    this.widget.play();
+    return true;
   }
 
   /** Reprend la piste chargée. */
@@ -380,7 +391,7 @@ export class Radio {
     this.status = 'loading';
     this.ownPause = false;
     this.watch(this.current, { gesture: this.env.inGesture() });
-    this.widget.play();
+    this.send();
     this.render();
   }
 
@@ -395,7 +406,7 @@ export class Radio {
   /** `gesture` : la lecture a été demandée au lecteur pendant un geste du joueur. */
   watch(track, { loaded = true, retried = false, gesture = false } = {}) {
     this.cancelWatch();
-    this.attempt = { track, loaded, refused: false, retried, waits: 0, gesture };
+    this.attempt = { track, loaded, refused: false, retried, waits: 0, gesture, played: false };
     this.arm(loaded ? START_TIMEOUT : LOAD_TIMEOUT);
   }
 
@@ -491,11 +502,10 @@ export class Radio {
   unblock() {
     if (!this.enabled || this.held) return;
     if (this.status === 'loading') {
-      // Déjà demandée pendant ce geste (« ▶ Radio Manif », le lecteur préchargé) : un second play() la couperait.
-      // Le lecteur répond PAUSE à un play() qui arrive pendant le démarrage, et la Radio y lirait un refus.
-      if (this.attempt?.gesture) return;
+      // Déjà demandée (pendant ce geste, ou au lecteur préchargé dès qu'il est prêt) : pas de second play().
+      if (this.attempt?.played || this.attempt?.gesture) return;
       // Chargée, pas encore partie : le geste passe au lecteur (Safari ne lance une piste que pendant un geste).
-      if (this.attempt?.loaded && this.widget) return this.widget.play();
+      if (this.attempt?.loaded && this.widget) return void this.send();
       this.gesture = true; // pas encore prête : on s'en souvient
       return;
     }
@@ -506,7 +516,7 @@ export class Radio {
     this.status = 'loading';
     this.ownPause = false;
     this.watch(track, { retried: true, gesture: this.env.inGesture() });
-    this.widget.play(); // pendant le geste, ou juste après : c'est ce qui l'autorise
+    this.send(); // pendant le geste, ou juste après : c'est ce qui l'autorise
     this.render();
   }
 
