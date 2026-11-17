@@ -6,6 +6,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { loadContent } from '../tools/content.mjs';
 import { queueNote, readTime, scrollTiming } from '../src/client/ui.js';
+import { signNote } from '../src/client/collection.js';
 import { Game, DT } from '../src/sim/game.js';
 
 // ---------------------------------------------------------------- un faux canevas
@@ -77,7 +78,13 @@ test('une note reste le temps d’être lue, et un peu plus : d’autant plus lo
   const sign = 'Pancarte commune débloquée : « LA RETRAITE AVANT L’ARTHRITE, ET PLUS VITE QUE ÇA »';
   assert.ok(readTime(sign) > 5.25, 'une pancarte longue : plus de cinq secondes');
   assert.ok(readTime('Débloqué : La compagnie de CRS') > readTime('Débloqué : La BAC'), 'plus long à lire, plus longtemps');
-  assert.equal(readTime('x'.repeat(400)), 6, 'jamais plus de six secondes');
+  assert.equal(readTime('x'.repeat(400)), 8, 'jamais plus de huit secondes');
+  // Une pancarte s'écrit maintenant en entier : sa note, plus longue, reste plus longtemps que l'ancienne note coupée.
+  const longest = bundle.pancartes.reduce((a, b) => (b.texte.length > a.texte.length ? b : a));
+  const whole = signNote({ ...longest, rarete: 3 });
+  const cut = `Pancarte légendaire débloquée : « ${longest.texte.slice(0, 43).trimEnd()}… »`; // l'ancienne coupe à 44 signes
+  assert.ok(readTime(whole) > readTime(cut), `la pancarte entière : ${readTime(whole)} s, contre ${readTime(cut)} s coupée`);
+  assert.ok(readTime('Débloqué : Gendarmes mobiles') < 6, 'une note « Débloqué » ne change pas');
 });
 
 // ---------------------------------------------------------------- textes flottants

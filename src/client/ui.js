@@ -69,9 +69,10 @@ export function scrollTiming(over, em, seconds = AIRTIME) {
 
 /**
  * Secondes de jeu à l'écran pour une note : le temps de la lire, et un peu plus, d'autant plus long que le texte :
- * de 3,75 à 6 secondes.
+ * de 3,75 à 8 secondes. Une note de 71 signes au plus (« Débloqué : … ») reste sous 6 secondes ; celle d'une pancarte,
+ * écrite en entier, peut aller jusqu'à 8.
  */
-export const readTime = (text) => Math.min(6, Math.max(3.75, 2.25 + text.length * 0.0525));
+export const readTime = (text) => Math.min(8, Math.max(3.75, 2.25 + text.length * 0.0525));
 
 /**
  * Range une note dans la file d'attente. Si une note du même genre (`group`) attend déjà, elles se replient
@@ -837,6 +838,8 @@ export class Hud {
     if (this.note || !this.notes.length) return;
     const next = this.notes.shift();
     const el = h('p', { className: next.tone }, next.text);
+    // Une pancarte s'écrit en entier : sa note a sa place à elle, plus large, sous tout le HUD (voir style.css).
+    this.q('toasts').classList.toggle('pancarte', /\bpancarte\b/.test(next.tone));
     this.q('toasts').append(el);
     this.note = { el, until: now + readTime(next.text) };
   }

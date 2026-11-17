@@ -14,7 +14,7 @@ import { CRS_OCTOBRE_2026 } from './blesses.js';
 import { shareImage, openShare } from './share.js';
 import { measure } from './mesure.js';
 import { loadSave, storeSave, discover, isFound } from './save.js';
-import { cardName, citationOfWord, levelOrder, rarityName, taxShocks } from './collection.js';
+import { cardName, citationOfWord, levelOrder, signNote, taxShocks } from './collection.js';
 import { registerServiceWorker } from './sw-register.js';
 
 const bundle = await (await (window.contentRequest ?? fetch('content.json'))).json(); // partie dès index.html
@@ -27,6 +27,8 @@ const input = new Input(document.getElementById('tactile'));
 const hud = new Hud(bundle);
 let floorMarks = undefined; // les mesures du HUD avec lesquelles le bandeau du bas a été mesuré
 const editButton = document.getElementById('edition'); // en essai depuis l'Atelier : retour à l'édition, à côté de la pause
+const toasts = document.getElementById('toasts');
+let hudBand = -1; // le bas du HUD déjà donné aux notes (`--bas-hud`) : on ne le réécrit que s'il change
 
 /** @type {Game | null} */
 let game = null;
@@ -139,9 +141,6 @@ function toMenu() {
   radio.play('menu');
 }
 
-/** Une note à l'écran reste courte : le texte entier est dans la Collection. */
-const short = (text, max = 44) => (text.length > max ? `${text.slice(0, max - 1).trimEnd()}…` : text);
-
 /**
  * Une rencontre : la carte entre dans la Collection, avec la citation et le fait qui l'expliquent.
  * La première fois, on l'annonce (sauf `quiet`).
@@ -151,7 +150,7 @@ function collect(kind, id, quiet = false) {
   const item = lines ? bundle[kind].find((p) => p.texte === id) : bundle[kind]?.[id];
   if (!item || !discover(save, kind, item.id)) return;
   won.push(`${kind}:${item.id}`);
-  if (kind === 'pancartes') hud.toast(`Pancarte ${rarityName(item)} débloquée : « ${short(item.texte)} »`, `rarete-${item.rarete}`, 'pancartes');
+  if (kind === 'pancartes') hud.toast(signNote(item), `rarete-${item.rarete} pancarte`, 'pancartes');
   else if (!quiet) hud.toast(`Débloqué : ${cardName(item)}`, '', 'cartes');
   collect('citations', item.citation, true);
   for (const fiche of [item.fiche].flat()) collect('fiches', fiche, true);
@@ -399,6 +398,8 @@ function placeOverHud(demo) {
     const ticker = document.getElementById('bandeau');
     renderer.floorBand = !demo && !document.body.classList.contains('tactile') && !ticker.hidden ? ticker.offsetHeight : 0;
   }
+  // La note d'une pancarte, sur deux ou trois lignes, se pose sous tout le HUD, barre de vie comprise (voir style.css).
+  if (band !== hudBand) toasts.style.setProperty('--bas-hud', `${(hudBand = band)}px`);
   if (!demo && document.body.classList.contains('tactile')) renderer.signTop = Math.max(30, Math.ceil((Math.max(row, bar) + 6) / renderer.ratio));
 }
 
