@@ -11,6 +11,7 @@
 // prochain toucher la relance ; un réseau lent, on l'attend.
 
 import { h, link } from './dom.js';
+import { measure } from './mesure.js';
 
 const API = 'https://w.soundcloud.com/player/api.js';
 const PLAYER = 'https://w.soundcloud.com/player/';
@@ -27,6 +28,8 @@ const MAX_WAITS = 6; // le lecteur dit « je joue » mais rien n'avance : six d�
 /** Ce que disent le panneau et le menu de pause quand le script de SoundCloud n'a pas pu se charger (bloqueur, réseau). */
 export const BLOCKED_MESSAGE = 'Un bloqueur empêche SoundCloud de jouer. Autorise w.soundcloud.com pour écouter la Radio Manif.';
 const EVENTS = ['READY', 'PLAY', 'PLAY_PROGRESS', 'PAUSE', 'FINISH', 'ERROR'];
+/** Le temps laissé au lecteur pour dire son volume avant qu'un événement parte sans. */
+const VOLUME_DELAY = 500;
 
 /**
  * Les pistes possibles pour un moment du jeu, de la plus précise à la plus large :
@@ -127,6 +130,7 @@ export class Radio {
       activated: () => navigator.userActivation?.hasBeenActive ?? true, // le joueur a-t-il déjà touché la page ?
       inGesture: () => navigator.userActivation?.isActive ?? false, // un toucher, un clic ou une touche, à l'instant
       connect: connectWidget,
+      measure,
       ...env,
     };
     this.view = this.env.view || new RadioPanel(box);
@@ -162,6 +166,52 @@ export class Radio {
     this.lazy = false; // ce navigateur refuse une piste chargée hors d'un geste, même après le premier (Safari)
     this.lost = false; // le lecteur n'a pas pu se charger (réseau coupé, script de SoundCloud bloqué)
     this.onAsk = () => {}; // le joueur demande la musique : à main.js d'enregistrer ce choix
+    // L'écoute de la piste chargée, pour la mesure : { track, cause, started, position (ms), relative (0 à 1) }.
+    // `cause` : pourquoi elle a été chargée (« auto », « suivante », « enchainee », « remplacement », « relance »).
+    this.listen = null;
+    this.why = 'auto'; // la cause de la prochaine piste chargée
+    this.reportedBlocked = false; // le lecteur bloqué ne se compte qu'une fois par visite
+  }
+
+  /** Les propriétés communes des événements de musique : la piste, le moment du jeu, et le niveau s'il y en a un. */
+  about(track = this.current) {
+    const properties = { track: track?.id ?? null, slot: this.moment() };
+    if (properties.slot === 'niveau') properties.level = this.slot;
+    return properties;
+  }
+
+  /** Où en était l'écoute de cette piste : secondes écoutées depuis son début, et pour cent de sa durée si connue. */
+  heardOf(track) {
+    const listen = this.listen?.track === track ? this.listen : null;
+    const out = { seconds: Math.round((listen?.position ?? 0) / 1000) };
+    if (listen?.relative != null) out.percent = Math.round(listen.relative * 100);
+    return out;
+  }
+
+  /**
+   * Compte un événement de musique ; avec `volume`, le volume du lecteur SoundCloud (0 à 100), s'il le dit à temps.
+   * Le lecteur n'annonce pas ses changements de volume : on le lui demande au moment d'un ⏭, d'une pause, d'une fin.
+   */
+  report(event, properties, { volume = false } = {}) {
+    const send = (level) => {
+      if (level != null && Number.isFinite(Number(level))) properties.volume = Math.round(Number(level));
+      this.env.measure(event, properties);
+    };
+    const widget = this.widget;
+    if (!volume || typeof widget?.getVolume !== 'function') return send(null);
+    let done = false;
+    const once = (level) => {
+      if (done) return;
+      done = true;
+      this.env.cancel(late);
+      send(level);
+    };
+    const late = this.env.later(() => once(null), VOLUME_DELAY);
+    try {
+      widget.getVolume(once);
+    } catch {
+      once(null);
+    }
   }
 
   setEnabled(on) {
@@ -251,6 +301,14 @@ export class Radio {
     return track;
   }
 
+  /** La piste joue pour de bon : la première fois depuis son chargement, elle se compte. Une reprise après pause, non. */
+  confirmed(track) {
+    if (this.listen?.track !== track) this.listen = { track, cause: 'auto', started: false, position: 0, relative: null }; // préchargée
+    if (this.listen.started) return;
+    this.listen.started = true;
+    this.report('music_started', { ...this.about(track), cause: this.listen.cause });
+  }
+
   /** Une piste de niveau joue vraiment : elle sort du sac. */
   heardNow(track) {
     if (NOT_A_LEVEL.has(this.slot)) return;
@@ -285,6 +343,8 @@ export class Radio {
   /** Charge une piste ; le lecteur n'est créé qu'à la première. */
   start(track) {
     this.current = track;
+    this.listen = { track, cause: this.why, started: false, position: 0, relative: null };
+    this.why = 'auto';
     if (!NOT_A_LEVEL.has(this.slot) && this.visit) this.visit.track = track;
     this.status = 'loading';
     this.ownPause = false;
@@ -435,16 +495,16 @@ export class Radio {
     if (attempt.refused || !this.env.activated()) return this.block();
     this.probe((state) => {
       if (this.attempt !== attempt) return;
-      if (state === 'dead') return this.fail(attempt.track);
+      if (state === 'dead') return this.fail(attempt.track, 'absente');
       if (state === 'paused') {
         // Chargée mais arrêtée, sans refus annoncé : on la relance une fois, puis on passe à une autre.
-        if (attempt.retried) return this.fail(attempt.track);
+        if (attempt.retried) return this.fail(attempt.track, 'arretee');
         attempt.retried = true;
         this.widget.play();
         return this.arm(RETRY_DELAY);
       }
       // Le lecteur dit qu'il joue, ou ne répond pas encore : réseau lent, on patiente.
-      if (++attempt.waits > MAX_WAITS) return this.fail(attempt.track);
+      if (++attempt.waits > MAX_WAITS) return this.fail(attempt.track, 'muette');
       this.arm(START_TIMEOUT);
     });
   }
@@ -470,13 +530,18 @@ export class Radio {
    * Toutes ont échoué (l'API de SoundCloud en panne, par exemple) : le lecteur est injoignable,
    * et seuls le bouton ou le retour du réseau réessaient ; un geste ne relance pas tout un tour.
    */
-  fail(track) {
+  fail(track, reason = 'erreur') {
     this.failed.add(track.id);
+    this.report('music_failed', { ...this.about(track), reason });
+    this.why = 'remplacement';
     // Jamais la dernière piste entendue à ce moment-là, même quand la piste en échec était la dernière du sac.
     if (!NOT_A_LEVEL.has(this.slot)) this.refill(); // l'échec a pu finir le tour
     const next = this.following(track) ?? this.choose(this.lastHeard.get(this.moment()) ?? null);
     if (next) this.start(next);
-    else this.unreachable();
+    else {
+      this.why = 'auto';
+      this.unreachable();
+    }
   }
 
   block() {
@@ -493,6 +558,11 @@ export class Radio {
       this.connecting = null;
       this.lost = true;
       this.view.unmount();
+      // Le message du bloqueur s'affiche (`BLOCKED_MESSAGE`) : compté une fois par visite.
+      if (!this.reportedBlocked) {
+        this.reportedBlocked = true;
+        this.report('music_blocked', { online: this.env.online() });
+      }
     }
     if (!this.enabled) return this.render(); // le préchargement a échoué : la musique demandée réessaiera
     this.status = 'unreachable';
@@ -532,6 +602,7 @@ export class Radio {
     const track = this.choose();
     if (!track) return;
     this.chosenFor = `${this.slot}|${this.named}`;
+    this.why = 'relance';
     this.start(track);
   }
 
@@ -560,13 +631,14 @@ export class Radio {
     if (!this.enabled) return;
     // Une erreur après une demande de piste : elle est morte, une autre tout de suite.
     // (Le lecteur l'annonce avant même d'avoir fini de charger.)
-    if (name === 'ERROR') return this.attempt && this.fail(this.attempt.track);
+    if (name === 'ERROR') return this.attempt && this.fail(this.attempt.track, 'erreur');
     if (this.held) {
       // En pause : notre propre pause, confirmée ; puis une lecture qui repart, c'est le joueur, au bouton du
       // lecteur SoundCloud : la pause est levée. (Avant la confirmation, un reste de la piste qui se chargeait.)
       // Seul PLAY compte : le lecteur envoie encore un « ça avance » juste après sa pause.
       if (name === 'PAUSE') this.silenced = true;
       if (name !== 'PLAY' || !this.silenced) return;
+      this.report('music_resumed', { ...this.about(), ...this.heardOf(this.current), via: 'lecteur' });
       this.held = false;
       this.ownPause = false;
       this.watch(this.current, { retried: true });
@@ -575,6 +647,8 @@ export class Radio {
     }
     if (this.attempt && !this.attempt.loaded) return; // encore la piste d'avant
     if (name === 'FINISH') {
+      if (this.current) this.report('music_finished', this.about(), { volume: true });
+      this.why = 'enchainee';
       const next = this.following(this.current) ?? this.choose(this.current);
       return next ? this.start(next) : this.unreachable();
     }
@@ -584,7 +658,13 @@ export class Radio {
       if (!this.attempt && this.current && this.status !== 'playing') this.watch(this.current, { retried: true });
     }
     // Une lecture demandée avance : elle joue vraiment. (Sans demande en cours, un reste d'avant une pause.)
+    // Où en est l'écoute : rien ne part ici, c'est lu au ⏭, à la pause, à la fin.
+    if (name === 'PLAY_PROGRESS' && this.listen?.track === this.current && data.currentPosition > 0) {
+      this.listen.position = data.currentPosition;
+      if (Number.isFinite(data.relativePosition)) this.listen.relative = data.relativePosition;
+    }
     if (name === 'PLAY_PROGRESS' && data.currentPosition > 0 && this.attempt && !this.ownPause) {
+      this.confirmed(this.attempt.track);
       this.lastHeard.set(this.moment(), this.attempt.track);
       this.heardNow(this.attempt.track); // entendue pour de bon : elle sort du sac
       this.cancelWatch();
@@ -594,6 +674,10 @@ export class Radio {
     if (name === 'PAUSE' && !this.ownPause) {
       if (!this.attempt) {
         // Pause après une vraie lecture : le joueur, ou le système (appel, autre application).
+        // Page à l'écran : c'est le joueur, au bouton du lecteur SoundCloud.
+        if (this.status === 'playing' && !this.hidden && this.current) {
+          this.report('music_paused', { ...this.about(), ...this.heardOf(this.current), via: 'lecteur' }, { volume: true });
+        }
         if (this.status === 'playing') this.status = 'paused';
         return this.render();
       }
@@ -657,8 +741,10 @@ export class Radio {
     // Au hasard parmi les pistes du moment, sans le sac : « randomize the "Next" button ».
     const track = NOT_A_LEVEL.has(this.slot) ? chooseTrack(this.tracks, base) : nextLevelTrack(this.tracks, base) ?? chooseTrack(this.tracks, base);
     if (!track) return;
+    this.report('music_skipped', { ...this.about(skipped), ...this.heardOf(skipped) }, { volume: true });
     this.held = false;
     this.chosenFor = `${this.slot}|${this.named}`;
+    this.why = 'suivante';
     this.start(track);
   }
 
@@ -668,6 +754,7 @@ export class Radio {
     if (this.held || this.status === 'paused') return this.release();
     if (this.status === 'blocked') return this.unblock(); // ▶ : refusée, ce toucher la lance
     if (this.status === 'unreachable') return;
+    this.report('music_paused', { ...this.about(), ...this.heardOf(this.current), via: 'radio' }, { volume: true });
     this.silenced = false;
     this.held = true;
     this.gesture = false;
@@ -681,6 +768,7 @@ export class Radio {
    * le menu sont passés entre-temps), celle du moment, comme si on y arrivait.
    */
   release() {
+    this.report('music_resumed', { ...this.about(), ...this.heardOf(this.current), via: 'radio' });
     this.held = false;
     const key = `${this.slot}|${this.named}`;
     const level = !NOT_A_LEVEL.has(this.slot);
