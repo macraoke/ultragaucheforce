@@ -1,0 +1,11 @@
+texte: Je ne sais pas : je suis assez incompétent sur ces questions.
+auteur: Stéphane Courbit
+fonction: président de Banijay Group
+date: 2026-02-25
+contexte: Audition sous serment devant la commission d'enquête de l'Assemblée nationale sur l'audiovisuel public, interrogé sur les aides publiques reçues par son groupe.
+categorie: puissants
+note: Suite : « mais François sera peut-être plus à même que moi de répondre au sujet des aides publiques. » François Riahi est le directeur général de Banijay Group.
+source.titre: Assemblée nationale — Commission d'enquête sur la neutralité, le fonctionnement et le financement de l'audiovisuel public, compte rendu n° 44 du 25 février 2026 (audition de Banijay Group)
+source.url: https://www.assemblee-nationale.fr/dyn/opendata/CRCANR5L17S2026PO874480N044.html
+source.nature: officielle
+verifie: 2026-11-17

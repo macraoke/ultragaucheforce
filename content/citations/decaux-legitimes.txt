@@ -1,0 +1,11 @@
+texte: Nous sommes légitimes dans l'espace public parce que nous y apportons une utilité claire.
+auteur: Jean-Charles Decaux
+fonction: président du directoire de JCDecaux
+date: 2025-04
+contexte: Entretien à The Media Leader, au 50e Grand Prix de la Communication Extérieure, à l'abbaye des Vaux-de-Cernay, sur les critiques de l'empreinte carbone de l'affichage.
+categorie: puissants
+note: Juste avant : « nos produits sont essentiels : abris voyageurs, sanitaires, vélos, panneaux d'information… » Article publié le 6 avril 2025.
+source.titre: The Media Leader — Jean-Charles Decaux : « L'affichage est un média d'une formidable modernité »
+source.url: https://fr.themedialeader.com/jean-charles-decaux-laffichage-est-un-media-dune-formidable-modernite/
+source.nature: presse
+verifie: 2026-11-17

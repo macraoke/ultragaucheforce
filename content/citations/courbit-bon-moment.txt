@@ -1,0 +1,12 @@
+texte: J'ai été au bon moment au bon endroit.
+auteur: Stéphane Courbit
+fonction: président de Banijay Group
+date: 2026-02-25
+contexte: Audition sous serment devant la commission d'enquête de l'Assemblée nationale sur l'audiovisuel public, interrogé sur la réussite de Banijay.
+categorie: puissants
+mot: BON ENDROIT
+note: Suite : « il faut, à mon avis, avoir de la chance et j'en ai eu. » Juste avant : « Une personne qui arriverait aujourd'hui en ayant la même énergie, le même désir et le même âge ne pourrait pas connaître la même aventure que moi. »
+source.titre: Assemblée nationale — Commission d'enquête sur la neutralité, le fonctionnement et le financement de l'audiovisuel public, compte rendu n° 44 du 25 février 2026 (audition de Banijay Group)
+source.url: https://www.assemblee-nationale.fr/dyn/opendata/CRCANR5L17S2026PO874480N044.html
+source.nature: officielle
+verifie: 2026-11-17

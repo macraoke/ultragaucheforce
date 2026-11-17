@@ -1,0 +1,12 @@
+texte: Et surtout, notre média est sobre.
+auteur: Jean-Charles Decaux
+fonction: président du directoire de JCDecaux
+date: 2025-04
+contexte: Entretien à The Media Leader, au 50e Grand Prix de la Communication Extérieure, à l'abbaye des Vaux-de-Cernay, à la question : « Le média a été la cible de critiques sur son empreinte carbone. Que répondez-vous ? »
+categorie: puissants
+mot: SOBRE
+note: Suite : « C'est celui qui a l'empreinte carbone la plus faible, de très loin. » Article publié le 6 avril 2025.
+source.titre: The Media Leader — Jean-Charles Decaux : « L'affichage est un média d'une formidable modernité »
+source.url: https://fr.themedialeader.com/jean-charles-decaux-laffichage-est-un-media-dune-formidable-modernite/
+source.nature: presse
+verifie: 2026-11-17

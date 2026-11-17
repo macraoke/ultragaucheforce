@@ -1,0 +1,11 @@
+texte: Je dirais que c'est un média d'une formidable modernité.
+auteur: Jean-Charles Decaux
+fonction: président du directoire de JCDecaux
+date: 2025-04
+contexte: Entretien à The Media Leader, au 50e Grand Prix de la Communication Extérieure, à l'abbaye des Vaux-de-Cernay, à la question : « La communication extérieure est-elle un média du passé ou un média du futur ? »
+categorie: puissants
+note: Article publié le 6 avril 2025.
+source.titre: The Media Leader — Jean-Charles Decaux : « L'affichage est un média d'une formidable modernité »
+source.url: https://fr.themedialeader.com/jean-charles-decaux-laffichage-est-un-media-dune-formidable-modernite/
+source.nature: presse
+verifie: 2026-11-17

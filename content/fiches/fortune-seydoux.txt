@@ -1,0 +1,9 @@
+titre: 1,15 milliard estimé
+theme: richesses
+texte: Selon le classement Challenges publié le 8 juillet 2026, Jérôme Seydoux et sa famille (Pathé) sont au 128e rang des fortunes professionnelles, avec 350 millions d'euros de moins qu'en 2025 (−23,3 %) : environ 1,15 milliard d'euros.
+portee: La page en accès libre ne publie pas le montant : il se déduit de la baisse et de son pourcentage (350 millions, c'est 23,3 % d'environ 1,5 milliard). Estimation du magazine des actifs professionnels ; les biens personnels ne sont pas comptés. Ce n'est pas de l'argent disponible. Challenges écrit qu'il conserve, à 91 ans, 80 % de Pathé, après l'entrée au capital des Saadé.
+periode: classement 2026, publié le 8 juillet 2026
+source.titre: Challenges — Jérôme Seydoux et sa famille : analyse de sa fortune (classement des 500 plus grandes fortunes de France 2026)
+source.url: https://www.challenges.fr/classements/fortune/jerome-seydoux-et-sa-famille_26620
+source.nature: presse
+verifie: 2026-11-17

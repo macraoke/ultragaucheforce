@@ -1,0 +1,12 @@
+texte: Ce virtuose du poker n'a pas hésité à bluffer au début de sa carrière.
+auteur: Challenges
+fonction: magazine économique
+date: 2026-07-08
+contexte: Fiche « Le saviez-vous ? » de Stéphane Courbit dans le classement Challenges des 500 plus grandes fortunes de France 2026. Le boss lui doit son nom.
+categorie: puissants
+mot: VIRTUOSE DU POKER
+note: Suite : « pour se donner de l'importance auprès des patrons des chaînes en tournant des pages vides de son agenda et faisant ainsi croire qu'il était surbooké. »
+source.titre: Challenges — Stéphane Courbit : analyse de sa fortune (classement des 500 plus grandes fortunes de France 2026)
+source.url: https://www.challenges.fr/classements/fortune/stephane-courbit_26589
+source.nature: presse
+verifie: 2026-11-17
