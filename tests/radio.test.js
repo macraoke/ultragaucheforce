@@ -929,6 +929,145 @@ test('un nouveau tour ne commence ni par la dernière piste entendue, ni par la 
   assert.notEqual(heard[4], 'jeu-b', `« jeu-b » revient en tête du tour suivant : ${heard.join(', ')}`);
 });
 
+// ---------------------------------------------------------------------- « Suivant »
+// Valentin, 17 novembre 2026 : « autorise à faire suivant dans la radio manif, par exemple depuis le menu de pause ».
+
+test('« Suivant » en niveau : la suivante du sac, ni celle en cours ni une déjà entendue ; la piste passée compte', async () => {
+  const jeu = real.filter((t) => t.ou === 'jeu').map((t) => t.id);
+  for (let seed = 1; seed <= 30; seed++) {
+    const s = setup({ list: real, random: seeded(seed) });
+    await s.on();
+    s.radio.play('rond-point');
+    const heard = [s.radio.current.id];
+    s.ready();
+    s.playing();
+    while (heard.length < jeu.length) {
+      const before = s.radio.current;
+      s.radio.next();
+      assert.notEqual(s.radio.current, before);
+      heard.push(s.radio.current.id);
+      s.ready();
+      if (heard.length % 3) s.playing(); // une sur trois est passée avant d'avoir joué : elle compte quand même
+    }
+    assert.equal(new Set(heard).size, jeu.length, `graine ${seed} : un tour entier sans doublon (${heard.join(', ')})`);
+    s.radio.next(); // le tour suivant ne commence pas par la piste qu'on vient de passer
+    assert.notEqual(s.radio.current.id, heard.at(-1));
+  }
+});
+
+test('« Suivant » au boss et au menu : un autre tirage ; passer Monarch saute Ryukken', async () => {
+  const monarch = bundle.musiques['abattez-la-citadelle'];
+  const ryukken = bundle.musiques['abattez-la-citadelle-ryukken'];
+  const s = setup({ list: real, random: seeded(3) });
+  await s.on();
+  for (let i = 0; i < 30; i++) {
+    const before = s.radio.current;
+    s.radio.next();
+    assert.notEqual(s.radio.current, before);
+    assert.equal(s.radio.current.ou, 'menu');
+    s.ready();
+    s.playing();
+  }
+  s.radio.play('boss');
+  s.ready();
+  s.playing();
+  let monarchs = 0;
+  for (let i = 0; i < 200; i++) {
+    const before = s.radio.current;
+    s.radio.next();
+    assert.notEqual(s.radio.current, before);
+    assert.equal(s.radio.current.ou, 'boss');
+    assert.notEqual(s.radio.current, ryukken, 'Ryukken ne vient qu’après Monarch, jamais par « Suivant »');
+    if (before === monarch) monarchs++;
+    s.ready();
+    s.playing();
+  }
+  assert.ok(monarchs > 0, 'Monarch a été passée');
+  // Monarch finie, Ryukken suit ; « Suivant » sur Ryukken : une autre piste du boss.
+  while (s.radio.current !== monarch) {
+    s.radio.next();
+    s.ready();
+    s.playing();
+  }
+  s.emit('FINISH');
+  assert.equal(s.radio.current, ryukken);
+  s.ready();
+  s.playing();
+  s.radio.next();
+  assert.notEqual(s.radio.current, ryukken);
+  assert.equal(s.radio.current.ou, 'boss');
+});
+
+test('« Suivant » sur Ryukken : ni Ryukken, ni Monarch qui la ramènerait trente secondes plus tard', async () => {
+  // Relecture : Monarch pouvait sortir du tirage, et à sa fin, Ryukken revenait.
+  const monarch = bundle.musiques['abattez-la-citadelle'];
+  const ryukken = bundle.musiques['abattez-la-citadelle-ryukken'];
+  const s = setup({ list: real, random: seeded(21) });
+  await s.on();
+  s.radio.play('boss');
+  for (let i = 0; i < 200; i++) {
+    while (s.radio.current !== monarch) s.radio.next();
+    s.ready(); // le premier chargement rappelle, Monarch se charge
+    s.ready();
+    s.playing();
+    s.emit('FINISH'); // l'extrait de Monarch fini, Ryukken suit
+    assert.equal(s.radio.current, ryukken);
+    s.ready();
+    s.playing();
+    s.radio.next();
+    assert.ok(s.radio.current !== monarch && s.radio.current !== ryukken, `essai ${i} : ${s.radio.current.id}`);
+    s.ready();
+    s.playing();
+  }
+});
+
+test('« Suivant » pendant un chargement : pas de second chargement, la piste demandée se charge au rappel', async () => {
+  const s = setup({ list: [...tracks, T('jeu-c', 'jeu')] });
+  await s.on();
+  s.radio.play('rond-point'); // « jeu-a », en chargement
+  s.radio.next();
+  s.radio.next(); // trois appuis rapides
+  assert.equal(s.radio.current.id, 'jeu-c');
+  assert.equal(s.widget.loads.length, 1, 'pas de load() avant le rappel du premier');
+  s.ready();
+  assert.equal(s.widget.loads.length, 2);
+  assert.equal(s.lastUrl(), s.radio.current.url);
+  s.ready();
+  s.playing();
+  assert.equal(s.radio.status, 'playing');
+  assert.equal(s.radio.failed.size, 0);
+});
+
+test('« Suivant », musique coupée ou refusée : le bouton est masqué et rien ne se charge ; en pause, il relance', async () => {
+  const s = setup();
+  await s.on();
+  assert.equal(s.shown.skip, true);
+  s.radio.setEnabled(false);
+  assert.equal(s.shown.skip, false);
+  s.radio.next();
+  assert.equal(s.widget.loads.length, 0);
+  assert.equal(s.widget.plays, 0);
+  // Refusée par le navigateur : le bouton de relance, pas « Suivant ».
+  const b = setup({ activated: false });
+  await b.on();
+  b.radio.play('rond-point');
+  b.ready();
+  b.advance(START_TIMEOUT);
+  assert.equal(b.radio.status, 'blocked');
+  assert.equal(b.shown.skip, false);
+  b.radio.next();
+  assert.equal(b.widget.loads.length, 1);
+  // Mise en pause par le joueur (le bouton du lecteur) : « Suivant » lance la suivante.
+  const p = setup();
+  await p.on();
+  p.emit('PAUSE');
+  assert.equal(p.radio.status, 'paused');
+  assert.equal(p.shown.skip, true);
+  p.radio.next();
+  assert.equal(p.radio.status, 'loading');
+  assert.equal(p.radio.current.id, 'menu-b');
+});
+
 test('« Gabber au boss, Internationale en niveau »', () => {
   // Valentin, 16 novembre 2026.
   const gabber = bundle.musiques['jeunesse-emmerde-le-fn-gabber'];

@@ -37,17 +37,18 @@ export function poolsFor(tracks, slot, named = null) {
 }
 
 /**
- * Une piste au hasard dans la première liste qui en a une qui marche ; `avoid` (celle qui vient de finir) en dernier.
- * Une piste qui en suit une autre (clé `puis`) ne se tire pas au hasard : elle vient après celle-là.
+ * Une piste au hasard dans la première liste qui en a une qui marche ; `avoid` (celle qui vient de finir, ou une
+ * liste) en dernier. Une piste qui en suit une autre (clé `puis`) ne se tire pas au hasard : elle vient après celle-là.
  */
 export function chooseTrack(tracks, { slot, named = null, failed = new Set(), avoid = null, random = Math.random }) {
   const following = new Set(tracks.map((t) => t.puis).filter(Boolean));
+  const avoided = [avoid].flat();
   for (const pool of poolsFor(tracks, slot, named)) {
     const ok = pool.filter((t) => !failed.has(t.id));
     if (!ok.length) continue;
     const drawn = ok.filter((t) => !following.has(t.id) || t.id === named);
     const base = drawn.length ? drawn : ok;
-    const fresh = base.filter((t) => t !== avoid);
+    const fresh = base.filter((t) => !avoided.includes(t));
     const from = fresh.length ? fresh : base;
     return from[Math.floor(random() * from.length)];
   }
@@ -83,15 +84,16 @@ export function openingTrack(tracks, { slot, named = null, failed = new Set(), l
 /**
  * La piste suivante d'un niveau : un sac. Toutes celles qu'il peut jouer (les siennes et celles de tous les
  * niveaux), au hasard, sans en rejouer une (`heard`) avant d'avoir entendu les autres ; jamais celle qu'on vient
- * d'entendre (`avoid`), s'il y en a une autre.
+ * d'entendre (`avoid`, ou une liste), s'il y en a une autre.
  */
 export function nextLevelTrack(tracks, { slot, named = null, failed = new Set(), heard = new Set(), avoid = null, random = Math.random }) {
   const { all } = levelTracks(tracks, slot, named, failed);
   if (!all.length) return null;
+  const avoided = [avoid].flat();
   const pick = (list) => list[Math.floor(random() * list.length)];
-  const bag = all.filter((t) => !heard.has(t.id) && t !== avoid);
+  const bag = all.filter((t) => !heard.has(t.id) && !avoided.includes(t));
   if (bag.length) return pick(bag);
-  const others = all.filter((t) => t !== avoid); // le sac est vide : un nouveau tour
+  const others = all.filter((t) => !avoided.includes(t)); // le sac est vide : un nouveau tour
   return pick(others.length ? others : all);
 }
 
@@ -126,6 +128,7 @@ export class Radio {
     this.view = this.env.view || new RadioPanel(box);
     this.view.onAsk = () => this.onAsk();
     this.view.onRetry = () => this.retry();
+    this.view.onNext = () => this.next();
     this.enabled = false;
     this.status = 'off'; // off | loading | playing | paused | blocked (refusée, attend un geste) | unreachable (lecteur injoignable)
     this.widget = null;
@@ -538,8 +541,36 @@ export class Radio {
     this.view.setVisible(on, inGame);
   }
 
+  /** « Suivant » a un sens : la musique joue, se charge, ou le joueur l'a mise en pause. Coupée ou refusée, non. */
+  canSkip() {
+    return this.enabled && Boolean(this.current) && ['playing', 'loading', 'paused'].includes(this.status);
+  }
+
+  /**
+   * « Suivant » : la piste d'après, selon le moment. En niveau, la suivante du sac : la piste passée compte comme
+   * entendue. Au menu et au boss, un autre tirage. Une piste passée n'appelle pas sa suite (`puis`) : passer
+   * Monarch saute Ryukken. Passer une suite écarte aussi celle qu'elle suit : passer Ryukken ne la ramène pas
+   * par Monarch. Pendant un chargement, la piste demandée se charge au rappel du précédent.
+   */
+  next() {
+    if (!this.canSkip()) return;
+    const skipped = this.current;
+    this.lastHeard.set(this.moment(), skipped);
+    this.heardNow(skipped);
+    const leader = this.tracks.find((t) => t.puis === skipped.id);
+    const track = this.choose(leader ? [skipped, leader] : skipped);
+    if (!track) return;
+    this.chosenFor = `${this.slot}|${this.named}`;
+    this.start(track);
+  }
+
+  /** La ligne « ♪ piste ⏭ » du menu de pause (rien sans lecteur à l'écran, dans les tests). */
+  controls() {
+    return this.view.mini ?? null;
+  }
+
   render(possible = this.tracks.length > 0 && this.env.online()) {
-    this.view.show({ possible, enabled: this.enabled, status: this.status, track: this.current });
+    this.view.show({ possible, enabled: this.enabled, status: this.status, track: this.current, skip: this.canSkip() });
   }
 }
 
@@ -561,25 +592,41 @@ class RadioPanel {
     const screen = document.getElementById('ecran');
     if (screen) new MutationObserver(() => this.fit()).observe(screen, { childList: true });
     addEventListener('resize', () => requestAnimationFrame(() => this.fit()));
+    // « ♪ piste ⏭ » dans le menu de pause : ui.js l'y pose, elle se tient à jour d'ici.
+    this.miniTitle = h('span', { className: 'titre' });
+    this.mini = h('div', { className: 'radio-pause', hidden: true },
+      h('span', { className: 'note' }, '♪'), this.miniTitle, this.skipButton('Piste suivante (N)'), h('kbd', {}, 'N'));
+  }
+
+  /** ⏭ : la piste suivante. */
+  skipButton(title = 'Piste suivante') {
+    const button = h('button', { type: 'button', className: 'suivante', title, onclick: () => this.onNext() }, '⏭︎');
+    button.setAttribute('aria-label', 'Piste suivante');
+    return button;
   }
 
   mount(frame) {
     this.frame = frame;
     this.caption = h('p', {});
+    this.skip = this.skipButton();
     // Le texte se raccourcit selon la place : « ▶ Relancer la musique », « ▶ Relancer », ou « ▶♪ » sous le bouton pause.
     this.retry = h('button', { type: 'button', className: 'relance', hidden: true, title: 'Relancer la musique', onclick: () => this.onRetry() },
       '▶', h('span', { className: 'mot' }, ' Relancer'), h('span', { className: 'suite' }, ' la musique'), h('span', { className: 'note' }, '♪'));
-    this.box.replaceChildren(h('strong', {}, 'Radio Manif'), frame, this.caption, this.retry);
+    this.box.replaceChildren(h('strong', {}, 'Radio Manif'), frame, h('div', { className: 'piste' }, this.caption, this.skip), this.retry);
   }
 
   unmount() {
     this.frame = null;
     this.box.replaceChildren();
+    this.mini.hidden = true;
   }
 
-  show({ possible, enabled, status, track }) {
+  show({ possible, enabled, status, track, skip = false }) {
     this.enabled = enabled;
     this.box.hidden = !possible;
+    this.mini.hidden = !(possible && this.frame && skip);
+    if (this.miniTitle.textContent !== (track?.titre ?? '')) this.miniTitle.textContent = track?.titre ?? '';
+    this.mini.title = track ? `Radio Manif : ${track.titre} — ${track.artiste}` : '';
     if (!possible) return;
     const stuck = enabled && (status === 'blocked' || status === 'unreachable');
     this.box.classList.toggle('bloquee', Boolean(this.frame) && stuck);
@@ -593,6 +640,7 @@ class RadioPanel {
       return;
     }
     this.retry.hidden = !stuck;
+    this.skip.hidden = !skip;
     const label = track ? `${track.titre} — ${track.artiste}` : '';
     if (this.caption.textContent !== label) this.caption.replaceChildren(track ? link(track.url, label) : '');
     this.fit();

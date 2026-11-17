@@ -96,6 +96,7 @@ const screens = new Screens(screenRoot, {
     testing: () => Boolean(custom),
     options: () => applyOptions(),
     music: (yes) => answerMusic(yes),
+    radio: () => radio.controls(),
     learn: (ids) => ids.forEach((id) => collect('fiches', id, true)),
     back: () => (mode === 'paused' ? screens.pause() : screens.menu()),
     playing: () => mode === 'paused',
@@ -409,6 +410,11 @@ addEventListener('pointerdown', () => audio.unlock(), true);
 const unblockRadio = () => setTimeout(() => radio.unblock(), 100);
 addEventListener('pointerup', unblockRadio, true);
 addEventListener('keydown', unblockRadio, true);
+// N, dans le menu de pause : la piste suivante de Radio Manif, comme son bouton ⏭.
+addEventListener('keydown', (e) => {
+  if (e.code !== 'KeyN' || e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (mode === 'paused' && screenRoot.querySelector(':scope > .pause')) radio.next();
+});
 // Le réseau revient (métro, train) : Radio Manif aussi, même si le jeu a été lancé hors ligne.
 addEventListener('online', () => {
   radio.reconnected();
