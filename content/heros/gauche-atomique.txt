@@ -22,7 +22,7 @@ arme.taille: 5
 arme.image: projectile
 arme.son: tir
 
-# Spéciale : la plus large possible, mais une seule charge.
+# Spéciale : une onde large (rayon 120), deux charges.
 speciale.type: onde
 speciale.nom: RÉACTION EN CHAÎNE !
 speciale.charges: 2
