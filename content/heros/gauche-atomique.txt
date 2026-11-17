@@ -18,7 +18,7 @@ arme.rebonds: 4
 arme.portee: 360
 arme.degats: 1
 arme.terrain: 1
-arme.taille: 4
+arme.taille: 5
 arme.image: projectile
 arme.son: tir
 
@@ -26,7 +26,7 @@ arme.son: tir
 speciale.type: onde
 speciale.nom: RÉACTION EN CHAÎNE !
 speciale.charges: 1
-speciale.rayon: 160
+speciale.rayon: 120
 speciale.degats: 4
 speciale.terrain: 6
 speciale.recul: 400
@@ -116,7 +116,8 @@ Y.kkwkkwkk.c
 .bBbbbbbbbbccbbbbbbbbbB.
 .bBbbbbbbbbbbbbbbbbbbbB.
 --- projectile
-.cc.
-cwwc
-cwwc
-.cc.
+.www.
+wcYcw
+wYyYw
+wcYcw
+.www.

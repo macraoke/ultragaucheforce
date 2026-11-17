@@ -45,10 +45,11 @@ test('sauvetage : le niveau peut imposer le camarade libéré, et un tir ouvre a
 
 test('un héros « test » n’est ni héros de départ ni camarade tiré au hasard', () => {
   for (let seed = 1; seed <= 12; seed++) {
-    const game = settle(play(flat({ draw: (put, ground) => put(ground, 4, 'K') }), { seed }));
-    assert.equal(game.hero.def.id, 'alpha');
+    const game = settle(play(flat({ heros: '', draw: (put, ground) => put(ground, 4, 'K') }), { seed }));
+    const first = game.hero.def.id;
+    assert.ok(['alpha', 'beta'].includes(first), 'tiré parmi les héros jouables');
     run(game, 40, { right: true });
-    assert.equal(game.hero.def.id, 'beta');
+    assert.equal(game.hero.def.id, first === 'alpha' ? 'beta' : 'alpha');
   }
 });
 

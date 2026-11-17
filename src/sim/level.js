@@ -5,6 +5,7 @@ import { createHero } from './hero.js';
 import { createEnemy } from './enemy.js';
 import { createBoss } from './boss.js';
 import { createRecruit } from './manif.js';
+import { makeRng } from './rng.js';
 
 /** « a | b » ou ['a', 'b'] → ['a', 'b'] */
 export const toList = (v) => (Array.isArray(v) ? v : String(v || '').split('|').map((s) => s.trim()).filter(Boolean));
@@ -40,10 +41,14 @@ export function loadLevel(game) {
     }
   });
 
-  // Héros de départ : celui que le joueur a choisi, sinon celui que le niveau demande, sinon le premier héros jouable.
+  // Héros de départ : celui que le joueur a choisi, sinon celui que le niveau demande, sinon un héros jouable tiré
+  // au hasard. Le tirage a sa propre graine, dérivée de celle de la partie : il ne décale pas les autres tirages,
+  // et une même graine donne toujours le même héros (robot, tests).
   const chosen = Object.hasOwn(bundle.heros || {}, game.choice) ? bundle.heros[game.choice] : null;
   const wanted = toList(level.heros).map((id) => bundle.heros?.[id]).find(Boolean);
-  const def = (chosen?.statut !== 'test' && chosen) || wanted || playable(bundle)[0] || Object.values(bundle.heros || {})[0];
+  const pool = playable(bundle);
+  const drawn = pool.length ? makeRng(game.seed * 7 + 3).pick(pool) : null;
+  const def = (chosen?.statut !== 'test' && chosen) || wanted || drawn || Object.values(bundle.heros || {})[0];
   if (!def) throw new Error('Aucun héros dans le contenu : ajoute une fiche dans content/heros/.');
   game.hero = createHero(def, start.x, start.y);
   game.checkpoint = start;

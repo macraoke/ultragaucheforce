@@ -15,6 +15,18 @@ test('héros de départ : celui que le joueur choisit, sinon celui du niveau', (
   assert.equal(play(flat({ heros: 'beta' }), { hero: '' }).hero.def.id, 'beta');
 });
 
+test('ni choix ni héros du niveau : un héros jouable tiré au hasard, le même pour une même graine', () => {
+  const lvl = flat({ heros: '' });
+  const drawn = new Set();
+  for (let seed = 1; seed <= 40; seed++) {
+    const id = play(lvl, { seed }).hero.def.id;
+    assert.notEqual(id, 'test-hero', 'un héros d’essai n’est jamais tiré');
+    assert.equal(play(lvl, { seed }).hero.def.id, id, 'même graine, même héros');
+    drawn.add(id);
+  }
+  assert.deepEqual([...drawn].sort(), ['alpha', 'beta'], 'pas toujours le premier par ordre alphabétique');
+});
+
 test('héros choisi : le sauvetage donne quand même un autre héros, et la pile grandit', () => {
   const lvl = flat({ heros: 'alpha', camarades: ['beta'], draw: (put, ground) => put(ground, 6, 'K') });
   const game = play(lvl, { hero: 'beta' });

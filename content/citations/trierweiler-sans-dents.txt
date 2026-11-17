@@ -2,10 +2,10 @@ texte: Lui, l'homme de gauche, dit en privé : “les sans-dents”, très fier 
 auteur: Valérie Trierweiler
 fonction: ex-première dame, dans son livre « Merci pour ce moment »
 date: 2014-09
-contexte: Dans « Merci pour ce moment », à propos de François Hollande, président de la République.
-categorie: puissants
+contexte: Dans « Merci pour ce moment », à propos de François Hollande, président de la République. François Hollande a répondu : « je ne veux pas qu'on puisse dire ou écrire que je me moque de la douleur sociale, car c'est un mensonge qui me blesse ».
+categorie: gauche
 mot: SANS-DENTS
-note: La phrase commence ainsi : « Il s'est présenté comme l'homme qui n'aime pas les riches. En réalité, le président n'aime pas les pauvres. » La dépêche AFP reprise par La Libre marque les guillemets intérieurs par des « + ». François Hollande a répondu dans Le Nouvel Observateur : « je ne veux pas qu'on puisse dire ou écrire que je me moque de la douleur sociale, car c'est un mensonge qui me blesse ». Le héros Le Sans-dents lui doit son nom.
+note: La phrase commence ainsi : « Il s'est présenté comme l'homme qui n'aime pas les riches. En réalité, le président n'aime pas les pauvres. » La dépêche AFP reprise par La Libre marque les guillemets intérieurs par des « + ». La réponse de François Hollande est parue dans Le Nouvel Observateur. Le héros Le Sans-dents lui doit son nom.
 source.titre: La Libre (AFP) — Hollande et les sans-dents? « Un mensonge qui me blesse »
 source.url: https://www.lalibre.be/international/2014/09/10/hollande-et-les-sans-dents-un-mensonge-qui-me-blesse-3ETU7KENJJGUJEVGV64DJZAE3U/
 source.nature: presse
