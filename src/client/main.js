@@ -12,10 +12,15 @@ import { showHeroCard } from './herocard.js';
 import { showTaxScene, draw } from './tax.js';
 import { CRS_OCTOBRE_2026 } from './blesses.js';
 import { shareImage, openShare } from './share.js';
-import { measure } from './mesure.js';
+import { GAME_LOGGER } from './config.js';
+import { captureException, measure } from './mesure.js';
 import { loadSave, storeSave, discover, isFound } from './save.js';
 import { cardName, citationOfWord, levelOrder, rarityName, taxShocks } from './collection.js';
 import { registerServiceWorker } from './sw-register.js';
+
+// Un seul filet global pour les erreurs qui échappent au jeu ; les erreurs de console ne sont pas collectées.
+window.addEventListener('error', (event) => captureException(event.error));
+window.addEventListener('unhandledrejection', (event) => captureException(event.reason));
 
 const bundle = await (await (window.contentRequest ?? fetch('content.json'))).json(); // partie dès index.html
 const save = loadSave();
@@ -191,7 +196,10 @@ function start(id, level = null) {
   fitRight();
   begin = () => {
     begin = null;
-    if (id) measure('niveau lancé', { niveau: id }); // chaque vraie partie, rejouée ou non ; pas un changement de héros sur le carton
+    if (id) {
+      measure('level_started', { niveau: id }); // chaque vraie partie, rejouée ou non ; pas un changement de héros sur le carton
+      GAME_LOGGER.info('gameplay level started', { level_id: id, game_mode: 'campaign' });
+    }
     setMode('playing');
     // « Recommencer » (pause, « Game over ») : la même visite, sa piste continue ou revient après le boss.
     radio.play(current.id, current.level.musique, { restart: visited === current.id });
@@ -285,9 +293,12 @@ async function win() {
   const sign = game.signs.map((t) => bundle.pancartes.find((p) => p.texte === t)).filter(Boolean)
     .reduce((top, p) => (!top || p.rarete >= top.rarete ? p : top), null);
   const crowd = game.crowd;
-  if (!custom) measure('niveau terminé', { niveau: id, manif: crowd, secondes: Math.round(game.time), personnages_perdus: game.stats.deaths, boss: boss?.id });
+  if (!custom) {
+    measure('level_completed', { niveau: id, manif: crowd, secondes: Math.round(game.time), personnages_perdus: game.stats.deaths, boss: boss?.id });
+    GAME_LOGGER.info('gameplay level completed', { level_id: id, duration_seconds: Math.round(game.time), crowd_count: crowd, characters_lost: game.stats.deaths });
+  }
   const share = () => {
-    measure('image partagée', { niveau: id });
+    measure('level_image_shared', { niveau: id });
     openShare(shareImage({
       frames: [document.getElementById('monde'), document.getElementById('textes')],
       level: level.titre, crowd, tax: said, sign: sign?.texte, where: (location.host + location.pathname).replace(/(index\.html)?\/?$/, ''),
@@ -344,7 +355,10 @@ function handle(events) {
       });
     } else if (e.type === 'won') win();
     else if (e.type === 'lost') {
-      if (!custom) measure('niveau perdu', { niveau: current.id, manif: game.crowd, secondes: Math.round(game.time) });
+      if (!custom) {
+        measure('level_lost', { niveau: current.id, manif: game.crowd, secondes: Math.round(game.time) });
+        GAME_LOGGER.info('gameplay level lost', { level_id: current.id, duration_seconds: Math.round(game.time), crowd_count: game.crowd });
+      }
       begin = null;
       setMode('over');
       screens.lost();

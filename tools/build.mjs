@@ -13,8 +13,9 @@ import { loadContent, readContentFiles, ROOT } from './content.mjs';
 import { formatError } from '../src/content/rules.js';
 import { makeIcons } from './png.mjs';
 
-const STATIC = ['index.html', 'galerie.html', 'style.css', 'manifest.webmanifest', 'apercu.jpg'];
+const STATIC = ['index.html', 'galerie.html', 'style.css', 'manifest.webmanifest', 'apercu.jpg', 'node_modules/posthog-js/dist/module.full.no-external.js'];
 const ONLINE_ONLY = ['apercu.jpg']; // l'image d'un lien partagé : en ligne pour les aperçus, inutile dans le jeu
+const posthogConfig = JSON.stringify({ host: process.env.POSTHOG_HOST, token: process.env.POSTHOG_PROJECT_TOKEN });
 
 /** Tous les fichiers `.js` d'un dossier, en chemins relatifs à la racine du dépôt. */
 function scripts(dir) {
@@ -71,6 +72,7 @@ export function build(outDir = join(ROOT, 'dist')) {
   // La balise que `sw-register.js` cherche : sans elle (en développement), pas de service worker.
   let page = files.get('index.html').toString();
   if (!page.includes('</head>')) throw new Error('index.html : balise </head> introuvable.');
+  page = page.replace('window.__POSTHOG_CONFIG__ = null;', `window.__POSTHOG_CONFIG__ = ${posthogConfig};`);
   page = page.replace('</head>', `  <meta name="ugf-build" content="${version}">\n</head>`);
   // Les modules du menu, annoncés dès la lecture de la page, avant la feuille de style qui ferait attendre
   // le script. Seulement sans service worker (première visite) : sous lui, ils sont déjà en cache, et les
