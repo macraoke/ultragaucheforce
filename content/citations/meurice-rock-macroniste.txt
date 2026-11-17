@@ -1,6 +1,6 @@
 texte: Donc on assume notre rock macroniste.
 auteur: Guillaume Meurice
-fonction: humoriste de France Inter, chanteur des Disruptives
+fonction: humoriste de France Inter, membre des Disruptives
 date: 2018-10
 contexte: Entretien au webzine Lords of Rock sur The Disruptives, son groupe de rock parodique qui se dit « macroniste ».
 categorie: gauche
