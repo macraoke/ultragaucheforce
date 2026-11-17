@@ -1,6 +1,6 @@
 titre: caca sur bardella
 artiste: Sketogan
 url: https://soundcloud.com/sketogan/caca-sur-bardella
-ou: jeu
+ou: boss
 licence: tous droits réservés
 auteur: xsbfh
