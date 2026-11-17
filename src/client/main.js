@@ -342,7 +342,7 @@ function handle(events) {
     } else if (e.type === 'panic') audio.play(e.level >= 2 ? 'casseroles' : 'sifflet');
     else if (e.type === 'boss' && e.state === 'enter') {
       audio.speak(game.boss.def.id);
-      radio.play('boss');
+      radio.play('boss', current?.level?.['musique-boss'] || null); // la première piste du boss, si le niveau la nomme
     }
     else if (e.type === 'card') collect('fiches', e.id);
     else if (e.type === 'discover') {

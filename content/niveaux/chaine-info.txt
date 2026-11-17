@@ -19,6 +19,8 @@ nasse.ennemi: crs
 nasse.nombre: 3
 nasse.vitesse: 20
 nasse.rythme: 45
+musique: jles-aime-pas
+musique-boss: caca-sur-bardella-sketogan
 
 panneau.1: Tracts et manif : le barrage cède
 panneau.2: NASSE : creuse sous la rue

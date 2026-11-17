@@ -13,7 +13,7 @@ On le dessine dans le jeu, on l'essaie, on le propose. Le niveau lui-même est u
 7. **GitHub** mène au reste : les propositions en cours, une idée de niveau, une pancarte, un personnage, une source à corriger, un bug.
 
 > [!NOTE]
-> Le bouton **Texte** montre la fiche du niveau. C'est là que se règlent les clés que la palette ne couvre pas (`citation`, `fiche`, `accroche`, `heros`, `camarades`, `musique`, `manif`, `nasse.*`).
+> Le bouton **Texte** montre la fiche du niveau. C'est là que se règlent les clés que la palette ne couvre pas (`citation`, `fiche`, `accroche`, `heros`, `camarades`, `musique`, `musique-boss`, `manif`, `nasse.*`).
 
 Sans l'Atelier : créez `content/niveaux/mon-niveau.txt` (voir [CONTRIBUTING.md](../CONTRIBUTING.md)).
 
@@ -71,7 +71,8 @@ Déposé dans `content/niveaux/`, il devient une étape du plan de campagne, à 
 | `nasse.rythme` | la nasse revient d'elle-même autour du héros, toutes les tant de secondes (0 à 600 ; 0, par défaut : seulement aux repères `N`) |
 | `manchette` | une alerte de PANIQUE TV propre au niveau ; répétable. Elle reprend le texte d'un vrai bandeau de [`content/manchettes/`](../content/manchettes) (à la casse près) : c'est ce bandeau, il passe avec sa chaîne et sa date, et débloque sa carte. Sinon, elle passe sans crédit. Un crédit ne s'écrit pas ici : ajoutez d'abord le bandeau au fonds commun, avec sa source |
 | `intro` | le texte du carton d'ouverture, quand il n'y a pas de `citation` |
-| `musique` | une piste de `content/musiques/`, jouée à chaque entrée dans le niveau ; si des pistes ont aussi `ou` : ce niveau, l'entrée tire au hasard entre elles et celle-ci. Ensuite, les pistes tournent |
+| `musique` | une piste de `content/musiques/` : elle ouvre chaque entrée dans le niveau, même s'il a d'autres pistes à lui (`ou` : ce niveau). Ensuite, les pistes tournent. Si elle ne joue pas, l'entrée prend une autre de ses pistes, sinon le sac |
+| `musique-boss` | une piste de `content/musiques/` (de préférence `ou: boss`) : elle ouvre chaque arrivée au boss de ce niveau, suivie de sa suite (`puis`) s'il y en a une. Ensuite, et si elle ne joue pas, le hasard parmi les pistes du boss. Sans elle, le boss tire au hasard dès l'arrivée |
 
 Un signe de légende est une minuscule, ou l'un de ceux-ci : `+ * @ & % $ ! ? = ~ ^ < > _ , ;`.
 

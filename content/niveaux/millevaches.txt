@@ -9,6 +9,8 @@ fond: campagne
 cortege: oui
 manif: 3
 heros: tyrannogauchiste
+musique: countryside-explosions
+musique-boss: siamo-tutti-antifascisti-1fam-bender
 
 panneau.1: [avancer] : avancer · [sauter] : sauter
 panneau.2: [tirer] : lancer des tracts

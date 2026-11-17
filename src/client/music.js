@@ -63,7 +63,7 @@ export function chooseTrack(tracks, { slot, named = null, failed = new Set(), av
   return null;
 }
 
-/** Les moments hors des niveaux : ils tirent au hasard (`chooseTrack`), sans sac. */
+/** Les moments hors des niveaux : ils tirent au hasard (`chooseTrack`), sans sac. Le boss peut nommer sa première piste. */
 const NOT_A_LEVEL = new Set(['menu', 'boss']);
 
 /**
@@ -78,12 +78,16 @@ export function levelTracks(tracks, slot, named = null, failed = new Set()) {
 }
 
 /**
- * L'entrée dans un niveau : sa piste à lui (`ou` : le niveau, ou celle que nomme sa clé `musique`). S'il en a
- * plusieurs, une autre que celle de la visite d'avant (`last`) quand c'est possible ; jamais celle qu'on entend déjà
- * (`avoid`). Sans piste à lui : rien, le sac commence.
+ * L'entrée dans un niveau. La piste que nomme sa clé `musique` ouvre chaque visite, tant qu'elle joue ; si on
+ * l'entend déjà en y entrant, elle continue. Sans elle, sa piste à lui (`ou` : le niveau) : s'il en a plusieurs, une
+ * autre que celle de la visite d'avant (`last`) quand c'est possible ; jamais celle qu'on entend déjà (`avoid`).
+ * Sans piste à lui : rien, le sac commence.
  */
 export function openingTrack(tracks, { slot, named = null, failed = new Set(), last = null, avoid = null, random = Math.random }) {
-  const own = levelTracks(tracks, slot, named, failed).own.filter((t) => t !== avoid);
+  const mine = levelTracks(tracks, slot, named, failed).own;
+  const fixed = named && mine.find((t) => t.id === named);
+  if (fixed) return fixed;
+  const own = mine.filter((t) => t !== avoid);
   const fresh = own.filter((t) => t.id !== last);
   const from = fresh.length ? fresh : own;
   return from.length ? from[Math.floor(random() * from.length)] : null;
@@ -254,8 +258,8 @@ export class Radio {
   }
 
   /**
-   * Lance la musique d'un moment du jeu : « menu », « boss », ou l'identifiant d'un niveau,
-   * avec la piste que nomme le niveau s'il en nomme une.
+   * Lance la musique d'un moment du jeu : « menu », « boss », ou l'identifiant d'un niveau, avec la piste que nomme
+   * le niveau s'il en nomme une (sa clé `musique` ; au boss, sa clé `musique-boss`).
    * @param {{ restart?: boolean }} [how]  `restart` : « Recommencer » ; la visite du niveau continue, sa musique avec.
    *   Sinon, chaque arrivée dans un niveau en commence une nouvelle visite (« Rejouer » après une victoire aussi).
    */
@@ -275,7 +279,7 @@ export class Radio {
 
   /**
    * La musique du moment présent. Une visite de niveau commence par sa piste à lui, s'il en a une ; ensuite (et sans
-   * piste à lui), le sac ; jamais celle qu'on entend déjà en y entrant. Le menu et le boss tirent au hasard.
+   * piste à lui), le sac. Le menu et le boss commencent par leur piste d'ouverture, puis tirent au hasard.
    */
   tune() {
     const key = `${this.slot}|${this.named}`;
@@ -287,6 +291,7 @@ export class Radio {
     const track = same ? this.current : (level ? !this.visit?.track && this.open() : this.opener()) || this.choose(level ? this.current : null);
     if (!track) return this.unreachable(); // plus aucune piste ne joue
     this.chosenFor = key;
+    if (level && this.visit && !this.visit.track) this.visit.track = track; // la piste nommée, qu'on entendait déjà
     if (track !== this.current) return this.start(track);
     if (!live) this.resume();
   }
@@ -303,15 +308,29 @@ export class Radio {
     if (track !== this.current) this.start(track);
   }
 
+  /**
+   * Ce qui guide un tirage. Au boss, la piste nommée n'ouvre que l'arrivée (`opener`) : la suite tire au hasard,
+   * sans revenir à elle.
+   */
+  draw(avoid = null) {
+    const named = NOT_A_LEVEL.has(this.slot) ? null : this.named;
+    return { slot: this.slot, named, failed: this.failed, avoid, random: this.env.random };
+  }
+
   choose(avoid = null) {
-    const base = { slot: this.slot, named: this.named, failed: this.failed, avoid, random: this.env.random };
+    const base = this.draw(avoid);
     if (NOT_A_LEVEL.has(this.slot)) return chooseTrack(this.tracks, base);
     // En partie : le sac des pistes du niveau ; s'il ne reste rien, n'importe laquelle plutôt que le silence.
     return nextLevelTrack(this.tracks, { ...base, heard: this.heard }) ?? chooseTrack(this.tracks, base);
   }
 
-  /** L'arrivée au menu ou au boss : sa piste d'ouverture (`ouverture: oui`), si elle joue ; sinon, le hasard. */
+  /**
+   * L'arrivée au menu ou au boss : la piste que nomme le niveau (`musique-boss`), si elle joue ; sinon sa piste
+   * d'ouverture (`ouverture: oui`) ; sinon, le hasard. Sa suite (`puis`) vient à sa fin, comme pour toute piste.
+   */
   opener() {
+    const named = this.named && this.tracks.find((t) => t.id === this.named);
+    if (named && !this.failed.has(named.id)) return named;
     const own = this.tracks.filter((t) => t.ou === this.slot && t.ouverture && !this.failed.has(t.id));
     return own.length ? own[Math.floor(this.env.random() * own.length)] : null;
   }
@@ -765,7 +784,7 @@ export class Radio {
     this.heardNow(skipped);
     const leader = this.tracks.find((t) => t.puis === skipped.id);
     const avoid = leader ? [skipped, leader] : skipped;
-    const base = { slot: this.slot, named: this.named, failed: this.failed, avoid, random: this.env.random };
+    const base = this.draw(avoid);
     // Au hasard parmi les pistes du moment, sans le sac : « randomize the "Next" button ».
     const track = NOT_A_LEVEL.has(this.slot) ? chooseTrack(this.tracks, base) : nextLevelTrack(this.tracks, base) ?? chooseTrack(this.tracks, base);
     if (!track) return;

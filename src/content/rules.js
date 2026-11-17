@@ -424,7 +424,7 @@ function levelHeadlines(f, pool, report) {
 export function buildLevel(f, ctx, report) {
   const spec = {
     titre: req(), accroche: str(), intro: str(), manchette: list(), fond: pick(BACKDROPS), boss: str(),
-    heros: str(), camarades: str(), cortege: bool(), musique: str(),
+    heros: str(), camarades: str(), cortege: bool(), musique: str(), 'musique-boss': str(),
     // `citation` : la vraie phrase qui ouvre le niveau ; `fiche` (répétable) : la première sert à l'écran de fin.
     citation: str(), fiche: list(),
     manif: num(0, 5000, 0), 'nasse.ennemi': str(), 'nasse.nombre': num(1, 6, 3), 'nasse.vitesse': num(4, 80, 18),
@@ -664,7 +664,7 @@ export function buildContent(files) {
   refs('boss', 'fiches', (b) => [b.fortune.fiche, ...b.fortune.rente]);
   refs('niveaux', 'fiches', (n) => n.fiche);
   refs('niveaux', 'citations', (n) => n.citation);
-  refs('niveaux', 'musiques', (n) => n.musique);
+  refs('niveaux', 'musiques', (n) => [n.musique, n['musique-boss']]);
   refs('musiques', 'musiques', (m) => m.puis);
   for (const b of Object.values(bundle.boss)) {
     const ally = b.attaques?.invocation?.ennemi;

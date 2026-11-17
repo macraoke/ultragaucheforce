@@ -12,6 +12,8 @@ nasse.ennemi: crs
 nasse.nombre: 3
 nasse.vitesse: 20
 nasse.rythme: 45
+musique: casserolade-gueret
+musique-boss: majes-macron-explosion
 
 panneau.1: Tracts et manif : le barrage cède
 panneau.2: NASSE : les toits, ou les quais

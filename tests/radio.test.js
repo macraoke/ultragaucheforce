@@ -609,7 +609,7 @@ test('à l’entrée, jamais la piste qu’on entend déjà : un niveau à deux 
     assert.equal(openingTrack(list, { slot: 'rond-point', last: a.id, random }), b, 'sinon, une autre que la visite d’avant');
   }
   assert.equal(openingTrack(tracks, { slot: 'chaine-info', avoid: tracks[2] }), null, 'sa seule piste joue déjà : rien, le sac commence');
-  assert.equal(openingTrack(tracks, { slot: 'rond-point', named: 'jeu-b', avoid: tracks[4] }), null, 'la piste nommée joue déjà : le sac aussi');
+  assert.equal(openingTrack(tracks, { slot: 'rond-point', named: 'jeu-b', avoid: tracks[4] }), tracks[4], 'la piste nommée joue déjà : elle continue');
 });
 
 test('« Sa piste en premier » : chaque entrée dans un niveau commence par sa piste à lui, puis le sac', async () => {
@@ -622,6 +622,12 @@ test('« Sa piste en premier » : chaque entrée dans un niveau commence par sa 
       const s = setup({ list: real, random: seeded(seed) });
       await s.on();
       const [first, again] = await campaignOpenings(s, [id, id]); // deux entrées, le boss entre les deux
+      const fixed = bundle.niveaux[id].musique;
+      if (fixed) {
+        // Valentin : « fixe aussi les 1eres musiques de niveaux » : la même piste ouvre chaque entrée.
+        assert.deepEqual([first, again], [fixed, fixed], `${id}, graine ${seed}`);
+        continue;
+      }
       if (!own.length) {
         assert.notEqual(again, first, `${id} sans piste à lui : le sac, graine ${seed}`);
         continue;
@@ -1501,4 +1507,141 @@ test('mesure : pause puis reprise au bouton du lecteur SoundCloud, par paire', a
   assert.deepEqual(s.sent[2], ['music_resumed', { track: 'menu-a', slot: 'menu', seconds: 20, percent: 10, via: 'lecteur' }]);
   s.playing();
   assert.equal(s.sent.length, 3, 'une reprise n’est pas un départ');
+});
+
+// ---------------------------------------------------------------------- les premières pistes fixées par niveau
+// Valentin, 17 novembre 2026 : « Citadelle chez Arnault , propose moi pour les autres . Et fixe aussi les 1eres
+// musiques de niveaux ». Chaque niveau nomme la piste qui ouvre sa visite (`musique`) et celle qui ouvre son boss
+// (`musique-boss`) ; ensuite, le hasard, comme avant.
+
+test('les premières pistes validées par Valentin, niveau par niveau', () => {
+  // Le tableau validé (« Valider tout ») : la première piste du niveau, puis celle de son boss.
+  const table = {
+    millevaches: ['countryside-explosions', 'siamo-tutti-antifascisti-1fam-bender'],
+    'rond-point': ['hey-hey-macron', 'macron-demission-peridurale'],
+    raffinerie: ['internationale', 'tout-le-monde-deteste-la-police-tekos-redon'],
+    'soir-du-49-3': ['casserolade-gueret', 'majes-macron-explosion'],
+    'chaine-info': ['jles-aime-pas', 'caca-sur-bardella-sketogan'],
+    bismillah: ['debordement-general-1312bpm', 'abattez-la-citadelle'], // « Citadelle chez Arnault »
+  };
+  for (const [id, pair] of Object.entries(table)) {
+    assert.deepEqual([bundle.niveaux[id].musique, bundle.niveaux[id]['musique-boss']], pair, id);
+  }
+});
+
+test('la piste nommée ouvre chaque visite, même quand le niveau a d’autres pistes à lui et qu’elle a ouvert la précédente', () => {
+  for (const id of bundle.campagne) {
+    const named = bundle.niveaux[id].musique;
+    for (const random of randoms) {
+      assert.equal(openingTrack(real, { slot: id, named, last: named, random }).id, named, id);
+    }
+  }
+  // Elle ne joue pas : le niveau ouvre sur une autre de ses pistes, sinon le sac.
+  const other = openingTrack(real, { slot: 'millevaches', named: 'countryside-explosions', failed: new Set(['countryside-explosions']) });
+  assert.equal(other.id, 'thatched-villagers');
+});
+
+/** Un niveau puis son boss, dans la Radio, comme main.js les annonce. */
+async function levelThenBoss(s, id) {
+  const level = bundle.niveaux[id];
+  s.radio.play(id, level.musique);
+  const first = s.radio.current.id;
+  s.ready();
+  s.playing();
+  s.radio.play('boss', level['musique-boss']);
+  return first;
+}
+
+test('au boss, la piste que nomme le niveau ouvre l’arrivée, à chaque fois ; sans elle, le hasard', async () => {
+  for (const id of bundle.campagne) {
+    for (let seed = 1; seed <= 10; seed++) {
+      const s = setup({ list: real, random: seeded(seed) });
+      await s.on();
+      assert.equal(await levelThenBoss(s, id), bundle.niveaux[id].musique, `${id}, graine ${seed}`);
+      assert.equal(s.radio.current.id, bundle.niveaux[id]['musique-boss'], `${id}, graine ${seed}`);
+      assert.equal(s.lastUrl(), s.radio.current.url);
+      s.ready();
+      s.playing();
+      // Mort au boss, « Recommencer » : la piste du niveau revient ; l'arrivée au boss rouvre sur la même.
+      s.radio.play(id, bundle.niveaux[id].musique, { restart: true });
+      s.ready();
+      s.playing();
+      s.radio.play('boss', bundle.niveaux[id]['musique-boss']);
+      assert.equal(s.radio.current.id, bundle.niveaux[id]['musique-boss']);
+    }
+  }
+  // Un niveau sans `musique-boss` (l'Atelier) : le tirage d'avant.
+  const drawn = new Set();
+  for (let seed = 1; seed <= 40; seed++) {
+    const s = setup({ list: real, random: seeded(seed) });
+    await s.on();
+    s.radio.play('boss', null);
+    drawn.add(s.radio.current.id);
+  }
+  assert.ok(drawn.size > 3, [...drawn].join(', '));
+});
+
+test('« Citadelle chez Arnault » : Monarch, puis Ryukken, puis le hasard parmi les pistes du boss', async () => {
+  const after = new Set();
+  for (let seed = 1; seed <= 40; seed++) {
+    const s = setup({ list: real, random: seeded(seed) });
+    await s.on();
+    await levelThenBoss(s, 'bismillah');
+    assert.equal(s.radio.current.id, 'abattez-la-citadelle');
+    const started = s.sent.length;
+    s.ready();
+    s.playing();
+    assert.deepEqual(s.sent.slice(started).find(([e]) => e === 'music_started'),
+      ['music_started', { track: 'abattez-la-citadelle', slot: 'boss', cause: 'auto' }]);
+    s.emit('FINISH');
+    assert.equal(s.radio.current.id, 'abattez-la-citadelle-ryukken', 'sa suite (`puis`)');
+    s.ready();
+    s.playing();
+    s.emit('FINISH');
+    const next = s.radio.current;
+    assert.equal(next.ou, 'boss');
+    assert.notEqual(next.id, 'abattez-la-citadelle-ryukken');
+    after.add(next.id);
+  }
+  // Après Ryukken, le hasard : la piste nommée ne s'impose plus.
+  assert.ok(after.size > 3, [...after].join(', '));
+});
+
+test('« Suivant » sur la piste nommée du boss : un autre tirage, jamais elle', async () => {
+  for (let seed = 1; seed <= 30; seed++) {
+    const s = setup({ list: real, random: seeded(seed) });
+    await s.on();
+    await levelThenBoss(s, 'millevaches');
+    s.ready();
+    s.playing();
+    s.radio.next();
+    assert.notEqual(s.radio.current.id, 'siamo-tutti-antifascisti-1fam-bender', `graine ${seed}`);
+    assert.equal(s.radio.current.ou, 'boss');
+  }
+});
+
+test('la piste nommée du boss ne joue pas : le hasard parmi les pistes du boss prend sa place', async () => {
+  // Déjà écartée (elle a échoué plus tôt) : l'arrivée tire au hasard.
+  const s = setup({ list: real, random: seeded(3) });
+  await s.on();
+  s.radio.failed.add('siamo-tutti-antifascisti-1fam-bender');
+  await levelThenBoss(s, 'millevaches');
+  assert.notEqual(s.radio.current.id, 'siamo-tutti-antifascisti-1fam-bender');
+  assert.equal(s.radio.current.ou, 'boss');
+  // Elle tombe en erreur au chargement : une autre piste du boss, tout de suite.
+  const e = setup({ list: real, random: seeded(4) });
+  await e.on();
+  await levelThenBoss(e, 'millevaches');
+  assert.equal(e.radio.current.id, 'siamo-tutti-antifascisti-1fam-bender');
+  e.emit('ERROR');
+  assert.notEqual(e.radio.current.id, 'siamo-tutti-antifascisti-1fam-bender');
+  assert.equal(e.radio.current.ou, 'boss');
+  assert.deepEqual(e.sent.find(([name]) => name === 'music_failed'),
+    ['music_failed', { track: 'siamo-tutti-antifascisti-1fam-bender', slot: 'boss', reason: 'erreur' }]);
+  // Monarch en erreur chez Arnault : sa suite, Ryukken, comme pour un tirage (sa règle `puis`).
+  const m = setup({ list: real, random: seeded(5) });
+  await m.on();
+  await levelThenBoss(m, 'bismillah');
+  m.emit('ERROR');
+  assert.equal(m.radio.current.id, 'abattez-la-citadelle-ryukken');
 });

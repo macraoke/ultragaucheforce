@@ -185,6 +185,10 @@ test('carte de collection : « fiche » se répète, et chaque référence doit 
   expectError(errorsOf('content/ennemis/crs.txt', text), { message: /« fiche-fantome » n'existe pas dans content\/fiches\// });
   const opening = level([SKY, 'D..........S', GROUND], 'citation: citation-fantome\n');
   expectError(errorsOf('content/niveaux/essai.txt', opening), { message: /« citation-fantome » n'existe pas dans content\/citations\// });
+  for (const key of ['musique', 'musique-boss']) {
+    const music = level([SKY, 'D..........S', GROUND], `${key}: piste-fantome\n`);
+    expectError(errorsOf('content/niveaux/essai.txt', music), { message: /« piste-fantome » n'existe pas dans content\/musiques\// });
+  }
 });
 
 test('rareté : « | rareté: … » se lit, une ligne sans le champ est commune', () => {

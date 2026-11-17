@@ -10,6 +10,8 @@ manif: 5
 nasse.ennemi: crs
 nasse.nombre: 3
 nasse.vitesse: 20
+musique: hey-hey-macron
+musique-boss: macron-demission-peridurale
 
 panneau.1: GARDE À VUE : un camarade est à l'étage
 panneau.2: PONT : dessus, ou la galerie
