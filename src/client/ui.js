@@ -433,13 +433,16 @@ export class Screens {
       // En essai, un seul retour : celui qui ramène à l'édition.
       h('div', { className: 'depart' }, this.keys(), h('div', { className: 'boutons' }, this.editButton() || this.back(() => this.introBack()), go)));
     this.escape = this.introBack;
-    this.fitHeroNames();
-    // Une longue déclaration sur un écran bas : la manchette rapetisse jusqu'à ce que le carton tienne sans défiler.
+    // Le carton tient sans défiler : la rangée des héros défile dans sa case ; si cela ne suffit pas, le carton se
+    // resserre (`.serre`), puis une longue déclaration rapetisse.
     const panel = this.root.firstChild;
     const headline = panel.querySelector('.manchette');
+    if (panel.scrollHeight > panel.clientHeight) panel.classList.add('serre');
+    this.fitHeroNames();
     for (let size = headline && parseFloat(getComputedStyle(headline).fontSize); headline && panel.scrollHeight > panel.clientHeight && size > 12; size -= 1) {
       headline.style.fontSize = `${size - 1}px`;
     }
+    this.heroScroll(); // le carton a sa taille : le héros choisi vient au milieu de sa rangée
     go.focus({ preventScroll: true }); // Entrée lance le niveau…
     this.root.firstChild.onkeydown = (e) => { // … ← et → changent de héros
       const turn = { ArrowLeft: -1, ArrowRight: 1 }[e.key];
@@ -455,6 +458,36 @@ export class Screens {
     return h('div', { className: 'choix-heros' }, heroes.map((x) => (mine.includes(x.id)
       ? h('button', { type: 'button', className: x.id === current ? 'choisi' : 'discret', onclick: () => pick(x.id) }, face(x), h('span', { className: 'nom' }, x.nom))
       : h('span', { className: 'inconnu' }, face(x), h('span', {}, '???')))));
+  }
+
+  /**
+   * La rangée des héros défile dans sa case : le héros choisi y est au milieu à l'ouverture, une case qui prend la main
+   * (Tab, manette) vient au milieu, et le fondu d'un bord ne reste que s'il y a d'autres héros de ce côté.
+   * Les positions se lisent dans la mise en page (`offsetLeft`), justes aussi quand tout pivote.
+   */
+  heroScroll() {
+    const row = this.root.querySelector('.choix-heros');
+    if (!row) return;
+    const edges = () => {
+      const across = row.scrollWidth > row.clientWidth + 1;
+      const [at, room, size] = across ? [row.scrollLeft, row.clientWidth, row.scrollWidth] : [row.scrollTop, row.clientHeight, row.scrollHeight];
+      row.classList.toggle('avant', at > 1);
+      row.classList.toggle('apres', at + room < size - 1);
+    };
+    const center = (box, smooth) => {
+      if (!box) return;
+      const still = !smooth || document.body.classList.contains('sobre') || matchMedia('(prefers-reduced-motion: reduce)').matches;
+      row.scrollTo({
+        left: box.offsetLeft + box.offsetWidth / 2 - row.clientWidth / 2,
+        top: box.offsetTop + box.offsetHeight / 2 - row.clientHeight / 2,
+        behavior: still ? 'instant' : 'smooth',
+      });
+    };
+    row.addEventListener('scroll', edges, { passive: true });
+    row.addEventListener('focusin', (e) => center(e.target.closest('.choix-heros > *'), true));
+    new ResizeObserver(edges).observe(row);
+    center(row.querySelector('.choisi'), false);
+    edges();
   }
 
   /** Un nom de héros tient dans sa case : un mot trop long (« TYRANNOGAUCHISTE ») fait réduire la lettre. */
