@@ -2,7 +2,7 @@ texte: Pour ma part, je n'aime pas les socialo-communistes !
 auteur: Pierre-Édouard Stérin
 fonction: président du conseil d'administration du Fonds du bien commun
 date: 2026-06-04
-contexte: Audition sous serment, en visioconférence, devant la commission d'enquête du Sénat sur le financement des politiques publiques par des organismes privés, pour expliquer son installation en Belgique en 2012.
+contexte: Audition sous serment devant la commission d'enquête du Sénat sur le financement des politiques publiques par des organismes privés, pour expliquer son installation en Belgique en 2012.
 categorie: puissants
 note: Juste avant : « Ce dernier [François Hollande] n'aime pas les riches. » Compte rendu rédigé du Sénat, pas le mot à mot de la vidéo.
 source.titre: Sénat — Commission d'enquête sur le financement des politiques publiques par des organismes privés : comptes rendus de la semaine du 1er juin 2026 (audition de M. Pierre-Édouard Stérin, 4 juin 2026)

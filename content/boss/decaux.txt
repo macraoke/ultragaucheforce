@@ -1,6 +1,6 @@
 # Un boss = une fortune documentée aux commandes d'une machine. Le dessin « ejecte » sert à sa sortie.
 nom: La Famille Decaux
-inspiration: Jean-Charles Decaux et sa famille
+inspiration: Jean-Charles Decaux
 traitement: un abribus à écran publicitaire monté sur deux roues de vélo en libre-service ; le pilote s'éjecte sous une affiche
 pv: 80
 largeur: 34
