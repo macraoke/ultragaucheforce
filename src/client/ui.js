@@ -335,6 +335,7 @@ export class Screens {
       box.onchange = () => {
         this.save.options[key] = box.checked;
         if (key === 'musique') this.save.options.musiqueChoisie = true;
+        if (key === 'sobre') this.save.options.sobreChoisi = true; // le réglage du système ne décide plus
         storeSave(this.save);
         this.go.options();
       };

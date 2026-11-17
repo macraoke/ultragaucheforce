@@ -4,7 +4,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
-import { upgrade, VERSION, isFound, isReadOnly, storeSave, loadSave, discover, eraseProgress } from '../src/client/save.js';
+import { upgrade, VERSION, isFound, isReadOnly, storeSave, loadSave, discover, eraseProgress, followSystemMotion } from '../src/client/save.js';
 import { loadContent } from '../tools/content.mjs';
 import { allCards, cardKey, rarityCounts } from '../src/client/collection.js';
 
@@ -150,4 +150,18 @@ test('pas de sauvegarde, ou une sauvegarde illisible : on repart de zéro, sans 
     assert.deepEqual(save.decouvertes, []);
     assert.equal(save.options.son, true);
   }
+});
+
+test('effets réduits : le réglage du système décide, tant que le joueur n’a pas choisi', () => {
+  const fresh = upgrade(null).options;
+  assert.equal(followSystemMotion(fresh, true), true);
+  assert.equal(fresh.sobre, true, 'système en mouvement réduit : coché d’office');
+  followSystemMotion(fresh, false);
+  assert.equal(fresh.sobre, false, 'le système change d’avis : le jeu suit');
+  const chosen = { ...upgrade(null).options, sobre: false, sobreChoisi: true };
+  followSystemMotion(chosen, true);
+  assert.equal(chosen.sobre, false, 'le joueur a décoché : son choix reste');
+  const older = { ...upgrade(null).options, sobre: true };
+  followSystemMotion(older, false);
+  assert.equal(older.sobre, true, 'une ancienne sauvegarde cochée à la main reste cochée');
 });
