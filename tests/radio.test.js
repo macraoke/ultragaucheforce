@@ -66,7 +66,7 @@ test('en fin de piste, une autre de la même liste si possible', () => {
  * Le faux lecteur suit l'ordre du vrai : `load()` part, puis le test dit quand la piste est prête
  * (`s.ready()`), et ce que le lecteur annonce entre-temps (une ERROR arrive avant le rappel de `load()`).
  */
-function setup({ activated = true, connect = 'ok', list = tracks, random = () => 0 } = {}) {
+function setup({ activated = true, connect = 'ok', list = tracks, random = () => 0, gesture = false } = {}) {
   const timers = [];
   let now = 0;
   let emit = () => {};
@@ -79,7 +79,7 @@ function setup({ activated = true, connect = 'ok', list = tracks, random = () =>
     getCurrentSound(cb) { cb(this.sound); },
     isPaused(cb) { cb(this.paused); },
   };
-  const ctx = { widget, connects: [], activated, now: () => now };
+  const ctx = { widget, connects: [], connectOptions: [], activated, gesture, now: () => now };
   const view = { show(state) { ctx.shown = state; }, mount() {}, unmount() { ctx.unmounted = true; }, setVisible() {} };
   const radio = new Radio({ musiques: Object.fromEntries(list.map((t) => [t.id, t])) }, null, {
     random,
@@ -87,8 +87,10 @@ function setup({ activated = true, connect = 'ok', list = tracks, random = () =>
     cancel(t) { const i = timers.indexOf(t); if (i >= 0) timers.splice(i, 1); },
     online: () => true,
     activated: () => ctx.activated,
-    connect(track, onEvent) {
+    inGesture: () => ctx.gesture,
+    connect(track, onEvent, view, options) {
       ctx.connects.push(track.id);
+      ctx.connectOptions.push(options);
       emit = onEvent;
       return connect === 'ok' ? Promise.resolve(widget) : Promise.reject(new Error('hors ligne'));
     },
@@ -1285,4 +1287,109 @@ test('« Gabber au boss, Internationale en niveau »', () => {
   const level = new Set();
   for (let i = 0; i < 400; i++) level.add(nextLevelTrack(real, { slot: 'rond-point', random }).id);
   assert.ok(level.has(drill.id) && !level.has(gabber.id), 'en niveau : l’Internationale, pas le gabber');
+});
+
+// Valentin, 17 novembre 2026 : « Précharger le lecteur ». Musique coupée, le lecteur se charge quand même, muet :
+// le toucher sur « ▶ Radio Manif » lance la piste déjà chargée, dans son geste, sans rien charger d'autre.
+test('musique coupée : le lecteur se précharge, muet ; « ▶ Radio Manif » lance sa piste dans le geste', async () => {
+  const s = setup();
+  s.radio.setEnabled(false);
+  s.radio.play('menu');
+  assert.deepEqual(s.connects, ['menu-a']);
+  assert.equal(s.connectOptions[0].autoPlay, false); // préchargé, il ne part pas de lui-même
+  await s.flush();
+  assert.equal(s.widget.plays, 0);
+  assert.equal(s.radio.status, 'off');
+  s.gesture = true;
+  s.radio.setEnabled(true); // le toucher sur « ▶ Radio Manif »
+  assert.equal(s.widget.plays, 1); // aussitôt, pendant le geste
+  assert.equal(s.widget.loads.length, 0); // la piste préchargée, pas une autre
+  assert.deepEqual(s.connects, ['menu-a']);
+  s.playing();
+  assert.equal(s.radio.status, 'playing');
+});
+
+test('musique demandée avant que le lecteur préchargé soit prêt : il part dès qu’il l’est', async () => {
+  const s = setup();
+  s.radio.setEnabled(false);
+  s.radio.play('menu');
+  s.radio.setEnabled(true);
+  assert.equal(s.widget.plays, 0);
+  await s.flush();
+  assert.equal(s.widget.plays, 1);
+  assert.deepEqual(s.connects, ['menu-a']);
+});
+
+test('préchargement impossible (SoundCloud bloqué) : rien ne joue, le bouton le dit, et réessaie à la demande', async () => {
+  const s = setup({ connect: 'non' });
+  s.radio.setEnabled(false);
+  s.radio.play('menu');
+  await s.flush();
+  assert.equal(s.radio.status, 'off');
+  assert.equal(s.shown.lost, true);
+  assert.equal(s.unmounted, true);
+  s.radio.setEnabled(true);
+  assert.deepEqual(s.connects, ['menu-a', 'menu-a']);
+});
+
+test('le menu commence par sa piste d’ouverture ; ⏭ tire ensuite parmi toutes celles du menu', async () => {
+  const list = [T('menu-a', 'menu'), { ...T('menu-b', 'menu'), ouverture: true }, T('menu-c', 'menu'), T('jeu-a', 'jeu')];
+  const s = setup({ list, random: () => 0 });
+  await s.on();
+  assert.deepEqual(s.connects, ['menu-b']);
+  s.radio.next();
+  assert.equal(s.lastUrl(), list[0].url);
+  assert.equal(chooseTrack(list, { slot: 'menu', random: () => 0 }).id, 'menu-a'); // le tirage au hasard la garde
+});
+
+test('la piste d’ouverture du vrai menu se lit sans module de déchiffrement', () => {
+  const openers = real.filter((t) => t.ou === 'menu' && t.ouverture);
+  assert.deepEqual(openers.map((t) => t.id), ['resistors']);
+  assert.ok(real.some((t) => t.id === 'marseillaise-hymne-national' && t.ou === 'menu')); // toujours au menu, pour ⏭
+});
+
+test('« ▶ Radio Manif » sur le lecteur préchargé : le geste qui suit ne relance pas une seconde fois', async () => {
+  const s = setup();
+  s.radio.setEnabled(false);
+  s.radio.play('menu');
+  await s.flush();
+  s.gesture = true;
+  s.radio.setEnabled(true); // le clic sur le bouton
+  s.radio.unblock(); // le même geste, vu par main.js un dixième de seconde plus tard
+  assert.equal(s.widget.plays, 1); // un second play() pendant le démarrage, le lecteur répondrait PAUSE
+  s.playing();
+  assert.equal(s.radio.status, 'playing');
+});
+
+test('refusée hors d’un geste (lecture automatique bloquée) : la Radio attend un toucher, sans condamner la piste', async () => {
+  const s = setup({ activated: false });
+  s.radio.setEnabled(true);
+  await s.flush();
+  s.emit('PAUSE');
+  assert.equal(s.radio.status, 'blocked');
+  assert.equal(s.radio.failed.size, 0);
+});
+
+test('lecteur préchargé pas encore prêt : le clic puis le geste vu par main.js donnent un seul play()', async () => {
+  const s = setup();
+  s.radio.setEnabled(false);
+  s.radio.play('menu');
+  s.radio.setEnabled(true); // le clic sur « ▶ Radio Manif », avant que le lecteur soit prêt
+  s.radio.unblock(); // le même geste, un dixième de seconde plus tard
+  await s.flush();
+  assert.equal(s.widget.plays, 1); // un second play() pendant le démarrage, le lecteur répondrait PAUSE
+  s.playing();
+  assert.equal(s.radio.status, 'playing');
+});
+
+test('lecteur préchargé prêt entre le clic et le geste vu par main.js : toujours un seul play()', async () => {
+  const s = setup();
+  s.radio.setEnabled(false);
+  s.radio.play('menu');
+  s.radio.setEnabled(true); // le clic, lecteur pas encore prêt
+  await s.flush(); // le lecteur arrive et part
+  s.radio.unblock(); // le même geste, un dixième de seconde plus tard
+  assert.equal(s.widget.plays, 1);
+  s.playing();
+  assert.equal(s.radio.status, 'playing');
 });

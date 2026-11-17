@@ -370,7 +370,8 @@ function buildSound(f, ctx, report) {
 
 function buildMusic(f, ctx, report) {
   // `puis` : la piste qui suit celle-ci quand elle finit (un extrait, puis la version entière).
-  const out = readFields(f, { titre: req(), artiste: req(), url: url(true), ou: str('partout'), puis: str(), ...CREDITS }, report);
+  // `ouverture` : au menu ou au boss, la piste par laquelle le moment commence ; les autres viennent ensuite, au hasard.
+  const out = readFields(f, { titre: req(), artiste: req(), url: url(true), ou: str('partout'), puis: str(), ouverture: bool(), ...CREDITS }, report);
   noSections(f, report);
   if (out.url && !out.url.startsWith('https://soundcloud.com/')) {
     report(f.lineOf('url'), '« url » doit être une piste SoundCloud (https://soundcloud.com/…).');
