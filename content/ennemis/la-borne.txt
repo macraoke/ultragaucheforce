@@ -1,7 +1,7 @@
 # Ses répliques sont ses mots, dans `content/citations/borne-*.txt` : le compte rendu de l'Assemblée nationale
 # du 16 mars 2023 et son entretien à l'AFP du 26 mars 2023.
 # Son arme : un 49.3 lent et lourd, qui passe en force. Il traverse les barrages qui tiennent (perce),
-# entame le décor, et emporte des manifestants s'il atteint le cortège. Un toutes les quatre secondes : on le saute.
+# entame le décor, et emporte des manifestants s'il atteint le cortège. Un toutes les quatre secondes, annoncé par un « ! » : on le saute, ou on l'abat d'un tir, comme les autres mots.
 nom: La Borne
 origine: Élisabeth Borne, Première ministre jusqu'en janvier 2024 : vingt-trois 49.3, dont celui de la réforme des retraites, adoptée sans vote. Ce qu'elle dit, ce sont ses mots à la tribune et à l'AFP.
 pv: 6
@@ -31,6 +31,7 @@ arme.perce: 1
 arme.touche: 3
 arme.taille: 14
 arme.mots: 49.3 !
+arme.visee: 0.4
 arme.son: mot
 auteur: UltraGauche Force
 --- repos
