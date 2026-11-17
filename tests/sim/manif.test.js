@@ -7,7 +7,8 @@ import { fixtureBundle, flat, level, play, run, settle } from './helpers.js';
 import { TILE } from '../../src/sim/world.js';
 import { LINE_REACH, KETTLE_FLOOR } from '../../src/sim/enemy.js';
 import { spawnProjectile } from '../../src/sim/projectile.js';
-import { syncCortege, flagOrder } from '../../src/sim/manif.js';
+import { syncCortege, flagOrder, gameFlags } from '../../src/sim/manif.js';
+import { loadContent } from '../../tools/content.mjs';
 
 const enemy = (id) => ({ type: 'ennemi', id });
 const recruit = (id) => ({ type: 'recrue', id });
@@ -586,4 +587,21 @@ test('drapeaux : une lutte proche (proximité 3) défile plus tôt qu’une lutt
   assert.ok(avgNear + 2 < avgFar, `les proches passent devant : rang moyen ${avgNear.toFixed(2)} contre ${avgFar.toFixed(2)}`);
   // Un poids, pas un tri : une lutte lointaine ouvre encore la marche de temps en temps (1/(1+3) par drapeau, soit 1/4 ici).
   assert.ok(farFirst > seeds * 0.15 && farFirst < seeds * 0.35, `une lutte lointaine passe troisième ${farFirst} fois sur ${seeds}`);
+});
+test('drapeaux : le carton du camarade libéré les range comme le cortège de la partie, tricolore et LFI en tête', () => {
+  const { bundle } = loadContent();
+  const ids = Object.keys(bundle.drapeaux);
+  const thirds = new Set();
+  for (let seed = 1; seed <= 40; seed++) {
+    const order = gameFlags(bundle, seed);
+    assert.deepEqual(order.slice(0, 2), ['tricolore', 'lfi'], `graine ${seed} : le tricolore, puis LFI`);
+    assert.deepEqual([...order].sort(), [...ids].sort(), 'chaque drapeau du contenu une fois');
+    const game = settle(play(flat({ cortege: true }), { bundle: { ...fixtureBundle(), drapeaux: bundle.drapeaux }, seed }));
+    game.crowd = 1000;
+    syncCortege(game);
+    const marching = game.cortege.filter((m) => m.kind === 'drapeau').map((m) => m.label);
+    assert.deepEqual(marching, order.slice(0, marching.length), `graine ${seed} : le cortège porte les drapeaux du carton, dans le même ordre`);
+    thirds.add(order[2]);
+  }
+  assert.ok(thirds.size > 5, `l’ordre change d’une partie à l’autre (${thirds.size} troisièmes différents)`);
 });
