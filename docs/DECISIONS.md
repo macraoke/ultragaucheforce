@@ -103,6 +103,8 @@ Puis on le taxe, sur un seul écran en deux temps, une idée chacun :
 
 Valentin, le 16 novembre 2026 : « après avoir taxé, on devrait mettre le focus sur ce que 2% qui représente peu pour le boss final, comme on le voit dans l'illustration, mais qui représente beaucoup pour la société ».
 
+Les liasses d'or sont les 2 %, et elles seules paient ce qui suit : un repère « 2 % = 2,4 milliards » se pose sur la caisse où elles se rangent, puis elles filent vers « Ces 2 % paieraient, à eux seuls ». Les étapes qui en parlent portent la couleur de l'or. Valentin, le 17 novembre 2026 : « C'est pas forcément clair à la fin du niveau que c'est les 2% (donc la petite fraction jaune) qui paie tout ça. »
+
 Chaque étape porte ses sources, en petit. Le bouton suivant mène au bilan du niveau avec un slogan scandé en manif, tiré au hasard (« On lâche rien ! »).
 
 L'échelle et l'exemple se tirent au hasard dans un dictionnaire de fiches sourcées (`compare`, `finance`). Un exemple n'est pas tiré quand 2 % de la fortune en paient moins de dix (« 2 Canadair » ne dit rien) ; il reste au tirage des fortunes plus grosses. Choix confirmé par Valentin. Les faits frappants sur les inégalités (`choc`) se comprennent seuls : l'un d'eux, tiré au hasard, passe à l'écran de fin, dans « Et en vrai ? ». Le public visé est autant la classe moyenne que les jeunes : c'est une manif virtuelle, elle doit apprendre quelque chose à chacun.

@@ -583,6 +583,15 @@ html.bas .commandes .pied { margin-top: .6em; }
 .panneau.taxe { width: min(100%, 1000px); display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); grid-template-areas: 'tas recit' 'tas pied'; gap: .9em clamp(12px, 2.6vmin, 26px); align-items: center; line-height: 1.3; }
 .taxe figure.tas { grid-area: tas; margin: 0; border: 3px solid var(--blanc); background: #10111c; }
 .taxe figure.tas canvas { display: block; width: 100%; height: auto; max-height: calc(var(--vh, 1vh) * 62); object-fit: contain; }
+.taxe .cadre { position: relative; }
+/* Le repère des 2 %, au-dessus de la caisse commune : sa pointe touche les liasses d'or. */
+.taxe .repere { position: absolute; margin: 0; transform: translate(calc(-100% + 1.1em), calc(-100% - 10px)); padding: .15em .45em; white-space: nowrap; background: var(--or); color: var(--nuit); font: 900 .95rem/1.1 var(--titre); text-transform: uppercase; box-shadow: 3px 3px 0 var(--rouge); animation: repere .3s ease-out both; }
+.taxe .repere[hidden] { display: none; }
+.taxe .repere b { font-size: 1.5em; }
+.taxe .repere::after { content: ''; position: absolute; right: .6em; bottom: -8px; border: 8px solid transparent; border-bottom: 0; border-top-color: var(--or); }
+@keyframes repere { from { opacity: 0; transform: translate(calc(-100% + 1.1em), calc(-100% - 22px)); } }
+/* Les liasses d'or qui filent de la caisse vers ce que ça paierait. */
+.liasse.volante { position: fixed; z-index: 50; width: 20px; height: 12px; background: var(--or); border: 2px solid var(--or-sombre); pointer-events: none; box-shadow: 2px 2px 0 var(--nuit); }
 .taxe .legende { display: flex; flex-wrap: wrap; gap: .2em 1.1em; padding: .4em .6em; background: var(--encre); font: 700 .82rem/1.25 var(--texte); }
 .taxe .legende .cle { display: inline-flex; align-items: center; gap: .45em; }
 .taxe .legende .cle[hidden] { display: none; }
@@ -592,6 +601,10 @@ html.bas .commandes .pied { margin-top: .6em; }
 .taxe .etapes { list-style: none; margin: 0; padding: 0; display: grid; gap: .75em; }
 .taxe .etapes li { margin: 0; padding-left: .7em; border-left: 4px solid var(--encre); }
 .taxe .etapes li[hidden] { display: none; }
+/* D'où vient l'argent et ce qu'il paie : la couleur des liasses d'or, une liasse devant l'étiquette. */
+.taxe .etapes li:is(.impot, .paie) { border-left-color: var(--or); }
+.taxe :is(.impot, .paie) .etiquette { color: var(--or); opacity: 1; }
+.taxe :is(.impot, .paie) .etiquette::before { content: ''; display: inline-block; width: 12px; height: 7px; margin-right: .45em; vertical-align: .05em; background: var(--or); border: 2px solid var(--or-sombre); }
 .taxe .etiquette { margin: 0; font: 900 .8rem/1.1 var(--titre); letter-spacing: .06em; text-transform: uppercase; opacity: .8; }
 .taxe .montant { margin: .06em 0; font: 900 clamp(1.7rem, 6.4vmin, 3.1rem)/.95 var(--titre); text-transform: uppercase; color: var(--or); }
 .taxe .nombre { margin: .06em 0; font: 900 clamp(1.15rem, 4vmin, 1.9rem)/1 var(--titre); text-transform: uppercase; color: var(--blanc); }
@@ -618,8 +631,11 @@ html.bas .commandes .pied { margin-top: .6em; }
 .taxe.faite .etapes li.titre { animation-name: etape-titre; transform-origin: 0 50%; }
 @keyframes etape { from { opacity: 0; transform: translateY(8px); } }
 @keyframes etape-titre { from { opacity: 0; transform: scale(.9); } }
-body.sobre .taxe .etapes li { animation: none !important; }
-@media (prefers-reduced-motion: reduce) { .taxe .etapes li { animation: none !important; } }
+/* Les liasses arrivent : ce qu'elles paient sursaute. */
+.taxe.faite .etapes li.recoit { animation: recoit .45s ease-out; }
+@keyframes recoit { 40% { transform: scale(1.06); } }
+body.sobre .taxe :is(.etapes li, .repere) { animation: none !important; }
+@media (prefers-reduced-motion: reduce) { .taxe :is(.etapes li, .repere) { animation: none !important; } }
 /* Une fenêtre étroite et debout (pas un téléphone, qui pivote en paysage) : le tas au-dessus du récit. */
 @media (max-width: 640px) and (orientation: portrait) { html:not(.pivote) .panneau.taxe { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'tas' 'recit' 'pied'; } }
 /* Téléphone en paysage : tout tient sans défiler ; le bouton passe sous le tas, sous le pouce, et le récit a toute la hauteur. */
@@ -629,6 +645,8 @@ html.bas .taxe .recit { align-self: center; }
 html.bas .taxe figure.tas canvas { max-height: calc(var(--vh, 1vh) * 68); }
 html.bas .taxe .legende { padding: .25em .45em; font-size: 11px; }
 html.bas .taxe .legende .liasse { width: 12px; height: 8px; }
+html.bas .taxe .repere { font-size: 11px; transform: translate(calc(-100% + 1.1em), calc(-100% - 8px)); }
+html.bas .taxe .repere::after { bottom: -6px; border-width: 6px; border-bottom: 0; }
 html.bas .taxe .etapes { gap: .3em; }
 html.bas .taxe .etapes li { padding-left: .5em; border-left-width: 3px; }
 html.bas .taxe .etiquette { font-size: 11px; }
