@@ -7,6 +7,11 @@
 // - Le service worker ne touche à aucune requête vers un autre site : ce script n'entre pas dans le cache.
 // - Rien n'est écrit sur l'appareil (`memory`), aucun profil n'est créé, aucun clic ni aucune saisie
 //   n'est capturé, pas d'enregistrement de session ; les adresses partent sans leurs paramètres.
+// - Mode sans cookie (`cookieless_mode: 'always'`, posthog.com/tutorials/cookieless-tracking) : le
+//   navigateur envoie un identifiant fixe, `$posthog_cookieless`, et PostHog calcule le visiteur sur ses
+//   serveurs, par un hachage du jour, de l'IP, de l'agent utilisateur et du site, avec un sel renouvelé
+//   et effacé chaque jour. L'IP et l'agent utilisateur brut sont retirés de l'événement après ce calcul.
+//   Il faut aussi « Enable cookieless tracking » dans le projet, sinon PostHog jette les événements.
 // - Les seuls événements du jeu sont ceux de `src/client/mesure.js`, et les erreurs JavaScript.
 
 (function () {
@@ -16,7 +21,9 @@
   !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],Object.defineProperty(u,"toString",{configurable:!0,enumerable:!0,writable:!0,value:function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e}}),Object.defineProperty(u.people,"toString",{configurable:!0,enumerable:!0,writable:!0,value:function(){return u.toString(1)+".people (stub)"}}),o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagResult isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
 
   // Ce qui pourrait distinguer un appareil d'un autre, au-delà du navigateur, du système et du type d'appareil.
-  var DROPPED = ['$raw_user_agent', '$screen_height', '$screen_width', '$viewport_height', '$viewport_width', '$device_id', '$initial_person_info', '$timezone_offset'];
+  // `$raw_user_agent`, `$host` et `$timezone` restent : le mode sans cookie en a besoin pour son hachage
+  // (sans eux, PostHog jette l'événement), et retire lui-même l'agent utilisateur brut une fois le calcul fait.
+  var DROPPED = ['$screen_height', '$screen_width', '$viewport_height', '$viewport_width', '$device_id', '$initial_person_info', '$timezone_offset'];
   // Les seules propriétés sans « $ » : celles des événements du jeu (`src/client/mesure.js`), et ce dont PostHog a besoin.
   // Les paramètres de campagne lus dans l'adresse (utm_…, fbclid…) ne partent pas.
   var KEPT = ['token', 'distinct_id', 'title', 'level', 'outcome', 'seconds', 'input', 'touch', 'online'];
@@ -53,6 +60,7 @@
   window.posthog.init('__TOKEN__', { // rempli par le build
     api_host: '__HOST__', // rempli par le build
     defaults: '2026-08-30',
+    cookieless_mode: 'always',
     persistence: 'memory',
     person_profiles: 'never',
     autocapture: false,

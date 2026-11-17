@@ -378,7 +378,7 @@ export class Screens {
       h('p', {}, link(REPO, 'Le dépôt'), ' · ', link(`${REPO}/blob/main/CONTRIBUTING.md`, 'Contribuer'), ' · ',
         link(`${REPO}/blob/main/CHARTE.md`, 'La charte'), ' · ', h('a', { href: 'galerie.html' }, 'La Galerie')),
       measuring() && fold('Mesure d’audience anonyme (PostHog) : ni cookie, ni profil.',
-        h('p', {}, 'Le jeu compte les visites, les parties par niveau (gagnée, perdue ou abandonnée, et leur durée), et ce qui empêche de jouer : contenu ou musique injoignables, erreurs. Un numéro tiré au hasard relie les compteurs d’une même visite ; il est oublié à la fermeture de la page. Rien n’est écrit sur ton appareil pour cela, et rien de ce que tu écris dans l’Atelier ne part.')),
+        h('p', {}, 'Le jeu compte les visites, les parties par niveau (gagnée, perdue ou abandonnée, et leur durée), et ce qui empêche de jouer : contenu ou musique injoignables, erreurs. Les visiteurs sont comptés par jour, sur les serveurs de PostHog, d’après une empreinte qui change chaque jour. Rien n’est écrit sur ton appareil pour cela, et rien de ce que tu écris dans l’Atelier ne part.')),
       fold('Références', h('ul', {}, REFERENCES.map((r) => h('li', {}, link(r.url, r.titre), ` — ${r.note}`)))),
       fold('Crédits et licences',
         h('p', {}, 'Code : MIT. Contenus : CC BY-SA 4.0. Bruitages synthétisés avec ZzFX de Frank Force (MIT).'),

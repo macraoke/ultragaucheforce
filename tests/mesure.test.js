@@ -54,7 +54,7 @@ test('mesure : avec une clé, le chargeur officiel, réglé au plus anonyme', ()
   assert.match(snippet, /api_host: "https:\/\/eu\.i\.posthog\.com"/, 'l’hôte européen par défaut');
   assert.match(snippet, /-assets\.i\.posthog\.com"\)\+"\/static\/array\.js"/, 'le script officiel, depuis l’hôte de PostHog');
   assert.match(snippet, /localhost\|127/, 'jamais en local');
-  for (const setting of ["persistence: 'memory'", "person_profiles: 'never'", 'autocapture: false', 'disable_session_recording: true',
+  for (const setting of ["cookieless_mode: 'always'", "persistence: 'memory'", "person_profiles: 'never'", 'autocapture: false', 'disable_session_recording: true',
     'capture_exceptions: true', 'capture_heatmaps: false', 'capture_dead_clicks: false', 'rageclick: false', 'mask_all_text: true', 'before_send: clean']) {
     assert.ok(snippet.includes(setting), setting);
   }
@@ -70,11 +70,13 @@ test('mesure : le filtre avant envoi retire les paramètres des adresses et ce q
   assert.equal(token, 'phc_essai123');
   const event = config.before_send({
     event: '$pageview', $set: { a: 1 },
-    properties: { $current_url: 'https://macraoke.github.io/ultragaucheforce/?debug&fbclid=x#a', $referrer: 'https://t.co/abc?s=1', $raw_user_agent: 'Mozilla', $screen_width: 390, $browser: 'Chrome', level: 'bismillah',
+    properties: { $current_url: 'https://macraoke.github.io/ultragaucheforce/?debug&fbclid=x#a', $referrer: 'https://t.co/abc?s=1', $raw_user_agent: 'Mozilla', $host: 'macraoke.github.io', $timezone: 'Europe/Paris', $screen_width: 390, $browser: 'Chrome', level: 'bismillah',
       fbclid: 'abc', utm_source: null, $session_entry_fbclid: 'abc', $session_entry_url: 'https://macraoke.github.io/ultragaucheforce/?x=1', $initial_utm_source: 'a' },
   });
   assert.deepEqual(event.properties, {
     $current_url: 'https://macraoke.github.io/ultragaucheforce/', $referrer: 'https://t.co/abc', $browser: 'Chrome', level: 'bismillah',
+    // le hachage du mode sans cookie en a besoin ; PostHog retire l'agent utilisateur brut après le calcul
+    $raw_user_agent: 'Mozilla', $host: 'macraoke.github.io', $timezone: 'Europe/Paris',
     $session_entry_url: 'https://macraoke.github.io/ultragaucheforce/',
     $geoip_disable: true, $process_person_profile: false,
   });
