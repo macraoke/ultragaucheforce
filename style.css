@@ -725,6 +725,9 @@ body.tactile .atelier input[type='text'], body.tactile .atelier select, body.tac
 #radio.cache, body:not([data-ecran='menu']) #radio { left: -9999px; right: auto; visibility: hidden; } /* hors de l'écran, hors du Tab ; la musique continue */
 #radio strong { font: 900 .85rem/1 var(--titre); text-transform: uppercase; letter-spacing: .05em; color: var(--or); }
 #radio iframe { display: block; width: 100%; height: 76px; border: 0; margin: 4px 0; }
+#radio.monte:not(.eteinte) > .demande { display: none; } /* le lecteur est là et la musique demandée */
+#radio.eteinte > :not(.demande) { position: absolute; left: -9999px; visibility: hidden; } /* préchargé, muet, caché */
+#radio .demande p.injoignable { white-space: normal; }
 #radio p { margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* ⏸ et ⏭ : la pause et la piste suivante, au bout de la ligne du titre (au menu), et à droite de « Pause ». */
 #radio .piste { display: flex; align-items: center; gap: 8px; }
