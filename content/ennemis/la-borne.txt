@@ -1,0 +1,81 @@
+# Ses répliques sont ses mots, dans `content/citations/borne-*.txt` : le compte rendu de l'Assemblée nationale
+# du 16 mars 2023 et son entretien à l'AFP du 26 mars 2023.
+# Son arme : un 49.3 lent et lourd, qui passe en force. Il traverse les barrages qui tiennent (perce),
+# entame le décor, et emporte des manifestants s'il atteint le cortège. Un toutes les quatre secondes : on le saute.
+nom: La Borne
+origine: Élisabeth Borne, Première ministre jusqu'en janvier 2024 : vingt-trois 49.3, dont celui de la réforme des retraites, adoptée sans vote. Ce qu'elle dit, ce sont ses mots à la tribune et à l'AFP.
+pv: 6
+vitesse: 0
+deplacement: fixe
+reaction: tire
+vue: 260
+fin: panne
+camp: pouvoir
+largeur: 14
+hauteur: 22
+citation: borne-pas-de-49-3
+citation: borne-engage-responsabilite
+fiche: borne-49-3-vingt-trois
+replique: J'ENGAGE LA RESPONSABILITÉ DE MON GOUVERNEMENT
+replique: CETTE RÉFORME EST NÉCESSAIRE.
+replique: ON NE PEUT PAS FAIRE DE PARI SUR L'AVENIR DE NOS RETRAITES.
+replique: LES CRIS, AU MOMENT MÊME OÙ JE M'EXPRIME, N'EN SONT QU'UNE PREUVE SUPPLÉMENTAIRE !
+replique: PAS DE 49.3 EN DEHORS DES TEXTES FINANCIERS
+arme.type: tir
+arme.cadence: 0.25
+arme.vitesse: 75
+arme.portee: 560
+arme.degats: 1
+arme.terrain: 2
+arme.perce: 1
+arme.touche: 3
+arme.taille: 14
+arme.mots: 49.3 !
+arme.son: mot
+auteur: UltraGauche Force
+--- repos
+......TTTT......
+.....TTTTTT.....
+.....TTsssss....
+.....Tkckkck....
+.....Tsssss.....
+......srrs......
+.......ss.......
+....nnnwwnnn..TT
+...nnnnwwnnnn.TT
+...nnnnwwnnnssRR
+...nnnnwwnnnn.RR
+..tttttttttttt..
+..tTTTTTTTTTTt..
+..tTBBwwRRTTTt..
+..tTBBwwRRTTTt..
+..tTTTTTTTTTTt..
+..tTTTTTTTTTTt..
+..tTTTTTTTTTTt..
+..tTTTTTTTTTTt..
+..tTTTTTTTTTTt..
+..tttttttttttt..
+..kkkkkkkkkkkk..
+--- fin
+......TTTT......
+.....TTTTTT.....
+.....TTsssss....
+.....Tkckkck....
+.....Tsssss.....
+......ssss......
+.......ss.......
+....nnnwwnnn....
+...nnnnwwnnnn...
+...nnnnwwnnnn...
+...snnnwwnnnns..
+..tttttttttttt..
+..tTTTTTTTTTTt..
+..tTBBwwRRTTTt..
+..tTBBwwRRTTTt..
+..tTTTTTTTTTTt..
+..tTTTTTTTTTTt..
+..tTTTTTTTTTTt..
+..tTTTTTTTTTTt..
+..tTTTTTTTTTTt..
+..tttttttttttt..
+..kkkkkkkkkkkk..
