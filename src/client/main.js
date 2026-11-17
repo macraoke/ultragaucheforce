@@ -503,6 +503,7 @@ function layout() {
   // Au pouce, le HUD est sous le bandeau : le panneau se pose sous sa première ligne (`placeOverHud`).
   renderer.signTop = thumbs ? 30 : Math.max(30, Math.ceil((140 * (window.devicePixelRatio || 1)) / renderer.scale));
   hud.marks = null; // à remesurer
+  if (!hud.el.hidden) hud.relayout(); // le fil change de largeur, ses lettres de taille
   fitRight();
   input.refreshTouch();
   screens.fitShelf(); // la Collection ouverte : une rangée de cartes tient-elle encore sous ses rayons ?

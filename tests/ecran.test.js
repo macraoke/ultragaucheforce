@@ -5,7 +5,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { loadContent } from '../tools/content.mjs';
-import { queueNote, readTime, scrollTiming } from '../src/client/ui.js';
+import { Crawl, alertTime, queueNote, readTime } from '../src/client/ui.js';
 import { signNote } from '../src/client/collection.js';
 import { Game, DT } from '../src/sim/game.js';
 
@@ -317,21 +317,38 @@ test('une pancarte qui vient d’être débloquée reste levée quatre secondes 
   assert.ok(raised.filter(([t]) => t > 6 + 4.55).every(([, up]) => !up), 'puis elle rejoint la rotation : ce n’est pas son tour');
 });
 
-test('le fil de PANIQUE TV : une ligne trop longue défile un tiers moins vite, et reste 2,4 s sur son dernier mot', () => {
-  const short = scrollTiming(300, 10);
-  assert.equal(short.travel, 310, 'jusqu’au dernier mot, avec un peu d’air');
-  assert.ok(Math.abs(short.time - 310 / 30) < 1e-9, 'trois hauteurs de lettre par seconde');
-  assert.equal(short.airtime, 15, 'quinze secondes d’antenne au moins');
-  const long = scrollTiming(900, 10);
-  assert.ok(Math.abs(long.airtime - (1.2 + long.time + 2.4)) < 1e-9, 'une pause avant, le défilement, 2,4 s sur le dernier mot');
-  assert.equal(scrollTiming(900, 10, 40).airtime, 40, 'une ligne qui demande plus d’antenne la garde');
-  // Valentin, 17 novembre 2026 : « le bandeau de panique TV: ne casse pas sur plusieurs lignes, fait défiler plutôt ! »
-  assert.deepEqual(scrollTiming(0, 10), { travel: 0, time: 0, airtime: 15 }, 'une ligne qui tient ne défile pas');
-  assert.deepEqual(scrollTiming(-40, 10, 7), { travel: 0, time: 0, airtime: 7 });
-  const slow = scrollTiming(900, 10, 15, true);
-  assert.equal(slow.travel, long.travel, 'en effets réduits, elle défile aussi jusqu’au dernier mot');
-  assert.ok(Math.abs(slow.time - 2 * long.time) < 1e-9, 'deux fois moins vite');
-  assert.ok(Math.abs(slow.airtime - (1.2 + slow.time + 2.4)) < 1e-9, 'avec les mêmes pauses');
+test('le fil de PANIQUE TV défile en continu : des morceaux bout à bout, sans trou ni saut', () => {
+  // Valentin, 17 novembre 2026 : « le bandeau de panique TV ne défile pas en continu (pour les longs textes notamment, comme à la TV) »
+  const crawl = new Crawl();
+  const room = 500;
+  const feed = () => { while (crawl.hungry(room)) crawl.push(300, { n: crawl.items.length }); };
+  feed();
+  assert.deepEqual(crawl.items.map((i) => i.x), [0, 300], 'posés bout à bout jusqu’à remplir le fil');
+  const seen = []; // où est, à l'écran, le bord gauche de chaque morceau, image après image
+  for (let frame = 0; frame < 600; frame++) {
+    crawl.advance(2);
+    crawl.drop(10);
+    feed();
+    seen.push(new Map(crawl.items.map((i) => [i, i.x - crawl.offset])));
+    assert.ok(crawl.end() - crawl.offset >= room, 'jamais de trou à droite');
+    assert.ok(crawl.items[0].x + crawl.items[0].w >= crawl.offset - 10, 'un morceau sorti à gauche est retiré');
+  }
+  for (let k = 1; k < seen.length; k++) {
+    for (const [item, at] of seen[k]) {
+      if (seen[k - 1].has(item)) assert.ok(Math.abs(seen[k - 1].get(item) - 2 - at) < 1e-9, 'chaque morceau avance de 2 pixels, ni plus ni moins');
+    }
+  }
+  assert.ok(crawl.offset < 320, 'la piste est ramenée à zéro à mesure : elle ne grandit pas sans fin');
+  const lead = crawl.lead();
+  assert.ok(lead.x <= crawl.offset && lead.x + lead.w > crawl.offset, 'l’étiquette annonce le morceau au bord gauche');
+});
+
+test('une alerte reste à l’antenne le temps de défiler jusqu’à son dernier mot', () => {
+  assert.equal(alertTime(0, 10, 7), 7, 'une alerte qui tient garde ses sept secondes');
+  assert.equal(alertTime(-40, 10, 7), 7);
+  assert.equal(alertTime(60, 10, 7), 7, 'deux secondes de défilement : sept secondes suffisent');
+  assert.ok(Math.abs(alertTime(900, 10, 7) - (900 / 30 + 2.4)) < 1e-9, 'trois hauteurs de lettre par seconde, puis 2,4 s sur le dernier mot');
+  assert.ok(Math.abs(alertTime(900, 10, 7, true) - (900 / 15 + 2.4)) < 1e-9, 'en effets réduits, deux fois moins vite');
 });
 
 test('une recrue sur plusieurs, à quelques secondes d’écart, crie son slogan ; le gain s’affiche toujours', () => {
