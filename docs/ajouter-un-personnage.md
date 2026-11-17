@@ -21,6 +21,7 @@ Chaque section `--- nom` est une image : une lettre par pixel, les lettres étan
 | `portrait` | héros : le portrait géant du carton de déblocage ; boss : obligatoire |
 | `projectile` | ce que lance son arme |
 | `onde` | héros : l'onde de la spéciale `sol` |
+| `bille` | héros : une bille de la spéciale `billes` |
 | `fin` | unité : une fois hors service, elle a posé ce qui la rendait menaçante (sans lui, son dessin `repos`, apaisé, presque gris) |
 | `ejecte` | boss : la caricature qui s'éjecte, indemne |
 | `image`, `image2` | recrue : obligatoire, et sa seconde pose |
@@ -331,6 +332,7 @@ Toutes acceptent aussi `speciale.nom` (le cri affiché), `speciale.charges` (0 �
 | `onde` | onde circulaire qui repousse, étourdit et fissure le décor | `rayon` (16 à 160, 72), `degats` (0 à 10, 2), `terrain` (0 à 10, 2), `recul` (0 à 400, 220), `etourdit` en secondes (0 à 6, 2) |
 | `sol` | onde qui court le long du sol, des deux côtés | `vitesse` (60 à 420, 240), `portee` (32 à 480, 220), `degats` (0 à 10, 3), `terrain` (0 à 10, 3) |
 | `clones` | des doubles apparaissent et tirent avec le héros | `nombre` (1 à 4, 2), `duree` en secondes (1 à 12, 6) |
+| `billes` | des billes roulent devant soi et restent au sol (dessin `bille`) : qui marche dessus glisse, sonné, et file sur sa lancée ; ni ce qui vole, ni une ligne, ni un véhicule | `nombre` (1 à 8, 5), `vitesse` (20 à 240, 120), `duree` en secondes au sol (1 à 12, 5), `glisse` en secondes (0,5 à 6, 2), `recul` (0 à 400, 160), `degats` (0 à 10, 0) |
 | `mur` | fait pousser une colonne de tuiles devant soi | `hauteur` (1 à 5, 3), `distance` (1 à 3, 1), `tuile` (un fichier de `content/tuiles/`) |
 
 ### Attaques de boss

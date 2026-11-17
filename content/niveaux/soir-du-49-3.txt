@@ -23,6 +23,7 @@ w: canon-a-eau
 b: barrage
 g: grille
 i: ministre
+f: cuve-a-pisse
 e: editorialiste
 d: drone
 <: bfm
@@ -86,7 +87,7 @@ j: echafaudage
 ............................................................................B.........B...........................B.........B..t............................................................................................................M.........................M...................LLLLLLL...............
 ..................................................................ps........V.........V...........................V.........VPP.............................................................................................................V.........................V..................LLLLLLLLL..............
 .................................................................MMMM.......V.........V...........................V.........V...............................................................................................................V...........s.....c.......V.................aLLLLLLLLLL.............
-....D..1..x...l...c..x..u..a...m.x.a...K...Q...x.t..xo..ma..c.!cMMMMMM.m..axV...2.....V...x.........N.........x...V.........Vj..u.Q..xc..a.m.a..w.c.3...z.o.n.s...y.a...n...b...=...n.....w...a.m.n..<....>..cnm.z....Q..mwxo.cxsau.t!a..g..V.....h.....h.............VcaxKmxa..w..Q.$.LLLLLLLLLLLLL.c$...S.....
+....D..1..x...l...c..x..u..a...m.x.a...K...Q...x.t..xo..ma..c.!cMMMMMM.m..axV...2.....V...x.........N.........x...V.........Vj..u.Q..xc..a.m.a..w.c.3...z.o.n.s...y.a...n.f.b...=...n.....w...a.m.n..<....>..cnm.z....Q..mwxo.cxsau.t!a..g..V.....h.....h.............VcaxKmxa..w..Q.$.LLLLLLLLLLLLL.c$...S.....
 GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGPPGGGGGGGGGGGGGGGGGGGGGGGPPGGGGPPGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMGGGG..AGGGGGGGGGGGGOOOOOOGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
 GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG..GGGGGGGGGGGGGGGGGGGGGGG..GGGG..GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMGGGG..AGGGGGGGGGGGGOOOOOOGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG..GGGGGGGGGGGGGGGGGGGGGGG..GGGG..GGGGGGGGGGGGGGG...........................GGGG...................MM..........MM..........MM................GGGG..AGGGGGGGGGGGGOOOOOOGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG

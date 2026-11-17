@@ -4,12 +4,17 @@
 import { TILE } from './world.js';
 import { hitsSolid, overlap, holds } from './physics.js';
 import { joinRecruit } from './manif.js';
+import { sturdy } from './enemy.js';
 
 const DEFAULTS = {
   vx: 0, vy: 0, team: 'luttes', word: null, def: null, image: 'projectile',
   gravity: 0, range: 240, damage: 1, terrain: 1, bounces: 0, explosion: 0,
   pierce: false, armor: false, friendly: false, gas: 0, hug: false, owner: null, age: 0, dead: false,
   touche: 0, // camp de l'ordre : manifestants touchés si le projectile atteint le cortège
+  drag: 0, // freinage par seconde : une bille roule, ralentit, s'arrête
+  life: 0, // secondes avant de disparaître ; 0 : seule la portée compte
+  slip: 0, // secondes où l'adversaire qui marche dessus glisse, sonné (les billes)
+  slide: 0, // vitesse de sa glissade, pixels par seconde
 };
 const MAX_PROJECTILES = 240;
 
@@ -44,6 +49,8 @@ export function updateProjectiles(game, dt) {
       }
     }
     p.age += dt;
+    if (p.drag > 0) p.vx *= Math.max(0, 1 - p.drag * dt);
+    if (p.life > 0 && p.age >= p.life) p.dead = true;
     if (p.y > world.h * TILE + 64 || p.y < -480 || p.x < -64 || p.x > world.w * TILE + 64) p.dead = true;
   }
   game.projectiles = game.projectiles.filter((p) => !p.dead);
@@ -94,12 +101,30 @@ function burst(game, p, quiet = false) {
   }
 }
 
+/** L'adversaire glisse sur une bille : sonné, il file sur sa lancée (sinon dans le sens de la bille). */
+function slipOn(game, e, p) {
+  const dir = Math.sign(e.vx) || Math.sign(p.vx) || e.facing;
+  e.state = 'stunned';
+  e.stun = Math.max(e.stun, p.slip);
+  e.daze = 'glisse';
+  e.kick = dir * p.slide;
+  e.aim = null;
+  e.rush = null;
+  game.sfx('impact', e.x);
+}
+
 function touchActors(game, p) {
   if (p.team === 'luttes') {
     const damage = p.damage * game.power(); // le nombre fait la force
     for (const e of game.enemies) {
       if (e.state === 'done' || p.hits.has(e) || !overlap(p, e)) continue;
       p.hits.add(e);
+      // Une bille au sol : qui marche dessus glisse, bouclier ou pas. Ni ce qui vole, ni une ligne, ni un véhicule.
+      if (p.slip > 0) {
+        if (e.state !== 'sleep' && e.def.deplacement !== 'vol' && !sturdy(e)) slipOn(game, e, p);
+        if (p.damage > 0) game.hurtEnemy(e, damage, 'luttes', Math.sign(p.vx));
+        continue;
+      }
       // Le bouclier pare ce qui arrive de face, sauf projectile « blindage ».
       // Un projectile perçant (« perce ») n'abîme pas l'automate protégé, mais continue sa route.
       // Un tract qui explose ici n'est pas « paré » : le bouclier arrête le tract, pas le souffle, qui l'atteint (voir burst).

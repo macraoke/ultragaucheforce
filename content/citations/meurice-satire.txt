@@ -1,0 +1,11 @@
+texte: C'est toi qui m'as appris la satire, la liberté de ton, l'irrévérence
+auteur: Guillaume Meurice
+fonction: humoriste, chroniqueur du « Grand dimanche soir » sur France Inter
+date: 2024-06-12
+contexte: « Lettre à France (Inter) », lettre ouverte à la radio publique, au lendemain de l'annonce de son licenciement.
+categorie: gauche
+note: Il s'adresse à France Inter et à ses humoristes, qu'il enregistrait sur cassettes. Dans la même lettre, la direction a « un tableur Excel à la place du cerveau ». Le Sniper tire ces trois mots.
+source.titre: Puremédias — « Un tableau Excel à la place du cerveau » : Après son licenciement, Guillaume Meurice étrille la direction de France Inter dans une lettre
+source.url: https://www.ozap.com/actu/-un-tableau-excel-a-la-place-du-cerveau-apres-son-licenciement-guillaume-meurice-etrille-la-direction-de-france-inter-dans-une-lettre/644395
+source.nature: presse
+verifie: 2026-11-17
