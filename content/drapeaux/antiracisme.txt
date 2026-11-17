@@ -1,5 +1,6 @@
 nom: Poing levé
 description: Les luttes antiracistes.
+proximite: 3
 auteur: UltraGauche Force
 ressource.1.titre: 1983, la Marche pour l'égalité et contre le racisme — Musée national de l'histoire de l'immigration
 ressource.1.url: https://www.histoire-immigration.fr/integration-et-xenophobie/1983-la-marche-pour-l-egalite-des-droits-et-contre-le-racisme

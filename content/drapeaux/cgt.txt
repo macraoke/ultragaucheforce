@@ -1,5 +1,6 @@
 nom: Drapeau de la CGT (stylisé)
 description: Le syndicat, tel qu’on le croise dans tous les cortèges.
+proximite: 3
 auteur: UltraGauche Force
 ressource.1.titre: Les grandes dates de l'histoire de la CGT — Institut CGT d'histoire sociale
 ressource.1.url: https://www.ihs.cgt.fr/les-grandes-dates-de-lhistoire-de-la-cgt/

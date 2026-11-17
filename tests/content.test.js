@@ -278,3 +278,14 @@ test('décor écrit : « ecrit » vaut pancarte ou tag', () => {
   const text = textOf('content/decors/banderole.txt').replace('ecrit: pancarte', 'ecrit: neon');
   expectError(errorsOf('content/decors/banderole.txt', text), { line: lineOf(text, 'ecrit: neon'), message: /« ecrit: neon » n'existe pas/ });
 });
+
+test('drapeaux : la proximité se lit dans la fiche, de 1 à 3, 2 sans le champ', () => {
+  const { bundle } = buildContent(real);
+  assert.equal(bundle.drapeaux.palestine.proximite, 3);
+  assert.equal(bundle.drapeaux.ukraine.proximite, 1);
+  const path = 'content/drapeaux/rouge.txt';
+  const without = textOf(path).replace(/^proximite: .*\n/m, '');
+  assert.equal(buildContent(withFile(path, without)).bundle.drapeaux.rouge.proximite, 2);
+  const text = textOf(path).replace(/^proximite: .*$/m, 'proximite: 5');
+  expectError(errorsOf(path, text), { line: lineOf(text, 'proximite: 5'), message: /« proximite: 5 » n'existe pas/ });
+});

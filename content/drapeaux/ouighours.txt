@@ -1,5 +1,6 @@
 nom: Drapeau ouïghour (Kök Bayraq)
 description: Les Ouïghours du Xinjiang : génocide pour l'Assemblée nationale (2022), crimes contre l'humanité pour Amnesty International.
+proximite: 1
 auteur: UltraGauche Force
 ressource.1.titre: Chine : l'Assemblée nationale reconnaît et condamne le « génocide » des Ouïghours — LCP
 ressource.1.url: https://lcp.fr/actualites/chine-l-assemblee-nationale-reconnait-et-condamne-le-genocide-des-ouighours-99130

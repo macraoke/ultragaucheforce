@@ -1,5 +1,6 @@
 nom: Drapeau du Kurdistan
 description: Un peuple sans État, sur quatre pays : Turquie, Syrie, Irak, Iran.
+proximite: 2
 auteur: UltraGauche Force
 ressource.1.titre: Les Kurdes : l'autre peuple sans État — L'Essentiel du Dessous des cartes, ARTE (vidéo, 3 min)
 ressource.1.url: https://www.youtube.com/watch?v=7wM45iegWOc

@@ -313,8 +313,12 @@ function readResources(f, report, max = 3) {
   return out;
 }
 
+/** `proximite` : 3 pour une lutte d'ici, 1 pour une lutte lointaine ; le cortège sort plus tôt les plus proches. */
+export const PROXIMITIES = ['1', '2', '3'];
+
 function buildFlag(f, ctx, report) {
-  const out = readFields(f, { nom: req(), description: str(), ...CREDITS }, report, under('ressource'));
+  const out = readFields(f, { nom: req(), description: str(), proximite: pick(PROXIMITIES, '2'), ...CREDITS }, report, under('ressource'));
+  out.proximite = Number(out.proximite);
   out.ressources = readResources(f, report);
   out.sprites = readSprites(f, ctx.palette, report, { required: ['image'], max: 32 });
   return out;
