@@ -323,11 +323,9 @@ body.sobre #hud-manif.grossit { animation: none; }
 #bandeau[data-alerte] em { background: var(--or); color: var(--nuit); }
 /* Le fil : une ligne ; trop longue, elle défile jusqu'à son dernier mot. */
 #bandeau .fil { flex: 1; min-width: 0; display: flex; align-items: center; background: var(--fond); color: var(--encre-fil); padding: 0 .8em; white-space: nowrap; overflow: hidden; transition: background .3s, color .3s; }
-#bandeau .fil i { display: inline-block; font-style: normal; animation: defile 4.5s linear 1.2s both; }
+/* Une seule ligne, toujours : trop longue, elle défile (Hud.fit pose l'animation, et sa durée). */
+#bandeau .fil i { display: inline-block; font-style: normal; white-space: nowrap; will-change: transform; }
 @keyframes defile { to { transform: translateX(var(--decalage, 0)); } }
-/* Effets réduits : rien ne défile, la ligne se replie en plus petit. */
-#bandeau .fil.replie { white-space: normal; }
-#bandeau .fil.replie i { animation: none; font-size: var(--corps, .62em); line-height: 1.08; letter-spacing: 0; }
 /* La couleur du bandeau suit le niveau de la chaîne : blanc, jaune, rouge. */
 #bandeau[data-niveau='1'] { --fond: #ffe08a; --filet: var(--or); }
 #bandeau[data-niveau='2'] { --fond: var(--rouge); --encre-fil: var(--blanc); --filet: var(--blanc); }
