@@ -1522,7 +1522,7 @@ test('les premières pistes validées par Valentin, niveau par niveau', () => {
     raffinerie: ['internationale', 'tout-le-monde-deteste-la-police-tekos-redon'],
     'soir-du-49-3': ['casserolade-gueret', 'majes-macron-explosion'],
     'chaine-info': ['jles-aime-pas', 'caca-sur-bardella-sketogan'],
-    bismillah: ['debordement-general-1312bpm', 'abattez-la-citadelle'], // « Citadelle chez Arnault »
+    bismillah: ['gen-z-nodey-remix', 'abattez-la-citadelle'], // « Citadelle chez Arnault »
   };
   for (const [id, pair] of Object.entries(table)) {
     assert.deepEqual([bundle.niveaux[id].musique, bundle.niveaux[id]['musique-boss']], pair, id);

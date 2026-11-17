@@ -13,7 +13,7 @@ nasse.ennemi: crs
 nasse.nombre: 3
 nasse.vitesse: 18
 nasse.rythme: 50
-musique: debordement-general-1312bpm
+musique: gen-z-nodey-remix
 musique-boss: abattez-la-citadelle
 
 panneau.1: Tracts et manif : le barrage cède
