@@ -9,7 +9,7 @@ hauteur: 40
 vitesse: 30
 citation: arnault-derniere-famille-royale
 fiche: impots-milliardaires
-origine: Ses propres mots, dans son communiqué du 26 juillet 2026, à propos de la reprise de Boussac en 1984 : « On m'appelait alors 'The Terminator'. »
+origine: Ses propres mots, le 26 juillet 2026, sur la reprise de Boussac en 1984 : « On m'appelait alors 'The Terminator'. »
 # D'où vient le nom : la note de content/citations/arnault-derniere-famille-royale.txt (Puremédias, lu le 17 novembre 2026).
 # Assis sur sa fortune tant que sa vie n'est pas passée sous la moitié.
 assis: oui
