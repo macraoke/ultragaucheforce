@@ -30,7 +30,7 @@ export const KEY_CHOICES = {
   clavier: { avancer: '← → ou Q D', sauter: 'ESPACE ou Z', tirer: 'J ou Entrée', speciale: 'K ou Maj' },
 };
 
-/** Le tableau complet des commandes (écran Commandes, README) : toutes les touches qui marchent. */
+/** Le tableau des commandes (écran Commandes, README) : les mêmes touches que les panneaux. */
 export const CONTROLS = [
   ['Avancer', '← → ou Q D', 'croix ou stick', 'moitié gauche : glisser le pouce'],
   ['Sauter, grimper', 'ESPACE ou Z', 'A', 'SAUT, ou pouce gauche vers le haut ; penché vers un mur, tenu, on grimpe'],
