@@ -4,6 +4,7 @@ traitement: archétype — ceux que le mot désigne, fiers, et qui ont les crocs
 cri: LES SANS-DENTS ONT LES CROCS !
 citation: trierweiler-sans-dents
 fiche: renoncement-aux-soins
+fiche: programme-loyers
 pv: 3
 vitesse: 135
 saut: 3.2
