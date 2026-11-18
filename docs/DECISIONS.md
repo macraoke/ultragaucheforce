@@ -122,7 +122,7 @@ Ce que l'écran en dit change d'une partie à l'autre, tiré de la graine de la 
 ## Itération 3
 
 - **Le téléphone d'abord** : l'image remplit l'écran (manche flottant sur toute la moitié gauche, trois boutons à droite, chacun dans son cercle), et le jeu pivote en paysage quand le téléphone est tenu debout.
-- **La panique est celle de la chaîne** : sa jauge vit dans le bandeau de PANIQUE TV, à côté de son nom. BFM-TV et CNews sont des unités qui cadrent le héros.
+- **La panique est celle de la chaîne** : sa jauge vit dans le bandeau de PANIQUE TV, à côté de son nom. Le duplex de PANIQUE TV et le plateau de FNEWS sont des unités qui cadrent le héros.
 - **Un seul comptage de la manif** : le chiffre de la préfecture est retiré.
 - **Les automates désactivés, détaillés** : plus de compteur pendant la partie ; à la fin, leur nombre, et ce qui le compose.
 - **La nasse revient d'elle-même**, sans être annoncée.

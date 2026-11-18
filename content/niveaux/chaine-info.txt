@@ -31,8 +31,8 @@ b: barrage
 a: ramasseur
 d: drone
 e: editorialiste
-n: cnews
-<: bfm
+n: fnews
+<: duplex-panique-tv
 p: premier-de-cordee
 i: ministre
 s: soignante

@@ -22,7 +22,7 @@ panneau.5: HYPERMARCHÉ
 g: lance-pleurs
 r: barrage
 h: helicoptere
-f: bfm
+f: duplex-panique-tv
 d: drone
 e: editorialiste
 a: ramasseur

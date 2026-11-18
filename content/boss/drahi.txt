@@ -35,7 +35,7 @@ phase.3.jusqua: 0
 phase.3.rythme: 1.2
 phase.3.attaques: pluie | charge | salve
 
-invocation.ennemi: bfm
+invocation.ennemi: duplex-panique-tv
 invocation.nombre: 2
 salve.nombre: 3
 salve.vitesse: 140

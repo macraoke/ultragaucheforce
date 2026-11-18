@@ -1,6 +1,6 @@
 # Un plateau : il ne bouge pas, il cadre, et la panique monte. Ses répliques sont de vrais bandeaux de la chaîne
 # et les mots de son plateau, chacun avec sa fiche dans `content/citations/`.
-nom: Plateau de CNews
+nom: Plateau de FNEWS
 pv: 6
 vitesse: 0
 deplacement: fixe
@@ -40,10 +40,10 @@ auteur: xsbfh
 ..nnnwwnnn..KKKwwKKK..rrrwwrrr..
 RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR
 nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
-nnnnnnnwwnwwnnwwwnwnwnnwwnnnnnnn
+nnnnnnwwwnwwnnwwwnwnwnnwwnnnnnnn
 nnnnnnwnnnwnwnwnnnwnwnwnnnnnnnnn
-nnnnnnwnnnwnwnwwnnwnwnnwnnnnnnnn
+nnnnnnwwnnwnwnwwnnwnwnnwnnnnnnnn
 nnnnnnwnnnwnwnwnnnwwwnnnwnnnnnnn
-nnnnnnnwwnwnwnwwwnwnwnwwnnnnnnnn
+nnnnnnwnnnwnwnwwwnwnwnwwnnnnnnnn
 nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
 kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk

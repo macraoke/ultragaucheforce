@@ -641,6 +641,20 @@ export function buildContent(files) {
     if (m) bundle.voix[m[1]] = path;
   }
 
+  // L'ordre des camarades : `content/camarades.txt` fixe les premiers (sélection, Collection, Galerie) ;
+  // ceux qu'il ne nomme pas suivent, par nom de fichier.
+  const comrades = byPath.get('content/camarades.txt');
+  if (comrades) {
+    const first = [];
+    for (const { text, line } of parseLines(comrades.text)) {
+      if (!has(bundle.heros, text)) reporter(comrades.path)(line, `Le héros « ${text} » n'existe pas dans content/heros/.`);
+      else if (!first.includes(text)) first.push(text);
+    }
+    const rest = Object.keys(bundle.heros).filter((id) => !first.includes(id));
+    bundle.heros = Object.fromEntries([...first, ...rest].map((id) => [id, bundle.heros[id]]));
+    ctx.heros = bundle.heros;
+  }
+
   const campaign = byPath.get('content/campagne.txt');
   if (campaign) {
     for (const { text, line } of parseLines(campaign.text)) {

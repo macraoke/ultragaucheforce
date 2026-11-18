@@ -34,7 +34,7 @@ Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les platea
 | ![Millevaches : l'hélicoptère](docs/captures/millevaches-helicoptere.jpg) | ![Le rond-point : le péage levé](docs/captures/rond-point-peage.jpg) |
 | ![La raffinerie bloquée : la cuve du dépôt de carburant](docs/captures/raffinerie-cuves.jpg) | ![Le siège de la chaîne d'info : la régie](docs/captures/chaine-info-regie.jpg) |
 | ![Le soir du 49.3 : devant l'Assemblée](docs/captures/soir-du-49-3-assemblee.jpg) | ![Une équipe télé filme la poubelle qui brûle](docs/captures/feu-de-poubelle.jpg) |
-| ![PANIQUE TV en pleine hystérie](docs/captures/panique-bandeau.jpg) | ![Le duplex de BFM-TV](docs/captures/duplex-bfm.jpg) |
+| ![PANIQUE TV en pleine hystérie](docs/captures/panique-bandeau.jpg) | ![Le duplex de PANIQUE TV](docs/captures/duplex-panique-tv.jpg) |
 | ![La fortune, à l'échelle](docs/captures/taxe-fortune.jpg) | ![Le menu](docs/captures/menu.jpg) |
 | ![L'ouverture d'un niveau](docs/captures/ouverture.jpg) | ![Un camarade libéré](docs/captures/carton-heros.jpg) |
 | ![Fin de niveau](docs/captures/fin-de-niveau.jpg) | ![Taxée à 2 % : ce que ça paierait, et ce que chacun paie déjà](docs/captures/taxe-ce-que-ca-paie.jpg) |

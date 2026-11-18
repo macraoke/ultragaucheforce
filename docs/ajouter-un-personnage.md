@@ -106,6 +106,8 @@ speciale.etourdit: 3
 | `largeur`, `hauteur` | la boîte de collision, en pixels | 6 à 16, 8 à 24 |
 | `statut` | `jouable`, ou `test` pour l'écarter des sauvetages | |
 
+[`content/camarades.txt`](../content/camarades.txt) fixe l'ordre des héros : la sélection, la Collection et la Galerie les montrent dans cet ordre. Un héros qu'il ne nomme pas vient après, par nom de fichier.
+
 ## Une recrue
 
 Elle attend sur place. Le héros la touche, ou lui tend un tract : elle rejoint la manif.

@@ -36,7 +36,7 @@ t: tracteurs
 a: ag
 o: medic
 l: presse-independante
-f: bfm
+f: duplex-panique-tv
 v: vache
 m: meule
 b: arbre

@@ -275,6 +275,19 @@ test('brouillons version 2 : un brouillon v1 qui posait les anciens automates (`
   assert.deepEqual(checkLevel(data.brouillons[0].texte, bundle).errors, []);
 });
 
+test('brouillons version 3 : un brouillon v2 qui posait `cnews` et `bfm` se valide encore', () => {
+  const { model } = paint(readLevel(TEMPLATE), [{ x: 10, y: 9 }], { type: 'chose', id: 'fnews' });
+  const now = writeLevel(paint(model, [{ x: 14, y: 9 }], { type: 'chose', id: 'duplex-panique-tv' }).model);
+  const old = now.replace(/: fnews$/m, ': cnews').replace(/: duplex-panique-tv$/m, ': bfm');
+  assert.match(old, /^.: cnews$/m, 'l’ancien brouillon pose le plateau de CNews');
+  assert.match(old, /^.: bfm$/m);
+  assert.notDeepEqual(checkLevel(old, bundle).errors, [], 'sans passage, il ne se valide plus');
+  const data = upgrade({ version: 2, ouvert: 'a', brouillons: [{ id: 'a', texte: old, cree: 1, modifie: 2 }] });
+  assert.equal(data.version, VERSION);
+  assert.equal(data.brouillons[0].texte, now, 'la légende reprend les nouveaux identifiants, le reste ne bouge pas');
+  assert.deepEqual(checkLevel(data.brouillons[0].texte, bundle).errors, []);
+});
+
 test('brouillons : l’ancien brouillon unique de l’Atelier devient le premier, une seule fois', () => {
   const disk = storage();
   const drafts = new Drafts({ storage: disk, now: clock() });

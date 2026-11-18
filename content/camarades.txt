@@ -1,0 +1,17 @@
+# L'ordre des camarades : un identifiant de héros par ligne (le nom du fichier, sans « .txt »).
+# La sélection des héros, la Collection et la Galerie les montrent dans cet ordre ; ceux qui n'y sont pas suivent.
+tyrannogauchiste
+melenchon
+ecoterroriste
+poutou
+aubry
+sale-gosse
+dinos-gauchistes
+zucman
+guette
+gauche-atomique
+rousseau
+sniper
+magma-gauche
+bompard
+sans-dents

@@ -1,6 +1,6 @@
 titre: Bismillah, c'est les ténèbres
 auteur: xsbfh
-accroche: D'un lycée bloqué à Mayotte à 800 000 manifestants, selon les organisateurs, le 17 octobre dans toute la France.
+accroche: D'un lycée bloqué à Mayotte à 800 000 manifestants le 17 octobre.
 citation: bardella-guerre-civile
 fiche: comptage-31-janvier-2023
 fiche: comptage-17-octobre-2026
@@ -46,8 +46,8 @@ y: intersyndicale
 !: ag
 ~: medic
 ,: presse-independante
-<: bfm
->: cnews
+<: duplex-panique-tv
+>: fnews
 z: statue
 k: kiosque
 j: abribus

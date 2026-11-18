@@ -24,7 +24,7 @@ h: helicoptere
 d: drone
 i: ministre
 e: editorialiste
-<: bfm
+<: duplex-panique-tv
 t: cheminot
 y: intersyndicale
 j: gilet-jaune
