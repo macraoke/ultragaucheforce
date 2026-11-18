@@ -1,5 +1,5 @@
 nom: Magma gauche
-traitement: une forme de l'ultragauche, comme dans un dessin animé : un corps de lave, fendu d'orange, qui fume
+traitement: l'ultragauche en dessin animé, un corps de lave fendu d'orange qui fume
 cri: MAGMA GAUCHE !
 citation: melenchon-ultra-extreme-gauche
 fiche: video-ultragauche

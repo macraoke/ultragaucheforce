@@ -1,5 +1,5 @@
-# Tir visé : une visée que l'on voit venir, puis un tir tendu. Un tir qui file dans le cortège y touche deux personnes ;
-# l'automate qui atteint le cortège emmène trois manifestants.
+# Lancer visé : on voit venir la visée, puis le lancer part tout droit. S'il file dans le cortège, il y touche deux personnes.
+# L'automate qui atteint le cortège emmène trois manifestants.
 nom: Ramasseur
 pv: 2
 vitesse: 60

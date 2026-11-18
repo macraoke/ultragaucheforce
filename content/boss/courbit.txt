@@ -8,7 +8,7 @@ hauteur: 40
 vitesse: 40
 citation: courbit-virtuose-du-poker
 fiche: fortune-courbit
-origine: Le nom reprend sa fiche du classement Challenges 2026, qui le dit « virtuose du poker ».
+origine: Sa fiche du classement Challenges 2026 le dit « virtuose du poker ».
 # Il ne reste pas assis : il bluffe et fonce tout de suite.
 assis: non
 # Ses répliques sont ses propres mots (voir content/citations/courbit-*.txt).

@@ -1,5 +1,5 @@
 nom: Cuve à pisse
-origine: Le 9 novembre 2025, dans « La Dernière » sur Radio Nova, Pierre-Emmanuel Barré dit avoir de « fortes suspicions » que Laurent Nuñez, ministre de l'Intérieur, « soit une grosse cuve à pisse ». Le ministère porte plainte ; le parquet de Paris la classe sans suite. Ce qu'elle dit, ce sont les mots du ministre.
+origine: Le 9 novembre 2025, dans « La Dernière » sur Radio Nova, Pierre-Emmanuel Barré dit avoir de « fortes suspicions » que Laurent Nuñez, ministre de l'Intérieur, « soit une grosse cuve à pisse ». Le ministère porte plainte. Le parquet de Paris la classe sans suite. Ses mots sont ceux du ministre.
 pv: 6
 vitesse: 0
 deplacement: fixe

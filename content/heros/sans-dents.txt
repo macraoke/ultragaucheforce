@@ -1,6 +1,6 @@
 nom: Le Sans-dents
-origine: Son cri est une pancarte de Voltuan, « l'homme à la pancarte », citée par l'AFP en septembre 2015.
-traitement: archétype — ceux que le mot désigne, fiers, et qui ont les crocs
+origine: « Les sans-dents ont les crocs » : une pancarte de Voltuan, « l'homme à la pancarte », citée par l'AFP en septembre 2015.
+traitement: ceux que le mot désigne, fiers, et qui ont les crocs
 cri: LES SANS-DENTS ONT LES CROCS !
 citation: trierweiler-sans-dents
 fiche: renoncement-aux-soins

@@ -1,6 +1,6 @@
-# Il ne blesse personne : il cadre le héros, et la panique monte.
+# Il ne fait perdre aucun point de vie. Il cadre le héros, et la panique monte.
 # Clin d'œil à « We Become What We Behold » de Nicky Case.
-# La chaîne est inventée, ses répliques non : de vrais titres et bandeaux, relevés dans `content/manchettes/`.
+# La chaîne est inventée. Ses répliques sont de vrais titres et bandeaux, relevés dans `content/manchettes/`.
 nom: Drone de PANIQUE TV
 pv: 1
 vitesse: 60

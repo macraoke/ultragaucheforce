@@ -8,7 +8,7 @@ hauteur: 40
 vitesse: 35
 citation: sterin-exile-fiscal
 fiche: fortune-sterin
-origine: Le nom reprend ses propres mots, sous serment devant le Sénat, le 4 juin 2026 : il vit en Belgique depuis 2012.
+origine: Sous serment devant le Sénat, le 4 juin 2026, il dit vivre en Belgique depuis 2012.
 # Assis sur sa fortune tant que sa vie n'est pas passée sous les six dixièmes.
 assis: oui
 leve: 0.6

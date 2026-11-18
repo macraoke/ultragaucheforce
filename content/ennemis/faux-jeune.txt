@@ -1,5 +1,5 @@
 nom: Faux jeune
-origine: L'automate déguisé en lycéen que des élèves disent avoir vu se glisser dans leurs conversations. Une infiltration présumée : rien ne l'a confirmée.
+origine: Un automate déguisé en lycéen. Des élèves disent l'avoir vu se glisser dans leurs conversations. Rien ne l'a confirmé.
 pv: 2
 vitesse: 80
 deplacement: marche

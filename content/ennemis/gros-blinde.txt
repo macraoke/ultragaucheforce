@@ -1,4 +1,4 @@
-# Un blindé : une ligne qui a une vie. Les tracts l'entament, la manif le pousse, d'autant plus fort qu'elle est nombreuse.
+# Un blindé est une ligne : il a une vie. Les tracts l'usent. La manif le pousse, plus fort quand elle est nombreuse.
 nom: Gros blindé
 pv: 20
 vitesse: 14

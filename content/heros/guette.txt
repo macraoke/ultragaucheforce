@@ -10,7 +10,7 @@ saut: 3.4
 fiche: programme-6e-republique
 auteur: xsbfh
 
-# Arme : les pages du programme, en éventail levé, qui traversent les rangs.
+# Arme : les pages du programme, lancées en éventail, qui traversent les rangs.
 arme.type: tir
 arme.nombre: 3
 arme.dispersion: 60
@@ -25,7 +25,7 @@ arme.taille: 6
 arme.image: projectile
 arme.son: tir
 
-# Spéciale : d'un coup de baguette, tout le monde s'arrête ; elle étourdit plus qu'elle ne repousse.
+# Spéciale : un geste de la baguette, et tout le monde s'arrête. Ça étourdit plus que ça ne repousse.
 speciale.type: onde
 speciale.nom: LE PROGRAMME !
 speciale.charges: 2

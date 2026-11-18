@@ -1,5 +1,5 @@
 nom: Déconstruction Woman
-origine: Le 14 octobre 2021, dans sa chronique sur Sud Radio, Guy Carlier la présente comme « ma super héroïne » et lui donne ce nom. Son cri est le sien : « Désobéissons. », à Reporterre, le 18 octobre 2022.
+origine: Le 14 octobre 2021, dans sa chronique sur Sud Radio, Guy Carlier l'appelle « ma super héroïne » et lui donne ce nom. « Désobéissons. », dit-elle à Reporterre le 18 octobre 2022.
 inspiration: Sandrine Rousseau
 traitement: la déconstruction en super-héroïne : ce qu'elle touche se défait, murs compris
 cri: DÉSOBÉISSONS !
@@ -9,7 +9,7 @@ vitesse: 145
 saut: 3.3
 auteur: xsbfh
 
-# Arme : un mot géant qui traverse les adversaires et ronge le décor. Il part plus vite qu'elle ne court.
+# Arme : un mot géant qui traverse les rangs et ronge le décor. Il va plus vite qu'elle.
 arme.type: tir
 arme.cadence: 1.8
 arme.vitesse: 250

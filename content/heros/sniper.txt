@@ -1,7 +1,7 @@
 nom: Le Sniper
-origine: « Le sniper a encore frappé », écrit Puremédias le 31 janvier 2023, quand il se moque des journalistes de France Inter invités à déjeuner par Emmanuel Macron. Licencié par Radio France en juin 2024, il écrit à France Inter une lettre qui lui donne ses munitions. Son cri vient d'un entretien à Politis en mars 2024 : l'humour « désacralise le pouvoir ».
+origine: « Le sniper a encore frappé », écrit Puremédias le 31 janvier 2023, quand il se moque des journalistes de France Inter invités à déjeuner par Emmanuel Macron. En mars 2024, il dit à Politis que l'humour « désacralise le pouvoir ». Radio France le licencie en juin 2024.
 inspiration: Guillaume Meurice
-traitement: l'humoriste licencié de France Inter, un micro à lunette en guise de fusil
+traitement: l'humoriste licencié de France Inter, avec un micro à lunette
 cri: ÇA DÉSACRALISE LE POUVOIR !
 citation: puremedias-le-sniper
 pv: 2
@@ -9,7 +9,7 @@ vitesse: 135
 saut: 3.2
 auteur: xsbfh
 
-# Arme : un tir rare, très rapide, de très loin, qui traverse les rangs et passe les boucliers.
+# Arme : un lancer rare et très rapide, de très loin, qui traverse les rangs et passe les boucliers.
 arme.type: tir
 arme.cadence: 1.4
 arme.vitesse: 420
@@ -22,7 +22,7 @@ arme.taille: 6
 arme.mots: SATIRE ! | LIBERTÉ DE TON ! | IRRÉVÉRENCE ! | VISIBLEMENT TROP ! | DÉSACRALISE LE POUVOIR ! | ROCK MACRONISTE !
 arme.son: tir
 
-# Spéciale : The Disruptives, son groupe de rock « macroniste », débarque et tire avec lui (citation meurice-rock-macroniste).
+# Spéciale : The Disruptives, son groupe de rock « macroniste », débarque et lance avec lui (citation meurice-rock-macroniste).
 speciale.type: clones
 speciale.nom: THE DISRUPTIVES !
 speciale.charges: 2

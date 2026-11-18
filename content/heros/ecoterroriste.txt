@@ -1,5 +1,5 @@
 nom: L'Écoterroriste
-traitement: un jardinier, comme le mot le laisse imaginer
+traitement: un jardinier
 cri: ON EST PLUS CHAUDS QUE LE CLIMAT !
 citation: darmanin-ecoterrorisme
 pv: 2

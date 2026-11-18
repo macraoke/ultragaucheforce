@@ -1,4 +1,4 @@
-# Une ligne : elle a une vie. Les tracts l'entament, la manif la pousse, d'autant plus fort qu'elle est nombreuse.
+# Une ligne a une vie. Les tracts l'usent. La manif la pousse, plus fort quand elle est nombreuse.
 nom: Grille de la Citadelle
 pv: 3
 vitesse: 0

@@ -8,7 +8,7 @@ hauteur: 40
 vitesse: 45
 citation: granjon-ogre
 fiche: fortune-granjon
-origine: Le nom reprend La Libre Belgique, le 16 novembre 2019 : « l'ogre de l'e-commerce ».
+origine: « L'ogre de l'e-commerce » : La Libre Belgique, le 16 novembre 2019.
 # Assis sur ses invendus tant que sa vie n'est pas passée sous les quatre dixièmes.
 assis: oui
 leve: 0.4

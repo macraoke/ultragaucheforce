@@ -1,5 +1,5 @@
 nom: L'Ingénieur du chaos
-origine: Franz-Olivier Giesbert traite les insoumis d'« ingénieurs du chaos », dans Le Point, en septembre 2025.
+origine: Franz-Olivier Giesbert traite les insoumis d'« ingénieurs du chaos » (Le Point, septembre 2025).
 inspiration: Jean-Luc Mélenchon
 traitement: le tribun, en plus fort
 cri: LA RÉPUBLIQUE, C'EST MOI !
@@ -10,7 +10,7 @@ saut: 3.2
 fiche: hologramme-2017
 auteur: xsbfh
 
-# Arme : la vague de verbe, courte portée, traverse tout. Elle part plus vite qu'il ne court.
+# Arme : une vague de mots qui porte court et traverse tout. Elle va plus vite que lui.
 arme.type: tir
 arme.cadence: 2
 arme.vitesse: 250
