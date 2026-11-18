@@ -112,6 +112,7 @@ const screens = new Screens(screenRoot, {
     quit: () => toMenu(),
     skip: () => {
       endRun('abandoned', 'passer');
+      won = []; // ce que le tuto a débloqué ne passe pas dans l'écran de fin de l'étape suivante
       start(nextStep(bundle, save));
     },
     tutorial: () => current?.id === TUTORIAL,
