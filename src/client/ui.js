@@ -241,7 +241,7 @@ export class Screens {
       .map((x) => [Math.random(), x]).sort((a, b) => a[0] - b[0]).slice(0, 5).map(([, x]) => x);
     this.show('menu',
       h('div', { className: 'logo' }, h('span', {}, 'UltraGauche'), h('span', {}, 'Force')),
-      h('p', { className: 'devise' }, 'Taxez les riches. Faites tomber la Citadelle.'),
+      h('p', { className: 'devise' }, 'Taxez les riches. Abattez la Citadelle.'),
       h('div', { className: 'troupe' }, heroes.map((x) => spriteElement(x.sprites.repos, this.bundle.palette, 4))),
       h('nav', {},
         this.button('Jouer', () => this.go.play(this.nextLevel()), 'gros'),

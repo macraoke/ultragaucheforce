@@ -1,6 +1,6 @@
 # UltraGauche Force
 
-> **Taxez les riches. Faites tomber la Citadelle.**
+> **Taxez les riches. Abattez la Citadelle.**
 
 **[Jouer en ligne](https://ultragaucheforce.github.io/)**, dans le navigateur, sans rien installer.
 
