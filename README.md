@@ -65,10 +65,10 @@ Le jeu est sur http://localhost:8080.
 | | Clavier | Manette | Tactile |
 |---|---|---|---|
 | Avancer | ← → ou Q D | croix ou stick | moitié gauche : glisser le pouce |
-| Sauter, grimper | Espace, ↑ ou Z | A | SAUT, ou pouce gauche vers le haut ; penché vers un mur, tenu, on grimpe |
-| Lancer (maintenir) | J, X ou Entrée | X ou gâchette droite | LANCER |
+| Sauter, grimper | ESPACE ou Z | A | SAUT, ou pouce gauche vers le haut ; penché vers un mur, tenu, on grimpe |
+| Lancer (maintenir) | J ou Entrée | X ou gâchette droite | LANCER |
 | Creuser, lancer en haut | ↓ ou ↑ sans avancer, puis lancer | bas ou haut, puis lancer | pouce gauche vers le bas ou le haut, puis LANCER ; ou LANCER glissé vers le haut |
-| Spéciale | K, C ou Maj | B ou gâchette gauche | SPÉ |
+| Spéciale | K ou Maj | B ou gâchette gauche | SPÉ |
 | Pause | Échap ou P | Start | II |
 | Piste suivante (en pause) | N | croix jusqu’à ⏭, puis A | ⏭, à côté de « Pause » |
 
