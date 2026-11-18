@@ -35,12 +35,13 @@ function fit(card, scene, words) {
 /**
  * @param {object} bundle  le contenu du jeu
  * @param {object} hero    une fiche de `bundle.heros`
- * @param {{audio?: object, reduced?: boolean, rescued?: boolean, seed?: number, onClose?: () => void}} options
+ * @param {{audio?: object, reduced?: boolean, rescued?: boolean, first?: boolean, seed?: number, onClose?: () => void}} options
+ *        `first` : le héros vient d'être débloqué pour la première fois ; le carton reste deux fois plus longtemps
  *        `seed` : la graine de la partie ; les drapeaux s'y rangent comme dans son cortège, le tricolore en tête
  *        `onClose` : appelé quand le carton commence à s'effacer, juste avant de laisser revoir le jeu
  * @returns {Promise<void>} résolue quand le carton est fermé
  */
-export function showHeroCard(bundle, hero, { audio = null, reduced = false, rescued = true, seed = Math.floor(Math.random() * 1e9), onClose = null } = {}) {
+export function showHeroCard(bundle, hero, { audio = null, reduced = false, rescued = true, first = false, seed = Math.floor(Math.random() * 1e9), onClose = null } = {}) {
   return new Promise((resolve) => {
     const card = el('div', `carton${reduced ? ' sobre' : ''}`);
     card.setAttribute('role', 'dialog');
@@ -108,7 +109,7 @@ export function showHeroCard(bundle, hero, { audio = null, reduced = false, resc
       setTimeout(() => audio?.play('cuivres'), 480),
       setTimeout(() => audio?.speak(hero.id), 560),
       setTimeout(() => audio?.play('cymbale'), 600),
-      setTimeout(close, reduced ? 1700 : 3200),
+      setTimeout(close, (reduced ? 1700 : 3200) * (first ? 2 : 1)),
     ];
 
     let closed = false;
