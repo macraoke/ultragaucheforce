@@ -510,6 +510,8 @@ html.bas .fin .debloquees .carte-mini :is(.mot, .ecrit) { -webkit-line-clamp: 2;
 html.bas .fin .pied { margin-top: 6px; }
 html.bas .fin .pied button { padding: .45em .8em; }
 html.bas .fin .pied button.gros { font-size: 1.15rem; }
+/* Sur téléphone, le bouton qui fait avancer (« Niveau suivant », « La suite ») passe en bas à droite, comme sur l'écran de taxe. */
+html.bas .fin .pied button.gros { order: 1; margin-left: auto; }
 .vote { text-align: center; }
 .vote .appel { font: 900 clamp(3rem, 16vmin, 8rem)/.9 var(--titre); text-transform: uppercase; color: var(--or); margin: .1em 0 .2em; transform: rotate(-2deg); }
 .vote .dates { font: 900 clamp(1.1rem, 4vmin, 2rem)/1.1 var(--titre); text-transform: uppercase; letter-spacing: .04em; margin: 0 0 .8em; }
@@ -648,10 +650,11 @@ body.sobre .taxe :is(.etapes li, .repere) { animation: none !important; }
 @media (prefers-reduced-motion: reduce) { .taxe :is(.etapes li, .repere) { animation: none !important; } }
 /* Une fenêtre étroite et debout (pas un téléphone, qui pivote en paysage) : le tas au-dessus du récit. */
 @media (max-width: 640px) and (orientation: portrait) { html:not(.pivote) .panneau.taxe { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'tas' 'recit' 'pied'; } }
-/* Téléphone en paysage : tout tient sans défiler ; le bouton passe sous le tas, sous le pouce, et le récit a toute la hauteur. */
-html.bas .panneau.taxe { grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); grid-template-areas: 'tas recit' 'pied recit'; padding: 10px 12px; gap: 8px 12px; }
-html.bas .taxe figure.tas { align-self: end; }
-html.bas .taxe .recit { align-self: center; }
+/* Téléphone (en paysage, ou debout et pivoté) : tout tient sans défiler. Le récit part du haut, à hauteur du tas ;
+   le bouton qui fait avancer se pose en bas à droite, sous le pouce droit, au ras du bas du tas. */
+html.bas .panneau.taxe { grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); grid-template-rows: auto 1fr; grid-template-areas: 'tas recit' 'tas pied'; align-items: start; padding: 10px 12px; gap: 8px 12px; }
+html.bas .taxe .recit { align-self: start; }
+html.bas .taxe .pied { align-self: end; justify-self: end; }
 html.bas .taxe figure.tas canvas { max-height: calc(var(--vh, 1vh) * 68); }
 html.bas .taxe .legende { padding: .25em .45em; font-size: 11px; }
 html.bas .taxe .legende .liasse { width: 12px; height: 8px; }
