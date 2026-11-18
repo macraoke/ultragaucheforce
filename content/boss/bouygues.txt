@@ -9,7 +9,7 @@ vitesse: 30
 citation: bouygues-grossir-pour-grossir
 fiche: fortune-bouygues
 # D'où vient le nom : Public Sénat, 18 février 2022 (lu le 17 novembre 2026), voir content/citations/bouygues-grossir-pour-grossir.txt.
-origine: Le 18 février 2022, Public Sénat raconte son audition sous serment au Sénat sur la concentration des médias. Il l'appelle « le prince du béton ».
+origine: Le 18 février 2022, Public Sénat raconte son audition sous serment au Sénat sur la concentration des médias, et l'appelle « le prince du béton ».
 # Assis sur sa fortune tant que sa vie n'est pas passée sous la moitié.
 assis: oui
 leve: 0.5
