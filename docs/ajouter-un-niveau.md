@@ -46,7 +46,7 @@ GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 ```
 
-Déposé dans `content/niveaux/`, il devient une étape du plan de campagne, à la suite des autres. [`content/campagne.txt`](../content/campagne.txt) fixe l'ordre des premières étapes.
+Déposé dans `content/niveaux/`, il devient une étape du plan de campagne, à la suite des autres (sauf le tuto, `get-ready-with-me`, joué au tout premier « Jouer »). [`content/campagne.txt`](../content/campagne.txt) fixe l'ordre des premières étapes.
 
 ## L'en-tête
 
@@ -60,7 +60,7 @@ Déposé dans `content/niveaux/`, il devient une étape du plan de campagne, à 
 | `fond` | `campagne`, `ville` ou `citadelle` |
 | `cortege` | `oui` : la manif suit le héros |
 | `manif` | combien de manifestants au départ (10 avec un cortège, sauf indication ; 5000 au plus) |
-| `panneau.1` à `panneau.9` | le texte du panneau placé par le chiffre correspondant sur la carte. Une touche s'écrit entre crochets, et chacun la lit sur son appareil : `[tirer] : lancer des tracts` devient « J : … » au clavier, « X : … » à la manette, « LANCER : … » au pouce. Les touches : `[avancer]`, `[sauter]`, `[tirer]`, `[bas]`, `[haut]`, `[spéciale]`, `[pause]`. Le premier panneau d'une partie qui dit `[spéciale]` fait clignoter la puce de la spéciale et le bouton SPÉ, jusqu'au premier usage, huit secondes au plus, jamais en pause |
+| `panneau.1` à `panneau.9` | le texte du panneau placé par le chiffre correspondant sur la carte. Une touche s'écrit entre crochets, et chacun la lit sur son appareil : `[tirer] : lancer des tracts` devient « J : … » au clavier, « X : … » à la manette, « LANCER : … » au pouce. Les touches : `[avancer]`, `[sauter]`, `[tirer]`, `[bas]`, `[haut]`, `[spéciale]`, `[pause]`. Le premier panneau d'une partie qui dit `[spéciale]` fait clignoter la puce de la spéciale et le bouton SPÉ, jusqu'au premier usage, huit secondes au plus, jamais en pause. Dans le tuto ([`get-ready-with-me`](../content/niveaux/get-ready-with-me.txt)), un panneau qui dit une touche attend le geste : il reste en haut jusqu'à ce que le joueur l'ait fait (`[bas]` + `[tirer]` : creuser), puis montre un ✓ et s'efface ; au pouce, le bouton concerné clignote. Le panneau suivant prend sa place |
 | un signe de légende | `b: barrage` place une unité, une recrue ou un décor à chaque `b` de la carte |
 | `heros` | le héros avec lequel on essaie le niveau dans l'Atelier. En jeu, le joueur choisit parmi ceux qu'il a débloqués ; la première fois, le hasard choisit. Sans cette clé ni choix du joueur, un héros jouable est tiré au hasard, le même pour une même graine |
 | `camarades` | l'ordre des héros libérés, séparés par une barre verticale : `melenchon \| zucman` (sinon au hasard) |

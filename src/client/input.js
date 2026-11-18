@@ -25,6 +25,11 @@ export const KEY_NAMES = {
   pouce: { avancer: 'Pouce gauche', sauter: 'SAUT', tirer: 'LANCER', bas: 'Pouce ↓', haut: 'Pouce ↑', speciale: 'SPÉ', pause: 'II' },
 };
 
+/** Au clavier, une commande seule sur un panneau ou sur le carton dit aussi son autre touche. */
+export const KEY_CHOICES = {
+  clavier: { avancer: '← → ou Q D', sauter: 'ESPACE ou Z', tirer: 'J ou Entrée', speciale: 'K ou Maj' },
+};
+
 /** Le tableau complet des commandes (écran Commandes, README) : toutes les touches qui marchent. */
 export const CONTROLS = [
   ['Avancer', '← → ou Q D', 'croix ou stick', 'moitié gauche : glisser le pouce'],
@@ -38,8 +43,9 @@ export const CONTROLS = [
 
 /** Les commandes en une ligne, pour le carton d'ouverture et la pause : [touche, ce qu'elle fait]. */
 export const brief = (device) => {
-  const k = KEY_NAMES[device] || KEY_NAMES.clavier;
-  return [[k.avancer, 'avancer'], [k.sauter, 'sauter'], [k.tirer, 'lancer'], [`${k.bas} + ${k.tirer}`, 'creuser'], [k.speciale, 'spéciale']];
+  const k = { ...(KEY_NAMES[device] || KEY_NAMES.clavier) };
+  const full = { ...k, ...KEY_CHOICES[device] };
+  return [[full.avancer, 'avancer'], [full.sauter, 'sauter'], [full.tirer, 'lancer'], [`${k.bas} + ${k.tirer}`, 'creuser'], [full.speciale, 'spéciale']];
 };
 
 const TOKEN = /\[([^\]]+)\]/g;
@@ -56,11 +62,21 @@ export function withKeys(text, device = 'clavier') {
   const [keys, thumbs] = text.split(' // ');
   const chosen = thumbs && device === 'pouce' ? thumbs : keys;
   const names = KEY_NAMES[device] || KEY_NAMES.clavier;
-  return chosen.replace(TOKEN, (all, word) => names[tokenName(word)] ?? all);
+  const full = KEY_CHOICES[device] || {};
+  return chosen.replace(TOKEN, (all, word, at) => {
+    const name = tokenName(word);
+    // Seule, une commande dit toutes ses touches (« J ou Entrée ») ; combinée (« [bas] + [tirer] ») ou répétée, la touche courte.
+    const combined = /\+\s*$/.test(chosen.slice(0, at)) || /^\s*\+/.test(chosen.slice(at + all.length))
+      || tokens(chosen).filter((t) => t === name).length > 1;
+    return (!combined && full[name]) || names[name] || all;
+  });
 }
 
+/** Les commandes qu'un panneau nomme, dans l'ordre : « [bas] + [tirer] : creuser » → `['bas', 'tirer']`. */
+export const tokens = (text) => [...(text || '').matchAll(TOKEN)].map(([, word]) => tokenName(word));
+
 /** Ce panneau nomme-t-il cette commande (`speciale`, `tirer`…), sous l'une des formes que `withKeys` reconnaît ? */
-export const mentions = (text, action) => [...(text || '').matchAll(TOKEN)].some(([, word]) => tokenName(word) === action);
+export const mentions = (text, action) => tokens(text).includes(action);
 
 /** Les boutons et les axes de la manette standard que le jeu lit (voir `gamepad()` et `pollMenu()`). */
 const PAD_BUTTONS = [0, 1, 2, 4, 5, 6, 7, 9, 12, 13, 14, 15];

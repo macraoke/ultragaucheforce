@@ -8,13 +8,14 @@ import { Input } from './input.js';
 import { Audio } from './audio.js';
 import { Radio } from './music.js';
 import { Screens, Hud } from './ui.js';
+import { coach, guideView } from './consigne.js';
 import { showHeroCard } from './herocard.js';
 import { showTaxScene, draw } from './tax.js';
 import { INJURY_FILE } from './blesses.js';
 import { shareImage, openShare } from './share.js';
 import { measure, runStarted, runEnded, heroRescued } from './mesure.js';
 import { loadSave, storeSave, discover, isFound, followSystemMotion } from './save.js';
-import { cardName, citationOfWord, levelOrder, signNote, taxShocks } from './collection.js';
+import { TUTORIAL, nextStep, startingHero, cardName, citationOfWord, levelOrder, signNote, taxShocks } from './collection.js';
 import { registerServiceWorker } from './sw-register.js';
 
 // Le contenu, parti dès index.html. S'il n'arrive pas, la mesure le compte (l'erreur, elle, suit son cours).
@@ -49,6 +50,8 @@ let bot = {};
 let won = []; // clés de ce qui a été débloqué depuis le début du niveau : la rangée de l'écran de fin
 let visited = null; // le niveau lancé, tant qu'il n'est ni gagné ni quitté : « Recommencer » y garde sa musique
 let run = null; // la partie en cours, pour la mesure : { level, mode, hero, playing } (`mesure.js`)
+let guiding = false; // dans le tuto, les panneaux attendent le geste (`consigne.js`)
+let guide = null; // la consigne en cours
 // Le temps d'écran pas encore joué. Il repart d'un quart de pas, jamais de zéro : à 60 Hz, une image dure un pas,
 // et un reste nul laisserait le moindre écart d'horloge jouer tantôt zéro pas, tantôt deux (le décor saute).
 const PHASE = DT / 4;
@@ -107,6 +110,12 @@ const screens = new Screens(screenRoot, {
       setMode('playing');
     },
     quit: () => toMenu(),
+    skip: () => {
+      endRun('abandoned', 'passer');
+      won = []; // ce que le tuto a débloqué ne passe pas dans l'écran de fin de l'étape suivante
+      start(nextStep(bundle, save));
+    },
+    tutorial: () => current?.id === TUTORIAL,
     atelier: (button) => openAtelier(button),
     edit: () => backToEdit(),
     testing: () => Boolean(custom),
@@ -181,30 +190,22 @@ function collectCortege() {
   for (const m of game.cortege) if (m.kind === 'drapeau') collect('drapeaux', m.label, true);
 }
 
-/**
- * Le personnage de départ : celui que le joueur a choisi ; sinon un de ceux qu'il a débloqués, au hasard ;
- * et la toute première fois, n'importe lequel, au hasard.
- */
-function startingHero() {
-  const playable = Object.values(bundle.heros).filter((x) => x.statut === 'jouable').map((x) => x.id);
-  const mine = playable.filter((x) => isFound(save, 'heros', x));
-  if (mine.includes(save.heros)) return { id: save.heros, source: 'choisi' };
-  const pool = mine.length ? mine : playable;
-  return { id: pool[Math.floor(Math.random() * pool.length)] ?? '', source: mine.length ? 'aleatoire' : 'premier' };
-}
-
 function start(id, level = null) {
   const again = current?.id === (id ?? 'atelier'); // « Recommencer » : ce qui a déjà été débloqué dans ce niveau reste
   endRun('abandoned', again ? 'recommencer' : 'autre_niveau');
   custom = level;
   current = { id: id ?? 'atelier', level: level ?? bundle.niveaux[id] };
-  // Dans l'Atelier, on essaie le niveau avec le héros que dit sa fiche, pas celui de la sauvegarde.
-  const hero = level ? { id: '', source: 'atelier' } : startingHero();
+  // Dans l'Atelier, on essaie le niveau avec le héros que dit sa fiche, pas celui de la sauvegarde ; le tuto part
+  // toujours avec le sien, pour que le camarade libéré lance autre chose.
+  const tutorial = !level && id === TUTORIAL;
+  const hero = level ? { id: '', source: 'atelier' } : tutorial ? { id: current.level.heros, source: 'tuto' } : startingHero(bundle, save);
   game = new Game(bundle, id, { seed: Math.floor(Math.random() * 1e9), level, hero: hero.id });
+  guiding = tutorial;
+  guide = null;
   renderer.snap(game);
   hud.reset();
   if (!begin && !again) won = []; // un changement de héros sur le carton d'ouverture garde ce qui a déjà été débloqué
-  if (id) collect('niveaux', id, true);
+  if (id && !tutorial) collect('niveaux', id, true); // le tuto est noté vu à « C'est parti » : un « ← Retour » le garde
   collect('citations', current.level.citation, true);
   collect('heros', game.hero.def.id, true);
   collectCortege();
@@ -213,6 +214,7 @@ function start(id, level = null) {
   fitRight();
   begin = () => {
     begin = null;
+    if (tutorial) collect('niveaux', id, true); // le tuto vu : le prochain « Jouer » mène à la campagne
     // Chaque vraie partie, rejouée ou non ; pas un changement de héros sur le carton. Un niveau de l'Atelier
     // compte sous le seul nom « atelier » : rien de ce qu'on y écrit ne part.
     run = runStarted({
@@ -224,7 +226,7 @@ function start(id, level = null) {
     radio.play(current.id, current.level.musique, { restart: visited === current.id });
     visited = current.id;
   };
-  screens.intro(current.level, () => begin?.(), game.hero.def.id, !level);
+  screens.intro(current.level, () => begin?.(), game.hero.def.id, !level && !tutorial);
 }
 
 let atelier = null; // le module de l'Atelier, chargé à sa première ouverture : le menu n'en a pas besoin
@@ -324,7 +326,7 @@ async function win() {
   };
   screens.end({
     level, hurt, seed: game.seed, facts, time: game.time, crowd, won, best: custom ? null : best, share,
-    next: index >= 0 ? order[index + 1] : null,
+    next: id === TUTORIAL ? nextStep(bundle, save) : index >= 0 ? order[index + 1] : null,
     last: index === order.length - 1,
   });
   won = []; // rejouer ce niveau repart d'une rangée vide
@@ -394,7 +396,9 @@ function frame(now) {
     while (acc >= DT && steps < 6 && (mode === 'playing' || mode === 'menu')) {
       acc -= DT;
       steps++;
-      game.step(demo ? botActions(game, bot) : input.actions(game));
+      const actions = demo ? botActions(game, bot) : input.actions(game);
+      game.step(actions);
+      if (!demo) coachStep(actions);
       renderer.follow(game); // la caméra avance avec le monde, pas à pas
       const events = game.events.splice(0);
       if (demo) renderer.absorb(events);
@@ -406,9 +410,20 @@ function frame(now) {
   }
   renderer.device = input.device;
   hud.device = input.device;
+  showGuide(demo);
   if (!demo) hud.update(game); // d'abord le HUD : le dessin se place sous lui tel qu'il est à cette image
   placeOverHud(demo);
   if (mode !== 'card') renderer.draw(game, dt); // sous le carton de héros, opaque, rien à redessiner (voir `handle`)
+}
+
+/** La consigne suit le pas qui vient d'être joué : le panneau lu, les actions envoyées. */
+function coachStep(actions) {
+  if (guiding) guide = coach(guide, { sign: game.sign, actions, time: game.time });
+}
+
+/** Le rendu et le HUD montrent la consigne en cours : le panneau tenu, le ✓, ce qui clignote au pouce. */
+function showGuide(demo) {
+  renderer.guide = hud.guide = guiding && !demo ? guideView(guide) : null;
 }
 
 /**
@@ -540,11 +555,13 @@ if (new URLSearchParams(location.search).has('debug')) {
   window.__ugf = {
     get game() { return game; },
     get mode() { return mode; },
+    get guide() { return guiding ? guide : undefined; },
     bundle, start, toMenu, setMode, screens, input, radio, audio,
     /** Redessine tout de suite (utile quand l'onglet est en arrière-plan). */
     draw(snap = false) {
       if (snap) renderer.snap(game);
       renderer.tick(1 / 60);
+      showGuide(false);
       hud.update(game);
       placeOverHud(false);
       renderer.draw(game, 1 / 60);
@@ -552,7 +569,9 @@ if (new URLSearchParams(location.search).has('debug')) {
     /** Avance de n pas avec des actions fixes, ou avec le robot si `actions` vaut 'bot'. */
     step(n = 1, actions = {}) {
       for (let i = 0; i < n && game.status === 'playing'; i++) {
-        game.step(actions === 'bot' ? botActions(game, bot) : actions);
+        const sent = actions === 'bot' ? botActions(game, bot) : actions;
+        game.step(sent);
+        coachStep(sent);
         renderer.follow(game);
         handle(game.events.splice(0));
       }

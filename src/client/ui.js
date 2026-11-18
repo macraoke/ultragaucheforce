@@ -5,8 +5,8 @@ import { h, link, quoted, signature } from './dom.js';
 import { spriteElement } from './sprites.js';
 import { REPO, REFERENCES } from './config.js';
 import { measuring } from './mesure.js';
-import { storeSave, eraseProgress, isFound, isReadOnly } from './save.js';
-import { SHELVES, VOTE_FICHES, allCards, collectionCount, isFresh, levelOrder, markSeen, openCard, progress, rarityCounts, shelfGrid, wonCards } from './collection.js';
+import { storeSave, eraseProgress, isFound, isReadOnly, firstVisit } from './save.js';
+import { SHELVES, TUTORIAL, VOTE_FICHES, nextStep, allCards, collectionCount, isFresh, levelOrder, markSeen, openCard, progress, rarityCounts, shelfGrid, wonCards } from './collection.js';
 import { livesStack } from './lives.js';
 import { KEY_NAMES, CONTROLS, brief, mentions } from './input.js';
 import { injuryReport } from './blesses.js';
@@ -246,6 +246,7 @@ export class Screens {
       h('nav', {},
         this.button('Jouer', () => this.go.play(this.nextLevel()), 'gros'),
         this.button('Campagne', () => this.levels()),
+        this.bundle.niveaux[TUTORIAL] && this.button('Tuto', () => this.go.play(TUTORIAL)),
         this.button(`Collection ${collectionCount(this.bundle, this.save).found}/${collectionCount(this.bundle).total}`, () => this.collection()),
         this.atelierButton('Atelier'),
         this.button('Commandes', () => this.controls()),
@@ -256,9 +257,10 @@ export class Screens {
       h('p', { className: 'mention' }, MENTION, ' ', link(REPO, 'Open source.')));
   }
 
+  /** La prochaine étape ; au tout premier passage, le tuto. */
   nextLevel() {
-    const order = levelOrder(this.bundle);
-    return order.find((id) => !this.save.termines[id]) || order[0];
+    if (firstVisit(this.save) && this.bundle.niveaux[TUTORIAL]) return TUTORIAL;
+    return nextStep(this.bundle, this.save);
   }
 
   /**
@@ -416,7 +418,7 @@ export class Screens {
       h('p', {}, 'Tu perdras tout ce que tu as débloqué et tes records. La campagne repartira du premier niveau.'),
       this.button('Annuler', () => this.options(), 'gros'),
       this.button('Effacer', () => {
-        eraseProgress(this.save);
+        eraseProgress(this.save, [`niveaux:${TUTORIAL}`]); // le tuto déjà vu ou passé ne revient pas
         this.options('Progression effacée.');
       }, 'discret effacer'));
     this.escape = () => this.options(); // Échap, c'est Annuler
@@ -454,6 +456,7 @@ export class Screens {
       h('div', { className: 'entete' }, h('h2', {}, 'Pause'), this.go.radio?.()),
       this.keys(),
       this.button('Reprendre', () => this.go.resume(), 'gros'),
+      this.go.tutorial?.() && this.button('Passer le tuto', () => this.go.skip()),
       this.editButton(),
       this.button('Retour au piquet', () => this.go.checkpoint()),
       this.button('Recommencer', () => this.go.restart()),
@@ -504,7 +507,8 @@ export class Screens {
       choose && heroes.length > 1 && this.heroRow(heroes, mine, hero, pick),
       // Écran bas : les commandes à côté des boutons, pas au-dessus. « C'est parti » reste le bouton principal.
       // En essai, un seul retour : celui qui ramène à l'édition.
-      h('div', { className: 'depart' }, this.keys(), h('div', { className: 'boutons' }, this.editButton() || this.back(() => this.introBack()), go)));
+      h('div', { className: 'depart' }, this.keys(), h('div', { className: 'boutons' }, this.editButton() || this.back(() => this.introBack()),
+        level.id === TUTORIAL && this.button('Passer le tuto', () => this.go.skip(), 'discret'), go)));
     this.escape = this.introBack;
     // Le carton tient sans défiler : la rangée des héros défile dans sa case ; si cela ne suffit pas, le carton se
     // resserre (`.serre`), puis une longue déclaration rapetisse.
@@ -661,6 +665,17 @@ export function askSpecial(ask, game, live) {
   return { ask: next, on };
 }
 
+/**
+ * Ce qui clignote à cette image : `special` quand un panneau la demande (`askSpecial`), et ce que la consigne de la
+ * première partie allume pour son prochain geste (`guideView`).
+ * @returns {Set<string>} des `data-action` de bouton, ou un sens du pouce gauche (`cote`, `bas`, `haut`)
+ */
+export function askedFor(asking, guide) {
+  const pulse = new Set(guide?.hints || []);
+  if (asking) pulse.add('special');
+  return pulse;
+}
+
 export class Hud {
   constructor(bundle) {
     this.bundle = bundle;
@@ -683,6 +698,7 @@ export class Hud {
     this.onQuote = () => {}; // une vraie citation passe à l'antenne : la Collection la note
     this.device = 'clavier'; // l'appareil dont la puce de la spéciale montre la touche
     this.ask = null; // un panneau a demandé la spéciale (voir `askSpecial`)
+    this.guide = null; // la consigne de la première partie : ce qu'elle allume au pouce (voir `guideView`)
     this.live = false; // la partie tourne : hors pause et hors carton, rien ne clignote
     // Le fil permanent de PANIQUE TV : de vraies déclarations, datées et signées.
     this.quotes = Object.values(bundle.citations).filter((c) => c.categorie !== 'gauche');
@@ -827,17 +843,19 @@ export class Hud {
   }
 
   update(game) {
-    this.pump(game.time, Boolean(game.sign));
+    this.pump(game.time, Boolean(game.sign)); // une consigne qui attend ne retient pas les notes : le panneau passe dessous
     this.offAir(game.offAir > 0);
     const { hero, boss } = game;
     const special = hero.def.speciale;
-    // Un panneau demande la spéciale : la puce et le bouton SPÉ clignotent jusqu'à ce qu'elle serve.
+    // Ce qu'on demande au joueur clignote : la spéciale qu'un panneau nomme, jusqu'à ce qu'elle serve, et en première
+    // partie le prochain geste de la consigne (un bouton, ou le sens où glisser le pouce gauche).
     const { ask, on: asking } = askSpecial(this.ask, game, this.live);
     this.ask = ask;
+    const pulse = askedFor(asking, this.live ? this.guide : null);
     const fighting = Boolean(boss?.active && boss.state !== 'gone');
     const line = fighting ? null : lineBar(game, (this.lineMemo ??= {})); // la ligne devant laquelle on arrive
     const state = [hero.def.id, hero.hp, game.stack.join(), hero.charges, game.panicLevel, Math.round(game.panic), game.crowd,
-      fighting ? boss.hp : -1, line ? `${line.nom}:${Math.round(line.part * 1000)}` : '', this.device, asking].join('|');
+      fighting ? boss.hp : -1, line ? `${line.nom}:${Math.round(line.part * 1000)}` : '', this.device, [...pulse].join()].join('|');
     if (state === this.last) return; // on ne touche au DOM que si quelque chose a changé
     this.last = state;
     this.q('hud-heros').textContent = hero.def.nom;
@@ -855,14 +873,18 @@ export class Hud {
     if (special) charges.replaceChildren(h('kbd', {}, KEY_NAMES[this.device].speciale), ` ${(special.nom || 'Spéciale').replace(/\s*!$/, '')} × ${hero.charges}`);
     else charges.replaceChildren();
     charges.classList.toggle('vide', Boolean(special) && hero.charges === 0);
-    charges.classList.toggle('demande', asking);
+    charges.classList.toggle('demande', pulse.has('special'));
     // Au pouce, le bouton SPÉ porte le même nombre, et clignote avec la puce.
     const button = document.querySelector('#tactile [data-action="special"]');
     if (button) {
       button.dataset.nombre = special ? `× ${hero.charges}` : '';
       button.classList.toggle('vide', Boolean(special) && hero.charges === 0);
-      button.classList.toggle('demande', asking);
     }
+    for (const mark of document.querySelectorAll('#tactile [data-action]')) mark.classList.toggle('demande', pulse.has(mark.dataset.action));
+    const stick = document.querySelector('#tactile .manche');
+    const slide = ['cote', 'bas', 'haut'].find((d) => pulse.has(d));
+    if (stick && slide) stick.dataset.demande = slide;
+    else if (stick) delete stick.dataset.demande;
     // La manif : combien on est. Le compteur sursaute quand elle grossit.
     const march = this.q('hud-manif');
     march.hidden = !game.crowd;

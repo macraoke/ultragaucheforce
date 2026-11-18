@@ -169,9 +169,9 @@ export function followSystemMotion(options, reduce) {
   return before !== options.sobre;
 }
 
-/** Le joueur efface sa progression ; ses options et son brouillon restent. */
-export function eraseProgress(save) {
-  Object.assign(save, { termines: {}, records: {}, decouvertes: [], vues: {}, heros: '' });
+/** Le joueur efface sa progression ; ses options et son brouillon restent, et les découvertes de `keep` aussi. */
+export function eraseProgress(save, keep = []) {
+  Object.assign(save, { termines: {}, records: {}, decouvertes: [...keep], vues: {}, heros: '' });
   return storeSave(save, { erase: true });
 }
 
@@ -179,6 +179,13 @@ const key = (kind, id) => `${kind}:${id}`;
 
 /** Cette carte (« heros », « ennemis », « citations »… + identifiant) a-t-elle déjà été rencontrée ? */
 export const isFound = (save, kind, id) => save.decouvertes.includes(key(kind, id));
+
+/**
+ * Le tout premier passage : aucun niveau encore commencé (un niveau lancé est noté « niveaux:… »), sans compter
+ * ceux de `except` (le tuto, pour le tirage du premier héros).
+ */
+export const firstVisit = (save, except = []) => !save.decouvertes.some((k) => typeof k === 'string' && k.startsWith('niveaux:')
+  && !except.includes(k.slice('niveaux:'.length)));
 
 /** Note une découverte ; renvoie vrai si elle est nouvelle. */
 export function discover(save, kind, id) {

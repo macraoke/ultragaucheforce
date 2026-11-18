@@ -12,14 +12,14 @@ heros: tyrannogauchiste
 musique: countryside-explosions
 musique-boss: siamo-tutti-antifascisti-1fam-bender
 
-panneau.1: [avancer] : avancer · [sauter] : sauter
-panneau.2: [tirer] : lancer des tracts
+panneau.1: [avancer] : Avancer · [sauter] : Sauter
+panneau.2: [tirer] : Lancer des tracts
 panneau.3: Va jusqu'à la paysanne : elle rejoint la manif ✊
-panneau.4: [spéciale] : lance ta spéciale
-panneau.5: Pousse contre le mur : [sauter], [sauter], [sauter]
+panneau.4: [spéciale] : Lancer ta spéciale
+panneau.5: Pousse contre le mur · [sauter], [sauter], [sauter] : Grimper
 panneau.6: ✊ Tracts et manif : le blindé cède
 panneau.7: Un tonneau saute, ses voisins aussi
-panneau.8: [bas] + [tirer] : creuser · [haut] + [tirer] : lancer en haut
+panneau.8: [bas] + [tirer] : Creuser · [haut] + [tirer] : Lancer en haut
 panneau.9: Fonce dans la cage : un camarade est libéré
 
 g: lance-pleurs

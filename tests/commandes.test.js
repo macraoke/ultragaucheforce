@@ -61,7 +61,9 @@ test('une manette posée ne prend pas la main : seuls les boutons et axes que le
 });
 
 test('panneau : une touche entre crochets devient celle de l’appareil', () => {
-  assert.equal(withKeys('[tirer] : lancer des tracts', 'clavier'), 'J : lancer des tracts');
+  assert.equal(withKeys('[tirer] : lancer des tracts', 'clavier'), 'J ou Entrée : lancer des tracts', 'seule, la commande dit ses deux touches');
+  assert.equal(withKeys('[bas] + [tirer] : creuser', 'clavier'), '↓ + J : creuser', 'combinée, la touche courte');
+  assert.equal(withKeys('[sauter], [sauter] : grimper', 'clavier'), 'ESPACE, ESPACE : grimper', 'répétée, la touche courte');
   assert.equal(withKeys('[tirer] : lancer des tracts', 'manette'), 'X : lancer des tracts');
   assert.equal(withKeys('[tirer] : lancer des tracts', 'pouce'), 'LANCER : lancer des tracts');
   assert.equal(withKeys('[bas] + [tirer] : creuser', 'pouce'), 'Pouce ↓ + LANCER : creuser');
@@ -176,7 +178,7 @@ test('Options du menu : effacer demande confirmation, et Annuler a la main', asy
   assert.deepEqual(save.decouvertes, ['heros:zucman']);
   press('Effacer ma progression');
   press('Effacer');
-  assert.deepEqual([save.termines, save.records, save.decouvertes, save.heros], [{}, {}, [], '']);
+  assert.deepEqual([save.termines, save.records, save.decouvertes, save.heros], [{}, {}, ['niveaux:get-ready-with-me'], '']); // le tuto reste vu
   assert.deepEqual(save.options, { son: true, musique: false, sobre: false }, 'les options restent');
   assert.match(root.textContent, /Progression effacée/);
 });

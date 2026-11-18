@@ -25,10 +25,11 @@ Le code : `src/client/mesure.js` (parties, héros), `src/client/music.js` (Radio
 
 - `level` : l'identifiant du niveau (le nom de son fichier), ou `atelier`.
 - `mode` : `campagne` (dans `content/campagne.txt`), `hors_campagne` (les autres niveaux de `content/`), `atelier`.
-- `hero` : le héros de départ. `hero_source` : `choisi` (sur le carton d'ouverture ou dans la Collection), `aleatoire` (tiré parmi ceux déjà débloqués), `premier` (la toute première partie, tiré parmi tous), `atelier`.
+- `hero` : le héros de départ. `hero_source` : `choisi` (sur le carton d'ouverture ou dans la Collection), `aleatoire` (tiré parmi ceux déjà débloqués), `premier` (la toute première partie, tiré parmi tous), `atelier`, `tuto` (le tuto part toujours avec le même héros).
+- Le tuto (`get-ready-with-me`) compte comme les autres niveaux, sous son identifiant, en `mode: hors_campagne`.
 - `input` : `clavier`, `manette` ou `pouce`. `again` : vrai pour « Recommencer » dans la même visite du niveau.
 - `outcome` : `won`, `lost`, `abandoned`. `seconds` : la durée de jeu. `crowd` : la taille de la manif. `lives` : les personnages restants dans la pile. `progress` : jusqu'où le héros est allé, en pour cent de la largeur du niveau.
-- `via`, pour un abandon : `menu` (« Quitter »), `recommencer`, `autre_niveau`, `fermeture` (la page fermée en pleine partie).
+- `via`, pour un abandon : `menu` (« Quitter »), `recommencer`, `autre_niveau`, `fermeture` (la page fermée en pleine partie), `passer` (« Passer le tuto », depuis la pause).
 
 ## Radio Manif
 
