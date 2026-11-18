@@ -63,8 +63,8 @@ test('une manette posée ne prend pas la main : seuls les boutons et axes que le
 test('panneau : une touche entre crochets devient celle de l’appareil', () => {
   assert.equal(withKeys('[tirer] : lancer des tracts', 'clavier'), 'J : lancer des tracts');
   assert.equal(withKeys('[tirer] : lancer des tracts', 'manette'), 'X : lancer des tracts');
-  assert.equal(withKeys('[tirer] : lancer des tracts', 'pouce'), 'TIR : lancer des tracts');
-  assert.equal(withKeys('[bas] + [tirer] : creuser', 'pouce'), 'Pouce ↓ + TIR : creuser');
+  assert.equal(withKeys('[tirer] : lancer des tracts', 'pouce'), 'LANCER : lancer des tracts');
+  assert.equal(withKeys('[bas] + [tirer] : creuser', 'pouce'), 'Pouce ↓ + LANCER : creuser');
   assert.equal(withKeys('[Spéciale] ou [speciale]', 'clavier'), 'K ou K', 'majuscule ou accent oublié : même touche');
   assert.equal(withKeys('Va [ailleurs]', 'clavier'), 'Va [ailleurs]', 'un mot inconnu reste tel quel');
   assert.equal(withKeys('J : tracts // TIR : tracts', 'pouce'), 'TIR : tracts', 'l’ancienne forme « clavier // pouce » marche encore');
@@ -168,7 +168,7 @@ test('Options du menu : effacer demande confirmation, et Annuler a la main', asy
   ui.options();
   assert.ok(buttons().includes('Effacer ma progression'));
   press('Effacer ma progression');
-  assert.match(root.textContent, /Tout ce que tu as débloqué et tes records seront perdus, et la campagne repartira du premier niveau\./);
+  assert.match(root.textContent, /Tu perdras tout ce que tu as débloqué et tes records\. La campagne repartira du premier niveau\./);
   assert.deepEqual(buttons(), ['Annuler', 'Effacer']);
   assert.equal(globalThis.document.activeElement.textContent, 'Annuler', 'Entrée annule');
   press('Annuler');

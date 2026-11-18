@@ -1,7 +1,7 @@
 {
   "name": "UltraGauche Force",
   "short_name": "UltraGauche",
-  "description": "Run-and-gun satirique, libre et collaboratif. La plus grosse manif pacifiste, pour aller taxer le boss final.",
+  "description": "Jeu de plateforme satirique, libre et collaboratif. Monte la plus grosse manif pacifiste et va taxer le boss final.",
   "lang": "fr",
   "dir": "ltr",
   "start_url": "./",

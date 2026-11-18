@@ -1,10 +1,10 @@
 # UltraGauche Force
 
-> **Taxez les riches. Abattez la Citadelle.**
+> **Taxez les riches. Faites tomber la Citadelle.**
 
 **[Jouer en ligne](https://ultragaucheforce.github.io/)**, dans le navigateur, sans rien installer.
 
-Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les plateaux télé la racontent : surarmée de tracts et de tomates. Le but : faire la plus grosse manif pacifiste pour aller taxer le boss final. On part sur le plateau de Millevaches ; d'étape en étape, la manif grossit, et au bout de chacune on taxe la fortune qui s'y est assise. Ça se joue dans le navigateur, au clavier ou au pouce.
+Un jeu de plateforme en pixel art où vous incarnez l'ultragauche telle que les plateaux télé la racontent : surarmée de tracts et de tomates. Le but : faire la plus grosse manif pacifiste pour aller taxer le boss final. On part sur le plateau de Millevaches ; d'étape en étape, la manif grossit, et au bout de chacune on taxe la fortune qui s'y est assise. Ça se joue dans le navigateur, au clavier ou au pouce.
 
 | | |
 |---|---|
@@ -65,8 +65,8 @@ Le jeu est sur http://localhost:8080.
 |---|---|---|---|
 | Avancer | ← → ou Q D | croix ou stick | moitié gauche : glisser le pouce |
 | Sauter, grimper | Espace, ↑ ou Z | A | SAUT, ou pouce gauche vers le haut ; penché vers un mur, tenu, on grimpe |
-| Tirer (maintenir) | J, X ou Entrée | X ou gâchette droite | TIR |
-| Creuser, viser en haut | ↓ ou ↑ sans avancer, puis tirer | bas ou haut, puis tirer | pouce gauche vers le bas ou le haut, puis TIR ; ou TIR glissé vers le haut |
+| Lancer (maintenir) | J, X ou Entrée | X ou gâchette droite | LANCER |
+| Creuser, lancer en haut | ↓ ou ↑ sans avancer, puis lancer | bas ou haut, puis lancer | pouce gauche vers le bas ou le haut, puis LANCER ; ou LANCER glissé vers le haut |
 | Spéciale | K, C ou Maj | B ou gâchette gauche | SPÉ |
 | Pause | Échap ou P | Start | II |
 | Piste suivante (en pause) | N | croix jusqu’à ⏭, puis A | ⏭, à côté de « Pause » |
@@ -118,4 +118,4 @@ Code [MIT](LICENSE), contenus [CC BY-SA 4.0](content/LICENCE.md) sauf mention co
 
 ## Clins d'œil
 
-[Broforce](https://store.steampowered.com/app/274190/Broforce/) (Free Lives, édité par Devolver Digital, 2015), dont le titre et le genre sont l'inspiration : un run and gun au décor destructible où chaque prisonnier libéré change de héros. UltraGauche Force est un projet indépendant, sans lien avec Free Lives ni Devolver Digital. [Fiscal Kombat](https://fr.wikipedia.org/wiki/Fiscal_Kombat), l'ancêtre. [We Become What We Behold](https://ncase.itch.io/wbwwb) de Nicky Case, à qui notre drone doit tout. L'[Orchestre du Nouveau Monde](https://www.helloasso.com/associations/orchestre-du-nouveau-monde), pour la fanfare. [La Dernière](https://www.nova.fr/emissions/la-derniere/) sur Radio Nova, pour le ton. [ZzFX](https://github.com/KilledByAPixel/ZzFX) de Frank Force, pour les bruitages.
+[Broforce](https://store.steampowered.com/app/274190/Broforce/) (Free Lives, édité par Devolver Digital, 2015), un jeu au décor destructible où chaque prisonnier libéré change de héros. UltraGauche Force est un projet indépendant, sans lien avec Free Lives ni Devolver Digital. [Fiscal Kombat](https://fr.wikipedia.org/wiki/Fiscal_Kombat), un jeu militant fait par des bénévoles. [We Become What We Behold](https://ncase.itch.io/wbwwb) de Nicky Case, sur la caméra qui fabrique la panique. L'[Orchestre du Nouveau Monde](https://www.helloasso.com/associations/orchestre-du-nouveau-monde), pour la fanfare. [La Dernière](https://www.nova.fr/emissions/la-derniere/) sur Radio Nova, pour le ton. [ZzFX](https://github.com/KilledByAPixel/ZzFX) de Frank Force, pour les bruitages.

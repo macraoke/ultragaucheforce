@@ -80,7 +80,7 @@ section('Héros', 'heros', grid(Object.values(bundle.heros).map((hero) =>
     hero.inspiration && h('p', {}, h('b', {}, 'Caricature de : '), hero.inspiration),
     h('p', {}, h('b', {}, 'Cri : '), `« ${hero.cri} »`),
     h('p', {}, h('small', {}, `${hero.pv} PV · vitesse ${hero.vitesse} · saut ${hero.saut} tuiles`)),
-    h('p', {}, h('small', {}, `Arme : ${weapon(hero.arme)}`)),
+    h('p', {}, h('small', {}, `Lance : ${weapon(hero.arme)}`)),
     hero.speciale && h('p', {}, h('small', {}, `Spéciale « ${hero.speciale.nom} » : ${weapon(hero.speciale)}`)),
     h('div', { className: 'actions' },
       h('button', { onclick: () => showHeroCard(bundle, hero, { audio }) }, 'Voir le carton'),
@@ -93,7 +93,7 @@ section('Ennemis', 'ennemis', grid(Object.values(bundle.ennemis).map((e) =>
     drawings(e, ['repos', 'marche1', 'fin', 'projectile'], 4),
     h('h3', {}, e.nom),
     h('p', {}, h('small', {}, `${e.pv} PV · ${e.deplacement} · réaction : ${e.reaction} · fin : en ${e.fin === 'greve' ? 'grève' : 'panne'}${e.bouclier ? ' · bouclier' : ''}`)),
-    e.arme?.mots?.length ? h('p', {}, h('b', {}, 'Tire des mots : '), e.arme.mots.join(' ')) : null,
+    e.arme?.mots?.length ? h('p', {}, h('b', {}, 'Lance des mots : '), e.arme.mots.join(' ')) : null,
     h('p', {}, e.replique.map((r) => `« ${r} »`).join(' ')),
   ))));
 

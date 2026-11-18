@@ -23,9 +23,9 @@ const store = () => (shared ??= new Drafts());
 let kept = null;
 const SAVE_DELAY = 600; // millisecondes après le dernier geste ; l'onglet caché ou fermé enregistre tout de suite
 const WARNINGS = {
-  refus: 'Ton navigateur refuse d’enregistrer : tes brouillons tiennent jusqu’à la fermeture de l’onglet.',
+  refus: 'Ton navigateur refuse d’enregistrer. Tes brouillons disparaîtront à la fermeture de l’onglet.',
   plein: 'Stockage plein : supprime un brouillon pour enregistrer.',
-  lecture: 'Ces brouillons viennent d’une version plus récente du jeu : rien n’est enregistré ici.',
+  lecture: 'Ces brouillons viennent d’une version plus récente du jeu. Rien n’est enregistré.',
 };
 
 const ZOOMS = [0.5, 0.75, 1, 1.5, 2, 3, 4];

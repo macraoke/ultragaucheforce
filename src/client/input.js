@@ -17,20 +17,20 @@ export const ACTIONS = ['left', 'right', 'up', 'down', 'jump', 'fire', 'special'
 
 /**
  * Le nom court de chaque commande, tel qu'il est à l'écran sur chaque appareil. Les panneaux s'en servent :
- * « [tirer] : lancer des tracts » devient « J : lancer des tracts » au clavier, « TIR : … » au pouce.
+ * « [tirer] : lancer des tracts » devient « J : lancer des tracts » au clavier, « LANCER : … » au pouce.
  */
 export const KEY_NAMES = {
   clavier: { avancer: '← →', sauter: 'ESPACE', tirer: 'J', bas: '↓', haut: '↑', speciale: 'K', pause: 'Échap' },
   manette: { avancer: 'Croix', sauter: 'A', tirer: 'X', bas: '↓', haut: '↑', speciale: 'B', pause: 'Start' },
-  pouce: { avancer: 'Pouce gauche', sauter: 'SAUT', tirer: 'TIR', bas: 'Pouce ↓', haut: 'Pouce ↑', speciale: 'SPÉ', pause: 'II' },
+  pouce: { avancer: 'Pouce gauche', sauter: 'SAUT', tirer: 'LANCER', bas: 'Pouce ↓', haut: 'Pouce ↑', speciale: 'SPÉ', pause: 'II' },
 };
 
 /** Le tableau complet des commandes (écran Commandes, README) : toutes les touches qui marchent. */
 export const CONTROLS = [
   ['Avancer', '← → ou Q D', 'croix ou stick', 'moitié gauche : glisser le pouce'],
   ['Sauter, grimper', 'Espace, ↑ ou Z', 'A', 'SAUT, ou pouce gauche vers le haut ; penché vers un mur, tenu, on grimpe'],
-  ['Tirer (maintenir)', 'J, X ou Entrée', 'X ou gâchette droite', 'TIR'],
-  ['Creuser, viser en haut', '↓ ou ↑ sans avancer, puis tirer', 'bas ou haut, puis tirer', 'pouce gauche vers le bas ou le haut, puis TIR ; ou TIR glissé vers le haut'],
+  ['Lancer (maintenir)', 'J, X ou Entrée', 'X ou gâchette droite', 'LANCER'],
+  ['Creuser, lancer en haut', '↓ ou ↑ sans avancer, puis lancer', 'bas ou haut, puis lancer', 'pouce gauche vers le bas ou le haut, puis LANCER ; ou LANCER glissé vers le haut'],
   ['Spéciale', 'K, C ou Maj', 'B ou gâchette gauche', 'SPÉ'],
   ['Pause', 'Échap ou P', 'Start', 'II'],
   ['Piste suivante (en pause)', 'N', 'croix jusqu’à ⏭, puis A', '⏭, à côté de « Pause »'],
@@ -39,7 +39,7 @@ export const CONTROLS = [
 /** Les commandes en une ligne, pour le carton d'ouverture et la pause : [touche, ce qu'elle fait]. */
 export const brief = (device) => {
   const k = KEY_NAMES[device] || KEY_NAMES.clavier;
-  return [[k.avancer, 'avancer'], [k.sauter, 'sauter'], [k.tirer, 'tirer'], [`${k.bas} + ${k.tirer}`, 'creuser'], [k.speciale, 'spéciale']];
+  return [[k.avancer, 'avancer'], [k.sauter, 'sauter'], [k.tirer, 'lancer'], [`${k.bas} + ${k.tirer}`, 'creuser'], [k.speciale, 'spéciale']];
 };
 
 const TOKEN = /\[([^\]]+)\]/g;

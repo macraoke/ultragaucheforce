@@ -241,7 +241,7 @@ export class Screens {
       .map((x) => [Math.random(), x]).sort((a, b) => a[0] - b[0]).slice(0, 5).map(([, x]) => x);
     this.show('menu',
       h('div', { className: 'logo' }, h('span', {}, 'UltraGauche'), h('span', {}, 'Force')),
-      h('p', { className: 'devise' }, 'Taxez les riches. Abattez la Citadelle.'),
+      h('p', { className: 'devise' }, 'Taxez les riches. Faites tomber la Citadelle.'),
       h('div', { className: 'troupe' }, heroes.map((x) => spriteElement(x.sprites.repos, this.bundle.palette, 4))),
       h('nav', {},
         this.button('Jouer', () => this.go.play(this.nextLevel()), 'gros'),
@@ -252,7 +252,7 @@ export class Screens {
         this.button('Options', () => this.options()),
         this.button('À propos', () => this.about()),
         this.update && this.button('Mettre à jour', this.update)),
-      isReadOnly(this.save) && h('p', { className: 'mention' }, 'Cette sauvegarde vient d’une version plus récente du jeu. Mets le jeu à jour : d’ici là, rien n’est enregistré.'),
+      isReadOnly(this.save) && h('p', { className: 'mention' }, 'Cette sauvegarde vient d’une version plus récente du jeu. Mets le jeu à jour. En attendant, rien n’est enregistré.'),
       h('p', { className: 'mention' }, MENTION, ' ', link(REPO, 'Open source.')));
   }
 
@@ -413,7 +413,7 @@ export class Screens {
   confirmErase() {
     this.show('liste etroit',
       h('h2', {}, 'Effacer ma progression ?'),
-      h('p', {}, 'Tout ce que tu as débloqué et tes records seront perdus, et la campagne repartira du premier niveau.'),
+      h('p', {}, 'Tu perdras tout ce que tu as débloqué et tes records. La campagne repartira du premier niveau.'),
       this.button('Annuler', () => this.options(), 'gros'),
       this.button('Effacer', () => {
         eraseProgress(this.save);
@@ -430,10 +430,10 @@ export class Screens {
       h('p', {}, link(REPO, 'Le dépôt'), ' · ', link(`${REPO}/blob/main/CONTRIBUTING.md`, 'Contribuer'), ' · ',
         link(`${REPO}/blob/main/CHARTE.md`, 'La charte'), ' · ', h('a', { href: 'galerie.html' }, 'La Galerie')),
       measuring() && fold('Mesure d’audience anonyme (PostHog) : ni cookie, ni profil.',
-        h('p', {}, 'Le jeu compte les visites, les parties par niveau et par héros (gagnée, perdue ou abandonnée, leur durée, la taille de la manif), les pistes de Radio Manif écoutées, passées ou mises en pause, et ce qui empêche de jouer : contenu ou musique injoignables, erreurs. Les visiteurs sont comptés par jour, sur les serveurs de PostHog, d’après une empreinte qui change chaque jour. Rien n’est écrit sur ton appareil pour cela, et rien de ce que tu écris dans l’Atelier ne part.')),
+        h('p', {}, 'Le jeu compte les visites et les parties, par niveau et par héros : gagnée, perdue ou abandonnée, leur durée, la taille de la manif. Il compte aussi les pistes de Radio Manif écoutées, passées ou mises en pause, et ce qui empêche de jouer : un contenu ou une musique injoignable, une erreur. Les visiteurs sont comptés par jour, sur les serveurs de PostHog, avec une empreinte qui change chaque jour. Rien n’est écrit sur ton appareil pour ça. Ce que tu écris dans l’Atelier n’est pas envoyé.')),
       fold('Radio Manif : le lecteur et les cookies de SoundCloud',
         h('p', {}, 'La musique passe par le lecteur de SoundCloud, chargé dès l’ouverture du jeu. SoundCloud y dépose ses propres cookies et traceurs, par exemple le cookie ', h('code', {}, 'sc_anonymous_id'), ' et le script de mesure de ', h('code', {}, 'dwt.soundcloud.com'), '. Le jeu ne les lit pas et n’en reçoit rien.'),
-        h('p', {}, 'Couper Radio Manif dans les Options arrête la musique, pas le lecteur : il reste chargé, muet, pour repartir d’un toucher. Pour que SoundCloud ne se charge pas du tout, bloque ', h('code', {}, 'w.soundcloud.com'), ' dans ton navigateur (un bloqueur de contenu suffit) : le jeu marche sans musique.')),
+        h('p', {}, 'Couper Radio Manif dans les Options arrête la musique, pas le lecteur. Il reste chargé, sans le son, pour repartir d’un toucher. Pour ne pas charger SoundCloud du tout, bloque ', h('code', {}, 'w.soundcloud.com'), ' dans ton navigateur (un bloqueur de contenu suffit). Le jeu marche sans musique.')),
       fold('Mentions légales', ...legalNotice()),
       fold('Références', h('ul', {}, REFERENCES.map((r) => h('li', {}, link(r.url, r.titre), ` — ${r.note}`)))),
       fold('Crédits et licences',
