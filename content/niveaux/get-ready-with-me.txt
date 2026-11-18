@@ -3,6 +3,7 @@ auteur: xsbfh
 fond: campagne
 cortege: oui
 manif: 3
+panique: 20
 heros: tyrannogauchiste
 camarades: melenchon
 

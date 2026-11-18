@@ -428,6 +428,8 @@ export function buildLevel(f, ctx, report) {
     // `musique` (répétable) : la première ouvre chaque visite, les suivantes viennent après elle, dans l'ordre.
     // `citation` : la vraie phrase qui ouvre le niveau ; `fiche` (répétable) : la première sert à l'écran de fin.
     citation: str(), fiche: list(),
+    // `panique` : la panique de PANIQUE TV au départ, sous le premier palier (le tuto s'en sert pour montrer l'alerte).
+    panique: num(0, 33, 0),
     manif: num(0, 5000, 0), 'nasse.ennemi': str(), 'nasse.nombre': num(1, 6, 3), 'nasse.vitesse': num(4, 80, 18),
     'nasse.rythme': num(0, 600, 0), // secondes entre deux nasses qui reviennent d'elles-mêmes (0 : seulement aux repères « N »)
     ...CREDITS,

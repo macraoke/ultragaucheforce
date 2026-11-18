@@ -119,6 +119,7 @@ export class Game {
     this.stack = Array(opts.lives ?? START_LIVES).fill(this.hero.def.id);
     this.recordTrail();
     this.addCrowd(level.manif ?? (level.cortege ? 10 : 0));
+    this.panic += level.panique ?? 0; // la panique de départ du niveau (`panique`), sous le premier palier
     this.discover('heros', this.hero.def.id);
   }
 

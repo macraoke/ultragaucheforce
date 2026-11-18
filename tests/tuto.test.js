@@ -84,13 +84,22 @@ test('le tuto se fait geste par geste : grimper, creuser, lancer en haut sur le 
   assert.ok(p.until(() => hero().onGround && hero().y >= top + 3 * TILE, { down: true, fire: true }, 600), 'descendu en creusant');
   assert.ok(p.done.includes('[bas] + [tirer] : Creuser'));
 
-  // Le drone de PANIQUE TV cadre le héros : la panique monte ; on lance en haut, il descend.
+  // Le drone de PANIQUE TV cadre le héros : en quelques secondes, le bandeau passe à l'alerte (le tuto part d'une
+  // panique de 20, `panique: 20`). On lance en haut : les drones descendent, et la panique ne monte plus.
   assert.ok(p.until(p.reading('Le drone'), { right: true }, 900));
+  assert.equal(game.panicLevel, 0, 'encore calme en arrivant au drone');
   assert.ok(p.until(() => drone().framing, { right: true }, 300), 'le drone cadre le héros');
-  const panic = game.panic;
-  p.until(() => false, {}, 60);
-  assert.ok(game.panic > panic, 'cadré, la panique monte');
+  const filmed = game.time;
+  assert.ok(p.until(() => game.panicLevel >= 1, {}, 60 * 8), 'filmé, PANIQUE TV passe à l’alerte');
+  assert.ok(game.time - filmed > 1.5 && game.time - filmed < 8, `l'alerte en ${(game.time - filmed).toFixed(1)} s`);
+  const filming = () => game.enemies.filter((e) => e.def.reaction === 'cadre' && e.state !== 'done');
   assert.ok(p.until(() => drone().state === 'done', { up: true, fire: true }, 240), 'touché en lançant en haut');
+  // L'alerte envoie des renforts : d'autres drones. On les fait descendre aussi, en lançant en haut.
+  assert.ok(p.until(() => !filming().length, { up: true, fire: true }, 60 * 10), 'plus aucun drone ne filme');
+  const after = game.panic;
+  p.until(() => false, {}, 120);
+  assert.equal(game.panic, after, 'plus de drone : l’alerte ne monte plus');
+  assert.equal(game.panicLevel, 1, 'elle reste à l’alerte : la panique ne redescend pas d’elle-même');
   assert.ok(p.done.some((t) => t.startsWith('Le drone')));
 
   // La spéciale, la cage, puis le robot finit le niveau.

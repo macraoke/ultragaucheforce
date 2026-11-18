@@ -13,7 +13,7 @@ On le dessine dans le jeu, on l'essaie, on le propose. Le niveau lui-même est u
 7. **GitHub** mène au reste : les propositions en cours, une idée de niveau, une pancarte, un personnage, une source à corriger, un bug.
 
 > [!NOTE]
-> Le bouton **Texte** montre la fiche du niveau. C'est là que se règlent les clés que la palette ne couvre pas (`citation`, `fiche`, `accroche`, `heros`, `camarades`, `musique`, `musique-boss`, `manif`, `nasse.*`).
+> Le bouton **Texte** montre la fiche du niveau. C'est là que se règlent les clés que la palette ne couvre pas (`citation`, `fiche`, `accroche`, `heros`, `camarades`, `musique`, `musique-boss`, `manif`, `panique`, `nasse.*`).
 
 Sans l'Atelier : créez `content/niveaux/mon-niveau.txt` (voir [CONTRIBUTING.md](../CONTRIBUTING.md)).
 
@@ -60,6 +60,7 @@ Déposé dans `content/niveaux/`, il devient une étape du plan de campagne, à 
 | `fond` | `campagne`, `ville` ou `citadelle` |
 | `cortege` | `oui` : la manif suit le héros |
 | `manif` | combien de manifestants au départ (10 avec un cortège, sauf indication ; 5000 au plus) |
+| `panique` | la panique de PANIQUE TV au départ, de 0 (par défaut) à 33, sous le premier palier : quelques secondes filmé par un drone suffisent alors pour passer à « alerte ». Le tuto part de 20 |
 | `panneau.1` à `panneau.9` | le texte du panneau placé par le chiffre correspondant sur la carte. Une touche s'écrit entre crochets, et chacun la lit sur son appareil : `[tirer] : lancer des tracts` devient « J : … » au clavier, « X : … » à la manette, « LANCER : … » au pouce. Les touches : `[avancer]`, `[sauter]`, `[tirer]`, `[bas]`, `[haut]`, `[spéciale]`, `[pause]`. Le premier panneau d'une partie qui dit `[spéciale]` fait clignoter la puce de la spéciale et le bouton SPÉ, jusqu'au premier usage, huit secondes au plus, jamais en pause. Dans le tuto ([`get-ready-with-me`](../content/niveaux/get-ready-with-me.txt)), un panneau qui dit une touche attend le geste : il reste en haut jusqu'à ce que le joueur l'ait fait (`[bas]` + `[tirer]` : creuser ; `[haut]` + `[tirer]` : lancer en haut ; `[avancer]` + `[sauter]` : grimper, un rebond contre un mur), puis montre un ✓ et s'efface ; au pouce, le bouton concerné clignote. Le panneau suivant prend sa place. Dans le tuto, le panneau lu est mis en avant : plus grand, sur fond jaune, il descend en place (immobile avec les effets réduits) et passe sous le héros plutôt que de le cacher |
 | un signe de légende | `b: barrage` place une unité, une recrue ou un décor à chaque `b` de la carte |
 | `heros` | le héros avec lequel on essaie le niveau dans l'Atelier. En jeu, le joueur choisit parmi ceux qu'il a débloqués ; la première fois, le hasard choisit. Sans cette clé ni choix du joueur, un héros jouable est tiré au hasard, le même pour une même graine |
