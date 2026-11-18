@@ -1,10 +1,10 @@
 # UltraGauche Force
 
-> **Taxez les riches. Abattez la Citadelle.**
+> **Taxez les riches. Faites tomber la Citadelle.**
 
 **[Jouer en ligne](https://ultragaucheforce.github.io/)**, dans le navigateur, sans rien installer.
 
-Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les plateaux télé la racontent : surarmée de tracts et de tomates. Le but : faire la plus grosse manif pacifiste pour aller taxer le boss final. On part sur le plateau de Millevaches ; d'étape en étape, la manif grossit, et au bout de chacune on taxe la fortune qui s'y est assise. Ça se joue dans le navigateur, au clavier ou au pouce.
+Un jeu de plateforme en pixel art où vous incarnez l'ultragauche telle que les plateaux télé la racontent : surarmée de tracts et de tomates. Le but : faire la plus grosse manif pacifiste pour aller taxer le boss final. On part sur le plateau de Millevaches ; d'étape en étape, la manif grossit, et au bout de chacune on taxe la fortune qui s'y est assise. Ça se joue dans le navigateur, au clavier ou au pouce.
 
 | | |
 |---|---|
@@ -65,8 +65,8 @@ Le jeu est sur http://localhost:8080.
 |---|---|---|---|
 | Avancer | ← → ou Q D | croix ou stick | moitié gauche : glisser le pouce |
 | Sauter, grimper | Espace, ↑ ou Z | A | SAUT, ou pouce gauche vers le haut ; penché vers un mur, tenu, on grimpe |
-| Tirer (maintenir) | J, X ou Entrée | X ou gâchette droite | TIR |
-| Creuser, viser en haut | ↓ ou ↑ sans avancer, puis tirer | bas ou haut, puis tirer | pouce gauche vers le bas ou le haut, puis TIR ; ou TIR glissé vers le haut |
+| Lancer (maintenir) | J, X ou Entrée | X ou gâchette droite | LANCER |
+| Creuser, lancer en haut | ↓ ou ↑ sans avancer, puis lancer | bas ou haut, puis lancer | pouce gauche vers le bas ou le haut, puis LANCER ; ou LANCER glissé vers le haut |
 | Spéciale | K, C ou Maj | B ou gâchette gauche | SPÉ |
 | Pause | Échap ou P | Start | II |
 | Piste suivante (en pause) | N | croix jusqu’à ⏭, puis A | ⏭, à côté de « Pause » |
