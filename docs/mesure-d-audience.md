@@ -35,7 +35,7 @@ Le code : `src/client/mesure.js` (parties, héros), `src/client/music.js` (Radio
 | Événement | Quand | Propriétés |
 |---|---|---|
 | `music_started` | une piste joue pour de bon (une fois par chargement ; une reprise après pause n'en est pas un) | `track`, `slot`, `level`, `cause` |
-| `music_skipped` | ⏭ ou N | `track`, `slot`, `level`, `seconds`, `percent`, `volume` |
+| `music_skipped` | ⏭ ou N, sur une piste qui a vraiment joué (passer une piste encore en chargement n'envoie rien) | `track`, `slot`, `level`, `seconds`, `percent`, `volume` |
 | `music_paused` | ⏸ de la Radio (`via: radio`), ou pause au bouton du lecteur SoundCloud, page à l'écran (`via: lecteur`, comptée après une seconde : la PAUSE que le lecteur envoie juste avant la fin d'une piste ne compte pas) | `track`, `slot`, `level`, `seconds`, `percent`, `volume`, `via` |
 | `music_resumed` | ▶ après une pause (de la Radio, ou au bouton du lecteur après une pause comptée) | `track`, `slot`, `level`, `seconds`, `percent`, `via` |
 | `music_finished` | la piste est allée jusqu'au bout | `track`, `slot`, `level`, `volume` |

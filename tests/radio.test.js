@@ -1436,6 +1436,18 @@ test('mesure : une piste qui part, passée au ⏭, puis la suivante', async () =
   assert.equal(s.sent.length, 3);
 });
 
+test('mesure : passer une piste qui n’a pas encore joué n’envoie pas music_skipped', async () => {
+  const s = setup();
+  await s.on();
+  s.radio.next(); // menu-a a joué : passée
+  assert.equal(s.sent[1][0], 'music_skipped');
+  const count = s.sent.length;
+  assert.equal(s.radio.canSkip(), true); // menu-b se charge encore
+  s.radio.next(); // passée avant d'avoir joué : rien ne part
+  assert.equal(s.sent.filter((e) => e[0] === 'music_skipped').length, 1);
+  assert.equal(s.sent.length, count);
+});
+
 test('mesure : une piste écoutée jusqu’au bout, en niveau, avec le volume du lecteur', async () => {
   const s = setup();
   s.widget.getVolume = (cb) => cb(30.4);
