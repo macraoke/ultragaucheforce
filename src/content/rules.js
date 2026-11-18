@@ -26,10 +26,10 @@ export const MARKERS = {
  */
 export { RARITIES };
 
-export const THEMES = ['richesses', 'droits', 'ordre', 'democratie', 'programme', 'luttes'];
+export const THEMES = ['richesses', 'droits', 'capital', 'democratie', 'programme', 'luttes'];
 export const NATURES = ['officielle', 'presse', 'associative', 'militante', 'createur'];
 export const BACKDROPS = ['campagne', 'ville', 'citadelle'];
-export const CAMPS = ['ordre', 'medias', 'pouvoir']; // à qui appartient une unité : seules celles de l'ordre comptent dans le bilan des blessés
+export const CAMPS = ['automates', 'medias', 'pouvoir']; // à qui appartient une unité : seuls les automates comptent parmi les « automates désactivés »
 
 // ---------------------------------------------------------------- lecteurs typés
 
@@ -476,7 +476,7 @@ export function buildLevel(f, ctx, report) {
       } else if (/[1-9]/.test(c)) {
         if (!has(out.panneaux, c)) report(map.line + y, `Panneau « ${c} » sans texte : ajoute « panneau.${c}: … » dans l'en-tête.`, x + 1);
       } else if (LEGEND.test(c)) {
-        if (!has(out.legende, c)) report(map.line + y, `Signe « ${c} » inconnu : déclare-le dans l'en-tête, par exemple « ${c}: bac ».`, x + 1);
+        if (!has(out.legende, c)) report(map.line + y, `Signe « ${c} » inconnu : déclare-le dans l'en-tête, par exemple « ${c}: barrage ».`, x + 1);
       } else {
         report(map.line + y, `Symbole « ${c} » inconnu. Tuiles : ${Object.keys(ctx.symbols).join(' ')} ; repères : ${Object.keys(MARKERS).join(' ')} ; vide : « . ».`, x + 1);
       }

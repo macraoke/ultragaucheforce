@@ -17,7 +17,7 @@ import { isFound } from './save.js';
 export const SHELVES = [
   { id: 'camarades', titre: 'Camarades', kinds: ['heros', 'recrues'] },
   { id: 'pancartes', titre: 'Pancartes', kinds: ['pancartes'] },
-  { id: 'en-face', titre: 'En face', kinds: ['ennemis', 'boss'] },
+  { id: 'en-face', titre: 'Le capital et ses automates', kinds: ['ennemis', 'boss'] },
   { id: 'lieux', titre: 'Lieux', kinds: ['niveaux'] },
   { id: 'paroles', titre: 'Paroles', kinds: ['citations'] },
   { id: 'tele', titre: 'Vu à la télé', kinds: ['manchettes'] },
@@ -221,7 +221,7 @@ function artOf(bundle, kind, item, size = 120) {
   return spriteElement(rows, bundle.palette, scale);
 }
 
-const SIGNS = { richesses: '€', droits: '§', ordre: '!', democratie: '✓', programme: '★', luttes: '✊' };
+const SIGNS = { richesses: '€', droits: '§', capital: '!', democratie: '✓', programme: '★', luttes: '✊' };
 
 /** Sur une carte compacte sans dessin : le mot d'une parole, la pancarte, le bandeau, ou le signe d'un thème. */
 function emblem(kind, item) {
@@ -258,7 +258,7 @@ function facts(kind, item) {
   }
   if (kind === 'ennemis') {
     const w = item.arme;
-    const traits = [item.ligne?.vie > 0 && 'ligne', item.bouclier && 'bouclier', w?.gaz > 0 && 'lacrymogènes', w?.vise > 0 && 'LBD', w?.type === 'jet' && 'canon à eau',
+    const traits = [item.ligne?.vie > 0 && 'ligne', item.bouclier && 'bouclier', w?.gaz > 0 && 'lacrymogènes', w?.vise > 0 && 'tir visé', w?.type === 'jet' && 'canon à eau',
       w?.mots?.length && 'tire des mots', item.reaction === 'charge' && 'charge', item.reaction === 'fonce' && 'fonce',
       item.reaction === 'projecteur' && 'projecteur', item.deplacement === 'vol' && 'vole'].filter(Boolean);
     const pv = item.ligne?.vie > 0 ? item.ligne.vie : item.pv; // une ligne : sa vie de ligne

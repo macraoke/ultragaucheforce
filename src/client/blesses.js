@@ -1,11 +1,10 @@
-// Le bilan des blessés de fin de niveau : le nombre que la partie annonce côté forces de l'ordre, réparti comme les
-// CRS blessés en octobre 2026 dans le fichier interne de leur direction (fiche `crs-blesses-octobre-2026`), et une ou
-// deux blessures de ce fichier, mot pour mot. Ce qui s'affiche se tire au hasard de la partie. Sans DOM : testé dans Node.
+// Le décompte de fin de niveau : le nombre d'automates désactivés pendant la partie, réparti comme le fichier interne
+// d'octobre 2026 (fiche `crs-blesses-octobre-2026`), et une ou deux blessures de ce fichier, mot pour mot. Ce qui s'affiche se tire au hasard de la partie. Sans DOM : testé dans Node.
 
 import { plural } from './dom.js';
 
 /** Ce que dit le fichier, tel que la fiche le cite. Un test vérifie que chaque nombre figure dans son texte. */
-export const CRS_OCTOBRE_2026 = {
+export const INJURY_FILE = {
   fiche: 'crs-blesses-octobre-2026',
   blesses: 1233,
   legers: 1167, // « blessés légers », selon la classification de l'administration
@@ -23,7 +22,7 @@ export const CRS_OCTOBRE_2026 = {
  * telles quelles, sans les ramener à la partie. Les crochets sont ceux de Mediapart.
  */
 export const FROM_FILE = {
-  // Ce qu'un agent s'est fait seul : une porte, une chute du fourgon, une course, un trou.
+  // Ce qu'un automate s'est fait seul : une porte, une chute du fourgon, une course, un trou.
   alone: [
     '« poignet gauche en fermant la porte du VR [véhicule de reconnaissance] »',
     '« se tord la cheville en chutant du fourgon »',
@@ -39,7 +38,7 @@ export const FROM_FILE = {
     '« voûte plantaire »',
     '« pouce de la main droite »',
     '« ongle majeur droit »',
-    'des hauts gradés, parfois pour une « douleur fesses quadriceps gauche »',
+    '« douleur fesses quadriceps gauche »',
   ],
 };
 
@@ -50,18 +49,18 @@ const whole = (x) => x.toLocaleString('fr-FR');
 const NBSP = '\u00a0';
 
 /**
- * Les `n` blessés annoncés, répartis comme les CRS blessés en octobre 2026. Chaque part est arrondie à l'entier le plus
+ * Les `n` automates désactivés, répartis comme le fichier interne d'octobre 2026. Chaque part est arrondie à l'entier le plus
  * proche, sans décimale : 2,84 blessés légers sur 3 s'écrivent 3, et 0,31 arrêt de travail, 0. Aucune part ne dépasse
  * le total, les blessures aux jambes et aux bras ensemble non plus (737 + 451 ≤ 1 233 dans la source), et le tiers ne
  * dépasse pas les origines connues : un test le vérifie jusqu'à 20 000 blessés. Les parts se recoupent (un blessé
  * léger peut être en arrêt de travail) : leur somme n'est pas le total, ni dans la source ni ici.
- * @param {number} n  le nombre de blessés annoncés par la partie
+ * @param {number} n  le nombre d'automates désactivés pendant la partie
  * @returns {{legers: number, arrets: number, jambes: number, bras: number, acouphenes: number, origine: number, tiers: number} | null}
  */
 export function injuries(n) {
   if (!(n > 0)) return null;
-  const share = (count) => Math.round((n * count) / CRS_OCTOBRE_2026.blesses);
-  const { legers, arrets, jambes, bras, acouphenes, origine, tiers } = CRS_OCTOBRE_2026;
+  const share = (count) => Math.round((n * count) / INJURY_FILE.blesses);
+  const { legers, arrets, jambes, bras, acouphenes, origine, tiers } = INJURY_FILE;
   return {
     legers: share(legers), arrets: share(arrets), jambes: share(jambes), bras: share(bras), acouphenes: share(acouphenes),
     origine: share(origine), tiers: share(tiers),
@@ -99,10 +98,10 @@ export function injuryParts(n) {
 const SHOWN = 2;
 
 /**
- * Ce que l'écran de fin dit des `n` blessés, tiré au hasard de la partie (même graine, même écran) :
+ * Ce que l'écran de fin dit des `n` automates désactivés, tiré au hasard de la partie (même graine, même écran) :
  * - `parts` : les blessés légers, toujours en tête, puis deux autres parts de la répartition, dans l'ordre de la source ;
- * - `file` : une blessure qu'un agent s'est faite seul, et une fois sur deux une autre du fichier.
- * @param {number} n  les blessés annoncés par la partie
+ * - `file` : une blessure qu'un automate s'est faite seul, et une fois sur deux une autre du fichier.
+ * @param {number} n  les automates désactivés pendant la partie
  * @param {{int: (k: number) => number, pick: (list: string[]) => string}} rng  le hasard de la partie (`makeRng(game.seed)`)
  * @returns {{parts: string[], file: string[]}} vides sans blessé
  */

@@ -1,5 +1,5 @@
 # À moto : traverse, dépasse, fait demi-tour.
-nom: BRAV-M
+nom: Pétaradeurs
 pv: 3
 vitesse: 150
 deplacement: moto

@@ -1,4 +1,4 @@
-# Tir visé, précédé d'une visée (LBD).
+# Tir visé, précédé d'une visée.
 nom: Tireur
 pv: 2
 vitesse: 0

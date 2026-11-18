@@ -13,7 +13,7 @@ import {
 const { bundle } = loadContent();
 const DIR = new URL('../content/niveaux/', import.meta.url);
 const levels = readdirSync(DIR).filter((name) => name.endsWith('.txt')).map((name) => [name, readFileSync(new URL(name, DIR), 'utf8')]);
-const defaults = { boss: Object.keys(bundle.boss)[0], nasse: 'crs' };
+const defaults = { boss: Object.keys(bundle.boss)[0], nasse: 'robot-bouclier' };
 const check = (model) => checkLevel(writeLevel(model), bundle);
 const fresh = () => readLevel(TEMPLATE);
 const at = (model, x, y) => model.rows[y][x];
@@ -74,10 +74,10 @@ test('une carte irrégulière est remise au carré', () => {
 });
 
 test('poser un personnage lui trouve un signe, sans rien demander', () => {
-  let { model } = paint(fresh(), [{ x: 10, y: 9 }], { type: 'chose', id: 'bac' }, defaults);
+  let { model } = paint(fresh(), [{ x: 10, y: 9 }], { type: 'chose', id: 'ramasseur' }, defaults);
   const sign = at(model, 10, 9);
-  assert.equal(legendOf(model)[sign], 'bac');
-  ({ model } = paint(model, [{ x: 12, y: 9 }], { type: 'chose', id: 'bac' }, defaults));
+  assert.equal(legendOf(model)[sign], 'ramasseur');
+  ({ model } = paint(model, [{ x: 12, y: 9 }], { type: 'chose', id: 'ramasseur' }, defaults));
   assert.equal(at(model, 12, 9), sign, 'le même personnage garde son signe');
   ({ model } = paint(model, [{ x: 14, y: 9 }], { type: 'chose', id: 'barrage' }, defaults));
   assert.notEqual(at(model, 14, 9), sign, 'deux personnages, deux signes');
@@ -86,13 +86,13 @@ test('poser un personnage lui trouve un signe, sans rien demander', () => {
   const { level, errors } = check(model);
   assert.deepEqual(errors, []);
   assert.deepEqual(Object.values(level.legende).map((l) => `${l.type}:${l.id}`).sort(),
-    ['decor:vache', 'ennemi:bac', 'ennemi:barrage', 'recrue:paysanne']);
+    ['decor:vache', 'ennemi:barrage', 'ennemi:ramasseur', 'recrue:paysanne']);
 });
 
 test('effacer le dernier exemplaire retire sa ligne de l’en-tête', () => {
-  let { model } = paint(fresh(), [{ x: 10, y: 9 }, { x: 11, y: 9 }], { type: 'chose', id: 'bac' }, defaults);
+  let { model } = paint(fresh(), [{ x: 10, y: 9 }, { x: 11, y: 9 }], { type: 'chose', id: 'ramasseur' }, defaults);
   ({ model } = paint(model, [{ x: 10, y: 9 }], { type: 'gomme' }, defaults));
-  assert.deepEqual(Object.values(legendOf(model)), ['bac']);
+  assert.deepEqual(Object.values(legendOf(model)), ['ramasseur']);
   ({ model } = paint(model, [{ x: 11, y: 9 }], { type: 'gomme' }, defaults));
   assert.deepEqual(legendOf(model), {});
   assert.equal(writeLevel(model), TEMPLATE);
@@ -160,7 +160,7 @@ test('poser un boss n’en impose aucun (il est tiré au hasard) ; le retirer ef
 
 test('une nasse arrive avec son unité', () => {
   const { model } = paint(fresh(), [{ x: 20, y: 9 }], { type: 'repere', char: 'N' }, defaults);
-  assert.equal(getField(model, 'nasse.ennemi'), 'crs');
+  assert.equal(getField(model, 'nasse.ennemi'), 'robot-bouclier');
   assert.deepEqual(check(model).errors, []);
 });
 
@@ -197,7 +197,7 @@ test('peindre hors de la carte ne fait rien', () => {
 });
 
 test('agrandir étire la carte derrière son bord : le terrain se prolonge, pas les personnages', () => {
-  let { model } = paint(fresh(), [{ x: 38, y: 9 }], { type: 'chose', id: 'bac' }, defaults);
+  let { model } = paint(fresh(), [{ x: 38, y: 9 }], { type: 'chose', id: 'ramasseur' }, defaults);
   const sign = at(model, 38, 9);
   model = resize(model, 'droite', 10, defaults);
   assert.equal(model.rows[0].length, 50);
@@ -239,7 +239,7 @@ test('agrandir puis réduire du même côté rend la même carte', () => {
 });
 
 test('réduire retire ce qui dépasse, et l’en-tête suit', () => {
-  let { model } = paint(fresh(), [{ x: 38, y: 3 }], { type: 'chose', id: 'bac' }, defaults);
+  let { model } = paint(fresh(), [{ x: 38, y: 3 }], { type: 'chose', id: 'ramasseur' }, defaults);
   ({ model } = paint(model, [{ x: 38, y: 4 }], { type: 'tuile', char: 'B', back: true }, defaults));
   model = resize(model, 'droite', -1, defaults);
   assert.equal(model.rows[0].length, 39);
@@ -316,12 +316,12 @@ test('les erreurs se disent sans lettre', () => {
 test('un réglage s’écrit à sa place dans l’en-tête', () => {
   let model = setField(fresh(), 'auteur', '  Louise   Michel ');
   assert.equal(getField(model, 'auteur'), 'Louise Michel');
-  ({ model } = paint(model, [{ x: 10, y: 9 }], { type: 'chose', id: 'bac' }, defaults));
+  ({ model } = paint(model, [{ x: 10, y: 9 }], { type: 'chose', id: 'ramasseur' }, defaults));
   ({ model } = paint(model, [{ x: 11, y: 9 }], { type: 'panneau' }, defaults));
   model = setField(model, 'fond', 'ville');
   model = setField(model, 'cortege', 'non');
   const keys = writeLevel(model).split('\n--- carte')[0].split('\n').map((l) => l.split(':')[0]);
-  assert.deepEqual(keys, ['titre', 'fond', 'cortege', 'auteur', 'panneau.1', 'b']);
+  assert.deepEqual(keys, ['titre', 'fond', 'cortege', 'auteur', 'panneau.1', 'r']);
   assert.equal(getField(setField(model, 'auteur', ''), 'auteur'), '');
   const { level, errors } = check(model);
   assert.deepEqual(errors, []);

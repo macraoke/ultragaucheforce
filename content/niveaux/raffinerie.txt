@@ -16,8 +16,8 @@ panneau.2: [bas] + [tirer] : creuser
 panneau.3: Remonte : le barrage est en haut
 panneau.4: STATION
 
-g: gendarme-mobile
-c: crs
+g: lance-pleurs
+c: robot-bouclier
 b: barrage
 w: canon-a-eau
 h: helicoptere

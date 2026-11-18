@@ -1,5 +1,5 @@
 # Son jet repousse le héros et le cortège, sans blesser.
-nom: Canon à eau
+nom: Arroseur
 pv: 14
 vitesse: 12
 deplacement: vehicule

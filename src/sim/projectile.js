@@ -10,7 +10,7 @@ const DEFAULTS = {
   vx: 0, vy: 0, team: 'luttes', word: null, def: null, image: 'projectile',
   gravity: 0, range: 240, damage: 1, terrain: 1, bounces: 0, explosion: 0,
   pierce: false, armor: false, friendly: false, gas: 0, hug: false, owner: null, age: 0, dead: false,
-  touche: 0, // camp de l'ordre : manifestants touchés si le projectile atteint le cortège
+  touche: 0, // camp des automates (`team: 'ordre'`) : manifestants touchés si le projectile atteint le cortège
   drag: 0, // freinage par seconde : une bille roule, ralentit, s'arrête
   life: 0, // secondes avant de disparaître ; 0 : seule la portée compte
   slip: 0, // secondes où l'adversaire qui marche dessus glisse, sonné (les billes)
@@ -183,7 +183,7 @@ function touchActors(game, p) {
     }
     return;
   }
-  // Camp de l'ordre : un tir qui touche une ligne qui tient s'y écrase, comme nos tracts (sauf « perce ») ; une grenade
+  // Camp des automates : un tir qui touche une ligne qui tient s'y écrase, comme nos tracts (sauf « perce ») ; une grenade
   // en cloche passe au-dessus. Une grenade « fratricide » qui la touche y éclate, plus bas, comme sur un collègue.
   if (!p.friendly) {
     for (const l of game.lines) {

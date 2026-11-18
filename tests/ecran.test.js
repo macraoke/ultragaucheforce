@@ -67,24 +67,24 @@ test('les notes attendent leur tour ; une rafale du même genre se replie en une
   assert.equal(notes.length, 1);
   assert.equal(notes[0].text, '3 pancartes débloquées', 'toutes les raretés se replient pareil');
   assert.equal(notes[0].tone, 'rarete-3', 'le bord a la couleur de la plus rare');
-  queueNote(notes, { text: 'Débloqué : BAC', group: 'cartes' });
-  queueNote(notes, { text: 'Débloqué : CRS', group: 'cartes' });
+  queueNote(notes, { text: 'Débloqué : Ramasseur', group: 'cartes' });
+  queueNote(notes, { text: 'Débloqué : Défonceur', group: 'cartes' });
   assert.deepEqual(notes.map((n) => n.text), ['3 pancartes débloquées', '2 cartes débloquées']);
 });
 
 test('une note reste le temps d’être lue, et un peu plus : d’autant plus longtemps que son texte est long', () => {
   assert.equal(readTime('2 pancartes débloquées'), 3.75, 'une note courte : trois secondes trois quarts');
-  assert.equal(readTime('Débloqué : La BAC'), 3.75);
+  assert.equal(readTime('Débloqué : Bourdon'), 3.75);
   const sign = 'Pancarte commune débloquée : « LA RETRAITE AVANT L’ARTHRITE, ET PLUS VITE QUE ÇA »';
   assert.ok(readTime(sign) > 5.25, 'une pancarte longue : plus de cinq secondes');
-  assert.ok(readTime('Débloqué : La compagnie de CRS') > readTime('Débloqué : La BAC'), 'plus long à lire, plus longtemps');
+  assert.ok(readTime('Débloqué : Le capital et ses automates') > readTime('Débloqué : Bourdon'), 'plus long à lire, plus longtemps');
   assert.equal(readTime('x'.repeat(400)), 8, 'jamais plus de huit secondes');
   // Une pancarte s'écrit maintenant en entier : sa note, plus longue, reste plus longtemps que l'ancienne note coupée.
   const longest = bundle.pancartes.reduce((a, b) => (b.texte.length > a.texte.length ? b : a));
   const whole = signNote({ ...longest, rarete: 3 });
   const cut = `Pancarte légendaire débloquée : « ${longest.texte.slice(0, 43).trimEnd()}… »`; // l'ancienne coupe à 44 signes
   assert.ok(readTime(whole) > readTime(cut), `la pancarte entière : ${readTime(whole)} s, contre ${readTime(cut)} s coupée`);
-  assert.ok(readTime('Débloqué : Gendarmes mobiles') < 6, 'une note « Débloqué » ne change pas');
+  assert.ok(readTime('Débloqué : Lance-pleurs') < 6, 'une note « Débloqué » ne change pas');
 });
 
 // ---------------------------------------------------------------- textes flottants
@@ -632,11 +632,11 @@ test('des unités identiques côte à côte n’ont qu’un « ! » ; une autre,
   const r = renderer();
   const unit = (id, x) => ({ def: { id }, x, y: 150, w: 12, h: 18 });
   r.groups.clear();
-  assert.equal(r.first('alerte', unit('crs', 100)), true);
-  assert.equal(r.first('alerte', unit('crs', 114)), false);
-  assert.equal(r.first('alerte', unit('crs', 128)), false, 'de proche en proche, toute la ligne');
-  assert.equal(r.first('alerte', unit('bac', 120)), true, 'une autre unité');
-  assert.equal(r.first('alerte', unit('crs', 260)), true, 'un autre groupe');
+  assert.equal(r.first('alerte', unit('robot-bouclier', 100)), true);
+  assert.equal(r.first('alerte', unit('robot-bouclier', 114)), false);
+  assert.equal(r.first('alerte', unit('robot-bouclier', 128)), false, 'de proche en proche, toute la ligne');
+  assert.equal(r.first('alerte', unit('ramasseur', 120)), true, 'une autre unité');
+  assert.equal(r.first('alerte', unit('robot-bouclier', 260)), true, 'un autre groupe');
   // Une unité hors de l'image n'écrit rien : elle ne prend pas le « ! » de sa voisine visible.
   r.groups.clear();
   assert.equal(r.first('alerte', unit('gm', -50)), true);
@@ -655,24 +655,24 @@ test('hors service, une unité n’a rien d’écrit au-dessus d’elle : elle s
     const def = bundle.ennemis[id];
     return { def, x: 120, y: 150, w: def.largeur, h: def.hauteur, facing: -1, flash: 0, state: 'done', ...extra };
   };
-  // Le CRS en grève, le canon à eau en panne : la simulation leur donne encore une bulle, « EN GRÈVE ! », « EN PANNE ».
-  const crs = down('crs', { bubble: { text: 'EN GRÈVE !', t: 2.5 } });
+  // Le Robot-bouclier en grève, l'Arroseur en panne : la simulation leur donne encore une bulle, « EN GRÈVE ! », « EN PANNE ».
+  const shield = down('robot-bouclier', { bubble: { text: 'EN GRÈVE !', t: 2.5 } });
   const canon = down('canon-a-eau', { x: 220, bubble: { text: 'EN PANNE', t: 2.5 } });
-  assert.ok(crs.def.sprites.fin && !canon.def.sprites.fin);
+  assert.ok(shield.def.sprites.fin && !canon.def.sprites.fin);
   for (let i = 0; i < 3; i++) {
     r.clock += 1;
-    r.enemy(crs);
+    r.enemy(shield);
     r.enemy(canon);
   }
   assert.deepEqual(said, [], 'ni « EN GRÈVE ! », ni « EN PANNE », ni écriteau');
-  // Le CRS s'assoit en tailleur, dans son dessin de fin ; le canon à eau garde le sien, apaisé (et non assombri).
-  const sitting = drawn.find((d) => d.rows.length < crs.def.sprites.fin.length);
-  assert.ok(sitting, 'le CRS est dessiné assis');
+  // Le Robot-bouclier s'assoit en tailleur, dans son dessin de fin ; le canon à eau garde le sien, apaisé (et non assombri).
+  const sitting = drawn.find((d) => d.rows.length < shield.def.sprites.fin.length);
+  assert.ok(sitting, 'le Robot-bouclier est dessiné assis');
   assert.equal(sitting.opts.dim, false, 'son dessin de fin, à ses couleurs');
   assert.ok(drawn.some((d) => d.rows === canon.def.sprites.repos && d.opts.dim === 'calm'), 'le canon à eau, apaisé');
-  // Une fleur chacun, toute poussée : à la main du CRS, sur le toit du canon à eau.
+  // Une fleur chacun, toute poussée : à la main du Robot-bouclier, sur le toit du canon à eau.
   r.combatBefore({ hero: { x: 0, y: 150, w: 12, h: 18, dead: false }, enemies: [] });
-  r.enemy(crs);
+  r.enemy(shield);
   r.enemy(canon);
   assert.equal(r.flowers.length, 2);
   assert.ok(r.flowers.every(([, , grown]) => grown >= 1));
@@ -700,7 +700,7 @@ test('hors service, un plateau de télé ne se retourne pas ; en effets réduits
 
 test('assise en tailleur : le haut du dessin jusqu’à la ceinture, puis les genoux ; une machine ne s’assoit pas', async () => {
   const { seated, hand, crown } = await import('../src/client/sprites.js');
-  const fin = bundle.ennemis.crs.sprites.fin;
+  const fin = bundle.ennemis['robot-bouclier'].sprites.fin;
   const sit = seated(fin);
   assert.equal(sit.length, 14, 'la ceinture (rangée 12) et deux rangées de jambes');
   assert.equal(sit[0].length, fin[0].length + 4, 'deux colonnes de chaque côté pour les genoux');
@@ -803,11 +803,11 @@ test('un gain (« + 20 », « +1 », « SOIGNÉ ») n’est jamais évincé avan
 // ---------------------------------------------------------------- décompte de la nasse
 
 /**
- * Une nasse de CRS telle que le rendu la lit : deux lignes de deux, posées sur le sol `ground`, à `gap` pixels
+ * Une nasse de Robots-boucliers telle que le rendu la lit : deux lignes de deux, posées sur le sol `ground`, à `gap` pixels
  * du milieu (x = 200). Rend la partie et la boîte du dessin de chaque unité, dans le monde.
  */
 function kettleScene(t, { ground = 150, gap = 40 } = {}) {
-  const def = bundle.ennemis.crs;
+  const def = bundle.ennemis['robot-bouclier'];
   const rows = def.sprites.repos;
   const unit = (x, side) => ({ def, x, y: ground - def.hauteur, w: def.largeur, h: def.hauteur, kettle: side, state: 'alert' });
   const units = [
@@ -883,14 +883,14 @@ test('le décompte de la nasse passe au-dessus de la voix d’en face ; textes f
   assert.ok(!overlap(r.textBox(f.text, f.x, f.y, f.size, 150), clock.box), 'le slogan passe autour');
 });
 
-test('dans le vrai jeu, une nasse de CRS affiche son décompte, opaque et jamais sur le héros qui saute, jusqu’à ce qu’elle soit levée', () => {
+test('dans le vrai jeu, une nasse de Robots-boucliers affiche son décompte, opaque et jamais sur le héros qui saute, jusqu’à ce qu’elle soit levée', () => {
   const width = 120;
   const rows = Array.from({ length: 14 }, (_, y) => {
     if (y >= 12) return 'T'.repeat(width);
     if (y === 11) return `..D${'.'.repeat(27)}N${'.'.repeat(width - 31)}`;
     return '.'.repeat(width);
   });
-  const level = { titre: 'nasse', manchette: [], panneaux: {}, legende: {}, boss: '', heros: 'zucman', cortege: true, manif: 10, fond: 'ville', carte: rows, nasse: { ennemi: 'crs', nombre: 3, vitesse: 20, rythme: 0 } };
+  const level = { titre: 'nasse', manchette: [], panneaux: {}, legende: {}, boss: '', heros: 'zucman', cortege: true, manif: 10, fond: 'ville', carte: rows, nasse: { ennemi: 'robot-bouclier', nombre: 3, vitesse: 20, rythme: 0 } };
   const game = new Game(bundle, 'nasse', { level, seed: 3, invincible: true });
   const r = renderer();
   r.snap(game);
@@ -932,7 +932,7 @@ test('dans le vrai jeu, une nasse de CRS affiche son décompte, opaque et jamais
 
 // ---------------------------------------------------------------- les cœurs, le boss vaincu
 
-test('le boss vaincu, un policier à pied près de qui passe le héros émet des cœurs rouges et violets, qui montent et s’effacent', () => {
+test('le boss vaincu, un automate à pied près de qui passe le héros émet des cœurs rouges et violets, qui montent et s’effacent', () => {
   const r = renderer();
   const said = [];
   r.label = (text) => said.push(text);
@@ -940,10 +940,10 @@ test('le boss vaincu, un policier à pied près de qui passe le héros émet des
     const def = bundle.ennemis[id];
     return { def, x, y: 150 - def.hauteur, w: def.largeur, h: def.hauteur, facing: -1, state: 'patrol', ...extra };
   };
-  const crs = unit('crs', 110);
+  const shield = unit('robot-bouclier', 110);
   const enemies = [
-    crs, unit('bac', 300), // un policier loin du héros
-    unit('bfm', 96), unit('canon-a-eau', 120), unit('faux-jeune', 104), // près de lui, mais ni de l'ordre, ni à pied
+    shield, unit('ramasseur', 300), // un automate loin du héros
+    unit('bfm', 96), unit('canon-a-eau', 120), unit('faux-jeune', 104), // près de lui, mais ni du camp des automates, ni à pied
   ];
   const game = { truce: false, hero: { x: 100, y: 134, w: 12, h: 16, dead: false }, enemies };
   const frames = (n, g = game) => {
@@ -956,19 +956,19 @@ test('le boss vaincu, un policier à pied près de qui passe le héros émet des
   assert.equal(r.hearts.length, 0, 'tant que le boss tient, pas de cœur');
   game.truce = true;
   frames(1);
-  assert.equal(r.hearts.length, 1, 'le boss vaincu, un cœur tout de suite, au-dessus du CRS');
+  assert.equal(r.hearts.length, 1, 'le boss vaincu, un cœur tout de suite, au-dessus du Robot-bouclier');
   const [first] = r.hearts;
-  assert.ok(Math.abs(first.x - (crs.x + crs.w / 2)) <= 4 && first.y < crs.y, 'au-dessus de sa tête');
+  assert.ok(Math.abs(first.x - (shield.x + shield.w / 2)) <= 4 && first.y < shield.y, 'au-dessus de sa tête');
   frames(59);
   assert.ok(r.hearts.length >= 4 && r.hearts.length <= 5, `un cœur toutes les 0,25 s : ${r.hearts.length}`);
   assert.deepEqual(r.hearts.slice(0, 4).map((h) => h.rows[1][2]), ['R', 'm', 'R', 'm'], 'rouge, violet, rouge, violet');
-  assert.ok(first.y < crs.y - 14, 'il monte');
+  assert.ok(first.y < shield.y - 14, 'il monte');
   game.hero.x = 200; // le héros s'éloigne
   frames(90);
   assert.equal(r.hearts.length, 0, 'ils se sont effacés, et aucun autre n’est venu');
   assert.deepEqual(said, [], 'rien d’écrit');
-  // Le même policier, assis en grève : il en émet aussi. Le héros mort : non.
-  crs.state = 'done';
+  // Le même automate, assis en grève : il en émet aussi. Le héros mort : non.
+  shield.state = 'done';
   game.hero.x = 100;
   frames(1);
   assert.equal(r.hearts.length, 1);
@@ -977,14 +977,14 @@ test('le boss vaincu, un policier à pied près de qui passe le héros émet des
   assert.equal(r.hearts.length, 0, 'le héros tombé, plus de cœur');
 });
 
-test('dans le vrai jeu, après la chute du boss, le héros qui passe devant une compagnie de CRS les fait émettre des cœurs', () => {
+test('dans le vrai jeu, après la chute du boss, le héros qui passe devant une ligne de Robots-boucliers les fait émettre des cœurs', () => {
   const width = 90;
   const rows = Array.from({ length: 14 }, (_, y) => {
     if (y >= 12) return 'T'.repeat(width);
     if (y === 11) return `..D${'.'.repeat(17)}c${'.'.repeat(50)}Y${'.'.repeat(width - 72)}`;
     return '.'.repeat(width);
   });
-  const level = { titre: 'trêve', manchette: [], panneaux: {}, legende: { c: { type: 'ennemi', id: 'crs' } }, boss: '', heros: 'zucman', cortege: false, fond: 'ville', carte: rows };
+  const level = { titre: 'trêve', manchette: [], panneaux: {}, legende: { c: { type: 'ennemi', id: 'robot-bouclier' } }, boss: '', heros: 'zucman', cortege: false, fond: 'ville', carte: rows };
   const lovers = (truce) => {
     const game = new Game(bundle, 'treve', { level, seed: 3, invincible: true });
     const r = renderer();

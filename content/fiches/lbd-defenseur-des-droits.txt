@@ -1,5 +1,5 @@
 titre: LBD : l'interdiction demandée
-theme: ordre
+theme: capital
 texte: Le Défenseur des droits recommande d'interdire les lanceurs de balles de défense (LBD 40x46) dans les manifestations. Le schéma national du maintien de l'ordre n'est pas revenu sur leur usage.
 portee: Fiche réforme n° 51, mise à jour en novembre 2023. Le LBD, de calibre 40 mm, tire un projectile en caoutchouc (description de la gendarmerie devant l'Assemblée nationale) ; il a remplacé le Flash-Ball dans la dotation des CRS et des gendarmes mobiles et, écrit l'institution, il est « surtout utilisé par les unités non spécialisées ». Position contraire du juge : le 1er février 2019, le Conseil d'État a refusé d'en suspendre l'usage. En janvier 2021, une commission d'enquête de l'Assemblée nationale a proposé de l'interdire lors de mouvements de foule, sauf grave danger ou émeute.
 periode: position rappelée en novembre 2023

@@ -1,5 +1,5 @@
 titre: Le RAID hors de son métier
-theme: ordre
+theme: capital
 texte: Pendant les émeutes de juin et juillet 2023, « pour la première fois, des forces d'intervention spécialisées ont été mobilisées », relève le Sénat, « sans véritable doctrine d'emploi préalablement établie ».
 portee: Rapport d'information n° 521 (2023-2024) de la commission des lois du Sénat, « Émeutes de juin 2023 : comprendre, évaluer, réagir », déposé le 9 avril 2024, rapporteur François-Noël Buffet. Il vise le RAID et le GIGN, et parle d'émeutes, pas de manifestations déclarées.
 periode: juin et juillet 2023

@@ -1,5 +1,5 @@
 titre: Qui compte les blessés ?
-theme: ordre
+theme: capital
 texte: Gilets jaunes : le ministère de l'Intérieur recense 2 549 manifestants blessés, 1 528 policiers et 575 gendarmes. Il précise que la gendarmerie ne comptabilise pas les éventuels blessés parmi les manifestants.
 portee: Réponse ministérielle du 29 septembre 2020 à la question écrite n° 16069. Périodes différentes : du 17 novembre 2018 au 7 mars 2020 pour la police, au 18 février 2020 pour la gendarmerie. Le chiffre des manifestants est celui « recensé par les forces de sécurité intérieure » : ce n'est pas un décompte indépendant.
 periode: 17 novembre 2018 à mars 2020

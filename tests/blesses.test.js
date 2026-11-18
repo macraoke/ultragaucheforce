@@ -1,10 +1,10 @@
-// Les blessés annoncés en fin de niveau, répartis comme les CRS blessés en octobre 2026 : des entiers, jamais plus que le total,
+// Le décompte des automates désactivés en fin de niveau, réparti comme le fichier interne d'octobre 2026 : des entiers, jamais plus que le total,
 // et une ou deux blessures du fichier, mot pour mot, tirées au hasard de la partie.
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { loadContent } from '../tools/content.mjs';
-import { CRS_OCTOBRE_2026, FROM_FILE, injuries, injuryParts, injuryReport } from '../src/client/blesses.js';
+import { INJURY_FILE, FROM_FILE, injuries, injuryParts, injuryReport } from '../src/client/blesses.js';
 import { makeRng } from '../src/sim/rng.js';
 import { Game } from '../src/sim/game.js';
 
@@ -15,23 +15,23 @@ const report = (n, seed) => injuryReport(n, makeRng(seed));
 const ALL = [...FROM_FILE.alone, ...FROM_FILE.declared];
 
 test('blessés : chaque nombre de la répartition est dans le texte de sa fiche', () => {
-  const fact = bundle.fiches[CRS_OCTOBRE_2026.fiche];
+  const fact = bundle.fiches[INJURY_FILE.fiche];
   assert.ok(fact, 'la fiche existe');
   assert.match(fact.source.url, /^https:\/\/www\.mediapart\.fr\//);
   for (const key of ['blesses', ...KEYS.filter((k) => k !== 'origine')]) {
-    const n = CRS_OCTOBRE_2026[key].toLocaleString('fr-FR');
+    const n = INJURY_FILE[key].toLocaleString('fr-FR');
     assert.ok(plain(fact.texte).includes(plain(n)), `${key} : ${n} dans « ${fact.texte} »`);
   }
-  assert.equal(CRS_OCTOBRE_2026.origine, 20);
+  assert.equal(INJURY_FILE.origine, 20);
   assert.match(fact.texte, /Une vingtaine d'agents seulement indiquent l'origine/, '« une vingtaine » : l’écran dit « environ »');
-  assert.ok(bundle.ennemis.crs.fiche.includes(fact.id), 'la carte des CRS la donne aussi');
+  assert.ok(bundle.ennemis['robot-bouclier'].fiche.includes(fact.id), 'la carte du Robot-bouclier la donne aussi');
 });
 
 test('blessés : des entiers, arrondis au plus proche, qui ne dépassent jamais le total', () => {
   for (let n = 1; n <= 20000; n++) {
     const parts = injuries(n);
     for (const key of KEYS) {
-      const exact = (n * CRS_OCTOBRE_2026[key]) / CRS_OCTOBRE_2026.blesses;
+      const exact = (n * INJURY_FILE[key]) / INJURY_FILE.blesses;
       assert.ok(Number.isInteger(parts[key]), `${n} blessés, ${key} : ${parts[key]} n’est pas un entier`);
       assert.ok(Math.abs(parts[key] - exact) <= 0.5, `${n} blessés, ${key} : ${parts[key]} trop loin de ${exact}`);
       assert.ok(parts[key] <= n, `${n} blessés, ${key} : ${parts[key]} dépasse le total`);
@@ -72,7 +72,7 @@ test('blessés : 1 233 blessés redonnent les nombres de la source', () => {
 });
 
 test('blessés : chaque blessure du fichier que l’écran peut citer est mot pour mot dans la fiche', () => {
-  const fact = bundle.fiches[CRS_OCTOBRE_2026.fiche];
+  const fact = bundle.fiches[INJURY_FILE.fiche];
   const said = plain(`${fact.texte} ${fact.portee}`);
   assert.ok(FROM_FILE.alone.length && FROM_FILE.declared.length);
   for (const line of ALL) {

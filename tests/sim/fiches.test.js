@@ -1,4 +1,4 @@
-// Les clés de fiche de l'itération 2 : recrues, manif et nasse d'un niveau, unités de maintien de l'ordre,
+// Les clés de fiche de l'itération 2 : recrues, manif et nasse d'un niveau, automates,
 // boss assis, fiche de collection. Chaque erreur d'écriture a son message.
 
 import test from 'node:test';

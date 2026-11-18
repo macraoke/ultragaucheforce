@@ -17,7 +17,7 @@
 //   discover {kind: 'heros' | 'ennemi' | 'recrue' | 'boss' | 'mot', id} : une seule fois par partie
 //   decorDown {id, x, y} : un décor à `pv` est cassé · offAir {seconds, x} : la régie cassée coupe l'antenne
 //
-// La manif et le maintien de l'ordre :
+// La manif et les automates :
 //   crowd        nombre de manifestants (entier, jamais plafonné) ; `cortege` en dessine 40 au plus
 //   recruits     [{ id, def, x, y, w, h, joined, animTime }] : à rejoindre en les touchant ou en leur tendant un tract
 //   addCrowd(n)  des gens rejoignent · disperse(part, raison) en disperse une part · loseCrowd(n, raison) en retire n
@@ -167,7 +167,7 @@ export class Game {
     if (this.events.length > MAX_EVENTS) this.events.splice(0, this.events.length - MAX_EVENTS);
   }
 
-  /** Le boss vaincu (il s'éjecte, puis disparaît), l'ordre cesse le feu jusqu'à la fin du niveau. */
+  /** Le boss vaincu (il s'éjecte, puis disparaît), les automates cessent le feu jusqu'à la fin du niveau. */
   get truce() {
     return Boolean(this.boss && (this.boss.state === 'ejecting' || this.boss.state === 'gone'));
   }
@@ -234,7 +234,7 @@ export class Game {
       }
     }
     if (team !== 'ordre' && this.boss && near(this.boss)) this.hurtBoss(damage);
-    // Au cessez-le-feu, ce que l'ordre a lancé ne blesse plus : une grenade encore en l'air, un tonneau qu'elle fait sauter.
+    // Au cessez-le-feu, ce que les automates ont lancé ne blesse plus : une grenade encore en l'air, un tonneau qu'elle fait sauter.
     const harmless = this.truce && (team === 'ordre' || credit === 'ordre');
     if (team !== 'luttes' && !harmless && !hero.dead && near(hero)) this.hurtHero(1, { x, kind: 'explosion' });
     if (team !== 'ordre') {
@@ -307,7 +307,7 @@ export class Game {
     }
   }
 
-  /** Les nuages qui gazent encore le héros et le cortège : au cessez-le-feu, plus ceux de l'ordre. */
+  /** Les nuages qui gazent encore le héros et le cortège : au cessez-le-feu, plus ceux des automates. */
   harmfulClouds() {
     return this.truce ? this.clouds.filter((c) => c.team !== 'ordre') : this.clouds;
   }
@@ -373,8 +373,8 @@ export class Game {
     e.daze = null;
     e.flash = 0.2;
     e.bubble = { text: strike ? 'EN GRÈVE !' : 'EN PANNE', t: 2.5 };
-    // Le bilan des « blessés » ne compte que les unités de l'ordre : ni un duplex, ni un ministre.
-    if (e.def.camp === 'ordre') this.stats[team === 'ordre' ? 'breakdownsBySelf' : 'breakdownsByPlayer']++;
+    // Les automates désactivés ne comptent que les unités du camp des automates : ni un duplex, ni un ministre.
+    if (e.def.camp === 'automates') this.stats[team === 'ordre' ? 'breakdownsBySelf' : 'breakdownsByPlayer']++;
     this.sfx(strike ? 'greve' : 'panne', e.x);
     this.emit('down', { x: e.x + e.w / 2, y: e.y + e.h / 2, end: strike ? 'greve' : 'panne' });
     this.emit('debris', { x: e.x + e.w / 2, y: e.y + e.h / 2, color: 'h', n: 5 });

@@ -87,7 +87,7 @@ test('brouillons : la liste donne le nom et la date, le plus récent d’abord',
 
 test('brouillons : renommer change le titre du niveau, et rien d’autre', () => {
   const drafts = new Drafts({ storage: storage(), now: clock() });
-  const { model } = paint(readLevel(TEMPLATE), [{ x: 10, y: 9 }], { type: 'chose', id: 'bac' }, { nasse: 'crs' });
+  const { model } = paint(readLevel(TEMPLATE), [{ x: 10, y: 9 }], { type: 'chose', id: 'ramasseur' }, { nasse: 'robot-bouclier' });
   const draft = drafts.create(writeLevel(model));
   drafts.rename(draft.id, '  Grève   à Égletons ');
   const text = drafts.get(draft.id).texte;

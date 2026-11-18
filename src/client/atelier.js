@@ -69,7 +69,7 @@ export function showAtelier(root, { bundle, save, test, back, resume = false }) 
     '..gGg.gGg.', '..gGg.gGg.', '..gGg.gGg.', '.ggg..ggg.',
   ];
   // Ce que l'en-tête reçoit de lui-même quand un boss ou une nasse arrive sur la carte.
-  const defaults = { boss: Object.keys(bundle.boss)[0], nasse: has(bundle.ennemis, 'crs') ? 'crs' : Object.keys(bundle.ennemis)[0] };
+  const defaults = { boss: Object.keys(bundle.boss)[0], nasse: has(bundle.ennemis, 'robot-bouclier') ? 'robot-bouclier' : Object.keys(bundle.ennemis)[0] };
 
   const drafts = store();
   drafts.adopt(save.brouillon, TEMPLATE); // l'ancien brouillon unique de l'Atelier devient le premier, une seule fois

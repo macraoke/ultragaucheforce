@@ -1,5 +1,5 @@
 titre: Neuf hélicoptères, vingt quads
-theme: ordre
+theme: capital
 texte: À Sainte-Soline, du 24 au 26 mars 2023, la gendarmerie dit avoir engagé 9 hélicoptères, 4 blindés, 4 engins lanceurs d'eau et un peloton de 40 gendarmes sur 20 quads, parmi 3 200 gendarmes et policiers.
 portee: Premier bilan adressé le 27 mars 2023 par le directeur général de la gendarmerie au ministre de l'Intérieur : c'est le récit d'une des parties. Selon la Défenseure des droits (décision n° 2026-158 du 7 juillet 2026), le poste de commandement recevait en direct les images des hélicoptères, et la doctrine du peloton sur quads dit que « tout emploi de la force en roulant est formellement proscrit » ; elle relève pourtant des tirs depuis des quads en mouvement. La gendarmerie estime, elle, que les quads ont joué « un rôle déterminant ».
 periode: 24 au 26 mars 2023

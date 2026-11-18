@@ -12,20 +12,20 @@ const card = (kind, id) => cards.find((c) => c.kind === kind && c.item.id === id
 
 test('débloqué dans le niveau : les clés de sauvegarde retrouvent leurs cartes, dans l’ordre de l’album', () => {
   const sign = bundle.pancartes.find((p) => p.credit && p.texte.includes(':')) || bundle.pancartes.find((p) => p.credit);
-  const keys = [`pancartes:${sign.texte}`, 'ennemis:crs', 'heros:zucman', 'heros:inconnu', 'fiches:smic'];
+  const keys = [`pancartes:${sign.texte}`, 'ennemis:robot-bouclier', 'heros:zucman', 'heros:inconnu', 'fiches:smic'];
   const found = cardsByKeys(bundle, keys);
-  assert.deepEqual(found.map(cardKey), ['heros:zucman', `pancartes:${sign.texte}`, 'ennemis:crs', 'fiches:smic']);
+  assert.deepEqual(found.map(cardKey), ['heros:zucman', `pancartes:${sign.texte}`, 'ennemis:robot-bouclier', 'fiches:smic']);
   assert.deepEqual(cardsByKeys(bundle, []), []);
   assert.equal(new Set(cards.map(cardKey)).size, cards.length, 'une clé par carte');
 });
 
 test('badge « Nouveau » : une carte trouvée depuis la dernière visite de son rayon, pas après', () => {
-  const save = { decouvertes: ['heros:zucman', 'ennemis:crs'], vues: {} };
+  const save = { decouvertes: ['heros:zucman', 'ennemis:robot-bouclier'], vues: {} };
   assert.ok(isFresh(save, card('heros', 'zucman')), 'jamais visité : tout ce qui est trouvé est nouveau');
   assert.ok(!isFresh(save, card('heros', 'melenchon')), 'pas trouvée : pas nouvelle');
   markSeen(save, 'camarades');
   assert.ok(!isFresh(save, card('heros', 'zucman')));
-  assert.ok(isFresh(save, card('ennemis', 'crs')), 'les autres rayons gardent leurs badges');
+  assert.ok(isFresh(save, card('ennemis', 'robot-bouclier')), 'les autres rayons gardent leurs badges');
   save.decouvertes.push('heros:melenchon');
   assert.ok(isFresh(save, card('heros', 'melenchon')));
   assert.ok(!isFresh({ decouvertes: ['heros:zucman'] }, card('heros', 'melenchon')), 'une vieille sauvegarde sans « vues »');

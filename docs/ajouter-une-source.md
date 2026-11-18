@@ -66,7 +66,7 @@ verifie: 2026-11-15
 | Clé | Rôle |
 |---|---|
 | `titre` | deux à six mots |
-| `theme` | `richesses`, `droits`, `ordre`, `democratie`, `programme` ou `luttes` |
+| `theme` | `richesses`, `droits`, `capital`, `democratie`, `programme` ou `luttes` |
 | `texte` | une ou deux phrases : le chiffre, son unité, sa date |
 | `portee` | la population, la définition, et ce que le chiffre ne dit pas |
 | `periode` | la période couverte |

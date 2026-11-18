@@ -588,11 +588,11 @@ export class Screens {
   }
 
   /**
-   * Fin de niveau, en un écran : la manif, le bilan des blessés tel qu'on l'annonce côté forces de l'ordre, réparti
-   * comme les CRS blessés en octobre 2026 avec une ou deux blessures de leur fichier, des faits réels à ouvrir
+   * Fin de niveau, en un écran : la manif, les automates désactivés et leur décompte, réparti comme le fichier
+   * interne d'octobre 2026, avec une ou deux blessures citées entre guillemets, des faits réels à ouvrir
    * (« Et en vrai ? »), ce qui a été débloqué.
-   * @param {number} hurt      les blessés annoncés côté forces de l'ordre pendant la partie
-   * @param {number} seed      la graine de la partie : ce que l'écran dit des blessés s'en tire
+   * @param {number} hurt      les automates désactivés pendant la partie
+   * @param {number} seed      la graine de la partie : ce que l'écran dit du décompte s'en tire
    * @param {string[]} facts   les fiches de « Et en vrai ? »
    */
   end({ level, hurt = 0, seed = 1, facts = [], time, crowd, next, last, won = [], best = 0, share = null }) {
@@ -610,11 +610,10 @@ export class Screens {
           best === null ? null : h('p', { className: 'dont' }, crowd > best ? (best ? `Record battu (${n(best)})` : 'Premier record') : `Record : ${n(best)}`)),
         h('article', { className: 'annonce' },
           h('p', { className: 'chiffre' }, n(hurt)),
-          h('p', {}, hurt > 1 ? 'blessés annoncés côté forces de l’ordre' : 'blessé annoncé côté forces de l’ordre'),
-          parts.length ? h('p', { className: 'dont' },
-            `${hurt > 1 ? 'Répartis' : 'Réparti'} comme les CRS blessés en octobre 2026 : ${parts.join(', ')}.`) : null,
+          h('p', {}, hurt > 1 ? 'automates désactivés' : 'automate désactivé'),
+          parts.length ? h('p', { className: 'dont' }, `${parts.join(', ')}.`) : null,
           // Espaces insécables : « ne reste pas seul en fin de ligne, » et ; ne commencent pas la suivante.
-          file.length ? h('p', { className: 'fichier' }, h('span', {}, 'Dans leur fichier : '),
+          file.length ? h('p', { className: 'fichier' },
             `${file.join('\u00a0; ').replace(/« /g, '«\u00a0').replace(/ »/g, '\u00a0»')}.`) : null)),
       // « Et en vrai ? » sur toute la largeur : les titres entiers, chacun ouvre sa carte.
       truths.length ? h('div', { className: 'vrai' }, h('span', {}, 'Et en vrai ?'),

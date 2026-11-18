@@ -1,5 +1,5 @@
 titre: D'où vient « Bismillah »
-theme: ordre
+theme: capital
 texte: Début octobre 2026, une capture d'écran Snapchat circule : un message au jargon « jeune » approximatif, qui demande à quand le blocus. Des élèves disent qu'il vient de policiers en civil qui cherchaient à infiltrer leurs conversations. Le message devient un mème, puis un slogan de manif.
 portee: L'infiltration est présumée : Al Jazeera écrit que l'affirmation n'a pas été vérifiée et que les autorités françaises ne se sont pas exprimées.
 periode: octobre 2026

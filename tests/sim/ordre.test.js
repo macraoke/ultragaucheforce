@@ -1,4 +1,4 @@
-// Les forces de l'ordre : sommations et charge, tir visé, canon à eau, moto, véhicule, hélicoptère,
+// Les automates : sommations et charge, tir visé, canon à eau, moto, véhicule, hélicoptère,
 // et le boss assis sur sa fortune.
 
 import test from 'node:test';

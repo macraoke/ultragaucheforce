@@ -1,5 +1,5 @@
 titre: Des drones au-dessus des cortèges
-theme: ordre
+theme: capital
 texte: Depuis la loi du 24 janvier 2022 et son décret du 19 avril 2023, un préfet peut autoriser des caméras sur drones pour le maintien de l'ordre. Le 24 mai 2023, le Conseil d'État a refusé de suspendre ce décret.
 portee: Ordonnance de référé, à la demande d'un particulier et d'une association : pas de doute sérieux sur la légalité, vu les garanties prévues (autorisation au cas par cas, information du public, pas de reconnaissance faciale, pas d'images de l'intérieur des domiciles). Pour un rassemblement, l'autorisation « n'est délivrée que pour la durée du rassemblement concerné » (article L. 242-5 du code de la sécurité intérieure). Avant ce cadre, le 22 décembre 2020, le Conseil d'État avait ordonné au préfet de police de cesser de surveiller par drone les rassemblements sur la voie publique (décision n° 446155).
 periode: loi du 24 janvier 2022, décret du 19 avril 2023, ordonnance du 24 mai 2023

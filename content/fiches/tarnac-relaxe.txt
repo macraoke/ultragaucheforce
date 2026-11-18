@@ -1,5 +1,5 @@
 titre: Tarnac, « une fiction »
-theme: ordre
+theme: capital
 texte: Le 12 avril 2018, les deux principaux prévenus, accusés du sabotage d'une ligne ferroviaire en novembre 2008, ont été relaxés à Paris. La Cour de cassation avait écarté la qualification terroriste en janvier 2017.
 portee: Affaire dite du « groupe de Tarnac », jugée par le tribunal correctionnel de Paris. Ils avaient été mis en examen pour association de malfaiteurs en relation avec une entreprise terroriste ; l'instruction avait abandonné cette charge dès août 2015. Cinq autres prévenus ont été relaxés et un a été condamné à quatre mois de prison avec sursis pour des faits annexes. Selon l'AFP, ces deux prévenus ont toutefois été déclarés coupables d'un refus de prélèvement biologique, avec dispense de peine. La présidente a déclaré que le « groupe de Tarnac » était « une fiction ».
 periode: novembre 2008 à avril 2018

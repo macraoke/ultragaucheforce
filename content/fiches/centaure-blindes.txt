@@ -1,5 +1,5 @@
 titre: Le Centaure, blindé des gendarmes
-theme: ordre
+theme: capital
 texte: Les blindés Centaure de la gendarmerie ont été « déployés pour la première fois lors des émeutes de juin 2023 », relève la Cour des comptes dans son rapport sur les forces mobiles du 3 avril 2024.
 portee: Le même rapport compte 64 compagnies de CRS et 116 escadrons de gendarmes mobiles. Nombre de véhicules : la gendarmerie « sera dotée à partir de 2024 de 90 véhicules blindés Centaure », le premier étant arrivé au groupement blindé de Satory fin septembre 2022 (avis n° 369 de l'Assemblée nationale, 19 octobre 2022). À Sainte-Soline, en mars 2023, la gendarmerie engageait quatre blindés à roues VBRG, d'un modèle plus ancien. Les emplois postérieurs à juin 2023 n'ont pas été vérifiés.
 periode: premier exemplaire en septembre 2022, premier déploiement en juin 2023

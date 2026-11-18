@@ -1,5 +1,5 @@
 # Grenades lacrymogènes tirées en cloche ; le gaz touche aussi son camp (fratricide: 1).
-nom: Gendarmes mobiles
+nom: Lance-pleurs
 pv: 3
 vitesse: 26
 deplacement: marche

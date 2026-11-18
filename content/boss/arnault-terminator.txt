@@ -42,7 +42,7 @@ phase.2.attaques: salve | charge | pluie
 salve.nombre: 3
 salve.vitesse: 130
 salve.ecart: 0.3
-invocation.ennemi: crs
+invocation.ennemi: robot-bouclier
 invocation.nombre: 1
 charge.vitesse: 170
 pluie.nombre: 6

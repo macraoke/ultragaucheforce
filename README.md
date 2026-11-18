@@ -4,7 +4,7 @@
 
 **[Jouer en ligne](https://macraoke.github.io/ultragaucheforce/)**, dans le navigateur, sans rien installer.
 
-Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les plateaux télé la racontent : surarmée de tracts et de tomates. On part à trois sur le plateau de Millevaches ; d'étape en étape, la manif grossit, et au bout de chacune on taxe la fortune qui s'y est assise. Ça se joue dans le navigateur, au clavier ou au pouce.
+Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les plateaux télé la racontent : surarmée de tracts et de tomates. Le but : faire la plus grosse manif pacifiste pour aller taxer le boss final. On part sur le plateau de Millevaches ; d'étape en étape, la manif grossit, et au bout de chacune on taxe la fortune qui s'y est assise. Ça se joue dans le navigateur, au clavier ou au pouce.
 
 | | |
 |---|---|
@@ -12,7 +12,7 @@ Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les platea
 | ![Le métro, sous le boulevard](docs/captures/metro.jpg) | ![Un immeuble, étage par étage](docs/captures/immeuble.jpg) |
 | ![Le barrage, sa vie en haut de l'écran](docs/captures/barrage.jpg) | ![Le boss, assis sur sa fortune](docs/captures/boss-assis.jpg) |
 
-- **Faire grossir la manif.** Une soignante, un cheminot, une intersyndicale : chaque recrue compte, une assemblée générale double tout.
+- **Faire la plus grosse manif.** Une soignante, un cheminot, une intersyndicale : chaque recrue compte, une assemblée générale double tout.
 - **Pousser.** Un barrage a une vie : les tracts l'entament, la manif le pousse, d'autant plus fort qu'elle est nombreuse.
 - **Six étapes.** Le camp d'entraînement de Millevaches, le rond-point, la raffinerie bloquée, le soir du 49.3 devant l'Assemblée, le siège de la chaîne d'info, puis « Bismillah, c'est les ténèbres », du lycée bloqué à la plus grande manif.
 - **Creuser, grimper.** Tout le décor se détruit. Sous la rue, le métro ; au-dessus, les étages et les toits.

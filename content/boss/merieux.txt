@@ -21,7 +21,7 @@ fortune.montant: 5.9
 fortune.fiche: fortune-merieux
 
 # Phases : jusqu'à quelle fraction de points de vie, à quel rythme (secondes), quelles attaques.
-# Des éprouvettes qui pleuvent, puis des CRS en renfort.
+# Des éprouvettes qui pleuvent, puis des automates en renfort.
 phase.1.jusqua: 0.6
 phase.1.rythme: 2.0
 phase.1.attaques: pluie | salve
@@ -32,7 +32,7 @@ phase.2.attaques: salve | invocation | pluie
 salve.nombre: 4
 salve.vitesse: 125
 salve.ecart: 0.25
-invocation.ennemi: crs
+invocation.ennemi: robot-bouclier
 invocation.nombre: 2
 pluie.nombre: 7
 pluie.vitesse: 105

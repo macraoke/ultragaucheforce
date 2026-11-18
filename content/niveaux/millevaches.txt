@@ -22,10 +22,10 @@ panneau.7: Un tonneau saute, ses voisins aussi
 panneau.8: [bas] + [tirer] : creuser · [haut] + [tirer] : viser en haut
 panneau.9: Fonce dans la cage : un camarade est libéré
 
-g: gendarme-mobile
+g: lance-pleurs
 q: quad
 h: helicoptere
-n: centaure
+n: gros-blinde
 d: drone
 e: editorialiste
 p: paysanne
