@@ -116,7 +116,7 @@ Unités : tout fichier de [`content/ennemis/`](../content/ennemis) (`robot-boucl
 
 ## La manif
 
-Le but du joueur : arriver toujours plus nombreux.
+Le but du joueur : la plus grosse manif possible, pour aller taxer le boss au bout.
 
 - Une **recrue** rejoint quand le héros la touche ou lui tend un tract. Son gain s'affiche au-dessus d'elle : `+ 20`, `× 2`.
 - Plus on est nombreux, plus les tracts font de dégâts.

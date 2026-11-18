@@ -8,15 +8,22 @@
 // Chaque geste relit le stockage avant d'écrire : un autre onglet a pu y créer ou supprimer un brouillon.
 
 import { readLevel, writeLevel, getField, setField } from './atelier-modele.js';
+import { renameEnemies } from './save.js';
 
 export const KEY = 'ugf:atelier:brouillons'; // préfixé, à part de la sauvegarde du jeu (`ugf:sauvegarde`)
 const UNREAD = 'ugf:atelier:brouillons:illisible'; // un stockage qu'on n'a pas su lire reste ici, tel quel
 
 /** Le format des brouillons. Il ne change qu'avec une fonction de passage dans `MIGRATIONS`. */
-export const VERSION = 1;
+export const VERSION = 2;
 
 /** `MIGRATIONS[n - 1]` fait passer les brouillons de la version n à la version n + 1. On n'en retire jamais. */
-const MIGRATIONS = [];
+const MIGRATIONS = [
+  // 1 → 2 : les automates changent d'identifiant (voir la version 4 de la sauvegarde) ; la légende de chaque
+  // brouillon et sa `nasse.ennemi` suivent, sinon le niveau ne se valide plus.
+  (data) => (Array.isArray(data.brouillons)
+    ? { ...data, brouillons: data.brouillons.map((d) => (isDraft(d) ? { ...d, texte: renameEnemies(d.texte) } : d)) }
+    : data),
+];
 
 const empty = () => ({ version: VERSION, ouvert: '', brouillons: [] });
 const versionOf = (data) => (Number.isInteger(data?.version) && data.version >= 1 ? data.version : 1);

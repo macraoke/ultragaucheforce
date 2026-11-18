@@ -15,6 +15,10 @@ const RENAMED_ENEMIES = {
 };
 const has = (o, k) => k !== null && Object.hasOwn(o, k);
 
+/** Le texte d'un niveau dont la légende et `nasse.ennemi` portent les anciens identifiants, avec ceux d'aujourd'hui. */
+export const renameEnemies = (text) => text.replace(/^(\S|nasse\.ennemi): *(\S+) *$/gm,
+  (line, sign, id) => (has(RENAMED_ENEMIES, id) ? `${sign}: ${RENAMED_ENEMIES[id]}` : line));
+
 /**
  * `MIGRATIONS[n - 1]` fait passer une sauvegarde de la version n à la version n + 1.
  * On n'en retire jamais : un joueur peut revenir après des mois. Chaque version garde une vraie
@@ -43,10 +47,7 @@ const MIGRATIONS = [
         return has(RENAMED_ENEMIES, id) ? `ennemis:${RENAMED_ENEMIES[id]}` : key;
       }))];
     }
-    if (typeof save.brouillon === 'string') {
-      out.brouillon = save.brouillon.replace(/^(\S|nasse\.ennemi): *(\S+) *$/gm,
-        (line, sign, id) => (has(RENAMED_ENEMIES, id) ? `${sign}: ${RENAMED_ENEMIES[id]}` : line));
-    }
+    if (typeof save.brouillon === 'string') out.brouillon = renameEnemies(save.brouillon);
     return out;
   },
 ];

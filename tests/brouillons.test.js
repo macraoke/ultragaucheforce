@@ -262,6 +262,19 @@ test('brouillons : rien n’est retiré à la lecture, une entrée bizarre va da
   assert.deepEqual(upgrade({ brouillons: 'non' }).ecartes, ['non']);
 });
 
+test('brouillons version 2 : un brouillon v1 qui posait les anciens automates (`r: bac`) se valide encore', () => {
+  const { model } = paint(readLevel(TEMPLATE), [{ x: 10, y: 9 }, { x: 14, y: 9 }], { type: 'chose', id: 'ramasseur' }, { nasse: 'robot-bouclier' });
+  const now = writeLevel(paint(model, [{ x: 18, y: 9 }], { type: 'chose', id: 'lance-pleurs' }, { nasse: 'robot-bouclier' }).model);
+  const old = now.replace(/: ramasseur$/m, ': bac').replace(/: lance-pleurs$/m, ': gendarme-mobile');
+  assert.match(old, /^.: bac$/m, 'l’ancien brouillon pose la bac');
+  assert.match(old, /^.: gendarme-mobile$/m);
+  assert.notDeepEqual(checkLevel(old, bundle).errors, [], 'sans passage, il ne se valide plus');
+  const data = upgrade({ version: 1, ouvert: 'a', brouillons: [{ id: 'a', texte: old, cree: 1, modifie: 2 }] });
+  assert.equal(data.version, VERSION);
+  assert.equal(data.brouillons[0].texte, now, 'la légende et la nasse reprennent les nouveaux identifiants, le reste ne bouge pas');
+  assert.deepEqual(checkLevel(data.brouillons[0].texte, bundle).errors, []);
+});
+
 test('brouillons : l’ancien brouillon unique de l’Atelier devient le premier, une seule fois', () => {
   const disk = storage();
   const drafts = new Drafts({ storage: disk, now: clock() });
