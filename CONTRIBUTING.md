@@ -7,7 +7,7 @@ Ici, on ajoute une pancarte comme on ajoute un niveau : sans code, sans rien ins
 
 | Je veux… | Où | Guide |
 |---|---|---|
-| lancer une idée | [une issue](https://github.com/macraoke/ultragaucheforce/issues/new/choose) | |
+| lancer une idée | [une issue](https://github.com/ultragaucheforce/ultragaucheforce.github.io/issues/new/choose) | |
 | une pancarte vue en manif, un slogan scandé | `content/pancartes/` | [pancarte ou bandeau](docs/ajouter-une-blague.md) |
 | un bandeau vu sur une chaîne d'info | `content/manchettes/` | [pancarte ou bandeau](docs/ajouter-une-blague.md) |
 | un niveau | l'Atelier du jeu : on le dessine, on l'essaie, on le propose | [niveau](docs/ajouter-un-niveau.md) |
@@ -53,7 +53,7 @@ Une pancarte, un slogan ou un bandeau porte sa source sur sa ligne : `TEXTE | o�
 
 ## Proposer depuis GitHub
 
-1. Sur [le dépôt](https://github.com/macraoke/ultragaucheforce), ouvrez le dossier voulu.
+1. Sur [le dépôt](https://github.com/ultragaucheforce/ultragaucheforce.github.io), ouvrez le dossier voulu.
 2. **Add file → Create new file** : un nom, le contenu.
 3. **Commit changes… → Propose changes**. GitHub copie le dépôt chez vous et ouvre la proposition tout seul ([détail](https://docs.github.com/fr/repositories/working-with-files/managing-files/creating-new-files)).
 

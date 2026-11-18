@@ -7,13 +7,20 @@
 // - tout le jeu est mis en cache d'un bloc, sous un nom versionné : jamais de mélange de versions ;
 // - « cache d'abord » : une fois installé, le jeu ne dépend plus du réseau ;
 // - une nouvelle version attend que le joueur l'accepte depuis le menu (jamais en pleine partie) ;
-// - on ne touche à aucune requête vers un autre site (le lecteur SoundCloud passe tel quel).
+// - on ne répond qu'aux fichiers du jeu et à sa page d'accueil : le reste du domaine (une autre appli
+//   dans un sous-dossier, comme /macraoke/) et les autres sites (le lecteur SoundCloud) passent tels quels.
 
 const VERSION = '__VERSION__'; // rempli par le build : empreinte de tous les fichiers
 const FILES = ['__FILES__']; // rempli par le build : chemins relatifs à précharger
 
 const PREFIX = 'ugf-'; // le domaine peut être partagé : on ne gère que nos propres caches
 const CACHE = PREFIX + VERSION;
+
+// Les adresses complètes du jeu, sans paramètres : à la racine du domaine, la portée du service worker
+// couvre aussi les sous-dossiers des autres applis, qu'il ne doit jamais servir.
+const SCOPE = self.registration.scope;
+const OWN = new Set(FILES.map((path) => new URL(path, SCOPE).href));
+const HOME = new Set([SCOPE, new URL('index.html', SCOPE).href]);
 
 self.addEventListener('install', (event) => {
   event.waitUntil((async () => {
@@ -42,15 +49,15 @@ self.addEventListener('message', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const { request } = event;
-  if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin) return;
+  if (request.method !== 'GET') return;
+  const url = new URL(request.url);
+  url.search = '';
+  url.hash = '';
+  const home = request.mode === 'navigate' && HOME.has(url.href);
+  if (!home && !OWN.has(url.href)) return; // pas un fichier du jeu : le réseau, sans intermédiaire
   event.respondWith((async () => {
     const cache = await caches.open(CACHE);
-    const cached = await cache.match(request, { ignoreSearch: true });
-    if (cached) return cached;
-    if (request.mode === 'navigate') {
-      const page = await cache.match('index.html');
-      if (page) return page;
-    }
-    return fetch(request);
+    const cached = await cache.match(home ? 'index.html' : url.href);
+    return cached ?? fetch(request);
   })());
 });
