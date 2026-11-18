@@ -355,6 +355,7 @@ function handle(events) {
     else if (e.type === 'heroCard') {
       heroRescued(run, e.hero);
       const hero = bundle.heros[e.hero];
+      const first = !isFound(save, 'heros', hero.id); // débloqué pour la première fois : le carton dure deux fois plus
       collect('heros', hero.id, true);
       collectCortege(); // les soutiens venus avec le camarade libéré
       // Le grand carton joue à chaque libération. Il est opaque : le monde n'est pas redessiné dessous,
@@ -365,7 +366,7 @@ function handle(events) {
         Object.assign(renderer.cam, renderer.target(game)); // la caméra arrivée
         renderer.draw(game, (performance.now() - opened) / 1000);
       };
-      showHeroCard(bundle, hero, { audio, reduced: save.options.sobre, seed: game.seed, onClose }).then(() => {
+      showHeroCard(bundle, hero, { audio, reduced: save.options.sobre, first, seed: game.seed, onClose }).then(() => {
         if (mode !== 'card') return;
         setMode('playing');
         if (game.level.cortege) audio.play('slogan'); // le cortège salue le camarade libéré
