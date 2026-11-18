@@ -1,6 +1,6 @@
 titre: 35 heures, puis 32
 theme: programme
-texte: Le programme L'Avenir en commun propose de revenir tout de suite à une durée légale de 35 heures par semaine, de passer aux 32 heures dans les métiers pénibles ou de nuit, puis de les étendre à tous par la négociation collective.
+texte: Le programme L'Avenir en commun propose de revenir tout de suite à une durée légale de 35 heures par semaine, de passer aux 32 heures dans les métiers pénibles ou de nuit, et d'encourager leur extension par la négociation collective.
 portee: Édition 2027 du programme de La France insoumise, chapitre « À chacun selon ses besoins ». Le programme précise que les heures supplémentaires seraient majorées, cotisations incluses, à 25 % pour les quatre premières et 50 % au-delà. Le même chapitre prévoit de généraliser une sixième semaine de congés payés pour tous les salariés. Ce sont des propositions d'un mouvement politique, pas des mesures en vigueur.
 periode: édition 2027, présentée en novembre 2026
 source.titre: Mélenchon 2027 — L'Avenir en commun, chapitre « À chacun selon ses besoins »
