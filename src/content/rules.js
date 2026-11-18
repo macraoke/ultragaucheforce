@@ -648,8 +648,7 @@ export function buildContent(files) {
     const first = [];
     for (const { text, line } of parseLines(comrades.text)) {
       if (!has(bundle.heros, text)) reporter(comrades.path)(line, `Le héros « ${text} » n'existe pas dans content/heros/.`);
-      else if (first.includes(text)) reporter(comrades.path)(line, `Le héros « ${text} » est déjà nommé plus haut.`);
-      else first.push(text);
+      else if (!first.includes(text)) first.push(text);
     }
     const rest = Object.keys(bundle.heros).filter((id) => !first.includes(id));
     bundle.heros = Object.fromEntries([...first, ...rest].map((id) => [id, bundle.heros[id]]));
