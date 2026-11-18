@@ -1,7 +1,7 @@
 titre: 1,5 milliard, selon lui
 theme: richesses
 texte: Le 4 juin 2026, sous serment devant une commission d'enquête du Sénat, Pierre-Édouard Stérin a dit que son capital « s'élève aujourd'hui à 1,5 milliard d'euros, répartis dans plus de 120 entreprises ».
-portee: Ce sont ses propres mots, pas une estimation de magazine. Plus tôt dans la même audition, il parle d'« un peu plus de 1,4 milliard d'euros » en ce début d'année 2026. Le classement Challenges du 8 juillet 2026 le place au 74e rang des fortunes professionnelles, 200 millions d'euros plus haut qu'en 2025, sans montant en accès libre (https://www.challenges.fr/classements/fortune/pierre-edouard-sterin_26641) : calculé sur cette hausse (+200 millions, +12,5 %), son estimation serait d'environ 1,8 milliard. Le jeu garde 1,5 milliard, le chiffre qu'il a donné sous serment. Ce n'est pas de l'argent disponible.
+portee: Ce sont ses propres mots, pas une estimation de magazine. Plus tôt dans la même audition, il parle d'« un peu plus de 1,4 milliard d'euros » en ce début d'année 2026. Le classement Challenges du 8 juillet 2026 le place au 74e rang des fortunes professionnelles, 200 millions d'euros plus haut qu'en 2025, sans montant en accès libre (https://www.challenges.fr/classements/fortune/pierre-edouard-sterin_26641) : calculé sur cette hausse (+200 millions, +12,5 %), son estimation serait d'environ 1,8 milliard. Ce n'est pas de l'argent disponible.
 periode: déclaration du 4 juin 2026
 source.titre: Sénat — Commission d'enquête sur le financement des politiques publiques par des organismes privés : comptes rendus de la semaine du 1er juin 2026 (audition de M. Pierre-Édouard Stérin, 4 juin 2026)
 source.url: https://www.senat.fr/compte-rendu-commissions/20260601/ce_politiques_publiques.html

@@ -1,6 +1,6 @@
 titre: 27 % pour les milliardaires, 52 % pour les autres
 theme: richesses
-texte: Tous impôts compris, les milliardaires français payaient 27 % de leurs revenus en 2016, presque uniquement de l'impôt sur les sociétés ; presque tous les autres, autour de 52 %, estime l'économiste Gabriel Zucman.
+texte: En 2016, tous impôts compris, les milliardaires français payaient 27 % de leurs revenus, presque uniquement en impôt sur les sociétés. Presque tous les autres payaient autour de 52 %, estime l'économiste Gabriel Zucman.
 portee: Même rapport et même méthode pour les deux nombres : tous les prélèvements rapportés au revenu avant impôt, bénéfices des sociétés contrôlées compris. Le rapport note que c'est environ la moitié des taux payés par tous les autres groupes sociaux (« only about half », en anglais dans le texte). Pour les milliardaires : 1,7 % d'impôt sur le revenu et environ 25 % d'impôt sur les sociétés. Estimation d'économiste, discutée.
 periode: données de 2016, rapport de juin 2024
 valeur: 27

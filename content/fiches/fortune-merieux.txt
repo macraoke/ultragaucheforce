@@ -1,7 +1,7 @@
 titre: 5,9 milliards estimés
 theme: richesses
 texte: Selon Forbes, le 17 novembre 2026, la fortune d’Alain Mérieux est estimée en temps réel à 6,5 milliards de dollars, soit environ 5,9 milliards d'euros.
-portee: Conversion au taux de référence de la BCE du 16 novembre 2026, 1 euro = 1,1014 dollar (https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/eurofxref-graph-usd.en.html). Estimation de Forbes, qui varie chaque jour avec la Bourse, fondée sur la pharmacie et le diagnostic, dont bioMérieux (Forbes : « Pharmaceuticals ») ; Forbes précise que son fils Alexandre partage cette fortune. Ce n'est pas de l'argent disponible.
+portee: Conversion au taux de référence de la BCE du 16 novembre 2026, 1 euro = 1,1014 dollar (https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/eurofxref-graph-usd.en.html). Estimation de Forbes, qui varie chaque jour avec la Bourse. Elle repose sur la pharmacie et le diagnostic, dont bioMérieux (Forbes : « Pharmaceuticals »). Forbes précise que son fils Alexandre partage cette fortune. Ce n'est pas de l'argent disponible.
 periode: estimation en temps réel du 17 novembre 2026
 source.titre: Forbes — Alain Mérieux, profil et fortune en temps réel
 source.url: https://www.forbes.com/profile/alain-merieux/

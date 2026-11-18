@@ -1,7 +1,7 @@
 titre: ISF et taxe à 2 %
 theme: programme
 texte: Le programme L'Avenir en commun propose de rétablir et renforcer l'impôt de solidarité sur la fortune (ISF), avec un volet climatique, et d'instaurer une « garantie d'impôt » de 2 % sur le patrimoine des centimillionnaires.
-portee: Édition 2027 du programme de La France insoumise, chapitre « Partager les richesses ». Le même chapitre prévoit aussi un héritage maximal de 12 millions d'euros et la suppression de la flat tax. Il s'agit de propositions d'un mouvement politique, pas de mesures en vigueur.
+portee: Édition 2027 du programme de La France insoumise, chapitre « Partager les richesses ». Le même chapitre prévoit aussi un héritage maximal de 12 millions d'euros et la suppression de la flat tax. Ce sont des propositions d'un mouvement politique, pas des mesures en vigueur.
 periode: édition 2027, présentée en novembre 2026
 source.titre: Mélenchon 2027 — L'Avenir en commun, chapitre « Partager les richesses »
 source.url: https://melenchon2027.fr/programme/livre/une-economie-au-service-des-besoins/chapitre2

@@ -1,7 +1,7 @@
 titre: IFI : 1,31 million d'euros en moins
 theme: richesses
 texte: En 2025, plus de la moitié des 50 premiers patrimoines soumis à l'IFI ont réduit cet impôt de 1,31 million d'euros en moyenne.
-portee: Les 50 plus gros patrimoines immobiliers imposables, pas les 50 plus grandes fortunes. Le plafonnement limite l'impôt en proportion des revenus ; le dossier précise que la réduction est « de 87 % en moyenne pour les contribuables plafonnés ». Contesté d'après des résultats de recherche (iFRAP, page non ouverte), qui y voit une garantie constitutionnelle et non une niche.
+portee: Les 50 plus gros patrimoines immobiliers imposables, pas les 50 plus grandes fortunes. Le plafonnement limite l'impôt en proportion des revenus ; le dossier précise que la réduction est « de 87 % en moyenne pour les contribuables plafonnés ». L'iFRAP le conteste et y voit une garantie constitutionnelle, pas une niche (d'après des résultats de recherche ; sa page n'a pas été ouverte).
 periode: 2025
 choc: oui
 source.titre: Assemblée nationale — Rapport de la commission d'enquête relative à l'imposition des plus hauts patrimoines et des revenus les plus élevés et à leur contribution au finance

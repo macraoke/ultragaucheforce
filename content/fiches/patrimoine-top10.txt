@@ -1,4 +1,4 @@
-titre: Qui possède quoi ?
+titre: 10 % des ménages, 47,9 % du patrimoine
 theme: richesses
 texte: Début 2024, les 10 % de ménages les mieux dotés détenaient 47,9 % du patrimoine brut total des ménages.
 portee: France hors Mayotte, ménages vivant en logement ordinaire. Patrimoine brut, donc dettes non déduites. Les 5 % les mieux dotés en détiennent 34,2 % et les 1 % les mieux dotés 15,4 %.

@@ -1,7 +1,7 @@
 titre: 100 % d'énergies renouvelables
 theme: programme
-texte: Le programme L'Avenir en commun propose d'atteindre le 100 % d'énergies renouvelables au plus tard en 2060, en commençant par organiser la sortie des énergies fossiles avant 2050 par la montée en puissance des énergies renouvelables, la sobriété et l'efficacité énergétiques.
-portee: Édition 2027 du programme de La France insoumise, chapitre « Les grands chantiers de la bifurcation écologique ». Le même chapitre prévoit de ne pas prolonger au-delà de 60 ans la durée de vie des centrales nucléaires existantes, d'arrêter le programme de nouveau nucléaire (EPR2) et de remettre en place des tarifs réglementés de l'énergie. Il s'agit de propositions d'un mouvement politique, pas de mesures en vigueur.
+texte: Le programme L'Avenir en commun propose d'atteindre 100 % d'énergies renouvelables en 2060 au plus tard. D'abord, sortir des énergies fossiles avant 2050, avec plus d'énergies renouvelables, la sobriété et l'efficacité énergétiques.
+portee: Édition 2027 du programme de La France insoumise, chapitre « Les grands chantiers de la bifurcation écologique ». Le même chapitre prévoit de ne pas prolonger au-delà de 60 ans la durée de vie des centrales nucléaires existantes, d'arrêter le programme de nouveau nucléaire (EPR2) et de remettre en place des tarifs réglementés de l'énergie. Ce sont des propositions d'un mouvement politique, pas des mesures en vigueur.
 periode: édition 2027, présentée en novembre 2026
 source.titre: Mélenchon 2027 — L'Avenir en commun, chapitre « Les grands chantiers de la bifurcation écologique »
 source.url: https://melenchon2027.fr/programme/livre/pour-une-bifurcation-ecologique-et-sociale/chapitre3

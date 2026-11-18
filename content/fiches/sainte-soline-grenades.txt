@@ -1,7 +1,7 @@
 titre: 5 015 grenades lacrymogènes
 theme: capital
-texte: À Sainte-Soline, le 25 mars 2023, le bilan de la gendarmerie répertorie 5 015 grenades lacrymogènes, 89 grenades de désencerclement, 40 grenades déflagrantes et assourdissantes et 81 munitions de LBD.
-portee: Bilan de l'usage des armes établi par la gendarmerie et repris par la Défenseure des droits (décision n° 2026-158 du 7 juillet 2026). Lacrymogènes : 2 783 CM6, 857 MP7 et 1 375 GM2L. Le dispositif comptait 3 000 gendarmes. Ce décompte ne dit pas si chaque tir était régulier.
+texte: À Sainte-Soline, le 25 mars 2023, le bilan de la gendarmerie répertorie 5 015 grenades lacrymogènes, 89 grenades de désencerclement, 40 grenades déflagrantes et assourdissantes et 81 balles de LBD.
+portee: Bilan établi par la gendarmerie et repris par la Défenseure des droits (décision n° 2026-158 du 7 juillet 2026). Lacrymogènes : 2 783 CM6, 857 MP7 et 1 375 GM2L. Le dispositif comptait 3 000 gendarmes. Ce décompte ne dit pas si chaque usage était régulier.
 periode: 25 mars 2023
 source.titre: Défenseur des droits — Décision n° 2026-158 du 7 juillet 2026 (manifestation de Sainte-Soline)
 source.url: https://juridique.defenseurdesdroits.fr/doc_num.php?explnum_id=23301

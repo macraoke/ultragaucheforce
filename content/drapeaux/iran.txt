@@ -1,5 +1,5 @@
 nom: Drapeau de l'Iran, sans emblème
-description: « Femme, Vie, Liberté » : une mission de l'ONU a conclu en 2024 à des crimes contre l'humanité dans la répression.
+description: « Femme, Vie, Liberté ». En 2024, une mission de l'ONU a conclu à des crimes contre l'humanité dans la répression.
 proximite: 2
 auteur: xsbfh
 ressource.1.titre: Iran : « le gouvernement prend des mesures concertées pour réduire au silence les victimes et leurs familles » — ONU Info

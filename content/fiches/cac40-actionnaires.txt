@@ -1,7 +1,7 @@
 titre: CAC 40 : 107,5 milliards aux actionnaires
 theme: richesses
 texte: En 2025, les entreprises du CAC 40 ont rendu 107,5 milliards d'euros à leurs actionnaires : 72,8 de dividendes et 34,8 de rachats d'actions.
-portee: Compilation privée à partir des publications des groupes ; ce n'est pas une source officielle, mais c'est la source d'origine que reprend la presse (BFM Bourse, lu aussi). Ces groupes sont mondiaux : les sommes ne viennent pas seulement de France et ne vont pas seulement à des actionnaires français.
+portee: Compilation privée faite à partir des publications des groupes. Ce n'est pas une source officielle, mais c'est celle que reprend la presse (BFM Bourse, lu aussi). Ces groupes sont mondiaux : les sommes ne viennent pas seulement de France et ne vont pas seulement à des actionnaires français.
 periode: 2025 (lettre de janvier 2026)
 choc: oui
 source.titre: Vernimmen — Dividendes et rachats d'actions au sein du CAC 40 en 2025
