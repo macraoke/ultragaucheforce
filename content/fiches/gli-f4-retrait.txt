@@ -1,7 +1,7 @@
 titre: La grenade GLI-F4 retirée
 theme: capital
-texte: Fin janvier 2020, le ministre de l'Intérieur a retiré la grenade GLI-F4, explosive en raison de sa teneur en tolite. Elle est remplacée par la GM2L, où une composition pyrotechnique tient lieu d'explosif.
-portee: Réponse du ministère de l'Intérieur à la question écrite n° 26327 : la GLI-F4 avait « un triple effet lacrymogène, assourdissant et de souffle » ; la GM2L est dite « assourdissante et lacrymogène » et réservée à des agents habilités. La Défenseure des droits date le retrait du 26 janvier 2020 et range la GM2L parmi les grenades explosives ; elle se tire uniquement au lanceur. À Sainte-Soline, le 25 mars 2023, le bilan de la gendarmerie recense 1 375 GM2L tirées.
+texte: Fin janvier 2020, le ministre de l'Intérieur a retiré la grenade GLI-F4, explosive parce qu'elle contenait de la tolite. Elle est remplacée par la GM2L, où une composition pyrotechnique remplace l'explosif.
+portee: Réponse du ministère de l'Intérieur à la question écrite n° 26327 : la GLI-F4 avait « un triple effet lacrymogène, assourdissant et de souffle » ; la GM2L est dite « assourdissante et lacrymogène » et réservée à des agents habilités. La Défenseure des droits date le retrait du 26 janvier 2020 et range la GM2L parmi les grenades explosives ; elle s'utilise uniquement au lanceur. À Sainte-Soline, le 25 mars 2023, le bilan de la gendarmerie recense 1 375 GM2L utilisées.
 periode: retrait fin janvier 2020 ; réponse publiée le 9 juin 2020
 source.titre: Assemblée nationale — Question écrite n° 26327, réponse du ministère de l'Intérieur (JO du 9 juin 2020)
 source.url: https://questions.assemblee-nationale.fr/dyn/15/questions/QANR5L15QE26327.pdf

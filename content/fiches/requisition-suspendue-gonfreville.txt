@@ -1,6 +1,6 @@
 titre: Une réquisition suspendue
 theme: droits
-texte: Le 6 avril 2023, le juge des référés du tribunal administratif de Rouen a suspendu la réquisition des grévistes chargés du pompage et de l'expédition à la raffinerie TotalEnergies de Gonfreville-l'Orcher : le préfet avait porté « une atteinte grave et manifestement illégale au droit de grève ».
+texte: Le 6 avril 2023, le juge des référés du tribunal administratif de Rouen a suspendu la réquisition des grévistes chargés du pompage et de l'expédition à la raffinerie TotalEnergies de Gonfreville-l'Orcher. Pour le juge, le préfet avait porté « une atteinte grave et manifestement illégale au droit de grève ».
 portee: Ordonnance n° 2301355, saisie par la CGT. La suspension vise l'arrêté du 4 avril 2023, à compter du 6 avril à 12 h 30. Le juge relève que l'approvisionnement n'était « actuellement problématique que pour 10% des stations-services », et que le flux de circulation attendu pour le week-end de Pâques n'était pas établi pour les régions visées. L'État verse 1 000 euros à chacun des deux requérants.
 periode: ordonnance du 6 avril 2023
 source.titre: Tribunal administratif de Rouen — Ordonnance n° 2301355 du 6 avril 2023

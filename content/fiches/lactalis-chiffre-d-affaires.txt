@@ -1,6 +1,6 @@
 titre: 30 milliards de chiffre d'affaires
 theme: richesses
-texte: Sous serment devant le Sénat, le 17 juin 2025, Emmanuel Besnier déclare qu'en 2024 Lactalis a franchi pour la première fois le seuil des 30 milliards d'euros de chiffre d'affaires, pour une rentabilité nette de 359 millions d'euros, soit 1,2 %.
+texte: Le 17 juin 2025, sous serment devant le Sénat, Emmanuel Besnier dit qu'en 2024 Lactalis a dépassé pour la première fois 30 milliards d'euros de chiffre d'affaires, pour une rentabilité nette de 359 millions d'euros, soit 1,2 %.
 portee: Chiffres du groupe, donnés par son PDG dans son propos liminaire devant la commission d'enquête sur l'utilisation des aides publiques aux grandes entreprises. Il y décrit « une entreprise non cotée, à capital familial », qui compte 85 500 collaborateurs dans le monde, dont 16 000 en France, et réalise 20 % de son activité en France.
 periode: année 2024
 source.titre: Sénat — rapport n° 808 (2024-2025), tome III, compte rendu de l'audition de M. Emmanuel Besnier, 17 juin 2025 (p. 551)

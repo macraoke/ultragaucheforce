@@ -1,7 +1,7 @@
 titre: Le Conseil d'État écarte C8
 theme: democratie
-texte: Le 19 février 2025, le Conseil d'État juge que l'Arcom n'a pas commis d'illégalité dans son analyse qui l'a amenée à écarter C8 et NRJ12 de la TNT. Il retient, pour C8, des manquements de nature à jeter un doute sur sa capacité à tenir ses engagements.
-portee: Il relève aussi que la chaîne n'avait, depuis sa création il y a vingt ans, jamais atteint l'équilibre financier. Il demande par ailleurs à l'Arcom d'évaluer si un nouvel appel à candidatures doit être lancé pour les quatre fréquences vacantes.
+texte: Le 19 février 2025, le Conseil d'État juge que l'Arcom n'a pas commis d'illégalité en écartant C8 et NRJ12 de la TNT. Pour C8, il retient des manquements qui peuvent faire douter de sa capacité à tenir ses engagements.
+portee: Il note aussi que la chaîne n'a jamais atteint l'équilibre financier depuis sa création, il y a vingt ans. Il demande enfin à l'Arcom d'évaluer si un nouvel appel à candidatures doit être lancé pour les quatre fréquences vacantes.
 periode: 19 février 2025
 source.titre: Conseil d'État — Fréquences TNT : l'Arcom doit évaluer l'opportunité d'un nouvel appel à candidatures pour les 4 fréquences désormais vacantes
 source.url: https://www.conseil-etat.fr/actualites/frequences-tnt-l-arcom-doit-evaluer-l-opportunite-d-un-nouvel-appel-a-candidatures-pour-les-4-frequences-desormais-vacantes

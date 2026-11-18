@@ -1,7 +1,7 @@
 titre: La règle verte
 theme: programme
-texte: Le programme L'Avenir en commun propose d'inscrire dans la Constitution le principe de la « règle verte », selon laquelle on ne prélève pas davantage sur la nature que ce qu'elle est en état de reconstituer.
-portee: Édition 2027 du programme de La France insoumise, chapitre « Planification écologique ». Le même chapitre prévoit des lois-cadres instaurant une planification écologique et démocratique, un conseil à la planification écologique et une baisse de 65 % des émissions de gaz à effet de serre d'ici 2033. Il s'agit de propositions d'un mouvement politique, pas de mesures en vigueur.
+texte: Le programme L'Avenir en commun propose d'inscrire dans la Constitution la « règle verte » : ne pas prélever sur la nature plus que ce qu'elle peut reconstituer.
+portee: Édition 2027 du programme de La France insoumise, chapitre « Planification écologique ». Le même chapitre prévoit des lois-cadres instaurant une planification écologique et démocratique, un conseil à la planification écologique et une baisse de 65 % des émissions de gaz à effet de serre d'ici 2033. Ce sont des propositions d'un mouvement politique, pas des mesures en vigueur.
 periode: édition 2027, présentée en novembre 2026
 source.titre: Mélenchon 2027 — L'Avenir en commun, chapitre « Planification écologique »
 source.url: https://melenchon2027.fr/programme/livre/pour-une-bifurcation-ecologique-et-sociale/chapitre1

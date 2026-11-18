@@ -1,6 +1,6 @@
 titre: 1 540 euros par mois
 theme: richesses
-texte: En 2024, les chauffeurs de taxi et de VTC non salariés gagnent en moyenne 1 540 euros par mois, selon l'Insee : le secteur le moins bien payé des non-salariés classiques.
+texte: En 2024, les chauffeurs de taxi et de VTC non salariés gagnent en moyenne 1 540 euros par mois, selon l'Insee. C'est le secteur le moins bien payé des non-salariés classiques.
 portee: Insee Première n° 2114 (30 juin 2026) : revenu d'activité moyen (après cotisations sociales, avant CSG et CRDS) des non-salariés « classiques » du secteur « taxis et VTC », hors micro-entrepreneurs et hors salariés.
 periode: 2024
 valeur: 1540

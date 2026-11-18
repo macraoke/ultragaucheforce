@@ -1,6 +1,6 @@
 titre: Vingt-trois 49.3
 theme: democratie
-texte: Première ministre pendant « un an et presque huit mois », jusqu'en janvier 2024, Élisabeth Borne a utilisé l'article 49.3 de la Constitution 23 fois : un nombre record depuis Michel Rocard.
+texte: Première ministre pendant « un an et presque huit mois », jusqu'en janvier 2024, Élisabeth Borne a utilisé 23 fois l'article 49.3 de la Constitution. C'est un record depuis Michel Rocard.
 portee: Selon Public Sénat, le 8 janvier 2024, au départ d'Élisabeth Borne de Matignon. Chaque recours engage la responsabilité du gouvernement sur un texte, adopté sans vote sauf motion de censure. Elle fixait pourtant pour objectif de n’y recourir qu’en dehors des textes financiers (entretien à l’AFP, 26 mars 2023).
 periode: 2022 à janvier 2024
 valeur: 23

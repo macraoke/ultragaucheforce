@@ -1,6 +1,6 @@
 titre: Un impôt plancher de 2 %
 theme: richesses
-texte: L'« impôt plancher » de 2 %, dit taxe Zucman, vise les patrimoines de plus de 100 millions d'euros. Il est différentiel : on ne paierait que l'écart entre 2 % du patrimoine et les impôts déjà acquittés sur les revenus.
+texte: L'« impôt plancher » de 2 %, dit taxe Zucman, vise les patrimoines de plus de 100 millions d'euros. Il est différentiel : on ne paierait que l'écart entre 2 % du patrimoine et les impôts déjà payés sur les revenus.
 portee: Proposition de loi adoptée par l'Assemblée nationale le 20 février 2025, que la commission des finances du Sénat n'a pas adoptée (rapport du 4 juin 2025) ; le dispositif n'est pas en vigueur. De l'ordre de 1 600 à 1 800 foyers fiscaux concernés selon ses autrices. Impôts déduits : impôt sur le revenu, IFI, CSG, CRDS et contribution exceptionnelle sur les hauts revenus. L'impôt sur les sociétés n'est pas déduit.
 periode: proposition de loi de 2025
 source.titre: Sénat — Rapport n° 689 (2024-2025) sur la proposition de loi instaurant un impôt plancher de 2 % sur le patrimoine des ultrariches

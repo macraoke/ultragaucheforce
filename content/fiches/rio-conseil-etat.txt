@@ -1,6 +1,6 @@
 titre: Un matricule trop petit
 theme: capital
-texte: Le 11 octobre 2023, le Conseil d'État a donné douze mois au ministre de l'Intérieur pour que policiers et gendarmes portent réellement leur numéro d'identification, et pour que ce numéro soit lisible.
+texte: Le 11 octobre 2023, le Conseil d'État a donné douze mois au ministre de l'Intérieur pour que policiers et gendarmes portent vraiment leur numéro d'identification, et que ce numéro soit lisible.
 portee: Assemblée du contentieux (17 juges), saisie par la Ligue des droits de l'homme, l'ACAT, le Syndicat de la magistrature et le Syndicat des avocats de France. Constats : un défaut de port qui dépasse les cas individuels, un numéro parfois masqué par les équipements, des chiffres de moins d'1 cm sur une bande de 5 × 1,2 cm (police) ou 4,5 × 1,2 cm (gendarmerie). Ce numéro, dit RIO, compte sept chiffres. Le 29 avril 2026 (décision n° 507239), le Conseil d'État juge sa décision pas entièrement exécutée et exige la distribution des nouveaux équipements avant le 31 décembre 2026, sans astreinte.
 periode: décision du 11 octobre 2023 ; suivi au 29 avril 2026
 source.titre: Conseil d'État — Forces de l'ordre : le Conseil d'État enjoint au Gouvernement de garantir le port effectif et la lisibilité du numéro d'identification individuel

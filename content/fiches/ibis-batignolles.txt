@@ -1,6 +1,6 @@
 titre: Ibis Batignolles, 22 mois de grève
 theme: luttes
-texte: Du 17 juillet 2019 au 21 mai 2021, vingt salariés du ménage de l'hôtel Ibis Batignolles, à Paris, dont 17 femmes de chambre, tiennent tête au sous-traitant STN et au groupe Accor. Le 25 mai 2021, leur accord valide la quasi-totalité de leurs revendications.
+texte: Du 17 juillet 2019 au 21 mai 2021, vingt salariés du ménage de l'hôtel Ibis Batignolles, à Paris, dont 17 femmes de chambre, tiennent tête au sous-traitant STN et au groupe Accor. Le 25 mai 2021, un accord leur donne la quasi-totalité de ce qu'ils demandaient.
 portee: franceinfo, 30 mai 2021, qui parle du conflit social le plus long de l'histoire de l'hôtellerie. Au piquet de grève, devant l'hôtel : « Frottez ! Frottez ! », lance une meneuse ; « Il faut payer ! », répondent les autres.
 periode: juillet 2019 à mai 2021
 source.titre: franceinfo — Après 22 mois de grève et un accord historique, les femmes de chambre de l'hôtel Ibis Batignolles racontent leur lutte « contre le patronat »

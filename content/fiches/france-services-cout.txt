@@ -1,6 +1,6 @@
 titre: Un guichet France services : 100 000 euros
 theme: richesses
-texte: Un espace France services, le guichet de services publics de proximité, coûte en moyenne 100 000 euros par an à faire fonctionner, établit la Cour des comptes.
+texte: Un espace France services, le guichet de services publics de proximité, coûte en moyenne 100 000 euros par an à faire fonctionner, selon la Cour des comptes.
 portee: Fonctionnement d'un guichet (agents, locaux), supporté surtout par la commune ou La Poste. La Cour note 200 000 euros en moyenne en quartier prioritaire et 80 000 en zone rurale. Les agents des administrations partenaires ne sont pas comptés.
 periode: budgets 2020 à 2023
 valeur: 100000

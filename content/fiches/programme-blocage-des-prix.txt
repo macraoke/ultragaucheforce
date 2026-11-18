@@ -1,7 +1,7 @@
 titre: Bloquer les prix essentiels
 theme: programme
 texte: Le programme L'Avenir en commun propose de bloquer et encadrer les prix des produits de première nécessité (alimentation, énergie, carburant) et d'interdire la « réduflation » (réduction des quantités pour le même prix).
-portee: Édition 2027 du programme de La France insoumise, chapitre « Partager les richesses ». La mesure figure dans la section « Créer un état d'urgence sociale », qui prévoit aussi de revaloriser les aides pour le logement (APL) de 10 % et de mettre en place des stocks tampons de matières premières alimentaires. Il s'agit de propositions d'un mouvement politique, pas de mesures en vigueur.
+portee: Édition 2027 du programme de La France insoumise, chapitre « Partager les richesses ». La mesure figure dans la section « Créer un état d'urgence sociale », qui prévoit aussi de revaloriser les aides pour le logement (APL) de 10 % et de mettre en place des stocks tampons de matières premières alimentaires. Ce sont des propositions d'un mouvement politique, pas des mesures en vigueur.
 periode: édition 2027, présentée en novembre 2026
 source.titre: Mélenchon 2027 — L'Avenir en commun, chapitre « Partager les richesses »
 source.url: https://melenchon2027.fr/programme/livre/une-economie-au-service-des-besoins/chapitre2

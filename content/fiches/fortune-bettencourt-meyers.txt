@@ -1,7 +1,7 @@
 titre: 69,7 milliards estimés
 theme: richesses
 texte: Selon le classement Challenges publié le 8 juillet 2026, Françoise Bettencourt Meyers et sa famille sont la quatrième fortune professionnelle de France, avec un patrimoine estimé à 69,7 milliards d'euros.
-portee: Estimation fondée sur la valeur des actions et parts d'entreprises, ici surtout L'Oréal, dont la fiche de Challenges dit que la famille possède près de 35 % (34,79 % au 31 décembre 2025 selon L'Oréal). Ce n'est pas de l'argent disponible, et les biens personnels ne sont pas comptés. Challenges attribue ce montant à elle « et sa famille », pas à elle seule.
+portee: Estimation fondée sur la valeur des actions et parts d'entreprises, surtout L'Oréal, dont la fiche de Challenges dit que la famille possède près de 35 % (34,79 % au 31 décembre 2025 selon L'Oréal). Ce n'est pas de l'argent disponible, et les biens personnels ne sont pas comptés. Challenges attribue ce montant à elle « et sa famille », pas à elle seule.
 periode: classement 2026, publié le 8 juillet 2026
 source.titre: Challenges — Les 500 plus grandes fortunes de France en 2026
 source.url: https://www.challenges.fr/classements/fortune/

@@ -1,7 +1,7 @@
 titre: Renationaliser la SNCF
 theme: programme
 texte: Le programme L'Avenir en commun propose de renationaliser la Société nationale des chemins de fer français (SNCF) et de refuser la mise en concurrence des lignes de transport.
-portee: Édition 2027 du programme de La France insoumise, chapitre « Les grands chantiers de la bifurcation écologique ». Le même chapitre prévoit de créer un pôle public des transports et de la mobilité, de stopper la suppression des lignes ferroviaires du quotidien et d'en réouvrir, et de réduire le prix des billets de train. Il s'agit de propositions d'un mouvement politique, pas de mesures en vigueur.
+portee: Édition 2027 du programme de La France insoumise, chapitre « Les grands chantiers de la bifurcation écologique ». Le même chapitre prévoit de créer un pôle public des transports et de la mobilité, de stopper la suppression des lignes ferroviaires du quotidien et d'en réouvrir, et de réduire le prix des billets de train. Ce sont des propositions d'un mouvement politique, pas des mesures en vigueur.
 periode: édition 2027, présentée en novembre 2026
 source.titre: Mélenchon 2027 — L'Avenir en commun, chapitre « Les grands chantiers de la bifurcation écologique »
 source.url: https://melenchon2027.fr/programme/livre/pour-une-bifurcation-ecologique-et-sociale/chapitre3

@@ -1,7 +1,7 @@
 titre: La retraite à 60 ans
 theme: programme
 texte: Le programme L'Avenir en commun propose d'abroger le report de l'âge de départ à 64 ans, puis de rétablir le droit à la retraite à 60 ans à taux plein pour 40 annuités de cotisations.
-portee: Édition 2027 du programme de La France insoumise, chapitre « À chacun selon ses besoins ». Le même chapitre prévoit de supprimer la décote et de porter les pensions pour une carrière complète au moins au niveau du Smic revalorisé. Il s'agit d'une proposition d'un mouvement politique, pas d'une mesure en vigueur.
+portee: Édition 2027 du programme de La France insoumise, chapitre « À chacun selon ses besoins ». Le même chapitre prévoit de supprimer la décote et de porter les pensions pour une carrière complète au moins au niveau du Smic revalorisé. C'est une proposition d'un mouvement politique, pas une mesure en vigueur.
 periode: édition 2027, présentée en novembre 2026
 source.titre: Mélenchon 2027 — L'Avenir en commun, chapitre « À chacun selon ses besoins »
 source.url: https://melenchon2027.fr/programme/livre/mettre-en-securite-sociale/chapitre1

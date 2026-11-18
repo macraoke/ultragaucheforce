@@ -1,7 +1,7 @@
 titre: Moins d'élèves par classe
 theme: programme
 texte: Le programme L'Avenir en commun propose de réduire partout les effectifs par classe pour faire mieux que la moyenne européenne de 19 élèves par classe, en donnant la priorité aux maternelles et aux classes des actuels réseaux d'éducation prioritaire (REP).
-portee: Édition 2027 du programme de La France insoumise, chapitre « Élever le niveau d'éducation et de savoirs ». Le même chapitre prévoit un plan pluriannuel de recrutement pour l'ensemble des concours, la titularisation de l'ensemble des personnels contractuels de l'Éducation nationale et le rattrapage du gel du point d'indice depuis 2010. Il s'agit de propositions d'un mouvement politique, pas de mesures en vigueur.
+portee: Édition 2027 du programme de La France insoumise, chapitre « Élever le niveau d'éducation et de savoirs ». Le même chapitre prévoit un plan pluriannuel de recrutement pour l'ensemble des concours, la titularisation de l'ensemble des personnels contractuels de l'Éducation nationale et le rattrapage du gel du point d'indice depuis 2010. Ce sont des propositions d'un mouvement politique, pas des mesures en vigueur.
 periode: édition 2027, présentée en novembre 2026
 source.titre: Mélenchon 2027 — L'Avenir en commun, chapitre « Élever le niveau d'éducation et de savoirs »
 source.url: https://melenchon2027.fr/programme/livre/le-gout-du-futur-aux-nouvelles-frontieres-de-l-humanite/chapitre2

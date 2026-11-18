@@ -1,6 +1,6 @@
 titre: Les street medics
 theme: luttes
-texte: La Défenseure des droits définit les « medics » comme des secouristes volontaires et bénévoles, sans lien avec les services de secours officiels, qui interviennent lors de manifestations pour apporter les premiers secours aux personnes blessées.
+texte: Pour la Défenseure des droits, les « medics » sont des secouristes volontaires et bénévoles, sans lien avec les secours officiels. Ils donnent les premiers secours aux blessés pendant les manifestations.
 portee: Définition donnée en note de la décision n° 2026-158 du 7 juillet 2026, à propos de Sainte-Soline. La décision note que cette organisation des secours était méconnue de la société civile, et qu'une manifestation interdite ne permet pas de désigner d'interlocuteurs entre manifestants, « medics » et secours officiels. Elle ne retient pas d'obstacle délibéré aux secours du SAMU.
 periode: décision du 7 juillet 2026
 source.titre: Défenseur des droits — Décision n° 2026-158 du 7 juillet 2026 (note 11)
