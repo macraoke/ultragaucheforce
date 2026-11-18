@@ -1519,7 +1519,7 @@ test('les premières pistes validées par Valentin, niveau par niveau', () => {
   const table = {
     millevaches: [['countryside-explosions'], 'siamo-tutti-antifascisti-1fam-bender'],
     'rond-point': [['hey-hey-macron'], 'macron-demission-peridurale'],
-    raffinerie: [['internationale'], 'tout-le-monde-deteste-la-police-tekos-redon'],
+    raffinerie: [['internationale'], 'jeunesse-emmerde-le-fn-dreamz-remix'],
     'soir-du-49-3': [['casserolade-gueret'], 'majes-macron-explosion'],
     'chaine-info': [['jles-aime-pas'], 'caca-sur-bardella-sketogan'],
     // « Citadelle chez Arnault » ; « et pour ce niveau mets "j'ai deux passions<3" comme 2e chanson, puis Sexy Nana . »
