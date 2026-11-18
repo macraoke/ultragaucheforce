@@ -70,6 +70,22 @@ test('version 4 : une vraie sauvegarde v3 garde ses automates débloqués, sous 
   assert.equal(draft, 'titre: Essai\nnasse.ennemi: robot-bouclier\nc: robot-bouclier\na: ramasseur\nv: vache\n', 'le brouillon de l’Atelier suit');
 });
 
+test('version 5 : une vraie sauvegarde v4 garde ses chaînes débloquées, sous les noms FNEWS et PANIQUE TV', () => {
+  const { bundle } = loadContent();
+  assert.ok(old.v4.decouvertes.includes('ennemis:bfm'), 'la sauvegarde v4 d’essai a débloqué l’ancien bfm');
+  const stored = { ...structuredClone(old.v4), decouvertes: [...old.v4.decouvertes, 'ennemis:cnews'] };
+  const save = upgrade(stored);
+  for (const [was, now] of [['bfm', 'duplex-panique-tv'], ['cnews', 'fnews']]) {
+    assert.ok(bundle.ennemis[now], `« ${now} » existe dans content/ennemis/`);
+    assert.ok(isFound(save, 'ennemis', now), `« ennemis:${was} » devient « ennemis:${now} »`);
+    assert.ok(!save.decouvertes.includes(`ennemis:${was}`), `« ennemis:${was} » ne reste pas en double`);
+  }
+  assert.ok(isFound(save, 'fiches', 'bandeau-fallait-il-l-interdire'), 'les fiches gardent leurs identifiants');
+  assert.equal(save.decouvertes.length, stored.decouvertes.length, 'rien de perdu, rien en double');
+  const draft = upgrade({ ...structuredClone(old.v4), brouillon: 'titre: Essai\n<: bfm\n>: cnews\nv: vache\n' }).brouillon;
+  assert.equal(draft, 'titre: Essai\n<: duplex-panique-tv\n>: fnews\nv: vache\n', 'le brouillon de l’Atelier suit');
+});
+
 test('ce que le jeu ne connaît pas reste dans la sauvegarde', () => {
   const stored = { ...structuredClone(old.v1), plusTard: { a: 1 }, decouvertes: [...old.v1.decouvertes, 'heros:parti-du-jeu'] };
   const save = upgrade(stored);

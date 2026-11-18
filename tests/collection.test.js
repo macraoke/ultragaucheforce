@@ -25,6 +25,15 @@ test('collection : les pancartes en deuxième, juste après les camarades ; les 
   assert.deepEqual(shelfOf, [...shelfOf].sort((a, b) => a - b), 'les cartes d’un rayon se suivent, rayon après rayon');
 });
 
+test('collection : les camarades viennent dans l’ordre de content/camarades.txt, le tyrannogauchiste en N° 001', () => {
+  const order = ['tyrannogauchiste', 'melenchon', 'ecoterroriste', 'poutou', 'aubry', 'sale-gosse', 'dinos-gauchistes', 'zucman',
+    'guette', 'gauche-atomique', 'rousseau', 'sniper', 'magma-gauche', 'bompard', 'sans-dents'];
+  const heroes = cards.filter((c) => c.kind === 'heros');
+  assert.deepEqual(heroes.map((c) => c.item.id), order);
+  assert.equal(heroes[0].number, 1);
+  assert.deepEqual(Object.keys(bundle.heros), order, 'la sélection et la Galerie suivent le même ordre');
+});
+
 test('collection : chaque rayon a ses cartes ; faits et propositions se partagent les fiches', () => {
   for (const shelf of SHELVES) assert.ok(cards.some((c) => c.shelf === shelf.id), `rayon « ${shelf.titre} »`);
   const of = (id) => cards.filter((c) => c.shelf === id);

@@ -11,6 +11,12 @@ const files = readContentFiles();
 const withFile = (path, text) => [...files.filter((f) => f.path !== path), { path, text }];
 
 test('« constructor » ou « toString » ne passent pas pour un contenu existant', () => {
+  const comrades = buildContent(withFile('content/camarades.txt', 'constructor\nzucman\nzucman\n'));
+  assert.ok(comrades.errors.some((e) => e.file === 'content/camarades.txt' && e.line === 1 && e.message.includes("n'existe pas")));
+  assert.ok(comrades.errors.some((e) => e.file === 'content/camarades.txt' && e.line === 3 && e.message.includes('déjà nommé')));
+  assert.equal(Object.keys(comrades.bundle.heros)[0], 'zucman', 'les autres héros suivent ceux que le fichier nomme');
+  assert.equal(Object.keys(comrades.bundle.heros).length, Object.keys(buildContent(files).bundle.heros).length);
+
   const campaign = buildContent(withFile('content/campagne.txt', 'constructor\n'));
   assert.ok(campaign.errors.some((e) => e.file === 'content/campagne.txt' && e.message.includes("n'existe pas")));
   assert.deepEqual(campaign.bundle.campagne, []);

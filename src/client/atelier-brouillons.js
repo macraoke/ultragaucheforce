@@ -14,16 +14,23 @@ export const KEY = 'ugf:atelier:brouillons'; // préfixé, à part de la sauvega
 const UNREAD = 'ugf:atelier:brouillons:illisible'; // un stockage qu'on n'a pas su lire reste ici, tel quel
 
 /** Le format des brouillons. Il ne change qu'avec une fonction de passage dans `MIGRATIONS`. */
-export const VERSION = 2;
+export const VERSION = 3;
 
 /** `MIGRATIONS[n - 1]` fait passer les brouillons de la version n à la version n + 1. On n'en retire jamais. */
 const MIGRATIONS = [
   // 1 → 2 : les automates changent d'identifiant (voir la version 4 de la sauvegarde) ; la légende de chaque
   // brouillon et sa `nasse.ennemi` suivent, sinon le niveau ne se valide plus.
-  (data) => (Array.isArray(data.brouillons)
-    ? { ...data, brouillons: data.brouillons.map((d) => (isDraft(d) ? { ...d, texte: renameEnemies(d.texte) } : d)) }
-    : data),
+  (data) => renameDrafts(data),
+  // 2 → 3 : `cnews` devient `fnews`, `bfm` devient `duplex-panique-tv` (voir la version 5 de la sauvegarde). Même passage.
+  (data) => renameDrafts(data),
 ];
+
+/** La légende et la `nasse.ennemi` de chaque brouillon prennent les identifiants d'ennemis d'aujourd'hui. */
+function renameDrafts(data) {
+  return Array.isArray(data.brouillons)
+    ? { ...data, brouillons: data.brouillons.map((d) => (isDraft(d) ? { ...d, texte: renameEnemies(d.texte) } : d)) }
+    : data;
+}
 
 const empty = () => ({ version: VERSION, ouvert: '', brouillons: [] });
 const versionOf = (data) => (Number.isInteger(data?.version) && data.version >= 1 ? data.version : 1);

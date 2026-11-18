@@ -30,8 +30,8 @@ f: cuve-a-pisse
 k: la-borne
 e: editorialiste
 d: drone
-<: bfm
->: cnews
+<: duplex-panique-tv
+>: fnews
 r: defonceur
 l: lyceenne
 u: prof

@@ -1,6 +1,6 @@
 # Il ne blesse personne : il cadre le héros, et la panique monte. Ses répliques sont de vrais bandeaux de la chaîne
 # et les mots de ses journalistes à l'antenne, chacun avec sa fiche dans `content/citations/`.
-nom: Duplex de BFM-TV
+nom: Duplex de PANIQUE TV
 pv: 2
 vitesse: 34
 deplacement: marche

@@ -6,12 +6,13 @@ const KEY = 'ugf:sauvegarde'; // préfixé : le domaine peut être partagé avec
 const UNREAD = 'ugf:sauvegarde:illisible'; // une sauvegarde qu'on n'a pas su lire reste ici, telle quelle
 
 /** Le format de la sauvegarde. Il ne change qu'avec une fonction de passage dans `MIGRATIONS`. */
-export const VERSION = 4;
+export const VERSION = 5;
 
-/** Les identifiants des automates avant la version 4, et ceux d'aujourd'hui. */
+/** Les anciens identifiants d'ennemis et ceux d'aujourd'hui : les automates avant la version 4, les chaînes avant la 5. */
 const RENAMED_ENEMIES = {
   crs: 'robot-bouclier', bac: 'ramasseur', 'brav-m': 'petaradeurs', raid: 'defonceur', 'gendarme-mobile': 'lance-pleurs',
   centaure: 'gros-blinde',
+  cnews: 'fnews', bfm: 'duplex-panique-tv',
 };
 const has = (o, k) => k !== null && Object.hasOwn(o, k);
 
@@ -39,18 +40,24 @@ const MIGRATIONS = [
   },
   // 3 → 4 : les automates changent de nom et d'identifiant (cadrage choisi par Valentin : « Automates du capital » ;
   // noms : « Option 2 »). Les cartes débloquées suivent, et le brouillon de l'Atelier qui en posait aussi.
-  (save) => {
-    const out = { ...save };
-    if (shape(save.decouvertes) === 'liste') {
-      out.decouvertes = [...new Set(save.decouvertes.map((key) => {
-        const id = typeof key === 'string' && key.startsWith('ennemis:') ? key.slice('ennemis:'.length) : null;
-        return has(RENAMED_ENEMIES, id) ? `ennemis:${RENAMED_ENEMIES[id]}` : key;
-      }))];
-    }
-    if (typeof save.brouillon === 'string') out.brouillon = renameEnemies(save.brouillon);
-    return out;
-  },
+  (save) => renameSaved(save),
+  // 4 → 5 : les chaînes changent de nom (Valentin : « change CNEWS pour "FNEWS" y compris le pictogramme. »,
+  // « change BFMTV pour Panique TV. ») : `cnews` devient `fnews`, `bfm` devient `duplex-panique-tv`. Même passage.
+  (save) => renameSaved(save),
 ];
+
+/** Les cartes d'ennemis débloquées et le brouillon de l'Atelier prennent les identifiants d'aujourd'hui. */
+function renameSaved(save) {
+  const out = { ...save };
+  if (shape(save.decouvertes) === 'liste') {
+    out.decouvertes = [...new Set(save.decouvertes.map((key) => {
+      const id = typeof key === 'string' && key.startsWith('ennemis:') ? key.slice('ennemis:'.length) : null;
+      return has(RENAMED_ENEMIES, id) ? `ennemis:${RENAMED_ENEMIES[id]}` : key;
+    }))];
+  }
+  if (typeof save.brouillon === 'string') out.brouillon = renameEnemies(save.brouillon);
+  return out;
+}
 
 const DEFAULTS = {
   termines: {}, // identifiant de niveau → vrai

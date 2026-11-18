@@ -687,7 +687,7 @@ test('hors service, un plateau de télé ne se retourne pas ; en effets réduits
   const actor = r.actor.bind(r);
   r.actor = (a, rows, opts) => { flips.push(opts.flip); return actor(a, rows, opts); };
   r.combatBefore({ hero: { x: 0, y: 150, w: 12, h: 18, dead: false }, enemies: [] });
-  const def = bundle.ennemis.cnews;
+  const def = bundle.ennemis.fnews;
   assert.equal(def.deplacement, 'fixe');
   assert.equal(def.reaction, 'cadre');
   const set = { def, x: 120, y: 150, w: def.largeur, h: def.hauteur, facing: -1, flash: 0, state: 'done' };
@@ -943,7 +943,7 @@ test('le boss vaincu, un automate à pied près de qui passe le héros émet des
   const shield = unit('robot-bouclier', 110);
   const enemies = [
     shield, unit('ramasseur', 300), // un automate loin du héros
-    unit('bfm', 96), unit('canon-a-eau', 120), unit('faux-jeune', 104), // près de lui, mais ni du camp des automates, ni à pied
+    unit('duplex-panique-tv', 96), unit('canon-a-eau', 120), unit('faux-jeune', 104), // près de lui, mais ni du camp des automates, ni à pied
   ];
   const game = { truce: false, hero: { x: 100, y: 134, w: 12, h: 16, dead: false }, enemies };
   const frames = (n, g = game) => {
