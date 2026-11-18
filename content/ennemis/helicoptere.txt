@@ -1,5 +1,5 @@
-# Son projecteur balaie le sol ; si le héros reste dedans, des gendarmes descendent à la corde.
-nom: Hélicoptère
+# Son projecteur balaie le sol ; si le héros reste dedans, des automates descendent à la corde.
+nom: Bourdon
 pv: 10
 vitesse: 55
 deplacement: vol
@@ -13,7 +13,7 @@ fiche: sainte-soline-dispositif
 fiche: sainte-soline-bilan
 faisceau.largeur: 60
 faisceau.balayage: 80
-renfort.ennemi: gendarme-mobile
+renfort.ennemi: lance-pleurs
 renfort.nombre: 2
 renfort.max: 2
 auteur: xsbfh

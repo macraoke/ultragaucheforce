@@ -1,4 +1,4 @@
-// Le boss vaincu, l'ordre cesse le feu : plus de tir, de charge, de grenade, d'interpellation, de renfort ni de nasse,
+// Le boss vaincu, les automates cessent le feu : plus de tir, de charge, de grenade, d'interpellation, de renfort ni de nasse,
 // et ce qui volait encore ne blesse plus ni le héros ni le cortège.
 
 import test from 'node:test';
@@ -9,7 +9,7 @@ import { spawnProjectile } from '../../src/sim/projectile.js';
 const enemy = (id) => ({ type: 'ennemi', id });
 const of = (events, type) => events.filter((e) => e.type === type);
 
-/** Une rue tenue par l'ordre, le boss au bout. Le héros avance, le cortège passe sur l'agent qui interpelle. */
+/** Une rue tenue par les automates, le boss au bout. Le héros avance, le cortège passe sur l'automate qui interpelle. */
 const street = () => flat({
   width: 70, cortege: true, manif: 100, boss: 'gros',
   legende: { c: enemy('chargeur'), g: enemy('garde'), t: enemy('tireur'), a: enemy('agent'), v: enemy('viseur'), k: enemy('canon') },
@@ -24,10 +24,10 @@ const street = () => flat({
   },
 });
 
-/** Le scénario : on laisse l'ordre attaquer, puis (ou non) le boss tombe ; le héros, sans protection, traverse la rue. */
+/** Le scénario : on laisse les automates attaquer, puis (ou non) le boss tombe ; le héros, sans protection, traverse la rue. */
 function scenario(defeat) {
   const game = settle(play(street(), { lives: 9 }));
-  run(game, 90); // l'ordre a commencé : sommations, visées, grenades
+  run(game, 90); // les automates ont commencé : sommations, visées, grenades
   const before = new Set(game.projectiles);
   if (defeat) game.hurtBoss(game.boss.hp);
   game.hero.invuln = 0;
@@ -93,7 +93,7 @@ function blow(name, defeat) {
   return of(run(game, 120), 'hurt');
 }
 
-test('cessez-le-feu : un tir, une grenade, un nuage ou un tonneau de l’ordre, encore en l’air, ne blessent plus', () => {
+test('cessez-le-feu : un tir, une grenade, un nuage ou un tonneau des automates, encore en l’air, ne blessent plus', () => {
   for (const name of Object.keys(BLOWS)) {
     assert.deepEqual(blow(name, false).map((e) => e.kind).slice(0, 1), [KIND[name]], `${name} : sans victoire, il blesse le héros`);
     assert.deepEqual(blow(name, true), [], `${name} : le boss vaincu, il ne blesse plus`);

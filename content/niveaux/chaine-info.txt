@@ -15,7 +15,7 @@ camarades: sniper
 manchette: La France Indigne
 manchette: LFI : le nazisme est-il passé à l'extrême gauche ?
 manchette: Manif anti-police : Fallait-il l'interdire ?
-nasse.ennemi: crs
+nasse.ennemi: robot-bouclier
 nasse.nombre: 3
 nasse.vitesse: 20
 nasse.rythme: 45
@@ -26,9 +26,9 @@ panneau.1: Tracts et manif : le barrage cède
 panneau.2: NASSE : creuse sous la rue
 panneau.3: C8 : ÉCRAN NOIR
 
-c: crs
+c: robot-bouclier
 b: barrage
-a: bac
+a: ramasseur
 d: drone
 e: editorialiste
 n: cnews

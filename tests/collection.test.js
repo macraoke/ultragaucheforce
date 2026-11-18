@@ -51,13 +51,13 @@ test('collection : chaque carte se débloque quelque part en jouant', () => {
   assert.deepEqual(hint('fiches', 'procuration'), ['à la fin de la campagne']);
   assert.deepEqual(hint('fiches', 'programme-energie'), ['dans À propos, « Le programme de L’Avenir en commun »'], 'le programme n’est pas sur l’écran du vote');
   assert.deepEqual(hint('fiches', 'patrimoine-moitie'), ['en taxant une fortune']);
-  assert.ok(hint('ennemis', 'gendarme-mobile').length >= 1, 'les renforts de l’hélicoptère comptent');
+  assert.ok(hint('ennemis', 'lance-pleurs').length >= 1, 'les renforts de l’hélicoptère comptent');
 });
 
 test('collection : les indices suivent l’ordre de la campagne', () => {
   const order = levelOrder(bundle);
-  const crs = whereToFind(bundle, 'ennemis', bundle.ennemis.crs);
-  assert.deepEqual(crs, order.filter((id) => crs.includes(bundle.niveaux[id].titre)).map((id) => bundle.niveaux[id].titre), 'dans l’ordre des étapes');
+  const shield = whereToFind(bundle, 'ennemis', bundle.ennemis['robot-bouclier']);
+  assert.deepEqual(shield, order.filter((id) => shield.includes(bundle.niveaux[id].titre)).map((id) => bundle.niveaux[id].titre), 'dans l’ordre des étapes');
 });
 
 test('collection : un boss tiré au hasard se croise au bout de n’importe quel niveau ; un boss imposé, dans ses niveaux', () => {

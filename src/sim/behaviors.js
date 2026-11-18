@@ -50,7 +50,7 @@ export const WEAPONS = {
     fire(game, shooter, w, team, target = null) {
       const dir = shooter.facing;
       const y = shooter.y + shooter.h * 0.35 - w.taille / 2;
-      // Tir visé (LBD) : vers le point donné, sinon vers le héros au moment du tir.
+      // Tir visé : vers le point donné, sinon vers le héros au moment du tir.
       let ux = dir;
       let uy = 0;
       const upright = team === 'luttes' && shooter.aim ? shooter.aim : 0; // le héros vise en haut (-1) ou en bas (1)

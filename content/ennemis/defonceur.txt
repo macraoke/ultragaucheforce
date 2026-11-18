@@ -1,4 +1,4 @@
-nom: RAID
+nom: Défonceur
 pv: 5
 vitesse: 60
 deplacement: marche

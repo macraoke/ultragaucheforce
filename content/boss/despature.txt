@@ -23,7 +23,7 @@ fortune.montant: 4.8
 fortune.fiche: fortune-despature
 
 # Phases : jusqu'à quelle fraction de points de vie, à quel rythme (secondes), quelles attaques.
-# Des lames de volet en salve, des gendarmes mobiles en renfort, puis la façade qui fonce sur ses chenilles.
+# Des lames de volet en salve, des automates en renfort, puis la façade qui fonce sur ses chenilles.
 phase.1.jusqua: 0.6
 phase.1.rythme: 1.8
 phase.1.attaques: salve | salve | pluie
@@ -37,7 +37,7 @@ phase.3.attaques: charge | pluie | salve
 salve.nombre: 4
 salve.vitesse: 135
 salve.ecart: 0.25
-invocation.ennemi: gendarme-mobile
+invocation.ennemi: lance-pleurs
 invocation.nombre: 2
 charge.vitesse: 175
 pluie.nombre: 6

@@ -275,7 +275,7 @@ test('spéciale « mur » : fait pousser des tuiles, jamais sur un personnage', 
 
 // ---------------------------------------------------------------- automates
 
-test('bilan : seules les unités de l’ordre comptent parmi les « blessés », pas un duplex ni un ministre', () => {
+test('bilan : seuls les automates comptent parmi les « automates désactivés », pas un duplex ni un ministre', () => {
   const base = fixtureBundle();
   const camera = { ...base.ennemis.statue, id: 'camera', camp: 'medias', bouclier: false };
   const guard = { ...base.ennemis.statue, id: 'planton', bouclier: false };

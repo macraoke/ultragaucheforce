@@ -1,5 +1,5 @@
 # Les sommations sont des extraits de l'article R. 211-11 du code de la sécurité intérieure.
-nom: CRS
+nom: Robot-bouclier
 pv: 3
 vitesse: 30
 deplacement: marche

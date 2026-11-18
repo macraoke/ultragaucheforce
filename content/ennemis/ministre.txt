@@ -1,4 +1,4 @@
-nom: Premier flic de France
+nom: Le Remonteur
 origine: Les mots de trois ministres de l'Intérieur : Christophe Castaner, Gérald Darmanin et Bruno Retailleau.
 pv: 6
 vitesse: 0

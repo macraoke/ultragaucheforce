@@ -52,6 +52,24 @@ test('raretés écrites à la main : une vraie sauvegarde v1 ou v2 garde toutes 
   }
 });
 
+test('version 4 : une vraie sauvegarde v3 garde ses automates débloqués, sous leurs nouveaux identifiants', () => {
+  const { bundle } = loadContent();
+  const renamed = { crs: 'robot-bouclier', bac: 'ramasseur', 'brav-m': 'petaradeurs', raid: 'defonceur', 'gendarme-mobile': 'lance-pleurs', centaure: 'gros-blinde' };
+  const before = old.v3.decouvertes.filter((k) => k.startsWith('ennemis:')).map((k) => k.slice('ennemis:'.length));
+  assert.ok(['crs', 'bac'].every((id) => before.includes(id)), 'la sauvegarde v3 d’essai a débloqué les anciens crs et bac');
+  const save = upgrade(structuredClone(old.v3));
+  for (const [was, now] of Object.entries(renamed)) {
+    if (!before.includes(was)) continue;
+    assert.ok(bundle.ennemis[now], `« ${now} » existe dans content/ennemis/`);
+    assert.ok(isFound(save, 'ennemis', now), `« ennemis:${was} » devient « ennemis:${now} »`);
+    assert.ok(!save.decouvertes.includes(`ennemis:${was}`), `« ennemis:${was} » ne reste pas en double`);
+  }
+  assert.ok(isFound(save, 'fiches', 'raid-emeutes-2023') && isFound(save, 'fiches', 'centaure-blindes'), 'les fiches gardent leurs identifiants');
+  assert.equal(save.decouvertes.length, old.v3.decouvertes.length, 'rien de perdu, rien en double');
+  const draft = upgrade({ ...structuredClone(old.v3), brouillon: 'titre: Essai\nnasse.ennemi: crs\nc: crs\na: bac\nv: vache\n' }).brouillon;
+  assert.equal(draft, 'titre: Essai\nnasse.ennemi: robot-bouclier\nc: robot-bouclier\na: ramasseur\nv: vache\n', 'le brouillon de l’Atelier suit');
+});
+
 test('ce que le jeu ne connaît pas reste dans la sauvegarde', () => {
   const stored = { ...structuredClone(old.v1), plusTard: { a: 1 }, decouvertes: [...old.v1.decouvertes, 'heros:parti-du-jeu'] };
   const save = upgrade(stored);
@@ -97,7 +115,7 @@ test('deux onglets : ce que l’autre a débloqué n’est pas perdu', () => {
   storeSave(there);
   discover(here, 'ennemis', 'debloque-ici');
   const stored = disk.read();
-  for (const key of ['heros:debloque-ailleurs', 'ennemis:debloque-ici', ...old.v1.decouvertes]) assert.ok(stored.decouvertes.includes(key), key);
+  for (const key of ['heros:debloque-ailleurs', 'ennemis:debloque-ici', ...upgrade(structuredClone(old.v1)).decouvertes]) assert.ok(stored.decouvertes.includes(key), key);
   assert.equal(stored.records.bismillah, 9999, 'le meilleur record');
   assert.equal(stored.termines.ailleurs, true);
   assert.equal(new Set(stored.decouvertes).size, stored.decouvertes.length, 'sans doublon');

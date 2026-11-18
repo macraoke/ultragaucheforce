@@ -1,5 +1,5 @@
 titre: 19 071 tirs de LBD
-theme: ordre
+theme: capital
 texte: En 2018, la police nationale a effectué 19 071 tirs de lanceur de balles de défense, contre 6 543 en 2017. La gendarmerie mobile en a effectué 983, contre 48 un an plus tôt.
 portee: Tableau de la commission des lois du Sénat, établi d'après les informations du ministère de l'Intérieur (rapport n° 345 du 20 février 2019). Police : toutes unités confondues. Totaux annuels : le tableau ne dit pas quelle part a été tirée en manifestation. Du 17 novembre 2018 au 5 février 2019, 13 460 tirs sont recensés dans la police, dont environ 15 % par des CRS, le reste par des unités civiles. Le même rapport cite ailleurs 6 284 tirs pour 2017, sans expliquer l'écart. Ces chiffres ne disent pas si chaque tir était régulier.
 periode: années 2017 et 2018

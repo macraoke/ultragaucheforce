@@ -6,7 +6,18 @@ const KEY = 'ugf:sauvegarde'; // préfixé : le domaine peut être partagé avec
 const UNREAD = 'ugf:sauvegarde:illisible'; // une sauvegarde qu'on n'a pas su lire reste ici, telle quelle
 
 /** Le format de la sauvegarde. Il ne change qu'avec une fonction de passage dans `MIGRATIONS`. */
-export const VERSION = 3;
+export const VERSION = 4;
+
+/** Les identifiants des automates avant la version 4, et ceux d'aujourd'hui. */
+const RENAMED_ENEMIES = {
+  crs: 'robot-bouclier', bac: 'ramasseur', 'brav-m': 'petaradeurs', raid: 'defonceur', 'gendarme-mobile': 'lance-pleurs',
+  centaure: 'gros-blinde',
+};
+const has = (o, k) => k !== null && Object.hasOwn(o, k);
+
+/** Le texte d'un niveau dont la légende et `nasse.ennemi` portent les anciens identifiants, avec ceux d'aujourd'hui. */
+export const renameEnemies = (text) => text.replace(/^(\S|nasse\.ennemi): *(\S+) *$/gm,
+  (line, sign, id) => (has(RENAMED_ENEMIES, id) ? `${sign}: ${RENAMED_ENEMIES[id]}` : line));
 
 /**
  * `MIGRATIONS[n - 1]` fait passer une sauvegarde de la version n à la version n + 1.
@@ -25,6 +36,19 @@ const MIGRATIONS = [
   (save) => {
     if (shape(save.options) !== 'object' || save.options.musiqueChoisie) return save;
     return { ...save, options: { ...save.options, musique: true } };
+  },
+  // 3 → 4 : les automates changent de nom et d'identifiant (cadrage choisi par Valentin : « Automates du capital » ;
+  // noms : « Option 2 »). Les cartes débloquées suivent, et le brouillon de l'Atelier qui en posait aussi.
+  (save) => {
+    const out = { ...save };
+    if (shape(save.decouvertes) === 'liste') {
+      out.decouvertes = [...new Set(save.decouvertes.map((key) => {
+        const id = typeof key === 'string' && key.startsWith('ennemis:') ? key.slice('ennemis:'.length) : null;
+        return has(RENAMED_ENEMIES, id) ? `ennemis:${RENAMED_ENEMIES[id]}` : key;
+      }))];
+    }
+    if (typeof save.brouillon === 'string') out.brouillon = renameEnemies(save.brouillon);
+    return out;
   },
 ];
 

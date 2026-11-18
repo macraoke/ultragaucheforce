@@ -58,21 +58,23 @@ Le prix : pas de musique hors-ligne, et un lecteur tiers avec ses traceurs. Il s
 
 Le lecteur ne dit pas toujours qu'une piste se tait. Radio Manif vérifie que la lecture avance : une piste morte cède la place à une autre, un réseau lent est attendu. Quand le navigateur refuse de jouer sans geste du joueur, un bouton le montre et le prochain toucher relance la musique. SoundCloud injoignable : on joue sans musique, et seul le bouton de Radio Manif, ou le retour du réseau, réessaie.
 
-## Le but : une manif qui grossit
+## Le but : la plus grosse manif pacifiste, jusqu'au boss final
+
+Valentin : « l'objectif c'est de faire la plus grosse manif pacifiste pour aller taxer le boss final . »
 
 On ne gagne pas en tirant plus, mais en arrivant plus nombreux.
 
 - **Le nombre est la ressource** : chaque recrue ajoute du monde, une assemblée générale multiplie. Plus on est nombreux, plus les tracts font de dégâts.
 - **Une ligne a une vie** : barrage, blindé, grille. Les tracts l'entament, la manif la pousse, d'autant plus fort qu'elle est nombreuse : explorer pour recruter fait passer plus vite.
 - **Jamais d'impasse** : même seul, on finit par casser une ligne à coups de tracts. Une nasse est levée au bout de vingt secondes.
-- **Disperser, pas éliminer** : une charge ou du gaz dispersent une part de la manif, la BAC interpelle ; on lit combien et pourquoi (« − 12 gazés »). Une unité finit hors service, un boss s'éjecte.
+- **Disperser, pas éliminer** : une charge ou du gaz dispersent une part de la manif, un automate emmène des manifestants ; on lit combien et pourquoi (« − 12 gazés »). Une unité finit hors service, un boss s'éjecte.
 
-## En face : des unités réelles
+## En face : le capital et ses automates
 
-CRS, BAC, BRAV-M, gendarmes mobiles, canon à eau, hélicoptère, blindé, et ceux qui parlent : un ministre, un éditorialiste.
+Les automates gardent les fortunes qu'on vient taxer : Robot-bouclier, Ramasseur, Pétaradeurs, Défonceur, Lance-pleurs, Arroseur, Bourdon, Tondeuses, Gros blindé ; et ceux qui parlent : le Remonteur, un éditorialiste. On ne les nomme pas autrement : la référence reste implicite (Valentin : « on les appelle "les automates" . partout . la ref est implicite » ; cadrage choisi : « Automates du capital »).
 
-- **Une carte par unité** : une compagnie, un escadron, une fonction. Une personnalité parle avec ses propres mots.
-- **Un comportement par unité**, tiré de ce qui est documenté : sommations puis charge, visée du LBD, lacrymogènes en cloche, nasse.
+- **Une carte par automate** : une fonction, un comportement. Une personnalité parle avec ses propres mots.
+- **Un comportement par automate**, tiré de ce qui est documenté : sommations puis charge, tir visé, lacrymogènes en cloche, nasse.
 - **Une fiche sourcée par unité** : textes officiels, rapports parlementaires, Conseil d'État, Défenseur des droits.
 
 ## Tout texte est une référence
@@ -111,18 +113,18 @@ Chaque étape porte ses sources, en petit. Le bouton suivant mène au bilan du n
 
 L'échelle et l'exemple se tirent au hasard dans un dictionnaire de fiches sourcées (`compare`, `finance`). Un exemple n'est pas tiré quand 2 % de la fortune en paient moins de dix (« 2 Canadair » ne dit rien) ; il reste au tirage des fortunes plus grosses. Choix confirmé par Valentin. Les faits frappants sur les inégalités (`choc`) se comprennent seuls : l'un d'eux, tiré au hasard, passe à l'écran de fin, dans « Et en vrai ? ». Le public visé est autant la classe moyenne que les jeunes : c'est une manif virtuelle, elle doit apprendre quelque chose à chacun.
 
-## Les blessés annoncés, répartis comme en vrai
+## Les automates désactivés et leur décompte
 
-L'écran de fin donne le nombre de blessés que la partie annonce côté forces de l'ordre, réparti comme les 1 233 CRS blessés en octobre 2026 dans le fichier interne de leur direction : blessés légers, arrêts de travail, où, acouphènes, blessés sans ambiguïté par un tiers parmi ceux dont l'origine est connue. Chaque part est arrondie à l'entier le plus proche, sans décimale (Valentin, le 16 novembre 2026 : « dans le décompte des blessés, arrondi . pas de décimales . ») : 3 blessés donnent « 3 blessés légers, 2 blessures aux jambes ou aux pieds et 1 aux bras ou aux mains ». Une part arrondie à zéro ne s'écrit pas ; les blessés par un tiers ne s'écrivent qu'à partir de 2, pour ne pas lire « 1 sur environ 1 » là où la source dit 12 sur une vingtaine. Aucune part ne dépasse le total ; les parts se recoupent (un blessé léger peut être en arrêt de travail), leur somme n'est donc pas le total, ni dans la source ni à l'écran. La fiche est dans « Et en vrai ? ».
+L'écran de fin donne le nombre d'automates désactivés pendant la partie (« 1 automate désactivé », « 38 automates désactivés »), puis son décompte, réparti comme le fichier interne d'octobre 2026 de la fiche `crs-blesses-octobre-2026` : blessés légers, arrêts de travail, où, acouphènes, blessés sans ambiguïté par un tiers parmi ceux dont l'origine est connue. Chaque part est arrondie à l'entier le plus proche, sans décimale (Valentin, le 16 novembre 2026 : « dans le décompte des blessés, arrondi . pas de décimales . ») : 3 blessés donnent « 3 blessés légers, 2 blessures aux jambes ou aux pieds et 1 aux bras ou aux mains ». Une part arrondie à zéro ne s'écrit pas ; les blessés par un tiers ne s'écrivent qu'à partir de 2, pour ne pas lire « 1 sur environ 1 » là où la source dit 12 sur une vingtaine. Aucune part ne dépasse le total ; les parts se recoupent (un blessé léger peut être en arrêt de travail), leur somme n'est donc pas le total, ni dans la source ni à l'écran. La fiche est dans « Et en vrai ? ».
 
-Ce que l'écran en dit change d'une partie à l'autre, tiré de la graine de la partie (Valentin, le 16 novembre 2026 : « randomise le décompte des blessés un peu mieux, mets en avant les blessures les plus ridicules (anecdotiques) notamment celles qu'ils se sont causés eux mêmes ») : les blessés légers, toujours, puis deux autres parts de la répartition ; et, en gras, « Dans leur fichier : » une blessure qu'un agent s'est faite seul (« une cheville tordue dans un trou »), une fois sur deux suivie d'une autre (« ongle majeur droit »). Ce sont les mots de l'article, repris dans la fiche ; l'article n'en donne pas le nombre, l'écran les cite donc telles quelles. La liste est `FROM_FILE` dans `src/client/blesses.js`.
+Ce que l'écran en dit change d'une partie à l'autre, tiré de la graine de la partie (Valentin, le 16 novembre 2026 : « randomise le décompte des blessés un peu mieux, mets en avant les blessures les plus ridicules (anecdotiques) notamment celles qu'ils se sont causés eux mêmes ») : les blessés légers, toujours, puis deux autres parts de la répartition ; et, entre guillemets, une blessure qu'un automate s'est faite seul (« une cheville tordue dans un trou »), une fois sur deux suivie d'une autre (« ongle majeur droit »). Ce sont les mots de l'article, repris dans la fiche ; l'article n'en donne pas le nombre, l'écran les cite donc telles quelles. La liste est `FROM_FILE` dans `src/client/blesses.js`.
 
 ## Itération 3
 
 - **Le téléphone d'abord** : l'image remplit l'écran (manche flottant sur toute la moitié gauche, trois boutons à droite, chacun dans son cercle), et le jeu pivote en paysage quand le téléphone est tenu debout.
 - **La panique est celle de la chaîne** : sa jauge vit dans le bandeau de PANIQUE TV, à côté de son nom. BFM-TV et CNews sont des unités qui cadrent le héros.
 - **Un seul comptage de la manif** : le chiffre de la préfecture est retiré.
-- **Les blessés, détaillés** : plus de compteur pendant la partie ; à la fin, le nombre annoncé côté forces de l'ordre, et ce qui le compose.
+- **Les automates désactivés, détaillés** : plus de compteur pendant la partie ; à la fin, leur nombre, et ce qui le compose.
 - **La nasse revient d'elle-même**, sans être annoncée.
 - **On choisit son héros** parmi ceux de la Collection ; chaque camarade libéré vaut une vie de plus.
 - **La Collection se joue** : cartes à retourner, « Nouveau », progression par rayon, ce qu'on a débloqué, en fin de niveau.

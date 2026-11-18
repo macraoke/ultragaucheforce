@@ -7,7 +7,7 @@ fiche: blesses-comptage
 fond: campagne
 cortege: oui
 manif: 5
-nasse.ennemi: crs
+nasse.ennemi: robot-bouclier
 nasse.nombre: 3
 nasse.vitesse: 20
 musique: hey-hey-macron
@@ -19,13 +19,13 @@ panneau.3: Tracts et manif : le barrage cède
 panneau.4: NASSE : monte sur le muret
 panneau.5: HYPERMARCHÉ
 
-g: gendarme-mobile
+g: lance-pleurs
 r: barrage
 h: helicoptere
 f: bfm
 d: drone
 e: editorialiste
-a: bac
+a: ramasseur
 j: gilet-jaune
 o: retraitee
 s: soignante

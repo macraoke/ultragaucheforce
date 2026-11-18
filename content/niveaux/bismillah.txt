@@ -9,7 +9,7 @@ boss: arnault
 fond: ville
 cortege: oui
 heros: zucman
-nasse.ennemi: crs
+nasse.ennemi: robot-bouclier
 nasse.nombre: 3
 nasse.vitesse: 18
 nasse.rythme: 50
@@ -24,17 +24,17 @@ panneau.3: GARDE À VUE : un camarade est à l'étage
 panneau.4: LA CITADELLE
 panneau.5: LYCÉES EN LUTTE
 
-c: crs
+c: robot-bouclier
 b: barrage
-a: bac
-m: brav-m
+a: ramasseur
+m: petaradeurs
 w: canon-a-eau
 h: helicoptere
 d: drone
 e: editorialiste
 i: ministre
 p: premier-de-cordee
-r: raid
+r: defonceur
 f: faux-jeune
 g: grille
 s: soignante

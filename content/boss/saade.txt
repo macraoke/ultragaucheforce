@@ -43,7 +43,7 @@ phase.3.attaques: salve | invocation | pluie
 salve.nombre: 2
 salve.vitesse: 140
 salve.ecart: 0.4
-invocation.ennemi: crs
+invocation.ennemi: robot-bouclier
 invocation.nombre: 2
 pluie.nombre: 8
 pluie.vitesse: 100

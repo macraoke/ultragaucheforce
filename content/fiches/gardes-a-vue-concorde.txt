@@ -1,5 +1,5 @@
 titre: Concorde, 16 mars 2023 : 283 gardes à vue, toutes classées sans suite
-theme: ordre
+theme: capital
 texte: Sur les 292 personnes placées en garde à vue en marge du premier rassemblement spontané du 16 mars 2023, place de la Concorde, seules neuf ont été présentées au parquet. 283 procédures ont été classées sans suite, pour infraction insuffisamment caractérisée ou absence d'infraction.
 portee: Décompte rapporté par France 24 le 21 mars 2023. Le lendemain, 60 personnes ont été placées en garde à vue : 34 procédures classées, 21 mesures alternatives (rappel à la loi, avertissement probatoire…) et cinq procès.
 periode: 16 mars 2023

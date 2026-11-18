@@ -1,6 +1,6 @@
-# LBD : une visée que l'on voit venir, puis un tir tendu. Un tir qui file dans le cortège y touche deux personnes ;
-# la BAC qui atteint le cortège interpelle trois manifestants.
-nom: BAC
+# Tir visé : une visée que l'on voit venir, puis un tir tendu. Un tir qui file dans le cortège y touche deux personnes ;
+# l'automate qui atteint le cortège emmène trois manifestants.
+nom: Ramasseur
 pv: 2
 vitesse: 60
 deplacement: marche

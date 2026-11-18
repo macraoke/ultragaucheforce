@@ -34,7 +34,7 @@ phase.3.jusqua: 0
 phase.3.rythme: 1.0
 phase.3.attaques: charge | salve | charge
 
-invocation.ennemi: crs
+invocation.ennemi: robot-bouclier
 invocation.nombre: 1
 pluie.nombre: 7
 pluie.vitesse: 95

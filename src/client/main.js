@@ -10,7 +10,7 @@ import { Radio } from './music.js';
 import { Screens, Hud } from './ui.js';
 import { showHeroCard } from './herocard.js';
 import { showTaxScene, draw } from './tax.js';
-import { CRS_OCTOBRE_2026 } from './blesses.js';
+import { INJURY_FILE } from './blesses.js';
 import { shareImage, openShare } from './share.js';
 import { measure, runStarted, runEnded, heroRescued } from './mesure.js';
 import { loadSave, storeSave, discover, isFound, followSystemMotion } from './save.js';
@@ -298,9 +298,9 @@ async function win() {
     said = tax.said;
     shock = draw('choc', taxShocks(bundle)) ?? null;
   }
-  // « Et en vrai ? » : le fait du niveau, d'où vient la répartition des blessés, le fait tiré après la taxe.
+  // « Et en vrai ? » : le fait du niveau, d'où vient le décompte des automates désactivés, le fait tiré après la taxe.
   const hurt = game.stats.breakdownsBySelf + game.stats.breakdownsByPlayer + game.stats.overrunOrder;
-  const facts = [[level.fiche].flat()[0], hurt > 0 && CRS_OCTOBRE_2026.fiche, shock?.id].filter((id) => id && bundle.fiches[id]);
+  const facts = [[level.fiche].flat()[0], hurt > 0 && INJURY_FILE.fiche, shock?.id].filter((id) => id && bundle.fiches[id]);
   for (const fiche of [...[level.fiche].flat(), ...facts]) collect('fiches', fiche, true);
   const order = levelOrder(bundle);
   const index = order.indexOf(id);

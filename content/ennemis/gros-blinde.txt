@@ -1,5 +1,5 @@
 # Un blindé : une ligne qui a une vie. Les tracts l'entament, la manif le pousse, d'autant plus fort qu'elle est nombreuse.
-nom: Centaure
+nom: Gros blindé
 pv: 20
 vitesse: 14
 deplacement: vehicule

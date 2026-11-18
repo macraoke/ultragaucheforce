@@ -8,7 +8,7 @@ fond: ville
 cortege: oui
 heros: melenchon
 camarades: sale-gosse
-nasse.ennemi: crs
+nasse.ennemi: robot-bouclier
 nasse.nombre: 3
 nasse.vitesse: 20
 nasse.rythme: 45
@@ -20,9 +20,9 @@ panneau.2: NASSE : les toits, ou les quais
 panneau.3: Sous le pont : le fleuve et ses piles
 panneau.4: ERREUR 49.3, DÉMOCRATIE NOT FOUND
 
-c: crs
-a: bac
-m: brav-m
+c: robot-bouclier
+a: ramasseur
+m: petaradeurs
 w: canon-a-eau
 b: barrage
 i: ministre
@@ -32,7 +32,7 @@ e: editorialiste
 d: drone
 <: bfm
 >: cnews
-r: raid
+r: defonceur
 l: lyceenne
 u: prof
 t: cheminot

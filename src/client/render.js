@@ -58,17 +58,17 @@ const FOLLOW = { x: 9 / 60, y: 7 / 60 }; // part du chemin vers le héros que la
 const KETTLE_SIZE = 10; // le décompte de la nasse, en pixels du jeu : il se lit de loin
 const KETTLE_LAST = 5; // les dernières secondes du décompte passent à l'or
 const overlaps = (a, b) => a.x0 < b.x1 && a.x1 > b.x0 && a.y0 < b.y1 && a.y1 > b.y0;
-// Le boss vaincu, un policier près de qui passe le héros émet de petits cœurs, rouges et violets (voir `love`).
+// Le boss vaincu, un automate à pied près de qui passe le héros émet de petits cœurs, rouges et violets (voir `love`).
 const LOVE_NEAR = { x: 36, y: 24 }; // à cette distance du héros, au plus (de centre à centre, de pieds à pieds)
-const LOVE_EVERY = 0.25; // secondes entre deux cœurs d'un même policier : trois quand le héros passe devant lui
+const LOVE_EVERY = 0.25; // secondes entre deux cœurs d'un même automate : trois quand le héros passe devant lui
 const LOVE_LIFE = 1.3; // secondes : le cœur monte, puis s'efface
 const MAX_HEARTS = 48;
 const HEARTS = [
   ['.kk.kk.', 'kwRkRRk', 'kRRRRRk', '.kRRRk.', '..kRk..', '...k...'],
   ['.kk.kk.', 'kwmkmmk', 'kmmmmmk', '.kmmmk.', '..kmk..', '...k...'],
 ];
-/** Un policier : une unité de l'ordre, à pied. */
-const isPolice = (def) => def.camp === 'ordre' && def.deplacement === 'marche';
+/** Un automate à pied (`camp: automates`, `deplacement: marche`). */
+const isWalkingAutomaton = (def) => def.camp === 'automates' && def.deplacement === 'marche';
 // Valentin, 16 novembre 2026 : « Le gain d'abord : les gains, « +1 », « ON REPART D'ICI » et les noms de spéciale passent
 // toujours : la pancarte qu'ils touchent se baisse un instant. Les slogans, eux, laissent la pancarte levée. »
 const leads = (f) => Boolean(f.gain || f.lead);
@@ -110,8 +110,8 @@ export class Renderer {
     this.runners = []; // manifestants qui quittent la manif en courant (dispersés, interpellés)
     this.rings = []; // le « pop » d'une unité qui passe hors service
     this.flowers = []; // [x, y, poussée] : la fleur de chaque unité hors service à cette image
-    this.hearts = []; // { x, y, t, color, sway } : les cœurs des policiers, le boss vaincu (voir `love`)
-    this.loved = new WeakMap(); // policier → { at, n } : quand il a émis son dernier cœur (`clock`), et combien
+    this.hearts = []; // { x, y, t, color, sway } : les cœurs des automates, le boss vaincu (voir `love`)
+    this.loved = new WeakMap(); // automate → { at, n } : quand il a émis son dernier cœur (`clock`), et combien
     this.hurt = null; // { t, hp, max } : le héros vient d'être touché (ce qu'il lui reste s'affiche au-dessus de lui)
     this.edge = 0; // liseré rouge autour de l'image quand le héros est touché
     this.crowded = 0; // le repère au-dessus du héros, au milieu de la manif : de 0 (absent) à 1
@@ -557,7 +557,7 @@ export class Renderer {
   }
 
   /**
-   * Le boss vaincu, l'ordre cesse le feu : un policier (une unité de l'ordre, à pied) près de qui passe le héros
+   * Le boss vaincu, les automates cessent le feu : un automate à pied près de qui passe le héros
    * émet de petits cœurs, rouges et violets, qui montent au-dessus de sa tête et s'effacent. Rien d'écrit.
    */
   love(game) {
@@ -566,7 +566,7 @@ export class Renderer {
       const hx = hero.x + hero.w / 2;
       const feet = hero.y + hero.h;
       for (const e of game.enemies) {
-        if (!isPolice(e.def) || this.hearts.length >= MAX_HEARTS) continue;
+        if (!isWalkingAutomaton(e.def) || this.hearts.length >= MAX_HEARTS) continue;
         if (Math.abs(e.x + e.w / 2 - hx) > LOVE_NEAR.x || Math.abs(e.y + e.h - feet) > LOVE_NEAR.y) continue;
         const last = this.loved.get(e) ?? { at: -Infinity, n: 0 };
         if (this.clock - last.at < LOVE_EVERY) continue;
@@ -1017,7 +1017,7 @@ export class Renderer {
     ctx.setLineDash([]);
   }
 
-  /** La visée du LBD : un trait pointillé et un viseur qui se resserre jusqu'au tir. */
+  /** La visée d'un tir visé : un trait pointillé et un viseur qui se resserre jusqu'au tir. */
   aim(e) {
     const { x, y, t } = e.aim;
     this.line(e.x + e.w / 2, e.y + e.h * 0.35, x, y, '#e43b44', [2, 2]);

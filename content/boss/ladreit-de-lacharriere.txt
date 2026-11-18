@@ -40,7 +40,7 @@ pluie.vitesse: 110
 salve.nombre: 4
 salve.vitesse: 120
 salve.ecart: 0.3
-invocation.ennemi: crs
+invocation.ennemi: robot-bouclier
 invocation.nombre: 1
 charge.vitesse: 140
 

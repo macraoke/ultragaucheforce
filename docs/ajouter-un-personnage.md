@@ -151,10 +151,10 @@ Pour la placer, un niveau la déclare dans sa légende : `p: pompier`.
 
 ## Une unité d'en face
 
-<!-- fichier: content/ennemis/compagnie-d-intervention.txt -->
+<!-- fichier: content/ennemis/automate-a-bouclier.txt -->
 ```text
 # Les sommations sont celles de l'article R. 211-11 du code de la sécurité intérieure.
-nom: Compagnie d'intervention
+nom: Automate à bouclier
 pv: 3
 vitesse: 30
 deplacement: marche
@@ -200,23 +200,23 @@ auteur: ton pseudo
 | `ligne.poussee` | une ligne : les points de vie que lui retirent cent manifestants qui poussent, par seconde | 0 à 50, 10 par défaut |
 | `interpelle` | combien de manifestants elle emmène quand elle atteint le cortège, une fois toutes les deux secondes et demie | 0 à 20 |
 | `fin` | à zéro point de vie | `greve` (elle s'assoit), `panne` (elle fume) |
-| `camp` | à qui elle appartient ; seules les unités de l'ordre comptent dans le bilan des blessés ; celles des médias se taisent quand on casse la régie (voir le décor à `coupe` dans [ajouter-un-niveau.md](ajouter-un-niveau.md)) | `ordre` (par défaut), `medias`, `pouvoir` |
+| `camp` | à qui elle appartient ; seuls les automates comptent dans le décompte de fin (« automates désactivés ») ; celles des médias se taisent quand on casse la régie (voir le décor à `coupe` dans [ajouter-un-niveau.md](ajouter-un-niveau.md)) | `automates` (par défaut), `medias`, `pouvoir` |
 | `replique` | une phrase qu'elle prononce ; répétable. La bulle reste 0,3 s par mot, 2 s au moins | |
 | `sommation` | réaction `charge` : dites une par une avant la première ruée ; répétable | |
 | `citation`, `fiche`, `origine` | sa carte | |
 | `largeur`, `hauteur` | boîte de collision | 6 à 32 |
 
-L'arme est facultative. Pour placer l'unité, un niveau la déclare dans sa légende : `c: compagnie-d-intervention`.
+L'arme est facultative. Pour placer l'unité, un niveau la déclare dans sa légende : `c: automate-a-bouclier`.
 
-Ce que le joueur voit, sans rien régler : une unité touchée blanchit et recule d'un pixel, puis montre sa jauge ; un bouclier de face arrête le coup (« PARÉ », des étincelles), mais pas le souffle d'une explosion ; sonnée, des étoiles tournent autour de sa tête ; gazée par son propre camp, elle pleure et tousse (« KOF ! ») ; quand elle repère le héros, un « ! » ; le boss vaincu, une unité de l'ordre à pied (`camp: ordre`, `deplacement: marche`) près de qui passe le héros émet de petits cœurs. Des unités identiques côte à côte font un groupe : un seul « ! », un seul « KOF ! ».
+Ce que le joueur voit, sans rien régler : une unité touchée blanchit et recule d'un pixel, puis montre sa jauge ; un bouclier de face arrête le coup (« PARÉ », des étincelles), mais pas le souffle d'une explosion ; sonnée, des étoiles tournent autour de sa tête ; gazée par son propre camp, elle pleure et tousse (« KOF ! ») ; quand elle repère le héros, un « ! » ; le boss vaincu, un automate à pied (`camp: automates`, `deplacement: marche`) près de qui passe le héros émet de petits cœurs. Des unités identiques côte à côte font un groupe : un seul « ! », un seul « KOF ! ».
 
-Hors service, rien ne s'écrit au-dessus d'elle : le dessin suffit. Au moment où elle tombe, un cercle et son bruitage ; puis son dessin `fin`, sinon son `repos`, apaisé, presque gris. En grève, elle s'assoit en tailleur, si son dessin a deux jambes sous une ceinture d'au plus douze pixels. En panne, elle fume. Et une petite fleur pousse : assise, dans sa main tendue (le pixel de peau `s` ou `S` le plus en avant, sous la tête) ; sinon plantée au sommet de son dessin. Une ligne qui cède, elle, s'ouvre (voir plus bas), sans s'asseoir ni fleur : une grille ou un barrage s'écarte en deux et s'efface, laissant son dessin `fin` ; un blindé comme le Centaure recule, assombri s'il n'a pas de dessin `fin`. Son dessin `fin` reprend `repos` sans ce qui la rendait menaçante : le CRS a posé son bouclier et ouvert sa visière, le drone a perdu ses hélices, l'éditorialiste montre la mire. Personne n'est blessé à l'écran ([charte](../CHARTE.md)).
+Hors service, rien ne s'écrit au-dessus d'elle : le dessin suffit. Au moment où elle tombe, un cercle et son bruitage ; puis son dessin `fin`, sinon son `repos`, apaisé, presque gris. En grève, elle s'assoit en tailleur, si son dessin a deux jambes sous une ceinture d'au plus douze pixels. En panne, elle fume. Et une petite fleur pousse : assise, dans sa main tendue (le pixel de peau `s` ou `S` le plus en avant, sous la tête) ; sinon plantée au sommet de son dessin. Une ligne qui cède, elle, s'ouvre (voir plus bas), sans s'asseoir ni fleur : une grille ou un barrage s'écarte en deux et s'efface, laissant son dessin `fin` ; le Gros blindé recule, assombri s'il n'a pas de dessin `fin`. Son dessin `fin` reprend `repos` sans ce qui la rendait menaçante : le Robot-bouclier a posé son bouclier et ouvert sa visière, le drone a perdu ses hélices, l'éditorialiste montre la mire. Personne n'est blessé à l'écran ([charte](../CHARTE.md)).
 
 ### Une ligne : `ligne.vie`
 
 Une ligne a une vie, comme le boss : quand le héros arrive devant elle, sa barre s'affiche en haut de l'écran, avec son nom. Les tracts l'entament, le souffle et les spéciales aussi ; les coups de son propre camp n'y font rien. Quand le héros arrive dessus, la manif pousse : chaque seconde, `ligne.poussee` points de vie par centaine de manifestants. Plus elle est nombreuse, plus elle pousse fort, et la ligne tremble. Tant qu'elle a de la vie, elle tient : on ne la saute pas, ses unités au sol ne la traversent pas, ni en marchant, ni en chargeant, ni en fonçant, et un tir qui la touche s'y écrase. Les grenades en cloche passent par-dessus, ce qui vole passe au-dessus. À zéro, elle cède et s'ouvre, sa barre vide un instant : plus personne n'est arrêté. Rien d'autre ne la fait céder. Sur une ligne, `pv` n'est pas lu : seule `ligne.vie` compte.
 
-Modèles : [`barrage`](../content/ennemis/barrage.txt), [`centaure`](../content/ennemis/centaure.txt), [`grille`](../content/ennemis/grille.txt).
+Modèles : [`barrage`](../content/ennemis/barrage.txt), [`gros-blinde`](../content/ennemis/gros-blinde.txt), [`grille`](../content/ennemis/grille.txt).
 
 ### Une charge : `reaction: charge`
 
@@ -227,7 +227,7 @@ Modèles : [`barrage`](../content/ennemis/barrage.txt), [`centaure`](../content/
 | `charge.pause` | secondes avant la charge suivante | 0,5 à 8 | 2,5 |
 | `charge.disperse` | pour cent de la manif dispersés quand la ruée traverse le cortège | 0 à 30 | 5 |
 
-Les sommations ne sont dites qu'une fois. Modèle : [`crs`](../content/ennemis/crs.txt).
+Les sommations ne sont dites qu'une fois. Modèle : [`robot-bouclier`](../content/ennemis/robot-bouclier.txt).
 
 ### Un projecteur : `reaction: projecteur`
 

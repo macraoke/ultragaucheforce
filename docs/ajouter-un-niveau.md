@@ -30,7 +30,7 @@ cortege: oui
 manif: 5
 panneau.1: Va jusqu'à la soignante : elle rejoint la manif ✊
 s: soignante
-b: bac
+b: barrage
 d: drone
 =: banderole
 --- carte
@@ -61,7 +61,7 @@ Déposé dans `content/niveaux/`, il devient une étape du plan de campagne, à 
 | `cortege` | `oui` : la manif suit le héros |
 | `manif` | combien de manifestants au départ (10 avec un cortège, sauf indication ; 5000 au plus) |
 | `panneau.1` à `panneau.9` | le texte du panneau placé par le chiffre correspondant sur la carte. Une touche s'écrit entre crochets, et chacun la lit sur son appareil : `[tirer] : lancer des tracts` devient « J : … » au clavier, « X : … » à la manette, « TIR : … » au pouce. Les touches : `[avancer]`, `[sauter]`, `[tirer]`, `[bas]`, `[haut]`, `[spéciale]`, `[pause]`. Le premier panneau d'une partie qui dit `[spéciale]` fait clignoter la puce de la spéciale et le bouton SPÉ, jusqu'au premier usage, huit secondes au plus, jamais en pause |
-| un signe de légende | `b: bac` place une unité, une recrue ou un décor à chaque `b` de la carte |
+| un signe de légende | `b: barrage` place une unité, une recrue ou un décor à chaque `b` de la carte |
 | `heros` | le héros avec lequel on essaie le niveau dans l'Atelier. En jeu, le joueur choisit parmi ceux qu'il a débloqués ; la première fois, le hasard choisit. Sans cette clé ni choix du joueur, un héros jouable est tiré au hasard, le même pour une même graine |
 | `camarades` | l'ordre des héros libérés, séparés par une barre verticale : `melenchon \| zucman` (sinon au hasard) |
 | `boss` | facultatif : impose un boss de `content/boss/`. Sans cette ligne, le boss du `Y` est tiré au hasard à chaque partie |
@@ -112,11 +112,11 @@ Les tuiles disponibles (la liste à jour est dans l'Atelier et dans [`content/tu
 | `A` | acier | indestructible |
 | `O` | socle rocheux | indestructible |
 
-Unités : tout fichier de [`content/ennemis/`](../content/ennemis) (`crs`, `bac`, `drone`…). Recrues : tout fichier de [`content/recrues/`](../content/recrues) (`soignante`, `cheminot`, `ag`…). Décors : tout fichier de [`content/decors/`](../content/decors) (`kiosque`, `banderole`, `vache`…).
+Unités : tout fichier de [`content/ennemis/`](../content/ennemis) (`robot-bouclier`, `ramasseur`, `drone`…). Recrues : tout fichier de [`content/recrues/`](../content/recrues) (`soignante`, `cheminot`, `ag`…). Décors : tout fichier de [`content/decors/`](../content/decors) (`kiosque`, `banderole`, `vache`…).
 
 ## La manif
 
-Le but du joueur : arriver toujours plus nombreux.
+Le but du joueur : la plus grosse manif possible, pour aller taxer le boss au bout.
 
 - Une **recrue** rejoint quand le héros la touche ou lui tend un tract. Son gain s'affiche au-dessus d'elle : `+ 20`, `× 2`.
 - Plus on est nombreux, plus les tracts font de dégâts.

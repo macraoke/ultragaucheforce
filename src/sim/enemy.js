@@ -1,4 +1,4 @@
-// Les automates de l'ordre : UNE seule mise en œuvre, entièrement pilotée par la fiche
+// Les automates : UNE seule mise en œuvre, entièrement pilotée par la fiche
 // (déplacement, réaction, vue, bouclier, arme, répliques, sommations, ligne).
 // États : sleep → patrol ⇄ alert, stunned (étourdi), done (en grève, en panne ou cassée : décor inoffensif).
 //
@@ -11,7 +11,7 @@
 //             écrasent, les grenades en cloche passent par-dessus
 //   push      une ligne (`ligne.vie`) que la manif pousse : les points de vie qu'elle perd par seconde (0 sinon) ;
 //             `hp` est sa vie, sur `def.ligne.vie`
-//   aim       { x, y, t } pendant une visée (LBD) : le tir part vers ce point dans t secondes
+//   aim       { x, y, t } pendant une visée (tir visé) : le tir part vers ce point dans t secondes
 //   jet       { x, y, length, dir } pendant un jet de canon à eau
 //   beam      { x, y, w, lit } faisceau du projecteur : centré en x, posé au sol en y ; lit = le héros est dedans
 //   rush      { phase: 'sommation' | 'ruee' | 'pause' } pendant une charge
@@ -77,7 +77,7 @@ export function wearLine(game, e, amount) {
   e.push = 0;
   e.overrun = true; // cassée : le client l'ouvre en grand
   game.stats.overrun++;
-  if (e.def.camp === 'ordre') game.stats.overrunOrder++;
+  if (e.def.camp === 'automates') game.stats.overrunOrder++;
   game.emit('overrun', { x: e.x + e.w / 2, y: e.y, feet: e.y + e.h, crowd: game.crowd });
   game.sfx('debordement', e.x);
   game.discover('ennemi', e.def.id);
@@ -224,7 +224,7 @@ export function updateEnemy(game, e, dt) {
     return;
   }
 
-  // Le boss vaincu, l'ordre cesse le feu : chacun reste où il est, sans attaquer ni rien dire de plus.
+  // Le boss vaincu, les automates cessent le feu : chacun reste où il est, sans attaquer ni rien dire de plus.
   if (game.truce) return standBy(game, e, dt);
   // La régie cassée, l'antenne est coupée : les médias restent sur place, sans filmer ni rien dire.
   if (game.offAir > 0 && def.camp === 'medias') return standBy(game, e, dt);
@@ -312,7 +312,7 @@ export function updateEnemy(game, e, dt) {
   else if (firing) shoot(game, e, dt);
   else e.aim = null;
 
-  // Une unité qui « interpelle » (la BAC) et atteint le cortège emmène quelques manifestants, puis souffle un peu.
+  // Une unité qui « interpelle » et atteint le cortège emmène quelques manifestants, puis souffle un peu.
   if (def.interpelle > 0 && e.arrest <= 0 && game.cortege.some((m) => m.x > e.x && m.x < e.x + e.w && m.y > e.y && m.y - 16 < e.y + e.h)) {
     e.arrest = ARREST_PAUSE;
     game.loseCrowd(def.interpelle, 'interpelle', { x: e.x + e.w / 2, y: e.y });
@@ -460,7 +460,7 @@ function charge(game, e, dt, dx, alert) {
   return 0;
 }
 
-/** Tir : immédiat, ou précédé d'un préavis que le joueur voit venir : la visée du LBD, la bouche d'un éditorialiste. */
+/** Tir : immédiat, ou précédé d'un préavis que le joueur voit venir : la visée d'un tir visé, la bouche d'un éditorialiste. */
 function shoot(game, e, dt) {
   const { hero } = game;
   const w = e.def.arme;

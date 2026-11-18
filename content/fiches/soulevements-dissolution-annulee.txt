@@ -1,5 +1,5 @@
 titre: Dissolution annulée
-theme: ordre
+theme: capital
 texte: Le 9 novembre 2023, le Conseil d'État a annulé la dissolution des Soulèvements de la Terre : aucune provocation à la violence contre les personnes ne peut leur être imputée, et la mesure n'était pas proportionnée.
 portee: Le Conseil d'État retient en revanche des provocations à des agissements violents contre les biens, mais juge que la dissolution n'était pas une mesure adaptée, nécessaire et proportionnée au vu de leurs effets réels à la date du décret. Le même jour, il confirme la dissolution de trois autres groupements (GALE, Alvarium, CRI).
 periode: décision du 9 novembre 2023
