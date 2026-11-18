@@ -811,7 +811,8 @@ export class Radio {
     // En niveau, la liste qu'il nomme (`musique`) d'abord, dans son ordre.
     const track = NOT_A_LEVEL.has(this.slot) ? chooseTrack(this.tracks, base) : this.listed() ?? nextLevelTrack(this.tracks, base) ?? chooseTrack(this.tracks, base);
     if (!track) return;
-    this.report('music_skipped', { ...this.about(skipped), ...this.heardOf(skipped) }, { volume: true });
+    // Une piste passée avant d'avoir joué ne compte pas comme passée : elle n'a jamais été entendue.
+    if (this.listen?.track === skipped && this.listen.started) this.report('music_skipped', { ...this.about(skipped), ...this.heardOf(skipped) }, { volume: true });
     this.held = false;
     this.chosenFor = `${this.slot}|${this.named}`;
     this.why = 'suivante';
