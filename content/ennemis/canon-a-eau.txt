@@ -1,4 +1,4 @@
-# Son jet repousse le héros et le cortège, sans blesser.
+# Son jet repousse le héros et le cortège. Il ne fait perdre aucun point de vie.
 nom: Arroseur
 pv: 14
 vitesse: 12

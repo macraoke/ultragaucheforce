@@ -1,5 +1,5 @@
 nom: Gauche atomique
-traitement: une forme de l'ultragauche, comme dans un dessin animé : un atome, noyau rouge et électrons qui tournent autour
+traitement: l'ultragauche en dessin animé, un atome au noyau rouge et ses électrons
 cri: GAUCHE ATOMIQUE !
 citation: melenchon-ultra-extreme-gauche
 fiche: video-ultragauche
@@ -8,7 +8,7 @@ vitesse: 155
 saut: 3.6
 auteur: xsbfh
 
-# Arme : des électrons, deux par tir, qui ricochent partout.
+# Arme : deux électrons à chaque lancer, qui rebondissent partout.
 arme.type: tir
 arme.nombre: 2
 arme.dispersion: 60

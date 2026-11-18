@@ -11,7 +11,7 @@ fiche: fortune-dassault
 # Les répliques : Serge Dassault, dans Politis (voir content/citations/dassault-*.txt). Ses dates (succède à Marcel Dassault en 1986,
 # passe la main en 2000, meurt en mai 2018) : la biographie de la fiche Challenges, lue le 17 novembre 2026,
 # https://www.challenges.fr/classements/fortune/laurent-marie-helene-et-thierry-dassault-et-leur-famille_26538
-origine: La fortune est celle de la famille Dassault : Laurent, Marie-Hélène et Thierry Dassault et leur famille, selon Challenges. Les répliques sont les mots de leur père, Serge Dassault, fils du fondateur Marcel Dassault, à la tête du groupe de 1986 à 2000, mort en mai 2018 (biographie de Challenges).
+origine: Selon Challenges, la fortune est celle de Laurent, Marie-Hélène et Thierry Dassault et de leur famille. Les répliques sont de leur père, Serge Dassault. Fils du fondateur Marcel Dassault, il dirige le groupe de 1986 à 2000 et meurt en mai 2018 (biographie de Challenges).
 # Assis sur sa fortune tant que sa vie n'est pas passée sous la moitié.
 assis: oui
 leve: 0.5
@@ -27,7 +27,7 @@ auteur: xsbfh
 fortune.montant: 27.7
 fortune.fiche: fortune-dassault
 
-# Phases : des missiles en rafale, puis des bombes, puis le Rafale décolle à l'horizontale.
+# Phases : une salve, puis une pluie, puis le Rafale décolle à l'horizontale.
 phase.1.jusqua: 0.6
 phase.1.rythme: 1.8
 phase.1.attaques: salve

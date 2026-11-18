@@ -24,7 +24,7 @@ auteur: xsbfh
 fortune.montant: 30.1
 fortune.fiche: fortune-niel
 
-# Phases : des rafales serrées, puis des charges de plus en plus rapprochées.
+# Phases : des salves serrées, puis des charges de plus en plus rapprochées.
 phase.1.jusqua: 0.65
 phase.1.rythme: 1.8
 phase.1.attaques: salve

@@ -8,7 +8,7 @@ hauteur: 40
 vitesse: 30
 citation: decaux-media-sobre
 fiche: fortune-decaux
-origine: La famille du fondateur, Jean-Claude Decaux, mort en 2016. Ses fils Jean-Charles et Jean-François dirigent JCDecaux ; les répliques sont de Jean-Charles.
+origine: La famille du fondateur, Jean-Claude Decaux, mort en 2016. Ses fils Jean-Charles et Jean-François dirigent JCDecaux. Les répliques sont de Jean-Charles.
 # Assis sur sa fortune tant que sa vie n'est pas passée sous les sept dixièmes : il se lève tôt.
 assis: oui
 leve: 0.7

@@ -10,7 +10,7 @@ fiche: bompard-supercalculateur
 fiche: comptage-31-janvier-2023
 auteur: xsbfh
 
-# Arme : une rafale de chiffres, fine, rapide et sans écart, qui porte loin et traverse les rangs.
+# Arme : des chiffres lancés vite et droit. Ils vont loin et traversent les rangs.
 arme.type: tir
 arme.cadence: 6
 arme.vitesse: 380

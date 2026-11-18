@@ -1,7 +1,7 @@
 # Un boss = une fortune documentée aux commandes d'une machine. Le dessin « ejecte » sert à sa sortie.
 nom: Pierre Castel
 inspiration: Pierre Castel
-traitement: un fût de bière mousseux sur pattes, une bouteille pour canon ; le pilote s'éjecte sous un parachute bordeaux
+traitement: un fût de bière mousseux sur pattes, qui lance ses capsules par une bouteille ; le pilote s'éjecte sous un parachute bordeaux
 pv: 70
 largeur: 30
 hauteur: 40

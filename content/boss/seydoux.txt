@@ -23,7 +23,7 @@ auteur: xsbfh
 fortune.montant: 1.15
 fortune.fiche: fortune-seydoux
 
-# Phases : une séance lente, des tickets en rafales serrées ; il ne charge qu'à la fin du film.
+# Phases : une séance lente, des tickets en salves serrées. Il ne charge qu'à la fin du film.
 phase.1.jusqua: 0.5
 phase.1.rythme: 2.4
 phase.1.attaques: salve

@@ -1,5 +1,5 @@
 nom: La Petite Bobo gauchiste
-origine: En juin 2026, sur X, on la traite de « petite bobo gauchiste ». Le jeu en fait son nom.
+origine: En juin 2026, sur X, on la traite de « petite bobo gauchiste ».
 inspiration: Manon Aubry
 traitement: l'eurodéputée, avec le tote bag qu'on prête aux bobos
 cri: QUAND JE DÉNONCE LES YACHTS DE LUXE, L'IMBÉCILE REGARDE LE BATEAU À VOILE !
@@ -10,7 +10,7 @@ saut: 3.6
 fiche: fortune-arnault
 auteur: xsbfh
 
-# Arme : des rafales de vent qui traversent les rangs.
+# Arme : du vent qui traverse les rangs.
 arme.type: tir
 arme.cadence: 3
 arme.vitesse: 260

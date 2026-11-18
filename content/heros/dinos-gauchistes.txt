@@ -1,5 +1,5 @@
 nom: Les Dinos gauchistes
-traitement: une forme de l'ultragauche, comme dans un dessin animé : un troupeau de tricératops masqués
+traitement: l'ultragauche en dessin animé, un troupeau de tricératops masqués
 cri: DINOS GAUCHISTES !
 citation: melenchon-ultra-extreme-gauche
 fiche: video-ultragauche

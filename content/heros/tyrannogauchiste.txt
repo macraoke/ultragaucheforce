@@ -10,7 +10,7 @@ citation: ciotti-tyranno-gauchistes
 fiche: impots-milliardaires
 auteur: xsbfh
 
-# Arme : une rafale de tracts.
+# Arme : des tracts lancés à la volée.
 arme.type: tir
 arme.cadence: 9
 arme.vitesse: 300

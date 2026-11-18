@@ -1,5 +1,5 @@
 nom: L'Immunité ouvrière
-origine: Au débat à onze candidats du 4 avril 2017, l'ouvrier chez Ford lance : « nous n'avons pas d'immunité ouvrière, désolé, on y va ». Le jeu en fait son nom, son cri et sa spéciale.
+origine: Au débat à onze candidats du 4 avril 2017, l'ouvrier chez Ford lance : « nous n'avons pas d'immunité ouvrière, désolé, on y va ».
 inspiration: Philippe Poutou
 traitement: l'ouvrier en tee-shirt à manches longues, au milieu des cravates
 cri: NOUS N'AVONS PAS D'IMMUNITÉ OUVRIÈRE !
@@ -9,7 +9,7 @@ vitesse: 125
 saut: 3
 auteur: xsbfh
 
-# Arme : des boulons qui rebondissent au ras du sol et traversent tout, pour nettoyer le terrain devant soi.
+# Arme : des boulons qui rebondissent au ras du sol et traversent tout.
 arme.type: tir
 arme.cadence: 2.6
 arme.vitesse: 190
@@ -24,7 +24,7 @@ arme.taille: 5
 arme.image: projectile
 arme.son: impact
 
-# Spéciale : une barricade de pavés, deux cases de haut, qui sépare le héros de ce qui le poursuit.
+# Spéciale : une barricade de pavés, deux cases de haut, entre le héros et ce qui le suit.
 speciale.type: mur
 speciale.nom: IMMUNITÉ OUVRIÈRE !
 speciale.charges: 4
