@@ -5,8 +5,8 @@ import assert from 'node:assert/strict';
 import { coach, gesturesOf, guideView, CHECK_TIME } from '../src/client/consigne.js';
 import { askedFor } from '../src/client/ui.js';
 import { loadContent } from '../tools/content.mjs';
-import { TUTORIAL, levelOrder } from '../src/client/collection.js';
-import { firstVisit } from '../src/client/save.js';
+import { TUTORIAL, levelOrder, nextStep, startingHero } from '../src/client/collection.js';
+import { firstVisit, eraseProgress } from '../src/client/save.js';
 
 test('chaque panneau attend les gestes que nomment ses marqueurs', () => {
   assert.deepEqual(gesturesOf('[avancer] : avancer · [sauter] : sauter'), ['avancer', 'sauter']);
@@ -96,4 +96,42 @@ test('le clignotement réunit la spéciale demandée et le geste de la consigne'
   assert.deepEqual([...askedFor(true, null)], ['special']);
   assert.deepEqual([...askedFor(false, { hints: ['bas', 'fire'] })].sort(), ['bas', 'fire']);
   assert.deepEqual([...askedFor(true, { hints: ['special'] })], ['special']);
+});
+
+test('après le tuto, fini ou passé, le premier niveau tire son héros parmi tous, comme une toute première partie', async () => {
+  const { bundle } = await loadContent();
+  const playable = Object.values(bundle.heros).filter((x) => x.statut === 'jouable').map((x) => x.id);
+  const tuto = bundle.niveaux[TUTORIAL];
+  const afterTuto = { heros: '', decouvertes: [`niveaux:${TUTORIAL}`, `heros:${tuto.heros}`, 'heros:melenchon'] };
+  const seen = new Set();
+  for (let i = 0; i < playable.length; i++) {
+    const pick = startingHero(bundle, afterTuto, () => (i + 0.5) / playable.length);
+    assert.equal(pick.source, 'premier');
+    seen.add(pick.id);
+  }
+  assert.deepEqual([...seen].sort(), [...playable].sort(), 'tous les héros jouables, pas seulement ceux du tuto');
+  // Un niveau de la campagne commencé : on revient au tirage parmi ceux débloqués.
+  const later = { ...afterTuto, decouvertes: [...afterTuto.decouvertes, 'niveaux:millevaches'] };
+  for (const r of [0, 0.5, 0.99]) {
+    const pick = startingHero(bundle, later, () => r);
+    assert.equal(pick.source, 'aleatoire');
+    assert.ok([tuto.heros, 'melenchon'].includes(pick.id));
+  }
+  assert.deepEqual(startingHero(bundle, { ...afterTuto, heros: 'melenchon' }), { id: 'melenchon', source: 'choisi' });
+  assert.deepEqual(startingHero(bundle, { heros: '', decouvertes: [] }, () => 0), { id: playable[0], source: 'premier' });
+});
+
+test('après le tuto, la suite est la prochaine étape non terminée', async () => {
+  const { bundle } = await loadContent();
+  const order = levelOrder(bundle);
+  assert.equal(nextStep(bundle, { termines: {} }), order[0]);
+  assert.equal(nextStep(bundle, { termines: { [order[0]]: true } }), order[1]);
+  assert.equal(nextStep(bundle, { termines: Object.fromEntries(order.map((id) => [id, true])) }), order[0]);
+});
+
+test('effacer sa progression ne renvoie pas dans le tuto', () => {
+  const save = { termines: { millevaches: true }, records: {}, decouvertes: ['niveaux:millevaches', 'heros:melenchon'], vues: {}, heros: 'x', options: {} };
+  eraseProgress(save, [`niveaux:${TUTORIAL}`]);
+  assert.deepEqual(save.decouvertes, [`niveaux:${TUTORIAL}`]);
+  assert.equal(firstVisit(save), false);
 });

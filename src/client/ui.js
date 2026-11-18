@@ -6,7 +6,7 @@ import { spriteElement } from './sprites.js';
 import { REPO, REFERENCES } from './config.js';
 import { measuring } from './mesure.js';
 import { storeSave, eraseProgress, isFound, isReadOnly, firstVisit } from './save.js';
-import { SHELVES, TUTORIAL, VOTE_FICHES, allCards, collectionCount, isFresh, levelOrder, markSeen, openCard, progress, rarityCounts, shelfGrid, wonCards } from './collection.js';
+import { SHELVES, TUTORIAL, VOTE_FICHES, nextStep, allCards, collectionCount, isFresh, levelOrder, markSeen, openCard, progress, rarityCounts, shelfGrid, wonCards } from './collection.js';
 import { livesStack } from './lives.js';
 import { KEY_NAMES, CONTROLS, brief, mentions } from './input.js';
 import { injuryReport } from './blesses.js';
@@ -260,8 +260,7 @@ export class Screens {
   /** La prochaine étape ; au tout premier passage, le tuto. */
   nextLevel() {
     if (firstVisit(this.save) && this.bundle.niveaux[TUTORIAL]) return TUTORIAL;
-    const order = levelOrder(this.bundle);
-    return order.find((id) => !this.save.termines[id]) || order[0];
+    return nextStep(this.bundle, this.save);
   }
 
   /**
@@ -419,7 +418,7 @@ export class Screens {
       h('p', {}, 'Tu perdras tout ce que tu as débloqué et tes records. La campagne repartira du premier niveau.'),
       this.button('Annuler', () => this.options(), 'gros'),
       this.button('Effacer', () => {
-        eraseProgress(this.save);
+        eraseProgress(this.save, [`niveaux:${TUTORIAL}`]); // le tuto déjà vu ou passé ne revient pas
         this.options('Progression effacée.');
       }, 'discret effacer'));
     this.escape = () => this.options(); // Échap, c'est Annuler
@@ -844,7 +843,7 @@ export class Hud {
   }
 
   update(game) {
-    this.pump(game.time, Boolean(game.sign || this.guide));
+    this.pump(game.time, Boolean(game.sign)); // une consigne qui attend ne retient pas les notes : le panneau passe dessous
     this.offAir(game.offAir > 0);
     const { hero, boss } = game;
     const special = hero.def.speciale;

@@ -176,7 +176,7 @@ test('Options du menu : effacer demande confirmation, et Annuler a la main', asy
   assert.deepEqual(save.decouvertes, ['heros:zucman']);
   press('Effacer ma progression');
   press('Effacer');
-  assert.deepEqual([save.termines, save.records, save.decouvertes, save.heros], [{}, {}, [], '']);
+  assert.deepEqual([save.termines, save.records, save.decouvertes, save.heros], [{}, {}, ['niveaux:get-ready-with-me'], '']); // le tuto reste vu
   assert.deepEqual(save.options, { son: true, musique: false, sobre: false }, 'les options restent');
   assert.match(root.textContent, /Progression effacée/);
 });

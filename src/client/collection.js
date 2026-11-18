@@ -8,7 +8,7 @@
 import { h, link, frenchDate, quoted, signature, sourceName, billions } from './dom.js';
 import { RARITIES } from '../content/rarities.js';
 import { sprite, spriteElement } from './sprites.js';
-import { isFound } from './save.js';
+import { isFound, firstVisit } from './save.js';
 
 /**
  * Les rayons de l'album, dans l'ordre d'affichage : onglets, clavier, manette, numéros des cartes.
@@ -90,6 +90,27 @@ export function levelOrder(bundle) {
   const rest = Object.keys(bundle.niveaux).filter((id) => !bundle.campagne.includes(id) && id !== TUTORIAL)
     .sort((a, b) => bundle.niveaux[a].titre.localeCompare(bundle.niveaux[b].titre, 'fr'));
   return [...bundle.campagne, ...rest];
+}
+
+/** La prochaine étape de la campagne : la première pas encore terminée, sinon la première. Jamais le tuto. */
+export function nextStep(bundle, save) {
+  const order = levelOrder(bundle);
+  return order.find((id) => !save.termines[id]) || order[0];
+}
+
+/**
+ * Le personnage de départ : celui que le joueur a choisi ; sinon un de ceux qu'il a débloqués, au hasard ; et la toute
+ * première partie (aucun niveau commencé, tuto à part : ses deux héros ne comptent pas), n'importe lequel, au hasard.
+ * @param {() => number} random
+ * @returns {{id: string, source: 'choisi' | 'aleatoire' | 'premier'}}
+ */
+export function startingHero(bundle, save, random = Math.random) {
+  const playable = Object.values(bundle.heros).filter((x) => x.statut === 'jouable').map((x) => x.id);
+  const mine = playable.filter((x) => isFound(save, 'heros', x));
+  if (mine.includes(save.heros)) return { id: save.heros, source: 'choisi' };
+  const first = !mine.length || firstVisit(save, [TUTORIAL]);
+  const pool = first ? playable : mine;
+  return { id: pool[Math.floor(random() * pool.length)] ?? '', source: first ? 'premier' : 'aleatoire' };
 }
 
 /** Les trois démarches que rappelle l'appel au vote. */

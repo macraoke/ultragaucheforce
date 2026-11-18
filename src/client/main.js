@@ -15,7 +15,7 @@ import { INJURY_FILE } from './blesses.js';
 import { shareImage, openShare } from './share.js';
 import { measure, runStarted, runEnded, heroRescued } from './mesure.js';
 import { loadSave, storeSave, discover, isFound, followSystemMotion } from './save.js';
-import { TUTORIAL, cardName, citationOfWord, levelOrder, signNote, taxShocks } from './collection.js';
+import { TUTORIAL, nextStep, startingHero, cardName, citationOfWord, levelOrder, signNote, taxShocks } from './collection.js';
 import { registerServiceWorker } from './sw-register.js';
 
 // Le contenu, parti dès index.html. S'il n'arrive pas, la mesure le compte (l'erreur, elle, suit son cours).
@@ -112,7 +112,7 @@ const screens = new Screens(screenRoot, {
     quit: () => toMenu(),
     skip: () => {
       endRun('abandoned', 'passer');
-      start(levelOrder(bundle)[0]);
+      start(nextStep(bundle, save));
     },
     tutorial: () => current?.id === TUTORIAL,
     atelier: (button) => openAtelier(button),
@@ -189,18 +189,6 @@ function collectCortege() {
   for (const m of game.cortege) if (m.kind === 'drapeau') collect('drapeaux', m.label, true);
 }
 
-/**
- * Le personnage de départ : celui que le joueur a choisi ; sinon un de ceux qu'il a débloqués, au hasard ;
- * et la toute première fois, n'importe lequel, au hasard.
- */
-function startingHero() {
-  const playable = Object.values(bundle.heros).filter((x) => x.statut === 'jouable').map((x) => x.id);
-  const mine = playable.filter((x) => isFound(save, 'heros', x));
-  if (mine.includes(save.heros)) return { id: save.heros, source: 'choisi' };
-  const pool = mine.length ? mine : playable;
-  return { id: pool[Math.floor(Math.random() * pool.length)] ?? '', source: mine.length ? 'aleatoire' : 'premier' };
-}
-
 function start(id, level = null) {
   const again = current?.id === (id ?? 'atelier'); // « Recommencer » : ce qui a déjà été débloqué dans ce niveau reste
   endRun('abandoned', again ? 'recommencer' : 'autre_niveau');
@@ -209,14 +197,14 @@ function start(id, level = null) {
   // Dans l'Atelier, on essaie le niveau avec le héros que dit sa fiche, pas celui de la sauvegarde ; le tuto part
   // toujours avec le sien, pour que le camarade libéré lance autre chose.
   const tutorial = !level && id === TUTORIAL;
-  const hero = level ? { id: '', source: 'atelier' } : tutorial ? { id: current.level.heros, source: 'tuto' } : startingHero();
+  const hero = level ? { id: '', source: 'atelier' } : tutorial ? { id: current.level.heros, source: 'tuto' } : startingHero(bundle, save);
   game = new Game(bundle, id, { seed: Math.floor(Math.random() * 1e9), level, hero: hero.id });
   guiding = tutorial;
   guide = null;
   renderer.snap(game);
   hud.reset();
   if (!begin && !again) won = []; // un changement de héros sur le carton d'ouverture garde ce qui a déjà été débloqué
-  if (id) collect('niveaux', id, true);
+  if (id && !tutorial) collect('niveaux', id, true); // le tuto est noté vu à « C'est parti » : un « ← Retour » le garde
   collect('citations', current.level.citation, true);
   collect('heros', game.hero.def.id, true);
   collectCortege();
@@ -225,6 +213,7 @@ function start(id, level = null) {
   fitRight();
   begin = () => {
     begin = null;
+    if (tutorial) collect('niveaux', id, true); // le tuto vu : le prochain « Jouer » mène à la campagne
     // Chaque vraie partie, rejouée ou non ; pas un changement de héros sur le carton. Un niveau de l'Atelier
     // compte sous le seul nom « atelier » : rien de ce qu'on y écrit ne part.
     run = runStarted({
@@ -336,7 +325,7 @@ async function win() {
   };
   screens.end({
     level, hurt, seed: game.seed, facts, time: game.time, crowd, won, best: custom ? null : best, share,
-    next: id === TUTORIAL ? order[0] : index >= 0 ? order[index + 1] : null,
+    next: id === TUTORIAL ? nextStep(bundle, save) : index >= 0 ? order[index + 1] : null,
     last: index === order.length - 1,
   });
   won = []; // rejouer ce niveau repart d'une rangée vide
