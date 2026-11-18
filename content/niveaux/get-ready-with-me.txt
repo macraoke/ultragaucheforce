@@ -6,13 +6,13 @@ manif: 3
 heros: tyrannogauchiste
 camarades: melenchon
 
-panneau.1: [avancer] : avancer · [sauter] : sauter
-panneau.2: [tirer] : lancer des tracts
+panneau.1: [avancer] : Avancer · [sauter] : Sauter
+panneau.2: [tirer] : Lancer des tracts
 panneau.3: Touche la paysanne : elle rejoint la manif ✊
-panneau.4: Un automate en face : [tirer] pour l'arrêter
-panneau.5: Ils sont deux : [spéciale]
+panneau.4: Un automate en face · [tirer] : Lancer des tracts
+panneau.5: Ils sont deux · [spéciale] : Lancer ta spéciale
 panneau.6: Touche la cage : un camarade est libéré
-panneau.7: Nouveau camarade, autre lancer : [tirer]
+panneau.7: Nouveau camarade, autre lancer · [tirer] : Lancer des mots
 panneau.8: S'il tombe, le camarade d'avant reprend
 panneau.9: ✊ Avance avec la manif : elle pousse le barrage
 

@@ -12,7 +12,7 @@ musique: internationale
 musique-boss: jeunesse-emmerde-le-fn-dreamz-remix
 
 panneau.1: Tracts et manif : le barrage cède
-panneau.2: [bas] + [tirer] : creuser
+panneau.2: [bas] + [tirer] : Creuser
 panneau.3: Remonte : le barrage est en haut
 panneau.4: STATION
 
