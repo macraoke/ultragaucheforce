@@ -2,7 +2,7 @@ texte: Mettre fin à l'open bar des arrêts de travail.
 auteur: Édouard Philippe
 fonction: président d'Horizons, maire du Havre, candidat à l'élection présidentielle
 date: 2026-08-27
-contexte: Annonces faites à l'AFP avant le débat des candidats à l'université de rentrée du Medef, avec une indemnisation du chômage ramenée à douze mois au plus pour les moins de 50 ans.
+contexte: À l'AFP, avant le débat des candidats à l'université de rentrée du Medef. Il veut ramener l'indemnisation du chômage à douze mois au plus pour les moins de 50 ans.
 categorie: puissants
 mot: OPEN BAR
 note: Il veut que « le premier jour, les deux premiers jours ne seront pas indemnisés lorsque c'est un arrêt ponctuel », et « lutter contre le phénomène de chantage à l'arrêt maladie ». Sur le chômage : « ma direction c'est de faire comme l'Allemagne ».

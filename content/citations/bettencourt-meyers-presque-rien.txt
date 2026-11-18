@@ -2,7 +2,7 @@ texte: Au fond, pour que presque rien ne change dans cette épopée
 auteur: Françoise Bettencourt Meyers
 fonction: actionnaire de L'Oréal, présidente de Téthys
 date: 2025-04-28
-contexte: Déclaration à l'AFP, la veille de l'assemblée générale de L'Oréal où elle quitte le conseil d'administration ; la phrase suit « Nous voulons apprécier cette continuité remarquable par respect et fierté pour tous ceux qui ont contribué partout dans le monde. »
+contexte: Déclaration à l'AFP, la veille de l'assemblée générale de L'Oréal où elle quitte le conseil d'administration. Juste avant : « Nous voulons apprécier cette continuité remarquable par respect et fierté pour tous ceux qui ont contribué partout dans le monde. »
 categorie: puissants
 mot: PRESQUE RIEN
 note: La dépêche ne cite que ce fragment, qui n'est pas une phrase entière. Page lue sur La Gazette France, qui reprend la dépêche de l'AFP ; la déclaration originale n'a pas été relue.

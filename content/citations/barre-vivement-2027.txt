@@ -2,7 +2,7 @@ texte: Vivement 2027, que Laurent Nuñez soit classé sans suite, lui aussi.
 auteur: Pierre-Emmanuel Barré
 fonction: humoriste, chroniqueur de « La Dernière » sur Radio Nova
 date: 2026-09
-contexte: Sur X, en repartageant l'article du Parisien qui annonce le classement sans suite de la plainte visant sa chronique du 9 novembre 2025 sur Radio Nova.
+contexte: Sur X, en repartageant l'article du Parisien : la plainte contre sa chronique du 9 novembre 2025 sur Radio Nova est classée sans suite.
 categorie: gauche
 note: Au même journal, il parle de « plutôt une bonne nouvelle pour la liberté d'expression ». Le personnage Sale gosse lui doit son cri.
 source.titre: Le HuffPost (Yahoo Actualités) — Pierre-Emmanuel Barré est ravi de sa victoire judiciaire contre Laurent Nuñez, après sa blague comparant la police à Daech

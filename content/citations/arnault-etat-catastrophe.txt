@@ -2,7 +2,7 @@ texte: Il est très mauvais pour l'État de se mêler de la gestion des entrepri
 auteur: Bernard Arnault
 fonction: PDG de LVMH
 date: 2025-05-21
-contexte: Devant la commission d'enquête du Sénat sur les aides publiques aux grandes entreprises, en réponse à Emmanuel Macron, qui avait appelé les entreprises à suspendre leurs investissements aux États-Unis, et au ministre de l'Économie Éric Lombard, qui les invitait au « patriotisme ».
+contexte: Devant la commission d'enquête du Sénat sur les aides publiques aux grandes entreprises. Il répond à Emmanuel Macron, qui avait appelé les entreprises à suspendre leurs investissements aux États-Unis, et au ministre de l'Économie Éric Lombard, qui les invitait au « patriotisme ».
 categorie: puissants
 mot: LA CATASTROPHE
 note: Phrase relevée par Public Sénat (qui écrit « l'Etat ») : « Je crois qu'il est très mauvais pour l'Etat de se mêler de la gestion des entreprises privées. En général, ça mène à la catastrophe. » Version du compte rendu officiel du Sénat : « Je pense qu'il est très préjudiciable que l'État se mêle de la gestion des entreprises privées » (https://www.senat.fr/compte-rendu-commissions/20250519/aides_publiques.html).

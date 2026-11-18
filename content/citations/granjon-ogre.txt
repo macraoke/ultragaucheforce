@@ -2,7 +2,7 @@ texte: L'ogre de l'e-commerce adopte un nom générique pour l'ensemble du group
 auteur: La Libre Belgique
 fonction: quotidien
 date: 2019-11-16
-contexte: Portrait de Jacques-Antoine Granjon en tête de l'entretien. Le boss lui doit son nom.
+contexte: Portrait de Jacques-Antoine Granjon en tête de l'entretien.
 categorie: puissants
 mot: OGRE
 note: Juste avant : « Son appétit d'expansion assouvi », après le rachat, entre 2015 et 2017, de ses concurrents européens.

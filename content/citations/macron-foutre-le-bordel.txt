@@ -2,7 +2,7 @@ texte: Au lieu de foutre le bordel, ils feraient mieux d'aller regarder si ils p
 auteur: Emmanuel Macron
 fonction: président de la République
 date: 2017-10-04
-contexte: À Égletons (Corrèze), en aparté filmé avec le président de la région Nouvelle-Aquitaine Alain Rousset, à propos d'anciens salariés de GM&S qui manifestaient à proximité et d'une fonderie d'Ussel en mal de recrutement.
+contexte: À Égletons (Corrèze), dans un aparté filmé avec Alain Rousset, président de la région Nouvelle-Aquitaine. Il parle d'anciens salariés de GM&S qui manifestaient tout près, et d'une fonderie d'Ussel qui avait du mal à recruter.
 categorie: puissants
 mot: FOUTRE LE BORDEL
 note: Transcription d'Europe 1 d'après les images de BFMTV : « Y'en a certains, au lieu de foutre le bordel, ils feraient mieux d'aller regarder si ils peuvent pas avoir des postes là-bas, parce qu'ils ont les qualifications pour le faire. » Version lissée reprise dans la presse : « Certains, au lieu de foutre le bordel, feraient mieux d'aller regarder s'ils ne peuvent pas avoir des postes là-bas ». Le 15 octobre 2017 sur TF1, il a répondu que « le mot "bordel", c'est du registre populaire ».

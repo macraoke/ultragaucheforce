@@ -2,7 +2,7 @@ texte: Le CDI n'est pas la panacée universelle.
 auteur: Serge Dassault
 fonction: sénateur UMP, président du groupe Dassault
 date: 2012-02-08
-contexte: Depuis le public d'une réunion sur les délocalisations au siège de l'UMP, à Paris, alors sénateur UMP de l'Essonne, pour « libéraliser les CDD ».
+contexte: Dans le public d'une réunion sur les délocalisations, au siège de l'UMP à Paris. Il est alors sénateur UMP de l'Essonne et veut « libéraliser les CDD ».
 categorie: puissants
 mot: PANACÉE
 note: Juste avant : « Il faut aussi libéraliser les CDD. Les CDD sont encadrés, on a droit à 6 mois, on a droit à 1 an, il faut faire ceci cela… »
