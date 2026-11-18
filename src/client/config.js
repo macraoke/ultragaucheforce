@@ -1,6 +1,6 @@
 // Réglages du client qui ne sont pas du contenu.
 
-export const REPO = 'https://github.com/macraoke/ultragaucheforce';
+export const REPO = 'https://github.com/ultragaucheforce/ultragaucheforce.github.io';
 
 /** Références assumées du projet, affichées dans « À propos ». */
 export const REFERENCES = [

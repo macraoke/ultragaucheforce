@@ -66,19 +66,19 @@ test('mesure : le filtre avant envoi retire les paramètres des adresses et ce q
   const window = {};
   const run = new Function('window', 'location', 'document', measureSnippet({ token: 'phc_essai123' }).replace(/<\/?script>/g, ''));
   const document = { createElement: () => ({}), getElementsByTagName: () => [{ parentNode: { insertBefore() {} } }] };
-  run(window, { hostname: 'macraoke.github.io' }, document);
+  run(window, { hostname: 'ultragaucheforce.github.io' }, document);
   const [[token, config]] = window.posthog._i;
   assert.equal(token, 'phc_essai123');
   const event = config.before_send({
     event: '$pageview', $set: { a: 1 },
-    properties: { $current_url: 'https://macraoke.github.io/ultragaucheforce/?debug&fbclid=x#a', $referrer: 'https://t.co/abc?s=1', $raw_user_agent: 'Mozilla', $host: 'macraoke.github.io', $timezone: 'Europe/Paris', $screen_width: 390, $browser: 'Chrome', level: 'bismillah',
-      fbclid: 'abc', utm_source: null, $session_entry_fbclid: 'abc', $session_entry_url: 'https://macraoke.github.io/ultragaucheforce/?x=1', $initial_utm_source: 'a' },
+    properties: { $current_url: 'https://ultragaucheforce.github.io/?debug&fbclid=x#a', $referrer: 'https://t.co/abc?s=1', $raw_user_agent: 'Mozilla', $host: 'ultragaucheforce.github.io', $timezone: 'Europe/Paris', $screen_width: 390, $browser: 'Chrome', level: 'bismillah',
+      fbclid: 'abc', utm_source: null, $session_entry_fbclid: 'abc', $session_entry_url: 'https://ultragaucheforce.github.io/?x=1', $initial_utm_source: 'a' },
   });
   assert.deepEqual(event.properties, {
-    $current_url: 'https://macraoke.github.io/ultragaucheforce/', $referrer: 'https://t.co/abc', $browser: 'Chrome', level: 'bismillah',
+    $current_url: 'https://ultragaucheforce.github.io/', $referrer: 'https://t.co/abc', $browser: 'Chrome', level: 'bismillah',
     // le hachage du mode sans cookie en a besoin ; PostHog retire l'agent utilisateur brut après le calcul
-    $raw_user_agent: 'Mozilla', $host: 'macraoke.github.io', $timezone: 'Europe/Paris',
-    $session_entry_url: 'https://macraoke.github.io/ultragaucheforce/',
+    $raw_user_agent: 'Mozilla', $host: 'ultragaucheforce.github.io', $timezone: 'Europe/Paris',
+    $session_entry_url: 'https://ultragaucheforce.github.io/',
     $geoip_disable: true, $process_person_profile: false,
   });
   assert.equal(event.$set, undefined);
@@ -87,14 +87,14 @@ test('mesure : le filtre avant envoi retire les paramètres des adresses et ce q
   const error = config.before_send({
     event: '$exception',
     properties: { $exception_list: [{
-      type: 'Error', value: 'échec à https://macraoke.github.io/ultragaucheforce/?fbclid=x#a ligne 3',
-      stacktrace: { frames: [{ filename: 'https://macraoke.github.io/ultragaucheforce/?fbclid=x#a', lineno: 3 }, { filename: 'https://macraoke.github.io/ultragaucheforce/src/client/main.js', lineno: 9 }] },
+      type: 'Error', value: 'échec à https://ultragaucheforce.github.io/?fbclid=x#a ligne 3',
+      stacktrace: { frames: [{ filename: 'https://ultragaucheforce.github.io/?fbclid=x#a', lineno: 3 }, { filename: 'https://ultragaucheforce.github.io/src/client/main.js', lineno: 9 }] },
     }] },
   });
   const [exception] = error.properties.$exception_list;
-  assert.equal(exception.value, 'échec à https://macraoke.github.io/ultragaucheforce/ ligne 3');
+  assert.equal(exception.value, 'échec à https://ultragaucheforce.github.io/ ligne 3');
   assert.deepEqual(exception.stacktrace.frames.map((f) => f.filename),
-    ['https://macraoke.github.io/ultragaucheforce/', 'https://macraoke.github.io/ultragaucheforce/src/client/main.js']);
+    ['https://ultragaucheforce.github.io/', 'https://ultragaucheforce.github.io/src/client/main.js']);
   assert.ok(!JSON.stringify(error).includes('fbclid'), 'aucun paramètre, à aucune profondeur');
 
   const local = {};
@@ -118,7 +118,7 @@ test('mesure : le build l’ajoute à la page avec une clé, et le service worke
   assert.notEqual(a.version, b.version, 'brancher la mesure change la version : le service worker sert la nouvelle page');
   const worker = readFileSync(join(measured, 'sw.js'), 'utf8');
   assert.ok(!/posthog/i.test(worker), 'aucun fichier de PostHog dans le précache');
-  assert.match(worker, /origin !== self\.location\.origin\) return/, 'les requêtes vers un autre site passent sans le cache');
+  assert.match(worker, /!OWN\.has\(url\.href\)\) return/, 'seuls les fichiers du jeu passent par le cache (tests/sw.test.js)');
 });
 
 test('mesure : une partie qui commence, un camarade libéré, puis la victoire ou la défaite', () => {
@@ -151,7 +151,7 @@ test('mesure : une partie qui commence, un camarade libéré, puis la victoire o
 test('mesure : le filtre avant envoi garde les propriétés des événements du jeu, rien d’autre', () => {
   const window = {};
   const run = new Function('window', 'location', 'document', measureSnippet({ token: 'phc_essai123' }).replace(/<\/?script>/g, ''));
-  run(window, { hostname: 'macraoke.github.io' }, { createElement: () => ({}), getElementsByTagName: () => [{ parentNode: { insertBefore() {} } }] });
+  run(window, { hostname: 'ultragaucheforce.github.io' }, { createElement: () => ({}), getElementsByTagName: () => [{ parentNode: { insertBefore() {} } }] });
   const [[, config]] = window.posthog._i;
   const kept = { track: 'monarch', slot: 'niveau', level: 'bismillah', seconds: 43, percent: 26, volume: 30, cause: 'suivante', via: 'radio', reason: 'muette',
     mode: 'campagne', hero: 'alpha', hero_source: 'choisi', again: false, crowd: 120, lives: 2, progress: 64, hero_from: 'alpha', hero_to: 'beta' };

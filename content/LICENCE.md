@@ -6,7 +6,7 @@ Copiez, modifiez, réutilisez, à deux conditions : créditer, et partager sous 
 
 ## Créditer
 
-> « UltraGauche Force », par ses contributrices et contributeurs — https://github.com/macraoke/ultragaucheforce — CC BY-SA 4.0
+> « UltraGauche Force », par ses contributrices et contributeurs — https://github.com/ultragaucheforce/ultragaucheforce.github.io — CC BY-SA 4.0
 
 Pour un contenu précis, ajoutez l'auteur donné par la clé `auteur` de sa fiche.
 
