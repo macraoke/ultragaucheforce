@@ -2,7 +2,7 @@ texte: Le Gaulois réfractaire au changement.
 auteur: Emmanuel Macron
 fonction: président de la République
 date: 2018-08-29
-contexte: À Copenhague, en déplacement au Danemark, en comparant les Danois aux Français pour vanter la « flexisécurité » danoise.
+contexte: En visite au Danemark, à Copenhague. Il compare les Danois aux Français pour vanter la « flexisécurité » danoise.
 categorie: puissants
 mot: GAULOIS RÉFRACTAIRE
 note: Phrase rapportée : « Ce peuple luthérien, qui a vécu les transformations de ces dernières années, n'est pas exactement le Gaulois réfractaire au changement ». Le lendemain, il a invoqué un « trait d'humour » ; il a reconnu plus tard « une erreur » (titre de Public Sénat).

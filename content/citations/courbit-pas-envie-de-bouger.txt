@@ -2,7 +2,7 @@ texte: Nous en sommes très heureux et nous n'avons pas envie de bouger.
 auteur: Stéphane Courbit
 fonction: président de Banijay Group
 date: 2026-02-25
-contexte: Audition sous serment devant la commission d'enquête de l'Assemblée nationale sur l'audiovisuel public, sur les taxes que son groupe paie en France.
+contexte: Sous serment devant la commission d'enquête de l'Assemblée nationale sur l'audiovisuel public, sur les taxes que son groupe paie en France.
 categorie: puissants
 note: Juste avant : « Nous participons à l'effort collectif, puisque nous payons nos taxes en France et que nous y sommes basés. »
 source.titre: Assemblée nationale — Commission d'enquête sur la neutralité, le fonctionnement et le financement de l'audiovisuel public, compte rendu n° 44 du 25 février 2026 (audition de Banijay Group)

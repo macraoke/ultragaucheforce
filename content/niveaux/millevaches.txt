@@ -1,6 +1,6 @@
 titre: Le camp d'entraînement de Millevaches
 auteur: xsbfh
-accroche: Le plateau de Millevaches, en Limousin : des bois, des prés et des vaches.
+accroche: Le plateau de Millevaches, en Limousin, et ses vaches.
 citation: lisnard-camp-entrainement
 fiche: sainte-soline-bilan
 fiche: tarnac-relaxe
@@ -19,7 +19,7 @@ panneau.4: [spéciale] : lance ta spéciale
 panneau.5: Pousse contre le mur : [sauter], [sauter], [sauter]
 panneau.6: ✊ Tracts et manif : le blindé cède
 panneau.7: Un tonneau saute, ses voisins aussi
-panneau.8: [bas] + [tirer] : creuser · [haut] + [tirer] : viser en haut
+panneau.8: [bas] + [tirer] : creuser · [haut] + [tirer] : lancer en haut
 panneau.9: Fonce dans la cage : un camarade est libéré
 
 g: lance-pleurs

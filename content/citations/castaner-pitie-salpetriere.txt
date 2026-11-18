@@ -2,7 +2,7 @@ texte: Ici, à la Pitié-Salpêtrière, on a attaqué un hôpital.
 auteur: Christophe Castaner
 fonction: ministre de l'Intérieur
 date: 2019-05-01
-contexte: Message publié sur Twitter au soir du défilé du 1er Mai à Paris, après l'entrée de manifestants dans l'enceinte de l'hôpital.
+contexte: Sur Twitter, au soir du défilé du 1er Mai à Paris, après l'entrée de manifestants dans l'enceinte de l'hôpital.
 categorie: diabolisation
 mot: ON A ATTAQUÉ UN HÔPITAL
 note: Suite du message : « On a agressé son personnel soignant. Et on a blessé un policier mobilisé pour le protéger. » Les images et les témoignages ont contredit cette version. Le 3 mai 2019, il a reconnu : « J'entends le reproche sur le mot attaque, je n'aurais pas dû l'employer. »

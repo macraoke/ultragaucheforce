@@ -2,7 +2,7 @@ texte: Nous sommes dans l'obligation de nous adapter, nous ne pouvons pas rester
 auteur: Thierry Peugeot
 fonction: président du conseil de surveillance de PSA Peugeot Citroën
 date: 2012-07-19
-contexte: Entretien au Figaro.fr, rapporté par l'AFP, après l'annonce de 8 000 suppressions de postes en France et de la fermeture de l'usine d'Aulnay, face au recul du marché européen de l'automobile.
+contexte: Entretien au Figaro.fr, rapporté par l'AFP, après l'annonce de 8 000 suppressions de postes en France et de la fermeture de l'usine d'Aulnay. Le marché européen de l'automobile recule.
 categorie: puissants
 mot: NOUS ADAPTER
 note: Juste avant : « Nous sommes bien conscients de la gravité du plan. »

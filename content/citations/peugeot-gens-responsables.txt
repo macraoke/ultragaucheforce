@@ -2,7 +2,7 @@ texte: Nous sommes aussi des gens responsables.
 auteur: Thierry Peugeot
 fonction: président du conseil de surveillance de PSA Peugeot Citroën
 date: 2012-07-19
-contexte: Entretien au Figaro.fr, rapporté par l'AFP, après l'annonce de 8 000 suppressions de postes en France et de la fermeture de l'usine d'Aulnay, alors que la famille, qui détient 25 % du capital, est mise en cause pour les dividendes versés.
+contexte: Entretien au Figaro.fr, rapporté par l'AFP, après l'annonce de 8 000 suppressions de postes en France et de la fermeture de l'usine d'Aulnay. La famille, qui détient 25 % du capital, est mise en cause pour les dividendes versés.
 categorie: puissants
 mot: GENS RESPONSABLES
 note: Suite : « A chaque fois que le groupe a été en difficulté, il a suspendu le versement de dividendes à ses actionnaires. Cela a été le cas en 2009 et en 2010, au titre des exercices précédents. »

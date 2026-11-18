@@ -2,7 +2,7 @@ texte: J'aurais pu augmenter mes tarifs de fret, je ne l'ai pas fait.
 auteur: Rodolphe Saadé
 fonction: PDG de CMA CGM
 date: 2023-06-01
-contexte: Audition devant la commission d'enquête de l'Assemblée nationale sur le coût de la vie outre-mer, sous serment.
+contexte: Sous serment devant la commission d'enquête de l'Assemblée nationale sur le coût de la vie outre-mer.
 categorie: puissants
 note: Compte rendu officiel, page 20 du PDF. Juste avant : « Moi, j'ai 80 millions de moins. »
 source.titre: Assemblée nationale — Commission d'enquête sur le coût de la vie dans les collectivités régies par les articles 73 et 74, compte rendu n° 21 du 1er juin 2023 (audition de Rodolphe Saadé)
