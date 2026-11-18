@@ -288,6 +288,17 @@ html.pivote body {
 @keyframes demande-bouton { 50% { box-shadow: 0 0 0 5px var(--blanc); background: rgb(246 194 28 / .6); color: var(--nuit); } }
 body.sobre #hud-charges.demande, body.sobre #tactile b.demande { animation: none; box-shadow: 0 0 0 4px var(--blanc); }
 @media (prefers-reduced-motion: reduce) { #hud-charges.demande, #tactile b.demande { animation: none; box-shadow: 0 0 0 4px var(--blanc); } }
+/* La consigne de la première partie : le pouce gauche glisse dans le sens demandé, tant que personne n'y touche. */
+#tactile .manche[data-demande] { border-color: rgb(246 194 28 / .8); }
+#tactile .manche[data-demande]:not(.appuye) i { background: rgb(246 194 28 / .8); animation: .9s ease-in-out infinite alternate; }
+#tactile .manche[data-demande='bas']:not(.appuye) i { animation-name: glisse-bas; }
+#tactile .manche[data-demande='haut']:not(.appuye) i { animation-name: glisse-haut; }
+#tactile .manche[data-demande='cote']:not(.appuye) i { animation-name: glisse-cote; }
+@keyframes glisse-bas { to { transform: translate(-50%, calc(-50% + 8vmin)); } }
+@keyframes glisse-haut { to { transform: translate(-50%, calc(-50% - 8vmin)); } }
+@keyframes glisse-cote { from { transform: translate(calc(-50% - 8vmin), -50%); } to { transform: translate(calc(-50% + 8vmin), -50%); } }
+body.sobre #tactile .manche[data-demande]:not(.appuye) i { animation-duration: 0s; animation-iteration-count: 1; animation-fill-mode: forwards; }
+@media (prefers-reduced-motion: reduce) { #tactile .manche[data-demande]:not(.appuye) i { animation-duration: 0s; animation-iteration-count: 1; animation-fill-mode: forwards; } }
 #hud-manif { flex-basis: 100%; color: var(--or); font-size: 1.5em; transform-origin: left center; }
 #hud-manif[hidden] { display: none; }
 #hud-manif.grossit { animation: grossit .45s cubic-bezier(.2, 1.6, .4, 1); }

@@ -59,8 +59,11 @@ export function withKeys(text, device = 'clavier') {
   return chosen.replace(TOKEN, (all, word) => names[tokenName(word)] ?? all);
 }
 
+/** Les commandes qu'un panneau nomme, dans l'ordre : « [bas] + [tirer] : creuser » → `['bas', 'tirer']`. */
+export const tokens = (text) => [...(text || '').matchAll(TOKEN)].map(([, word]) => tokenName(word));
+
 /** Ce panneau nomme-t-il cette commande (`speciale`, `tirer`…), sous l'une des formes que `withKeys` reconnaît ? */
-export const mentions = (text, action) => [...(text || '').matchAll(TOKEN)].some(([, word]) => tokenName(word) === action);
+export const mentions = (text, action) => tokens(text).includes(action);
 
 /** Les boutons et les axes de la manette standard que le jeu lit (voir `gamepad()` et `pollMenu()`). */
 const PAD_BUTTONS = [0, 1, 2, 4, 5, 6, 7, 9, 12, 13, 14, 15];

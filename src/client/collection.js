@@ -14,11 +14,17 @@ import { isFound } from './save.js';
  * Les rayons de l'album, dans l'ordre d'affichage : onglets, clavier, manette, numéros des cartes.
  * Les pancartes viennent juste après les camarades. `keep` trie les fiches entre deux rayons.
  */
+/**
+ * Le tuto, « Get ready with me » : joué au tout premier « Jouer », rejouable depuis le menu. Il n'est pas une étape
+ * de la campagne, ni un lieu de la Collection ; ses panneaux attendent le geste (`consigne.js`).
+ */
+export const TUTORIAL = 'get-ready-with-me';
+
 export const SHELVES = [
   { id: 'camarades', titre: 'Camarades', kinds: ['heros', 'recrues'] },
   { id: 'pancartes', titre: 'Pancartes', kinds: ['pancartes'] },
   { id: 'en-face', titre: 'Le capital et ses automates', kinds: ['ennemis', 'boss'] },
-  { id: 'lieux', titre: 'Lieux', kinds: ['niveaux'] },
+  { id: 'lieux', titre: 'Lieux', kinds: ['niveaux'], keep: (n) => n.id !== TUTORIAL },
   { id: 'paroles', titre: 'Paroles', kinds: ['citations'] },
   { id: 'tele', titre: 'Vu à la télé', kinds: ['manchettes'] },
   { id: 'faits', titre: 'Faits', kinds: ['fiches'], keep: (f) => f.theme !== 'programme' },
@@ -77,11 +83,11 @@ export const rarityName = (item) => (item.rarete === undefined ? '' : RARITIES[i
 export const signNote = (item) => `Pancarte ${rarityName(item)} débloquée : « ${item.texte} »`;
 
 /**
- * Le plan de campagne : tous les niveaux, dans l'ordre des étapes. `content/campagne.txt` fixe les premières ;
+ * Le plan de campagne : tous les niveaux sauf le tuto, dans l'ordre des étapes. `content/campagne.txt` fixe les premières ;
  * les autres suivent, par ordre de titre. Une seule catégorie : un niveau déposé est une étape comme une autre.
  */
 export function levelOrder(bundle) {
-  const rest = Object.keys(bundle.niveaux).filter((id) => !bundle.campagne.includes(id))
+  const rest = Object.keys(bundle.niveaux).filter((id) => !bundle.campagne.includes(id) && id !== TUTORIAL)
     .sort((a, b) => bundle.niveaux[a].titre.localeCompare(bundle.niveaux[b].titre, 'fr'));
   return [...bundle.campagne, ...rest];
 }

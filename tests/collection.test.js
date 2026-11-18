@@ -3,7 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { loadContent } from '../tools/content.mjs';
-import { SHELVES, allCards, cardId, cardName, citationOfWord, hintLine, levelOrder, signNote, whereToFind } from '../src/client/collection.js';
+import { SHELVES, TUTORIAL, allCards, cardId, cardName, citationOfWord, hintLine, levelOrder, signNote, whereToFind } from '../src/client/collection.js';
 import { RARITIES } from '../src/content/rarities.js';
 
 const { bundle } = loadContent();
@@ -15,7 +15,8 @@ test('collection : une carte par fiche, numérotée, avec un nom et une clé uni
   assert.equal(new Set(keys).size, keys.length, 'aucune carte en double');
   for (const c of cards) assert.ok(cardName(c.item), `${c.kind}:${cardId(c.item)} a un nom`);
   for (const kind of ['heros', 'recrues', 'ennemis', 'boss', 'niveaux', 'citations', 'fiches', 'drapeaux']) {
-    assert.equal(cards.filter((c) => c.kind === kind).length, Object.keys(bundle[kind]).length, kind);
+    const ids = Object.keys(bundle[kind]).filter((id) => !(kind === 'niveaux' && id === TUTORIAL)); // le tuto n'est pas un lieu
+    assert.equal(cards.filter((c) => c.kind === kind).length, ids.length, kind);
   }
 });
 

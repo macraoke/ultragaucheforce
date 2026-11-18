@@ -122,6 +122,7 @@ export class Renderer {
     this.anchor = 0.62; // hauteur des pieds du héros à l'écran (0 = haut, 1 = bas) : on voit ce qu'il y a sous terre
     this.demo = false; // démo du menu : pas de panneaux par-dessus le titre
     this.device = 'clavier'; // l'appareil dont les panneaux disent les touches : clavier, manette ou pouce
+    this.guide = null; // la consigne du tuto : son panneau reste lisible (voir `guideView`)
     this.signTop = 30; // hauteur du panneau à l'écran, en pixels du jeu (main.js la règle selon la mise en page)
     this.sign = { text: '', t: 0 }; // le dernier panneau lu, et combien de temps il reste à l'écran
     this.clock = 0;
@@ -514,10 +515,14 @@ export class Renderer {
    * Un panneau long passe à la ligne vers le bas : il ne monte jamais sur le HUD. Rend son texte, sa place et sa boîte.
    */
   signBoard(game, dt) {
+    // La consigne du tuto (`consigne.js`) tient le dernier panneau lu à l'écran tant que le geste n'est pas fait,
+    // même après une pause (`snap`).
     if (game.sign) this.sign = { text: game.sign, t: SIGN_LINGER };
+    else if (this.guide) this.sign = { text: this.guide.text, t: SIGN_LINGER };
     else this.sign.t = Math.max(0, this.sign.t - dt);
     if (this.sign.t <= 0 || this.demo) return null;
-    const text = withKeys(this.sign.text, this.device);
+    const done = this.guide?.done && this.guide.text === this.sign.text;
+    const text = withKeys(this.sign.text, this.device) + (done ? ' ✓' : '');
     const lines = this.wrap(text, 7, 190).length;
     let y = this.signTop + (lines - 1) * 7 * 1.1;
     // Une note de déblocage à sa place (au clavier, en haut à gauche) : le panneau passe dessous, et y reste tant qu'il

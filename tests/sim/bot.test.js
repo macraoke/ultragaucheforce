@@ -7,6 +7,7 @@ import { fixtureBundle, level, play } from './helpers.js';
 import { loadContent } from '../../tools/content.mjs';
 import { Game } from '../../src/sim/game.js';
 import { runBot, dumpMap, botActions, upReach } from '../../src/sim/bot.js';
+import { TUTORIAL } from '../../src/client/collection.js';
 
 const BUDGET = 60 * 420; // sept minutes de jeu, largement plus qu'un niveau de 3 minutes
 
@@ -102,4 +103,8 @@ if (real.errors.length) {
       traverse(real.bundle, id);
     });
   }
+  // Le tuto, joué au tout premier lancement, hors campagne : il doit se terminer aussi.
+  test(`le robot termine le tuto « ${TUTORIAL} »`, () => {
+    traverse(real.bundle, TUTORIAL);
+  });
 }

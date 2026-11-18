@@ -180,6 +180,9 @@ const key = (kind, id) => `${kind}:${id}`;
 /** Cette carte (« heros », « ennemis », « citations »… + identifiant) a-t-elle déjà été rencontrée ? */
 export const isFound = (save, kind, id) => save.decouvertes.includes(key(kind, id));
 
+/** Le tout premier passage : aucun niveau encore commencé (un niveau lancé est noté « niveaux:… »). */
+export const firstVisit = (save) => !save.decouvertes.some((k) => typeof k === 'string' && k.startsWith('niveaux:'));
+
 /** Note une découverte ; renvoie vrai si elle est nouvelle. */
 export function discover(save, kind, id) {
   if (isFound(save, kind, id)) return false;
