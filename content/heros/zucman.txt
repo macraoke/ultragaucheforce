@@ -10,6 +10,7 @@ vitesse: 135
 saut: 3.4
 fiche: impot-plancher
 fiche: impot-plancher-parcours
+fiche: programme-impot-fortune
 auteur: xsbfh
 
 # Arme : le tampon « 2 % », lent et lourd, casse murs et boucliers.

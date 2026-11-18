@@ -2,7 +2,7 @@ texte: Une minorité politisée et instrumentalisée par LFI cherche à empêche
 auteur: Édouard Philippe
 fonction: président d'Horizons, maire du Havre, candidat à l'élection présidentielle
 date: 2026-09-30
-contexte: Message publié sur X pendant le mouvement de blocage des lycées.
+contexte: Sur X, pendant le mouvement de blocage des lycées.
 categorie: diabolisation
 mot: INSTRUMENTALISÉE
 note: Suite : « Et saccagent les lycées. Ces blocages doivent cesser. Et les Français n'ont pas à payer la facture des casseurs. Les familles ont une responsabilité : pour remettre de l'ordre dans nos établissements scolaires, j'ai proposé que les maires puissent sanctionner financièrement les casseurs et leurs parents. » Le 1er octobre 2026, Public Sénat en cite une variante : « une minorité politisée et instrumentalisée par LFI », « qui cherche à empêcher les étudiants d'aller étudier et saccage les lycées. »

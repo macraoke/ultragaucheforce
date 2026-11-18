@@ -2,7 +2,7 @@ texte: Nous ne sommes pas une multinationale, mais une entreprise multilocale.
 auteur: Emmanuel Besnier
 fonction: PDG de Lactalis
 date: 2025-06-17
-contexte: Déclaration liminaire sous serment devant la commission d'enquête du Sénat sur l'utilisation des aides publiques aux grandes entreprises (compte rendu officiel, p. 551).
+contexte: Début de son audition sous serment devant la commission d'enquête du Sénat sur l'utilisation des aides publiques aux grandes entreprises (compte rendu officiel, p. 551).
 categorie: puissants
 mot: MULTILOCALE
 note: Il poursuit : « Notre présence dans 50 pays s'appuie sur un principe fondamental : produire localement ce que nous vendons localement, avec de la matière première locale. »

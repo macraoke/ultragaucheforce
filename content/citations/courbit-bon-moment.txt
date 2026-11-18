@@ -2,7 +2,7 @@ texte: J'ai été au bon moment au bon endroit.
 auteur: Stéphane Courbit
 fonction: président de Banijay Group
 date: 2026-02-25
-contexte: Audition sous serment devant la commission d'enquête de l'Assemblée nationale sur l'audiovisuel public, interrogé sur la réussite de Banijay.
+contexte: Sous serment devant la commission d'enquête de l'Assemblée nationale sur l'audiovisuel public, interrogé sur la réussite de Banijay.
 categorie: puissants
 mot: BON ENDROIT
 note: Suite : « il faut, à mon avis, avoir de la chance et j'en ai eu. » Juste avant : « Une personne qui arriverait aujourd'hui en ayant la même énergie, le même désir et le même âge ne pourrait pas connaître la même aventure que moi. »

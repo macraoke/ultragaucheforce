@@ -2,7 +2,7 @@ texte: Une volonté clairement formulée de mettre à terre l'économie françai
 auteur: Bernard Arnault
 fonction: PDG de LVMH
 date: 2025-09-20
-contexte: Déclaration au Sunday Times contre la taxe Zucman, impôt plancher de 2 % proposé sur les patrimoines de plus de 100 millions d'euros.
+contexte: Au Sunday Times, contre la taxe Zucman : un impôt plancher de 2 % proposé sur les patrimoines de plus de 100 millions d'euros.
 categorie: puissants
 mot: METTRE À TERRE
 note: Phrase complète : « Il ne s'agit ni d'un débat technique ni économique, mais bien d'une volonté clairement formulée de mettre à terre l'économie française ». Dans la même déclaration, il prête à Gabriel Zucman « une pseudo compétence universitaire qui elle-même fait largement débat » (Public Sénat écrit « pseudo-compétence universitaire qui, elle-même, fait largement débat ») au service d'une idéologie « qui vise la destruction de l'économie libérale, la seule qui fonctionne pour le bien de tous ». Réponse de Gabriel Zucman : voir arnault-zucman.

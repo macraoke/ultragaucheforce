@@ -2,7 +2,7 @@ texte: Je suis et je resterai fiscalement domicilié en France.
 auteur: Bernard Arnault
 fonction: PDG de LVMH
 date: 2013-04-10
-contexte: Entretien au Monde dans lequel il annonce retirer sa demande de nationalité belge, déposée en 2012 en plein débat sur la taxe à 75 % sur les très hauts revenus.
+contexte: Entretien au Monde. Il retire sa demande de nationalité belge, déposée en 2012 en plein débat sur la taxe à 75 % sur les très hauts revenus.
 categorie: puissants
 mot: FISCALEMENT DOMICILIÉ
 note: Phrase complète : « Je suis et je resterai fiscalement domicilié en France et, à ce titre, je remplirai, comme tous les Français, l'ensemble de mes obligations fiscales ». Il dit que sa demande « était d'abord patrimoniale ». Selon Reuters, il ajoute : « Je ne veux plus être associé à une situation où l'on peut soupçonner que je souhaite l'exil fiscal ». En septembre 2012, la révélation de cette demande avait inspiré à Libération la une « Casse-toi riche con ! », contre laquelle il a porté plainte.

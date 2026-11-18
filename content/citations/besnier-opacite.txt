@@ -2,7 +2,7 @@ texte: Certains veulent transformer cette discrétion en opacité, c'est une gra
 auteur: Emmanuel Besnier
 fonction: PDG de Lactalis
 date: 2018-06-07
-contexte: Déclaration liminaire devant la commission d'enquête de l'Assemblée nationale, audition publique (compte rendu officiel n° 25, p. 6).
+contexte: Début de son audition publique devant la commission d'enquête de l'Assemblée nationale (compte rendu officiel n° 25, p. 6).
 categorie: puissants
 mot: OPACITÉ
 note: Il enchaîne : « Je reconnais que cette discrétion fait que nous sommes mal connus et que cela alimente la suspicion. »

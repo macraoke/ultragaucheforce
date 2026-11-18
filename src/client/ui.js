@@ -424,16 +424,11 @@ export class Screens {
 
   about() {
     const fold = (title, ...body) => h('details', {}, h('summary', {}, title), ...body);
-    const programme = Object.values(this.bundle.fiches).filter((x) => x.theme === 'programme');
     this.show('liste apropos',
       h('h2', {}, 'À propos'),
       h('p', {}, MENTION),
       h('p', {}, link(REPO, 'Le dépôt'), ' · ', link(`${REPO}/blob/main/CONTRIBUTING.md`, 'Contribuer'), ' · ',
         link(`${REPO}/blob/main/CHARTE.md`, 'La charte'), ' · ', h('a', { href: 'galerie.html' }, 'La Galerie')),
-      programme.length ? this.button('Le programme de L’Avenir en commun', () => {
-        this.go.learn(programme.map((x) => x.id)); // le lire, c'est le débloquer dans la Collection
-        this.collection('propositions', { back: () => this.about() });
-      }, 'discret') : null,
       measuring() && fold('Mesure d’audience anonyme (PostHog) : ni cookie, ni profil.',
         h('p', {}, 'Le jeu compte les visites, les parties par niveau et par héros (gagnée, perdue ou abandonnée, leur durée, la taille de la manif), les pistes de Radio Manif écoutées, passées ou mises en pause, et ce qui empêche de jouer : contenu ou musique injoignables, erreurs. Les visiteurs sont comptés par jour, sur les serveurs de PostHog, d’après une empreinte qui change chaque jour. Rien n’est écrit sur ton appareil pour cela, et rien de ce que tu écris dans l’Atelier ne part.')),
       fold('Radio Manif : le lecteur et les cookies de SoundCloud',
@@ -630,7 +625,7 @@ export class Screens {
 
   /**
    * Dernier écran : un appel au vote citoyen, les dates et deux démarches, rien d'autre. Le programme est ailleurs
-   * (À propos, Collection) : Valentin, 17 novembre 2026, « Séparer les deux ».
+   * (Collection) : Valentin, 17 novembre 2026, « Séparer les deux ».
    */
   final() {
     const f = this.bundle.fiches;

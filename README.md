@@ -2,7 +2,7 @@
 
 > **Taxez les riches. Abattez la Citadelle.**
 
-**[Jouer en ligne](https://macraoke.github.io/ultragaucheforce/)**, dans le navigateur, sans rien installer.
+**[Jouer en ligne](https://ultragaucheforce.github.io/)**, dans le navigateur, sans rien installer.
 
 Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les plateaux télé la racontent : surarmée de tracts et de tomates. Le but : faire la plus grosse manif pacifiste pour aller taxer le boss final. On part sur le plateau de Millevaches ; d'étape en étape, la manif grossit, et au bout de chacune on taxe la fortune qui s'y est assise. Ça se joue dans le navigateur, au clavier ou au pouce.
 
@@ -49,13 +49,13 @@ Un run-and-gun en pixel art où vous incarnez l'ultragauche telle que les platea
 
 ## Jouer
 
-Le jeu est en ligne sur https://macraoke.github.io/ultragaucheforce/ pour l'instant ; il passera bientôt sur ultragaucheforce.fr.
+Le jeu est en ligne sur https://ultragaucheforce.github.io/.
 
 En local, il faut [Node.js](https://nodejs.org/fr) 22 et rien d'autre :
 
 ```bash
-git clone https://github.com/macraoke/ultragaucheforce.git
-cd ultragaucheforce
+git clone https://github.com/ultragaucheforce/ultragaucheforce.github.io.git
+cd ultragaucheforce.github.io
 npm start
 ```
 
@@ -86,7 +86,7 @@ Tout le contenu est en fichiers texte, modifiables depuis GitHub sans rien insta
 | un héros, une recrue, une unité d'en face, un boss | [une fiche](docs/ajouter-un-personnage.md) |
 | un drapeau, un son, une citation, un chiffre | [drapeau](docs/ajouter-un-drapeau.md) · [son](docs/ajouter-un-son.md) · [source](docs/ajouter-une-source.md) |
 | une mécanique | [une fonction](docs/ajouter-une-mecanique.md) |
-| une idée | [une issue](https://github.com/macraoke/ultragaucheforce/issues/new/choose) |
+| une idée | [une issue](https://github.com/ultragaucheforce/ultragaucheforce.github.io/issues/new/choose) |
 
 Tout ce qu'on dépose se débloque en jouant, et se retrouve dans la Collection. Le mode d'emploi : [CONTRIBUTING.md](CONTRIBUTING.md). Ce qui entre dans le jeu : [la charte](CHARTE.md).
 
@@ -114,7 +114,7 @@ Le pourquoi : [docs/DECISIONS.md](docs/DECISIONS.md).
 
 ## Licence
 
-Code [MIT](LICENSE), contenus [CC BY-SA 4.0](content/LICENCE.md) sauf mention contraire (certains sons et musiques ont leur propre licence, dite dans le jeu, À propos → Crédits et licences). Mentions légales : [en ligne](https://macraoke.github.io/ultragaucheforce/mentions-legales.html).
+Code [MIT](LICENSE), contenus [CC BY-SA 4.0](content/LICENCE.md) sauf mention contraire (certains sons et musiques ont leur propre licence, dite dans le jeu, À propos → Crédits et licences). Mentions légales : [en ligne](https://ultragaucheforce.github.io/mentions-legales.html).
 
 ## Clins d'œil
 

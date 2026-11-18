@@ -2,7 +2,7 @@ texte: Qui va créer des emplois ? C'est pas les pauvres.
 auteur: Serge Dassault
 fonction: sénateur UMP, président du groupe Dassault
 date: 2012-02-08
-contexte: Depuis le public d'une réunion sur les délocalisations au siège de l'UMP, à Paris, alors sénateur UMP de l'Essonne, à propos de l'impôt sur la fortune.
+contexte: Dans le public d'une réunion sur les délocalisations, au siège de l'UMP à Paris. Il est alors sénateur UMP de l'Essonne et parle de l'impôt sur la fortune.
 categorie: puissants
 mot: PAS LES PAUVRES
 note: Passage complet : « L'ISF, c'est quoi ? C'est les gens riches, alors oui, oui, mais il n'y a plus assez de riches pour payer, et ceux qui restent vont partir à cause de Hollande. Et si les riches sont partis, qui va investir ? Qui va développer ? Qui va faire la croissance ? Qui va créer des emplois ? C'est pas les pauvres. Alors les riches c'est bien, il faut les garder. » Politis note des applaudissements.

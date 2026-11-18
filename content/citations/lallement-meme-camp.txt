@@ -2,7 +2,7 @@ texte: Eh bien, nous ne sommes pas dans le même camp, madame.
 auteur: Didier Lallement
 fonction: préfet de police de Paris
 date: 2019-11-17
-contexte: Place d'Italie à Paris, à une femme qui se disait « gilet jaune », au lendemain des violences du premier anniversaire du mouvement ; la scène a été filmée par BFMTV.
+contexte: Place d'Italie à Paris, au lendemain des violences du premier anniversaire du mouvement, à une femme qui se disait « gilet jaune ». La scène a été filmée par BFMTV.
 categorie: diabolisation
 mot: PAS DANS LE MÊME CAMP
 note: Son entourage a affirmé qu'il parlait « du camp des casseurs et pas de celui des "gilets jaunes" » et que les images n'étaient « pas contextualisées ».

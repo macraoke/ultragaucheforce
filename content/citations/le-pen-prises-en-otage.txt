@@ -2,7 +2,7 @@ texte: Les revendications sociales légitimes ont une nouvelle fois été prises
 auteur: Marine Le Pen
 fonction: présidente du groupe Rassemblement national à l'Assemblée nationale, candidate à l'élection présidentielle
 date: 2026-10-17
-contexte: Message publié sur X le soir de la journée de mobilisation contre la vie chère, à l'appel d'anciens gilets jaunes, du mouvement lycéen et de syndicats, marquée par des pillages en marge des cortèges.
+contexte: Sur X, le soir de la journée de mobilisation contre la vie chère. Elle avait été lancée par d'anciens gilets jaunes, le mouvement lycéen et des syndicats, et a été marquée par des pillages en marge des cortèges.
 categorie: diabolisation
 mot: PRISES EN OTAGE
 note: Suite : « et les discours des députés de Jean-Luc Mélenchon qui, en légitimant la violence, en considérant l'ordre comme une oppression et le désordre comme un droit, cherchent à précipiter le pays dans le chaos ». Dépêche AFP, publiée par Brut le 26 octobre. Pour la date : LCP en cite des fragments (« revendications sociales légitimes », « prises en otage par l'extrême gauche ») le 17 octobre 2026 à 19 h 24, dans « Manifestations du 17 octobre: soutien aux policiers ou critiques du maintien de l'ordre, les responsables politiques se divisent ».

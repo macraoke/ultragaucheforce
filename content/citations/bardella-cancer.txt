@@ -2,7 +2,7 @@ texte: L'ultragauche est le cancer de notre démocratie.
 auteur: Jordan Bardella
 fonction: président du Rassemblement national, député européen
 date: 2026-10-19
-contexte: Conférence de presse, deux jours après la journée de mobilisation du 17 octobre contre la vie chère et les pillages en marge des cortèges. Il y annonce que ni lui ni Marine Le Pen n'iront à la réunion des chefs de parti autour de Sébastien Lecornu, évoquée dimanche soir par Emmanuel Macron et dont la date n'est pas encore annoncée.
+contexte: Conférence de presse, deux jours après la journée de mobilisation du 17 octobre contre la vie chère et les pillages en marge des cortèges. Il annonce que ni lui ni Marine Le Pen n'iront à la réunion des chefs de parti autour de Sébastien Lecornu. Emmanuel Macron l'a évoquée dimanche soir ; sa date n'est pas encore annoncée.
 categorie: diabolisation
 mot: CANCER
 note: Graphie de l'intertitre ; le corps de l'article écrit « L'ultra-gauche est le cancer de notre démocratie ». Même conférence : LFI, dont « l'ultragauche est devenue le bras armé », et la demande d'inscrire « des groupes d'ultragauche sur la liste des organisations terroristes de l'Union européenne ». Il veut interdire de manifestation les « milliers de militants d'ultragauche fichés S », comme les hooligans.

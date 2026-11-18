@@ -2,7 +2,7 @@ texte: Notre industrie réalise de faibles marges, de l'ordre de moins de 2 % de
 auteur: Emmanuel Besnier
 fonction: PDG de Lactalis
 date: 2025-06-17
-contexte: Déclaration liminaire sous serment devant la commission d'enquête du Sénat sur l'utilisation des aides publiques aux grandes entreprises (compte rendu officiel, p. 564).
+contexte: Début de son audition sous serment devant la commission d'enquête du Sénat sur l'utilisation des aides publiques aux grandes entreprises (compte rendu officiel, p. 564).
 categorie: puissants
 mot: FAIBLES MARGES
 note: Il parle du résultat net du groupe, en pourcentage du chiffre d'affaires. Dans la même audition : « En 2024, Lactalis a franchi pour la première fois le seuil des 30 milliards d'euros de chiffre d'affaires » (p. 551).

@@ -2,7 +2,7 @@ texte: J'entends beaucoup parler d'influence, oui, mais laquelle, pourquoi, comm
 auteur: Martin Bouygues
 fonction: président du groupe Bouygues
 date: 2022-02-18
-contexte: Audition sous serment devant la commission d'enquête du Sénat sur la concentration des médias, à propos du projet de fusion TF1-M6, à propos de l'influence de TF1 sur l'information.
+contexte: Sous serment devant la commission d'enquête du Sénat sur la concentration des médias, à propos du projet de fusion TF1-M6 et de l'influence de TF1 sur l'information.
 categorie: puissants
 mot: INFLUENCE
 note: Juste avant : « Il me semble que Le Monde, auprès des décideurs, a beaucoup plus de poids et d'influence que TF1. C'est une réalité historique. » Le compte rendu du Sénat n'a pas été ouvert : le texte est celui de Public Sénat.

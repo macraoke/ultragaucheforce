@@ -1,6 +1,6 @@
 titre: Le siège de la chaîne d'info
 auteur: xsbfh
-accroche: Une chaîne d'info en continu : ses plateaux, sa régie, son antenne.
+accroche: Une chaîne d'info en continu, du plateau à l'antenne.
 citation: bollore-aucun-projet-ideologique
 fiche: c8-conseil-etat-fin
 fiche: c8-ecran-noir
