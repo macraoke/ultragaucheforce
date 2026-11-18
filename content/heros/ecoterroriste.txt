@@ -6,6 +6,7 @@ pv: 2
 vitesse: 150
 saut: 3.6
 fiche: soulevements-dissolution-annulee
+fiche: programme-energie
 auteur: xsbfh
 
 # Arme : des tomates lancées en cloche.
