@@ -76,13 +76,17 @@ export function joinRecruit(game, r) {
   const n = def.multiplie > 0 ? Math.max(1, Math.round(game.crowd * def.multiplie) - game.crowd) : def.apport;
   const x = r.x + r.w / 2;
   game.stats.recruits++;
+  const before = game.stats.signs;
   game.addCrowd(n);
   // Une street medic soigne : elle rend des coups au personnage en jeu, sans dépasser son maximum.
   const { hero } = game;
   const healed = def.soin > 0 && !hero.dead ? Math.min(def.soin, hero.def.pv - hero.hp) : 0;
   hero.hp += healed;
   game.emit('recruit', { id: def.id, n, crowd: game.crowd, x, y: r.y, healed });
-  if (def.slogan.length) game.emit('bubble', { x, y: r.y - 6, text: def.slogan[(game.stats.recruits - 1) % def.slogan.length] });
+  // Arrivée avec une pancarte : elle crie ce qui y est écrit, mot pour mot, et rien d'autre. Sinon, son slogan.
+  const sign = game.stats.signs > before ? game.signs.at(-1) : null;
+  if (sign) game.emit('bubble', { x, y: r.y - 6, text: sign });
+  else if (def.slogan.length) game.emit('bubble', { x, y: r.y - 6, text: def.slogan[(game.stats.recruits - 1) % def.slogan.length] });
   game.sfx('recrue', x);
   game.discover('recrue', def.id);
   game.addPanic(2);

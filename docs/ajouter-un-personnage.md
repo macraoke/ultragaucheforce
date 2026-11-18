@@ -144,7 +144,7 @@ auteur: ton pseudo
 | `apport` | combien de personnes rejoignent la manif | 1 à 500 |
 | `multiplie` | à la place d'`apport` : la manif est multipliée (une assemblée générale) | 1,5 à 5 |
 | `soin` | combien de coups elle rend au personnage en jeu en rejoignant la manif (une street medic) | 0 à 3 |
-| `slogan` | ce qu'elle lance en rejoignant : un slogan réellement scandé ou une pancarte vue ; répétable | |
+| `slogan` | ce qu'elle lance en rejoignant : un slogan réellement scandé ou une pancarte vue ; répétable. Si elle arrive avec une pancarte, elle crie la pancarte à la place | |
 | `fiche`, `origine` | sa carte | |
 
 `apport` ou `multiplie`, jamais les deux. Le dessin `image` donne sa taille (48 pixels au plus) ; `image2` l'anime. Son gain s'affiche au-dessus d'elle : `+ 25`, `× 2`.
