@@ -51,14 +51,18 @@ test('collection : toute pancarte, tout bandeau devient une carte, avec ou sans 
 
 test('collection : chaque carte se débloque quelque part en jouant', () => {
   const lost = cards.filter((c) => whereToFind(bundle, c.kind, c.item).length === 0).map((c) => `${c.kind}:${cardId(c.item)}`);
-  assert.deepEqual(lost, [], 'cartes sans aucun chemin : attache-les à un personnage, un niveau, une scène');
+  // Le bouton « Le programme de L’Avenir en commun » a quitté À propos (Valentin, 18 novembre 2026) : ces quatre
+  // propositions, portées par aucun personnage, restent « À découvrir » en attendant qu'on leur trouve un chemin.
+  const waiting = ['programme-energie', 'programme-impot-fortune', 'programme-loyers', 'programme-temps-de-travail'].map((id) => `fiches:${id}`);
+  assert.deepEqual(lost.sort(), waiting, 'cartes sans aucun chemin : attache-les à un personnage, un niveau, une scène');
   const hint = (kind, id) => whereToFind(bundle, kind, kind === 'pancartes' ? bundle.pancartes.find((p) => p.texte === id) : bundle[kind][id]);
   assert.deepEqual(hint('pancartes', 'MACRON, RENDS-NOUS LE POGNON !'), ['dans la manif'], 'même le slogan d’une recrue se tire au hasard');
   assert.deepEqual(hint('heros', 'zucman'), ['dans n’importe quel niveau']);
   assert.deepEqual(hint('pancartes', 'TAXEZ LES RICHES'), ['dans la manif']);
   assert.deepEqual(hint('citations', 'melenchon-bruit-et-fureur'), ["L'Ingénieur du chaos"], 'les mots du héros viennent de sa citation');
   assert.deepEqual(hint('fiches', 'procuration'), ['à la fin de la campagne']);
-  assert.deepEqual(hint('fiches', 'programme-energie'), ['dans À propos, « Le programme de L’Avenir en commun »'], 'le programme n’est pas sur l’écran du vote');
+  assert.deepEqual(hint('fiches', 'programme-train'), ['Cheminot'], 'une proposition se débloque avec le camarade qui la porte');
+  assert.deepEqual(hint('fiches', 'programme-energie'), [], 'plus de bouton dans À propos, et le programme n’est pas sur l’écran du vote');
   assert.deepEqual(hint('fiches', 'patrimoine-moitie'), ['en taxant une fortune']);
   assert.ok(hint('ennemis', 'lance-pleurs').length >= 1, 'les renforts de l’hélicoptère comptent');
 });
