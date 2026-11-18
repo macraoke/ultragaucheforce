@@ -1,16 +1,18 @@
 // La consigne du tuto (« Get ready with me », `TUTORIAL`) : à chaque partie du tuto, un panneau qui nomme
 // une commande (`[sauter]`, `[tirer]`, `[bas]` + `[tirer]`…) reste affiché jusqu'à ce que le joueur ait fait le geste,
 // puis montre un ✓ et s'efface. Rien de neuf dans les fiches : les gestes se lisent dans les marqueurs du panneau.
-// Fonctions pures, testées dans Node : elles lisent les actions envoyées à la simulation, elles n'y touchent pas.
+// Fonctions pures, testées dans Node : elles lisent les actions envoyées à la simulation, et le héros après le pas
+// (un rebond contre un mur ne se lit que là), elles n'y touchent pas.
 
 import { tokens } from './input.js';
 
 /** Combien de temps le ✓ reste, en secondes de jeu, avant que le panneau s'efface comme les autres. */
 export const CHECK_TIME = 0.8;
 
-/** Chaque geste, et les actions d'un pas qui le font. */
+/** Chaque geste, et ce qui le fait à ce pas : les actions envoyées, et le héros qui vient de bouger. */
 export const GESTURES = {
   avancer: (a) => a.left || a.right,
+  grimper: (a, hero) => Boolean(hero?.climbed), // un rebond contre un mur (`updateHero`)
   sauter: (a) => a.jump,
   tirer: (a) => a.fire,
   speciale: (a) => a.special,
@@ -24,6 +26,7 @@ export const GESTURES = {
  */
 export const HINTS = {
   avancer: ['cote'],
+  grimper: ['cote', 'jump'],
   sauter: ['jump'],
   tirer: ['fire'],
   speciale: ['special'],
@@ -31,13 +34,18 @@ export const HINTS = {
   'lancer-haut': ['haut', 'fire'],
 };
 
+/** Deux marqueurs liés par un « + » qui font un seul geste. */
+const COMBOS = { 'avancer+sauter': 'grimper' };
+
 /**
  * Les gestes qu'attend un panneau, dans l'ordre, sans doublon. `[bas]` ou `[haut]` suivi de `[tirer]` forment un seul
- * geste ; un mot inconnu (ou `[pause]`) n'attend rien.
+ * geste, comme `[avancer] + [sauter]` (grimper) ; un mot inconnu (ou `[pause]`) n'attend rien.
  * @returns {string[]} des clés de GESTURES
  */
 export function gesturesOf(text) {
-  const words = tokens(text);
+  // « [avancer] + [sauter] » se lit comme un seul marqueur, « avancer+sauter » ; un « + » inconnu se défait.
+  const words = tokens((text || '').replace(/\]\s*\+\s*\[/g, '+'))
+    .flatMap((w) => (COMBOS[w] ? [COMBOS[w]] : w.split('+').map((p) => p.trim())));
   const out = [];
   for (let i = 0; i < words.length; i++) {
     let g = words[i];
@@ -57,16 +65,17 @@ const IDLE = Object.freeze({ text: '', wait: [], until: 0, cleared: [] });
  * un panneau sans geste, ou déjà fait, l'efface. Chaque geste fait sort de l'attente ; le dernier ouvre le ✓,
  * qui tombe au bout de CHECK_TIME. Rien ne bloque : la consigne ne fait qu'attendre.
  * @param {{text: string, wait: string[], until: number, cleared: string[]} | null} state  null : rien encore
- * @param {{sign: string | null, actions: object, time: number}} step  le panneau lu à ce pas, les actions envoyées, le temps de jeu
+ * @param {{sign: string | null, actions: object, time: number, hero?: object}} step  le panneau lu à ce pas, les actions
+ *        envoyées, le temps de jeu, le héros après le pas
  */
-export function coach(state, { sign, actions, time }) {
+export function coach(state, { sign, actions, time, hero }) {
   let s = state ?? IDLE;
   if (sign && sign !== s.text) {
     const wait = s.cleared.includes(sign) ? [] : gesturesOf(sign);
     s = { ...s, text: wait.length ? sign : '', wait, until: 0 };
   }
   if (s.wait.length && actions) {
-    const wait = s.wait.filter((g) => !GESTURES[g](actions));
+    const wait = s.wait.filter((g) => !GESTURES[g](actions, hero));
     if (wait.length !== s.wait.length) s = { ...s, wait, until: wait.length ? 0 : time + CHECK_TIME };
   }
   if (s.text && !s.wait.length && time >= s.until) s = { ...IDLE, cleared: [...s.cleared, s.text] };

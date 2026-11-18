@@ -122,11 +122,21 @@ test('grimpe : accroché à un mur on glisse lentement, et des sauts répétés 
   const game = standing({ draw: wall });
   const top = (15 - 1 - 7) * TILE; // rangée du haut du mur, en pixels
   let passed = false;
+  let rebounds = 0; // `climbed` : vrai au pas d'un rebond contre le mur (la consigne du tuto « grimper » l'attend)
   for (let i = 0; i < 600 && !passed; i++) {
     game.step({ right: true, jump: i % 9 < 6 });
+    if (game.hero.climbed) rebounds++;
     passed = game.hero.x > 11 * TILE;
   }
   assert.ok(passed, `mur franchi (héros en x=${game.hero.x.toFixed(0)}, y=${game.hero.y.toFixed(0)}, sommet=${top})`);
+  assert.ok(rebounds >= 3, `des rebonds contre le mur : ${rebounds}`);
+  const jumper = standing({});
+  let flat = 0;
+  for (let i = 0; i < 120; i++) {
+    jumper.step({ right: true, jump: i % 30 < 20 });
+    if (jumper.hero.climbed) flat++;
+  }
+  assert.equal(flat, 0, 'un saut du sol n’est pas un rebond');
 
   const slider = standing({ draw: wall });
   run(slider, 80, (i) => ({ right: true, jump: i % 9 < 6 })); // rejoint le mur et monte un peu

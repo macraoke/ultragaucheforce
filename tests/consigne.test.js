@@ -14,6 +14,9 @@ test('chaque panneau attend les gestes que nomment ses marqueurs', () => {
   assert.deepEqual(gesturesOf('[spéciale] : lance ta spéciale'), ['speciale']);
   assert.deepEqual(gesturesOf('Pousse contre le mur : [sauter], [sauter], [sauter]'), ['sauter']);
   assert.deepEqual(gesturesOf('[bas] + [tirer] : creuser · [haut] + [tirer] : lancer en haut'), ['creuser', 'lancer-haut']);
+  assert.deepEqual(gesturesOf('[avancer] + [sauter] : grimper au mur'), ['grimper'], 'avancer + sauter : un seul geste');
+  assert.deepEqual(gesturesOf('[avancer] : avancer · [sauter] : sauter'), ['avancer', 'sauter'], 'sans « + », deux gestes');
+  assert.deepEqual(gesturesOf('[sauter] + [spéciale]'), ['sauter', 'speciale'], 'un « + » inconnu se défait');
   assert.deepEqual(gesturesOf('[ Spéciale ]'), ['speciale'], 'les mêmes formes que withKeys');
   assert.deepEqual(gesturesOf('Va jusqu’à la paysanne : elle rejoint la manif ✊'), [], 'sans marqueur : rien à attendre');
   assert.deepEqual(gesturesOf('[pause] ou [inconnu]'), []);
@@ -36,15 +39,15 @@ test('le tuto vient au tout premier « Jouer », jamais après qu’un niveau a 
   assert.equal(firstVisit({ decouvertes: [`niveaux:${TUTORIAL}`] }), false, 'lancé une fois, ou passé : la suite est la campagne');
 });
 
-/** Joue la consigne pas à pas : `sign` le panneau lu, `actions` ce qui est enfoncé, 1/60 s par pas. */
+/** Joue la consigne pas à pas : `sign` le panneau lu, `actions` ce qui est enfoncé, `hero` le héros après le pas, 1/60 s par pas. */
 function player() {
   let state = null;
   let time = 0;
   return {
-    step(sign = null, actions = {}, n = 1) {
+    step(sign = null, actions = {}, n = 1, hero = undefined) {
       for (let i = 0; i < n; i++) {
         time += 1 / 60;
-        state = coach(state, { sign, actions, time });
+        state = coach(state, { sign, actions, time, hero });
       }
       return guideView(state);
     },
@@ -75,6 +78,14 @@ test('un panneau à deux gestes les attend tous les deux, et allume le prochain'
   assert.deepEqual(p.step(sign, { down: true, fire: true }).hints, ['haut', 'fire']);
   const view = p.step(null, { up: true, fire: true });
   assert.equal(view.done, true);
+});
+
+test('grimper attend un rebond contre un mur, pas un simple saut', () => {
+  const p = player();
+  const sign = '[avancer] + [sauter] : grimper au mur';
+  assert.deepEqual(p.step(sign).hints, ['cote', 'jump']);
+  assert.equal(p.step(sign, { right: true, jump: true, jumpPressed: true }, 30, { climbed: false }).done, false, 'un saut ne suffit pas');
+  assert.equal(p.step(sign, { right: true, jump: true }, 1, { climbed: true }).done, true, 'le rebond : ✓');
 });
 
 test('un autre panneau lu remplace la consigne ; un panneau sans marqueur l’efface', () => {
