@@ -7,7 +7,7 @@ import { fixtureBundle, flat, level, play, run, settle } from './helpers.js';
 import { TILE } from '../../src/sim/world.js';
 import { LINE_REACH, KETTLE_FLOOR } from '../../src/sim/enemy.js';
 import { spawnProjectile } from '../../src/sim/projectile.js';
-import { syncCortege, flagOrder, gameFlags } from '../../src/sim/manif.js';
+import { syncCortege, flagOrder, gameFlags, joinRecruit } from '../../src/sim/manif.js';
 import { loadContent } from '../../tools/content.mjs';
 import { checkLevel } from '../../src/content/rules.js';
 
@@ -30,7 +30,8 @@ test('recrue : rejoint la manif une seule fois, en la touchant ou en lui tendant
   assert.equal(game.crowd, 30);
   assert.equal(game.cortege.length, 5, 'le cortège qu’on voit grossit avec elle');
   assert.ok(game.recruits[0].joined);
-  assert.ok(events.some((e) => e.type === 'bubble' && e.text === 'SLOGAN UN'), 'elle arrive avec son slogan');
+  const brought = of(events, 'sign').at(-1)?.text; // avec une pancarte, elle crie la pancarte ; sinon, son slogan
+  assert.ok(events.some((e) => e.type === 'bubble' && e.text === (brought ?? 'SLOGAN UN')), 'elle arrive avec sa pancarte ou son slogan');
   assert.ok(game.panic > 0, 'et PANIQUE TV s’inquiète un peu');
 
   events = [...run(game, 40, { left: true }), ...run(game, 60, { right: true })]; // on repasse dessus
@@ -42,6 +43,29 @@ test('recrue : rejoint la manif une seule fois, en la touchant ou en lui tendant
   events = run(shooter, 40, { fire: true });
   assert.equal(of(events, 'recruit').length, 1, 'un tract suffit, sans bouger');
   assert.equal(shooter.crowd, 30);
+});
+
+test('recrue avec une pancarte : sa bulle dit la pancarte, mot pour mot, et pas un autre slogan', () => {
+  const lvl = () => flat({ cortege: true, legende: { v: recruit('voisine') }, draw: (put, ground) => put(ground, 9, 'v') });
+  const join = (roll) => {
+    const game = settle(play(lvl()));
+    game.events.length = 0;
+    game.rng.next = () => roll; // 0 : le groupe apporte une pancarte, la première du tirage ; 0,99 : aucune
+    joinRecruit(game, game.recruits[0]);
+    return game.events.splice(0);
+  };
+
+  const signed = join(0);
+  const sign = of(signed, 'sign');
+  assert.equal(sign.length, 1);
+  assert.equal(sign[0].text, 'PANCARTE UN');
+  assert.deepEqual(of(signed, 'bubble').map((e) => e.text), ['PANCARTE UN'], 'une seule bulle, le texte exact de la pancarte');
+  const recruited = signed.findIndex((e) => e.type === 'recruit');
+  assert.equal(signed[recruited + 1].type, 'bubble', 'la bulle suit son « + n », comme un slogan');
+
+  const empty = join(0.99);
+  assert.equal(of(empty, 'sign').length, 0);
+  assert.deepEqual(of(empty, 'bubble').map((e) => e.text), ['SLOGAN UN'], 'sans pancarte, elle garde son slogan');
 });
 
 test('recrue « multiplie » : l’assemblée générale double la manif, quelle que soit sa taille', () => {
