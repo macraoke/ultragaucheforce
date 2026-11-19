@@ -545,6 +545,9 @@ addEventListener('pointerup', function ask(e) {
   if (e.pointerType !== 'touch') return; // un clic de souris d'abord ne doit pas user la demande
   removeEventListener('pointerup', ask);
   if (document.fullscreenElement) return;
+  // L'appli installée s'ouvre déjà en plein écran : redemander le plein écran laisse, sur Android, une bande blanche
+  // à la place de la barre d'état quand elle se cache.
+  if (matchMedia('(display-mode: fullscreen)').matches) return;
   document.documentElement.requestFullscreen?.({ navigationUI: 'hide' })
     ?.then(() => screen.orientation?.lock?.('landscape'))
     .catch(() => {}); // refusé (iPhone, réglage du navigateur) : le pivot de la page fait le travail
