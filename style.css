@@ -370,7 +370,7 @@ body:not(.tactile) #hud:has(> #hud-boss:not([hidden])) ~ #toasts { top: max(6.6e
  * La note d'une pancarte dit son texte en entier, sur deux ou trois lignes : elle est plus large, et se pose sous tout le
  * HUD (`--bas-hud`, mesuré par main.js : le compteur de la manif, la barre de vie quand elle est là).
  */
-#toasts.pancarte { top: max(4.6em, calc(var(--bas-hud, 0px) + 6px)); max-width: min(46%, 470px); }
+#toasts.pancarte { top: max(8px, calc(var(--bas-hud, 3.6em) + 6px)); max-width: min(46%, 470px); }
 body:not(.tactile) #hud:has(> #hud-boss:not([hidden])) ~ #toasts.pancarte { top: max(6.6em, calc(var(--bas-hud, 0px) + 6px)); }
 #toasts p.rarete-1 { border-left-color: var(--rare); }
 #toasts p.rarete-2 { border-left-color: var(--epique); }
