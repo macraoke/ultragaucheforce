@@ -275,7 +275,8 @@ html.pivote body {
 /* HUD : lisible, discret, jamais au milieu de l'action */
 #hud { position: absolute; inset: 0; pointer-events: none; font: 900 clamp(.75rem, 2.2vmin, 1.1rem)/1 var(--titre); letter-spacing: .03em; text-transform: uppercase; color: var(--blanc); text-shadow: 0 2px 0 var(--nuit), 2px 0 0 var(--nuit), -2px 0 0 var(--nuit), 0 -2px 0 var(--nuit); z-index: 6; }
 #hud .bloc { position: absolute; top: 8px; display: flex; flex-wrap: wrap; align-items: center; gap: .3em .8em; max-width: 48%; }
-#hud .gauche { left: 10px; }
+#hud .gauche { left: 10px; max-width: calc(100% - var(--hud-droite, 3.2em) - 40px); } /* une seule ligne, en largeur : le jeu garde sa hauteur */
+#hud:has(> #hud-boss:not([hidden])) .gauche { max-width: 48%; } /* une barre de vie au milieu : la gauche s'arrête avant elle */
 #hud .droite { right: 10px; justify-content: flex-end; }
 #hud-charges { background: var(--or); color: var(--nuit); text-shadow: none; font: 900 1em/1 var(--titre); letter-spacing: .04em; text-transform: uppercase; padding: .3em .5em; }
 #hud-charges:empty { display: none; }
@@ -299,7 +300,7 @@ body.sobre #hud-charges.demande, body.sobre #tactile b.demande { animation: none
 @keyframes glisse-cote { from { transform: translate(calc(-50% - 8vmin), -50%); } to { transform: translate(calc(-50% + 8vmin), -50%); } }
 body.sobre #tactile .manche[data-demande]:not(.appuye) i { animation-duration: 0s; animation-iteration-count: 1; animation-fill-mode: forwards; }
 @media (prefers-reduced-motion: reduce) { #tactile .manche[data-demande]:not(.appuye) i { animation-duration: 0s; animation-iteration-count: 1; animation-fill-mode: forwards; } }
-#hud-manif { flex-basis: 100%; color: var(--or); font-size: 1.5em; transform-origin: left center; }
+#hud-manif { color: var(--or); font-size: 1.3em; transform-origin: left center; }
 #hud-manif[hidden] { display: none; }
 #hud-manif.grossit { animation: grossit .45s cubic-bezier(.2, 1.6, .4, 1); }
 @keyframes grossit { 0% { transform: scale(1.7); } 100% { transform: scale(1); } }
