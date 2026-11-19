@@ -2,7 +2,7 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { fixtureBundle, flat, play, run, settle } from './helpers.js';
+import { FIXTURES, fixtureBundle, flat, play, run, settle } from './helpers.js';
 import { readContentFiles, loadContent } from '../../tools/content.mjs';
 import { buildContent } from '../../src/content/rules.js';
 import { PANIC_STEPS } from '../../src/sim/game.js';
@@ -105,4 +105,21 @@ test('régie : le vérificateur borne ses réglages, et une coupure exige un dé
   const level = real.niveaux['chaine-info'];
   const signs = Object.entries(level.legende).filter(([, ref]) => ref.id === 'regie-antenne').map(([c]) => c);
   assert.equal(level.carte.join('').split('').filter((c) => signs.includes(c)).length, 1, 'une seule régie de l’antenne, au dernier étage de la chaîne d’info');
+});
+
+test('« panique » : un niveau peut partir avec de la panique, sous le premier palier ; sans la clé, de zéro', () => {
+  const files = readContentFiles(FIXTURES);
+  const plaine = files.find((f) => f.path.endsWith('plaine.txt'));
+  const withLine = (line) => buildContent(files.map((f) => (f === plaine ? { ...f, text: f.text.replace('fond: campagne', `fond: campagne\n${line}`) } : f)));
+  const ok = withLine('panique: 20');
+  assert.deepEqual(ok.errors, []);
+  assert.equal(ok.bundle.niveaux.plaine.panique, 20);
+  assert.ok(withLine(`panique: ${PANIC_STEPS[0]}`).errors.length, 'pas jusqu’au premier palier');
+  assert.equal(buildContent(files).bundle.niveaux.plaine.panique, 0, 'sans la clé : zéro');
+  const start = (level) => {
+    const game = play(level);
+    return { panic: game.panic, level: game.panicLevel };
+  };
+  assert.deepEqual(start(flat({ width: 20, panique: 20 })), { panic: 20, level: 0 });
+  assert.deepEqual(start(flat({ width: 20 })), { panic: 0, level: 0 });
 });

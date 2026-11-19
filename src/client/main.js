@@ -418,12 +418,13 @@ function frame(now) {
 
 /** La consigne suit le pas qui vient d'être joué : le panneau lu, les actions envoyées. */
 function coachStep(actions) {
-  if (guiding) guide = coach(guide, { sign: game.sign, actions, time: game.time });
+  if (guiding) guide = coach(guide, { sign: game.sign, actions, time: game.time, hero: game.hero });
 }
 
 /** Le rendu et le HUD montrent la consigne en cours : le panneau tenu, le ✓, ce qui clignote au pouce. */
 function showGuide(demo) {
   renderer.guide = hud.guide = guiding && !demo ? guideView(guide) : null;
+  renderer.tutorial = guiding && !demo; // dans le tuto, le panneau lu est mis en avant (`Renderer.signBoard`)
 }
 
 /**

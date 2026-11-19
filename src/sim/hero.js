@@ -26,7 +26,7 @@ export function createHero(def, cx, feetY) {
   const hero = {
     x: 0, y: 0, w: 0, h: 0, vx: 0, vy: 0, facing: 1, aim: 0, onGround: false, onWall: 0, hp: 0, invuln: 0, flash: 0,
     def: null, charges: 0, anim: 'repos', animTime: 0, clones: [], dead: false,
-    coyote: 0, buffer: 0, cut: true, cooldown: 0, gasTime: 0, hitX: 0, hitY: 0,
+    coyote: 0, buffer: 0, cut: true, cooldown: 0, gasTime: 0, hitX: 0, hitY: 0, climbed: false,
   };
   setHeroDef(hero, def, cx, feetY);
   return hero;
@@ -67,7 +67,9 @@ export function updateHero(game, hero, input, dt) {
   hero.coyote = hero.onGround ? FEEL.coyote : hero.coyote - dt;
   hero.buffer = input.jumpPressed ? FEEL.buffer : hero.buffer - dt;
   const cling = !hero.onGround && dir !== 0 && wallAt(world, hero, dir);
+  hero.climbed = false; // vrai au pas d'un rebond contre le mur : la consigne du tuto « grimper » l'attend
   if (hero.buffer > 0 && (hero.coyote > 0 || cling)) {
+    hero.climbed = hero.coyote <= 0;
     hero.vy = -impulse * (hero.coyote > 0 ? 1 : FEEL.wallJump); // accroché : on grimpe par petits bonds
     hero.coyote = 0;
     hero.buffer = 0;

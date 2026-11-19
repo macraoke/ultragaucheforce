@@ -5,10 +5,13 @@
 
 import { crown, hand, seated, sprite } from './sprites.js';
 import { withKeys } from './input.js';
+import { dodge } from './consigne.js';
 import { KETTLE_FLOOR } from '../sim/enemy.js';
 import { wordBox } from '../sim/projectile.js';
 
 const TILE = 16;
+/** Le panneau du tuto, mis en avant : corps du texte et largeur en pixels du jeu, durée de son entrée en secondes. */
+export const TUTO_SIGN = { size: 10, width: 300, enter: 0.25 };
 export const SIGN_LINGER = 1.6; // secondes pendant lesquelles un panneau dépassé reste lisible, en s'effaçant
 const FONT = "Impact, Haettenschweiler, 'Arial Narrow Bold', 'HelveticaNeue-CondensedBlack', 'Roboto Condensed', sans-serif";
 export const SKIES = {
@@ -123,6 +126,9 @@ export class Renderer {
     this.demo = false; // démo du menu : pas de panneaux par-dessus le titre
     this.device = 'clavier'; // l'appareil dont les panneaux disent les touches : clavier, manette ou pouce
     this.guide = null; // la consigne du tuto : son panneau reste lisible (voir `guideView`)
+    this.boardIn = 1; // l'entrée du panneau du tuto, de 0 à 1
+    this.boardDodge = {}; // le panneau du tuto qui laisse la place au héros (`dodge`)
+    this.tutorial = false; // dans le tuto, le panneau lu est mis en avant (`signBoard`)
     this.signTop = 30; // hauteur du panneau à l'écran, en pixels du jeu (main.js la règle selon la mise en page)
     this.sign = { text: '', t: 0 }; // le dernier panneau lu, et combien de temps il reste à l'écran
     this.clock = 0;
@@ -433,7 +439,15 @@ export class Renderer {
       this.label(f.text, f.x - cx, f.y - cy, { size: f.size || 7, color: f.color, bg: f.bg, alpha: Math.min(1, f.t * 2), width: 150 });
       f.seen = true; // déjà montré : s'il perd sa place, il s'effacera en fondu
     }
-    if (board) this.board(board.text, this.viewW / 2, board.y, { alpha: Math.min(1, this.sign.t * 2) });
+    if (board) {
+      const alpha = Math.min(1, this.sign.t * 2);
+      if (board.style.tuto) {
+        const e = 1 - (1 - this.boardIn) ** 3; // il descend de quelques pixels et apparaît, en un quart de seconde
+        this.label(board.text, board.x, board.y - (1 - e) * 8, {
+          size: board.style.size, width: board.style.width, color: '#1a1c2c', bg: '#f6c21c', alpha: alpha * e,
+        });
+      } else this.board(board.text, board.x, board.y, { alpha });
+    }
     if (countdown) this.label(countdown.text, countdown.x, countdown.y, { size: KETTLE_SIZE, color: countdown.last ? '#f6c21c' : '#f4f4f4' });
   }
 
@@ -513,6 +527,8 @@ export class Renderer {
   /**
    * Le panneau devant lequel on passe, avec les touches de l'appareil en cours ; dépassé, il reste lisible un instant.
    * Un panneau long passe à la ligne vers le bas : il ne monte jamais sur le HUD. Rend son texte, sa place et sa boîte.
+   * Dans le tuto (`tutorial`), il est mis en avant : plus grand, jaune, il descend en place (sans effets réduits), et
+   * passe sous le héros, ou au-dessus, plutôt que de le cacher.
    */
   signBoard(game, dt) {
     // La consigne du tuto (`consigne.js`) tient le dernier panneau lu à l'écran tant que le geste n'est pas fait,
@@ -523,18 +539,43 @@ export class Renderer {
     if (this.sign.t <= 0 || this.demo) return null;
     const done = this.guide?.done && this.guide.text === this.sign.text;
     const text = withKeys(this.sign.text, this.device) + (done ? ' ✓' : '');
-    const lines = this.wrap(text, 7, 190).length;
-    let y = this.signTop + (lines - 1) * 7 * 1.1;
+    const tuto = Boolean(this.tutorial);
+    const size = tuto ? TUTO_SIGN.size : 7;
+    const width = tuto ? Math.min(TUTO_SIGN.width, this.viewW - 16) : 190;
+    const lines = this.wrap(text, size, width).length;
+    let y = this.signTop + (lines - 1) * size * 1.1;
     // Une note de déblocage à sa place (au clavier, en haut à gauche) : le panneau passe dessous, et y reste tant qu'il
     // est à l'écran. Au pouce, c'est la note qui attend que le panneau soit passé (`Hud.pump`).
-    if (this.boardShift.text !== this.sign.text) this.boardShift = { text: this.sign.text, dy: 0 };
-    const box = this.textBox(text, this.viewW / 2, y, 7, 190);
+    if (this.boardShift.text !== this.sign.text) {
+      this.boardShift = { text: this.sign.text, dy: 0 };
+      this.boardIn = this.reduced ? 1 : 0; // un nouveau panneau : il descend en place
+    }
+    this.boardIn = Math.min(1, this.boardIn + dt / TUTO_SIGN.enter);
+    let x = this.viewW / 2;
+    let wrapAt = width;
+    const box = this.textBox(text, x, y, size, width);
     const note = this.noteBox;
     if (note && overlaps({ ...box, y0: box.y0 + this.boardShift.dy, y1: box.y1 + this.boardShift.dy }, note)) {
-      this.boardShift.dy = Math.max(this.boardShift.dy, note.y1 + 3 - box.y0);
+      // Le panneau du tuto se range à droite de la note s'il y tient, à sa hauteur : il ne descend pas sur l'action.
+      const room = this.viewW - 4 - (note.x1 + 4);
+      const side = tuto && !this.boardShift.dy && this.textBox(text, 0, y, size, room - 8);
+      if (side && side.lines === box.lines && side.x1 - side.x0 <= room) {
+        x = note.x1 + 4 + room / 2;
+        wrapAt = room - 8;
+      } else this.boardShift.dy = Math.max(this.boardShift.dy, note.y1 + 3 - box.y0);
     }
     y += this.boardShift.dy;
-    return { text, y, box: this.textBox(text, this.viewW / 2, y, 7, 190) };
+    // Jamais sur le héros : le panneau du tuto passe sous lui (sinon au-dessus) s'il y reste, pas pour un saut (`dodge`).
+    const { hero } = game;
+    if (tuto) {
+      const him = hero && !hero.dead ? {
+        x0: hero.x - 3 - this.camX, x1: hero.x + hero.w + 3 - this.camX,
+        y0: hero.y - 8 - this.camY, y1: hero.y + hero.h + 2 - this.camY,
+      } : null;
+      const at = this.textBox(text, x, y, size, wrapAt);
+      y += dodge(this.boardDodge, { text: this.sign.text, board: at, hero: him, overlap: Boolean(him && overlaps(at, him)), viewH: this.viewH, dt });
+    }
+    return { text, x, y, style: { size, width: wrapAt, tuto }, box: this.textBox(text, x, y, size, wrapAt) };
   }
 
   // ---------------------------------------------------------------- les coups, lisibles
