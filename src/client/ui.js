@@ -917,9 +917,9 @@ export class Hud {
       bar.querySelector('b').textContent = line.nom;
       bar.querySelector('i').style.width = `${line.part * 100}%`;
     }
-    // Ce qui change la hauteur du HUD (la pile, la puce et son nom, le compteur affiché ou non, la barre de vie du boss
+    // Ce qui change la hauteur du HUD (la pile, la puce et son nom, le compteur affiché ou non et sa longueur, la barre de vie du boss
     // ou d'une ligne, et son nom) : ses mesures sont à refaire (`measures`).
-    const shape = [pile, charges.textContent, march.hidden, bar.hidden || bar.querySelector('b').textContent].join('|');
+    const shape = [pile, charges.textContent, march.hidden || march.textContent.length, bar.hidden || bar.querySelector('b').textContent].join('|');
     if (shape !== this.shape) {
       this.shape = shape;
       this.marks = null;
@@ -962,6 +962,9 @@ export class Hud {
       return y;
     };
     const ids = (list) => Math.max(...list.map((id) => bottom(this.q(id))));
+    // La barre de vie du milieu passe sous la ligne de gauche, qui prend toute la largeur.
+    const left = this.el.querySelector('.gauche');
+    this.el.style.setProperty('--bas-ligne', `${left.offsetTop + left.offsetHeight}px`);
     // Le texte lui-même peut dépasser sa boîte (le ✊ du compteur, en emoji, est plus haut que sa ligne) : on le mesure
     // à l'écran, ramené dans le repère du jeu (au pivot, son haut est à droite de l'écran).
     const turned = document.documentElement.classList.contains('pivote');
