@@ -91,3 +91,24 @@ export function guideView(state) {
   const done = !state.wait.length;
   return { text: state.text, done, hints: done ? [] : HINTS[state.wait[0]] };
 }
+
+/** Combien de temps, en secondes, le héros reste sous le panneau du tuto avant qu'il change de place : un saut passe. */
+export const DODGE_DELAY = 0.6;
+
+/**
+ * Le panneau du tuto ne cache pas le héros, sans sauter à chaque bond : il ne bouge que si le héros reste dessous
+ * DODGE_DELAY secondes d'affilée. Il passe alors sous lui (au-dessus s'il n'y a pas la place) et garde cette place
+ * jusqu'au panneau suivant. Rend le décalage vertical à appliquer, en pixels du jeu.
+ * @param {{text?: string, over?: number, dy?: number}} memo  d'une image à l'autre, vide au départ
+ * @param {{text: string, board: {y0: number, y1: number}, hero: {y0: number, y1: number} | null, overlap: boolean,
+ *          viewH: number, dt: number}} frame  le panneau à sa place normale, la boîte du héros, s'ils se chevauchent
+ */
+export function dodge(memo, { text, board, hero, overlap, viewH, dt }) {
+  if (memo.text !== text) Object.assign(memo, { text, over: 0, dy: 0 });
+  if (memo.dy || !hero) return memo.dy;
+  memo.over = overlap ? memo.over + dt : 0;
+  if (memo.over < DODGE_DELAY) return 0;
+  const tall = board.y1 - board.y0;
+  memo.dy = hero.y1 + 2 + tall <= viewH ? hero.y1 + 2 - board.y0 : hero.y0 - 2 - board.y1;
+  return memo.dy;
+}

@@ -34,6 +34,7 @@
 
 import { makeRng } from './rng.js';
 import { TILE } from './world.js';
+import { PANIC_STEPS } from './panic.js';
 import { hitsSolid, overlap, holds } from './physics.js';
 import { updateHero, setHeroDef, FEEL } from './hero.js';
 import { createEnemy, updateEnemy, sturdy, isLine, wearLine, barrierTop } from './enemy.js';
@@ -44,8 +45,8 @@ import { updateProps } from './props.js';
 import { updateRecruits, updateCortege, syncCortege, visibleCortege, updateKettle, drawSign, bringSigns } from './manif.js';
 
 export const DT = 1 / 60;
+export { PANIC_STEPS }; // seuils ALERTE puis HYSTÉRIE (`panic.js`)
 
-export const PANIC_STEPS = [34, 67]; // seuils ALERTE puis HYSTÉRIE
 const IGNITE_RANGE = 20 * TILE; // une poubelle ne prend feu qu'à cette distance du héros : on doit le voir
 const MAX_REINFORCEMENTS = 4; // renforts bornés : la panique ne rend jamais un niveau infaisable
 const FUSE = 0.12; // délai entre la destruction d'un tonneau et son explosion (réaction en chaîne)

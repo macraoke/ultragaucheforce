@@ -2,7 +2,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { coach, gesturesOf, guideView, CHECK_TIME } from '../src/client/consigne.js';
+import { coach, gesturesOf, guideView, dodge, CHECK_TIME, DODGE_DELAY } from '../src/client/consigne.js';
 import { askedFor } from '../src/client/ui.js';
 import { loadContent } from '../tools/content.mjs';
 import { TUTORIAL, levelOrder, nextStep, startingHero } from '../src/client/collection.js';
@@ -145,4 +145,30 @@ test('effacer sa progression ne renvoie pas dans le tuto', () => {
   eraseProgress(save, [`niveaux:${TUTORIAL}`]);
   assert.deepEqual(save.decouvertes, [`niveaux:${TUTORIAL}`]);
   assert.equal(firstVisit(save), false);
+});
+
+test('le panneau du tuto ne saute pas au sommet d’un saut ; il laisse la place au héros qui reste dessous', () => {
+  const board = { y0: 30, y1: 46 };
+  const hero = { y0: 36, y1: 60 };
+  const frame = (overlap, extra = {}) => ({ text: 'A', board, hero, overlap, viewH: 216, dt: 1 / 60, ...extra });
+  const memo = {};
+  const at = (overlap, n, extra) => {
+    let dy = 0;
+    for (let i = 0; i < n; i++) dy = dodge(memo, frame(overlap, extra));
+    return dy;
+  };
+  assert.equal(at(true, 15), 0, 'un saut : un quart de seconde dessous, le panneau ne bouge pas');
+  assert.equal(at(false, 30), 0);
+  assert.equal(at(true, 15), 0, 'un autre saut : l’attente repart de zéro');
+  assert.equal(at(false, 1), 0);
+  const dy = at(true, Math.ceil(DODGE_DELAY * 60) + 1);
+  assert.equal(dy, hero.y1 + 2 - board.y0, 'resté dessous : il passe sous le héros');
+  assert.equal(at(false, 60), dy, 'puis garde cette place, sans revenir');
+  assert.equal(at(true, 60), dy);
+  assert.equal(dodge(memo, frame(false, { text: 'B' })), 0, 'le panneau suivant repart de sa place');
+  const low = {};
+  let up = 0;
+  for (let i = 0; i < 60; i++) up = dodge(low, frame(true, { hero: { y0: 190, y1: 214 } }));
+  assert.equal(up, 190 - 2 - board.y1, 'sans place dessous : au-dessus du héros');
+  assert.equal(dodge({}, frame(false, { hero: null })), 0, 'sans héros : rien ne bouge');
 });

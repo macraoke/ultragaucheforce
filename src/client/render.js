@@ -5,6 +5,7 @@
 
 import { crown, hand, seated, sprite } from './sprites.js';
 import { withKeys } from './input.js';
+import { dodge } from './consigne.js';
 import { KETTLE_FLOOR } from '../sim/enemy.js';
 import { wordBox } from '../sim/projectile.js';
 
@@ -126,6 +127,7 @@ export class Renderer {
     this.device = 'clavier'; // l'appareil dont les panneaux disent les touches : clavier, manette ou pouce
     this.guide = null; // la consigne du tuto : son panneau reste lisible (voir `guideView`)
     this.boardIn = 1; // l'entrée du panneau du tuto, de 0 à 1
+    this.boardDodge = {}; // le panneau du tuto qui laisse la place au héros (`dodge`)
     this.tutorial = false; // dans le tuto, le panneau lu est mis en avant (`signBoard`)
     this.signTop = 30; // hauteur du panneau à l'écran, en pixels du jeu (main.js la règle selon la mise en page)
     this.sign = { text: '', t: 0 }; // le dernier panneau lu, et combien de temps il reste à l'écran
@@ -563,19 +565,15 @@ export class Renderer {
       } else this.boardShift.dy = Math.max(this.boardShift.dy, note.y1 + 3 - box.y0);
     }
     y += this.boardShift.dy;
-    // Jamais sur le héros : le panneau du tuto passe sous lui, sinon au-dessus.
+    // Jamais sur le héros : le panneau du tuto passe sous lui (sinon au-dessus) s'il y reste, pas pour un saut (`dodge`).
     const { hero } = game;
-    if (tuto && hero && !hero.dead) {
-      const him = {
+    if (tuto) {
+      const him = hero && !hero.dead ? {
         x0: hero.x - 3 - this.camX, x1: hero.x + hero.w + 3 - this.camX,
         y0: hero.y - 8 - this.camY, y1: hero.y + hero.h + 2 - this.camY,
-      };
+      } : null;
       const at = this.textBox(text, x, y, size, wrapAt);
-      if (overlaps(at, him)) {
-        const tall = at.y1 - at.y0;
-        y += him.y1 + 2 - at.y0;
-        if (him.y1 + 2 + tall > this.viewH) y -= him.y1 - him.y0 + tall + 4;
-      }
+      y += dodge(this.boardDodge, { text: this.sign.text, board: at, hero: him, overlap: Boolean(him && overlaps(at, him)), viewH: this.viewH, dt });
     }
     return { text, x, y, style: { size, width: wrapAt, tuto }, box: this.textBox(text, x, y, size, wrapAt) };
   }
